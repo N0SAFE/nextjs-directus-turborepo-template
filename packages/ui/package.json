@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "prepare": "tsup",
+    "init": "tsup",
     "dev": "tsup --watch",
     "build": "tsup",
     "lint": "eslint \"**/*.ts*\"",
