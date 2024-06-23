@@ -1,0 +1,30 @@
+version: 1
+directus: 10.12.1
+vendor: mysql
+collections: []
+fields: []
+relations:
+  - collection: directus_settings
+    field: public_registration_role
+    related_collection: directus_roles
+    meta: null
+    schema:
+      table: directus_settings
+      column: public_registration_role
+      foreign_key_table: directus_roles
+      foreign_key_column: id
+      constraint_name: directus_settings_public_registration_role_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: directus_webhooks
+    field: migrated_flow
+    related_collection: directus_flows
+    meta: null
+    schema:
+      table: directus_webhooks
+      column: migrated_flow
+      foreign_key_table: directus_flows
+      foreign_key_column: id
+      constraint_name: directus_webhooks_migrated_flow_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL

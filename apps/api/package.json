@@ -1,0 +1,25 @@
+{
+    "name": "api",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "prepare": "directus bootstrap",
+        "build:force": "npm run schema:export",
+        "dev": "directus start",
+        "start": "directus start",
+        "test": "echo 'all app:api tests passed!'",
+        "schema:export": "directus schema snapshot --yes ./snapshot.yaml",
+        "schema:import": "directus schema apply --yes ./snapshot.yaml",
+        "schema:import:dryRun": "directus schema apply --dry-run ./snapshot.yaml",
+        "seed:run": "directus data apply ./seed.yaml"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "directus": "^10.12.1",
+        "directus-extension-seed": "^2.0.4",
+        "mysql": "^2.18.1"
+    }
+}

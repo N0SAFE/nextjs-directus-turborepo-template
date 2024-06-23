@@ -1,0 +1,39 @@
+{
+    "name": "portfolio-next-directus",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "generate:directus:types": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\"",
+        "build": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
+        "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",
+        "start": "dotenv -v FORCE_COLOR=1 -- turbo start",
+        "test": "dotenv -v FORCE_COLOR=1 -- turbo test",
+        "start:local": "dotenv -v FORCE_COLOR=1 -- turbo start:local",
+        "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",
+        "clean": "dotenv -v FORCE_COLOR=1 -- turbo clean",
+        "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
+        "docs": "npm run dev --workspace=@repo/docs",
+        "web": "npm run dev --workspace=@repo/web",
+        "ui": "npm run dev --workspace=@repo/ui",
+        "ui:add": "npm run ui:add --workspace=@repo/ui"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/bin": "*",
+        "@repo/tsconfig": "*",
+        "eslint": "^8.53.0",
+        "prettier": "^3.0.3",
+        "prettier-plugin-tailwindcss": "^0.5.7",
+        "turbo": "latest"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "packageManager": "npm@10.8.1",
+    "dependencies": {
+        "dotenv-cli": "^7.4.2"
+    }
+}

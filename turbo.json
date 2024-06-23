@@ -1,0 +1,36 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "globalDependencies": ["**/.env.*local", "**/.env"],
+    "tasks": {
+        "build:force": {
+            "cache": false
+        },
+        "generate:directus:types": {
+            "cache": false
+        },
+        "build": {
+            "dependsOn": ["^build", "api#build:force"],
+            "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+        },
+        "lint": {
+            "dependsOn": ["^build"]
+        },
+        "test": {
+            "dependsOn": ["^build"]
+        },
+        "check-types": {},
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "start": {
+            "persistent": true
+        },
+        "start:local": {
+            "persistent": true
+        },
+        "clean": {
+            "cache": false
+        }
+    }
+}
