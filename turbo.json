@@ -2,6 +2,10 @@
     "$schema": "https://turbo.build/schema.json",
     "globalDependencies": ["**/.env.*local", "**/.env"],
     "tasks": {
+        "prepare": {
+            "dependsOn": ["clean"],
+            "outputs": ["dist/**"]
+        },
         "build:force": {
             "cache": false
         },
