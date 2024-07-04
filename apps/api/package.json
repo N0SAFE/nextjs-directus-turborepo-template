@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "prepare": "directus bootstrap",
+        "init": "directus bootstrap",
         "build:force": "npm run schema:export",
         "dev": "directus start",
         "start": "directus start",
@@ -18,7 +18,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "directus": "^10.12.1",
+        "directus": "^10.13.0",
         "directus-extension-seed": "^2.0.4",
         "mysql": "^2.18.1"
     }

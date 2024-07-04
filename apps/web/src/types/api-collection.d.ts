@@ -812,15 +812,22 @@ export interface components {
     };
     Files: {
       /**
-       * @description Unique identifier for the file.
-       * @example 8cbb43fe-4cdf-4991-8352-c461779cec02
+       * @description Character set of the file.
+       * @example binary
        */
-      id?: string;
+      charset?: string | null;
+      /** @description Description for the file. */
+      description?: string | null;
       /**
-       * @description Where the file is stored. Either `local` for the local filesystem or the name of the storage adapter (for example `s3`).
-       * @example local
+       * @description Duration of the file in seconds. Only applies to audio and video.
+       * @example 0
        */
-      storage?: string;
+      duration?: number | null;
+      /**
+       * @description Where the file was embedded from.
+       * @example null
+       */
+      embed?: string | null;
       /**
        * @description Name of the file on disk. By default, Directus uses a random hash for the filename.
        * @example a88c3b72-ac58-5436-a4ec-b2858531333a.jpg
@@ -832,20 +839,53 @@ export interface components {
        */
       filename_download?: string;
       /**
-       * @description Title for the file. Is extracted from the filename on upload, but can be edited by the user.
-       * @example User Avatar
+       * @description Size of the file in bytes.
+       * @example 137862
        */
-      title?: string;
-      /**
-       * @description MIME type of the file.
-       * @example image/jpeg
-       */
-      type?: string;
+      filesize?: number;
+      focal_point_x?: number | null;
+      focal_point_y?: number | null;
       /**
        * @description Virtual folder where this file resides in.
        * @example null
        */
       folder?: string | components["schemas"]["Folders"] | null;
+      /**
+       * @description Height of the file in pixels. Only applies to images.
+       * @example 838
+       */
+      height?: number | null;
+      /**
+       * @description Unique identifier for the file.
+       * @example 8cbb43fe-4cdf-4991-8352-c461779cec02
+       */
+      id?: string;
+      /** @description Where the file was created. Is automatically populated based on Exif data for images. */
+      location?: string | null;
+      /** @description IPTC, Exif, and ICC metadata extracted from file */
+      metadata?: Record<string, unknown> | null;
+      modified_by?: string | components["schemas"]["Users"] | null;
+      /** Format: timestamp */
+      modified_on?: string;
+      /**
+       * @description Where the file is stored. Either `local` for the local filesystem or the name of the storage adapter (for example `s3`).
+       * @example local
+       */
+      storage?: string;
+      /** @description Tags for the file. Is automatically populated based on Exif data for images. */
+      tags?: string[] | null;
+      /**
+       * @description Title for the file. Is extracted from the filename on upload, but can be edited by the user.
+       * @example User Avatar
+       */
+      title?: string;
+      tus_data?: unknown;
+      tus_id?: string | null;
+      /**
+       * @description MIME type of the file.
+       * @example image/jpeg
+       */
+      type?: string;
       /**
        * @description Who uploaded the file.
        * @example 63716273-0f29-4648-8a2a-2af2948f6f78
@@ -857,49 +897,11 @@ export interface components {
        * @example 2019-12-03T00:10:15+00:00
        */
       uploaded_on?: string;
-      modified_by?: string | components["schemas"]["Users"] | null;
-      /** Format: timestamp */
-      modified_on?: string;
-      /**
-       * @description Character set of the file.
-       * @example binary
-       */
-      charset?: string | null;
-      /**
-       * @description Size of the file in bytes.
-       * @example 137862
-       */
-      filesize?: number;
       /**
        * @description Width of the file in pixels. Only applies to images.
        * @example 800
        */
       width?: number | null;
-      /**
-       * @description Height of the file in pixels. Only applies to images.
-       * @example 838
-       */
-      height?: number | null;
-      /**
-       * @description Duration of the file in seconds. Only applies to audio and video.
-       * @example 0
-       */
-      duration?: number | null;
-      /**
-       * @description Where the file was embedded from.
-       * @example null
-       */
-      embed?: string | null;
-      /** @description Description for the file. */
-      description?: string | null;
-      /** @description Where the file was created. Is automatically populated based on Exif data for images. */
-      location?: string | null;
-      /** @description Tags for the file. Is automatically populated based on Exif data for images. */
-      tags?: string[] | null;
-      /** @description IPTC, Exif, and ICC metadata extracted from file */
-      metadata?: Record<string, unknown> | null;
-      focal_point_x?: number | null;
-      focal_point_y?: number | null;
     };
     Folders: {
       /**
@@ -920,36 +922,6 @@ export interface components {
     };
     Roles: {
       /**
-       * @description Unique identifier for the role.
-       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
-       */
-      id?: string;
-      /**
-       * @description Name of the role.
-       * @example Administrator
-       */
-      name?: string;
-      /**
-       * @description The role's icon.
-       * @example verified_user
-       */
-      icon?: string;
-      /**
-       * @description Description of the role.
-       * @example Admins have access to all managed data within the system by default
-       */
-      description?: string | null;
-      /**
-       * @description Array of IP addresses that are allowed to connect to the API as a user of this role.
-       * @example []
-       */
-      ip_access?: string[];
-      /**
-       * @description Whether or not this role enforces the use of 2FA.
-       * @example false
-       */
-      enforce_tfa?: boolean;
-      /**
        * @description Admin role. If true, skips all permission checks.
        * @example false
        */
@@ -959,6 +931,36 @@ export interface components {
        * @example true
        */
       app_access?: boolean;
+      /**
+       * @description Description of the role.
+       * @example Admins have access to all managed data within the system by default
+       */
+      description?: string | null;
+      /**
+       * @description Whether or not this role enforces the use of 2FA.
+       * @example false
+       */
+      enforce_tfa?: boolean;
+      /**
+       * @description The role's icon.
+       * @example verified_user
+       */
+      icon?: string;
+      /**
+       * @description Unique identifier for the role.
+       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
+       */
+      id?: string;
+      /**
+       * @description Array of IP addresses that are allowed to connect to the API as a user of this role.
+       * @example []
+       */
+      ip_access?: string[];
+      /**
+       * @description Name of the role.
+       * @example Administrator
+       */
+      name?: string;
       users?: ((string | components["schemas"]["Users"])[]) | null;
     };
     Schema: {
@@ -971,77 +973,41 @@ export interface components {
       relations?: components["schemas"]["Relations"][];
     };
     Users: {
-      /**
-       * @description Unique identifier for the user.
-       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
-       */
-      id?: string;
-      /**
-       * @description First name of the user.
-       * @example Admin
-       */
-      first_name?: string;
-      /**
-       * @description Last name of the user.
-       * @example User
-       */
-      last_name?: string;
-      /**
-       * Format: email
-       * @description Unique email address for the user.
-       * @example admin@example.com
-       */
-      email?: string;
-      /** @description Password of the user. */
-      password?: string;
-      /**
-       * @description The user's location.
-       * @example null
-       */
-      location?: string | null;
-      /**
-       * @description The user's title.
-       * @example null
-       */
-      title?: string | null;
-      /**
-       * @description The user's description.
-       * @example null
-       */
-      description?: string | null;
-      /**
-       * @description The user's tags.
-       * @example null
-       */
-      tags?: string[] | null;
+      appearance?: string | null;
+      auth_data?: unknown;
       /**
        * @description The user's avatar.
        * @example null
        */
       avatar?: string | components["schemas"]["Files"] | null;
       /**
+       * @description The user's description.
+       * @example null
+       */
+      description?: string | null;
+      /**
+       * Format: email
+       * @description Unique email address for the user.
+       * @example admin@example.com
+       */
+      email?: string;
+      email_notifications?: boolean | null;
+      external_identifier?: string | null;
+      /**
+       * @description First name of the user.
+       * @example Admin
+       */
+      first_name?: string;
+      /**
+       * @description Unique identifier for the user.
+       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
+       */
+      id?: string;
+      /**
        * @description The user's language used in Directus.
        * @example en-US
        */
       language?: string;
-      /**
-       * @description The 2FA secret string that's used to generate one time passwords.
-       * @example null
-       */
-      tfa_secret?: string | null;
-      /**
-       * @description Status of the user.
-       * @example active
-       * @enum {string}
-       */
-      status?: "active" | "invited" | "draft" | "suspended" | "deleted";
-      /**
-       * @description Unique identifier of the role of this user.
-       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
-       */
-      role?: string | components["schemas"]["Roles"];
-      /** @description Static token for the user. */
-      token?: string | null;
       /**
        * Format: date-time
        * @description When this user used the API last.
@@ -1049,19 +1015,55 @@ export interface components {
        */
       last_access?: string | null;
       /**
+       * @description Last name of the user.
+       * @example User
+       */
+      last_name?: string;
+      /**
        * @description Last page that the user was on.
        * @example /my-project/settings/collections/a
        */
       last_page?: string | null;
+      /**
+       * @description The user's location.
+       * @example null
+       */
+      location?: string | null;
+      /** @description Password of the user. */
+      password?: string;
       provider?: string;
-      external_identifier?: string | null;
-      auth_data?: unknown;
-      email_notifications?: boolean | null;
-      appearance?: string | null;
+      /**
+       * @description Unique identifier of the role of this user.
+       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
+       */
+      role?: string | components["schemas"]["Roles"];
+      /**
+       * @description Status of the user.
+       * @example active
+       * @enum {string}
+       */
+      status?: "active" | "invited" | "draft" | "suspended" | "deleted";
+      /**
+       * @description The user's tags.
+       * @example null
+       */
+      tags?: string[] | null;
+      /**
+       * @description The 2FA secret string that's used to generate one time passwords.
+       * @example null
+       */
+      tfa_secret?: string | null;
       theme_dark?: string | null;
+      theme_dark_overrides?: unknown;
       theme_light?: string | null;
       theme_light_overrides?: unknown;
-      theme_dark_overrides?: unknown;
+      /**
+       * @description The user's title.
+       * @example null
+       */
+      title?: string | null;
+      /** @description Static token for the user. */
+      token?: string | null;
     };
     Query: {
       /**
@@ -1113,121 +1115,143 @@ export interface components {
     };
     Activity: {
       /**
-       * @description Unique identifier for the object.
-       * @example 2
-       */
-      id?: number;
-      /**
        * @description Action that was performed.
        * @example update
        * @enum {string}
        */
       action?: "create" | "update" | "delete" | "login";
-      /** @description The user who performed this action. */
-      user?: string | components["schemas"]["Users"] | null;
-      /**
-       * Format: date-time
-       * @description When the action happened.
-       * @example 2019-12-05T22:52:09Z
-       */
-      timestamp?: string;
-      /**
-       * @description The IP address of the user at the time the action took place.
-       * @example 127.0.0.1
-       */
-      ip?: string;
-      /**
-       * @description User agent string of the browser the user used when the action took place.
-       * @example Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/78.0.3904.108 Safari/537.36
-       */
-      user_agent?: string;
       /** @description Collection identifier in which the item resides. */
       collection?: string | components["schemas"]["Collections"];
-      /**
-       * @description Unique identifier for the item the action applied to. This is always a string, even for integer primary keys.
-       * @example 328
-       */
-      item?: string;
       /**
        * @description User comment. This will store the comments that show up in the right sidebar of the item edit page in the admin app.
        * @example null
        */
       comment?: string | null;
       /**
+       * @description Unique identifier for the object.
+       * @example 2
+       */
+      id?: number;
+      /**
+       * @description The IP address of the user at the time the action took place.
+       * @example 127.0.0.1
+       */
+      ip?: string;
+      /**
+       * @description Unique identifier for the item the action applied to. This is always a string, even for integer primary keys.
+       * @example 328
+       */
+      item?: string;
+      /**
        * @description Origin of the request when the action took place.
        * @example https://directus.io
        */
       origin?: string;
+      /**
+       * Format: date-time
+       * @description When the action happened.
+       * @example 2019-12-05T22:52:09Z
+       */
+      timestamp?: string;
+      /** @description The user who performed this action. */
+      user?: string | components["schemas"]["Users"] | null;
+      /**
+       * @description User agent string of the browser the user used when the action took place.
+       * @example Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/78.0.3904.108 Safari/537.36
+       */
+      user_agent?: string;
       revisions?: ((number | components["schemas"]["Revisions"])[]) | null;
     };
     Collections: {
+      accountability?: string | null;
+      archive_app_filter?: boolean;
+      archive_field?: string | null;
+      archive_value?: string | null;
+      collapse?: string;
       /**
        * @description The collection key.
        * @example customers
        */
       collection?: string;
-      icon?: string | null;
-      note?: string | null;
-      display_template?: string | null;
-      hidden?: boolean;
-      singleton?: boolean;
-      translations?: unknown;
-      archive_field?: string | null;
-      archive_app_filter?: boolean;
-      archive_value?: string | null;
-      unarchive_value?: string | null;
-      sort_field?: string | null;
-      accountability?: string | null;
       color?: string | null;
-      item_duplication_fields?: unknown;
-      sort?: number | null;
+      display_template?: string | null;
       group?: string | components["schemas"]["Collections"] | null;
-      collapse?: string;
+      hidden?: boolean;
+      icon?: string | null;
+      item_duplication_fields?: unknown;
+      note?: string | null;
       preview_url?: string | null;
+      singleton?: boolean;
+      sort?: number | null;
+      sort_field?: string | null;
+      translations?: unknown;
+      unarchive_value?: string | null;
       versioning?: boolean;
     };
     Extensions: {
-      enabled?: boolean;
-      /** Format: uuid */
-      id?: string;
-      folder?: string;
-      source?: string;
       /**
        * @description Name of the bundle the extension is in.
        * @example directus-extension-my-bundle
        */
       bundle?: string | null;
+      enabled?: boolean;
+      folder?: string;
+      /** Format: uuid */
+      id?: string;
+      source?: string;
     };
     Fields: {
-      id?: number;
       /**
        * @description Unique name of the collection this field is in.
        * @example about_us
        */
       collection?: string;
+      conditions?: unknown;
+      display?: string | null;
+      display_options?: unknown;
       /**
        * @description Unique name of the field. Field name is unique within the collection.
        * @example id
        */
       field?: string;
-      special?: string[] | null;
-      interface?: string | null;
-      options?: unknown;
-      display?: string | null;
-      display_options?: unknown;
-      readonly?: boolean;
-      hidden?: boolean;
-      sort?: number | null;
-      width?: string | null;
-      translations?: unknown;
-      note?: string | null;
-      conditions?: unknown;
-      required?: boolean | null;
       group?: number | components["schemas"]["Fields"] | null;
+      hidden?: boolean;
+      id?: number;
+      interface?: string | null;
+      note?: string | null;
+      options?: unknown;
+      readonly?: boolean;
+      required?: boolean | null;
+      sort?: number | null;
+      special?: string[] | null;
+      translations?: unknown;
       validation?: unknown;
       validation_message?: string | null;
+      width?: string | null;
     };
     Flows: {
+      /**
+       * @description The permission used during the flow. One of `$public`, `$trigger`, `$full`, or UUID of a role.
+       * @example $trigger
+       */
+      accountability?: string;
+      /**
+       * @description Color of the icon displayed in the Admin App for the flow.
+       * @example #112233
+       */
+      color?: string | null;
+      /**
+       * Format: date-time
+       * @description Timestamp in ISO8601 when the flow was created.
+       * @example 2022-05-11T13:14:52Z
+       */
+      date_created?: string | null;
+      description?: string | null;
+      /**
+       * @description Icon displayed in the Admin App for the flow.
+       * @example bolt
+       */
+      icon?: string;
       /**
        * @description Unique identifier for the flow.
        * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
@@ -1239,16 +1263,15 @@ export interface components {
        */
       name?: string;
       /**
-       * @description Icon displayed in the Admin App for the flow.
-       * @example bolt
+       * @description UUID of the operation connected to the trigger in the flow.
+       * @example 92e82998-e421-412f-a513-13701e83e4ce
        */
-      icon?: string;
+      operation?: string | components["schemas"]["Operations"];
       /**
-       * @description Color of the icon displayed in the Admin App for the flow.
-       * @example #112233
+       * @description Options of the selected trigger for the flow.
+       * @example null
        */
-      color?: string | null;
-      description?: string | null;
+      options?: Record<string, unknown> | null;
       /**
        * @description Current status of the flow.
        * @default active
@@ -1262,27 +1285,6 @@ export interface components {
        */
       trigger?: string;
       /**
-       * @description The permission used during the flow. One of `$public`, `$trigger`, `$full`, or UUID of a role.
-       * @example $trigger
-       */
-      accountability?: string;
-      /**
-       * @description Options of the selected trigger for the flow.
-       * @example null
-       */
-      options?: Record<string, unknown> | null;
-      /**
-       * @description UUID of the operation connected to the trigger in the flow.
-       * @example 92e82998-e421-412f-a513-13701e83e4ce
-       */
-      operation?: string | components["schemas"]["Operations"];
-      /**
-       * Format: date-time
-       * @description Timestamp in ISO8601 when the flow was created.
-       * @example 2022-05-11T13:14:52Z
-       */
-      date_created?: string | null;
-      /**
        * @description The user who created the flow.
        * @example 63716273-0f29-4648-8a2a-2af2948f6f78
        */
@@ -1291,25 +1293,32 @@ export interface components {
     };
     Operations: {
       /**
+       * Format: date-time
+       * @description Timestamp in ISO8601 when the operation was created.
+       * @example 2022-05-11T13:14:52Z
+       */
+      date_created?: string | null;
+      flow?: string | components["schemas"]["Flows"];
+      /**
        * @description Unique identifier for the operation.
        * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
        */
       id?: string;
-      /**
-       * @description The name of the operation.
-       * @example Log to Console
-       */
-      name?: string;
       /**
        * @description Key for the operation. Must be unique within a given flow.
        * @example log_console
        */
       key?: string;
       /**
-       * @description Type of operation. One of `log`, `mail`, `notification`, `create`, `read`, `request`, `sleep`, `transform`, `trigger`, `condition`, or any type of custom operation extensions.
-       * @example log
+       * @description The name of the operation.
+       * @example Log to Console
        */
-      type?: string;
+      name?: string;
+      /**
+       * @description Options depending on the type of the operation.
+       * @example null
+       */
+      options?: Record<string, unknown> | null;
       /**
        * @description Position of the operation on the X axis within the flow workspace.
        * @example 12
@@ -1321,27 +1330,20 @@ export interface components {
        */
       position_y?: number;
       /**
-       * @description Options depending on the type of the operation.
-       * @example null
+       * @description The operation triggered when the current operation fails (or `otherwise` logic of a condition operation).
+       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
        */
-      options?: Record<string, unknown> | null;
+      reject?: string | components["schemas"]["Operations"];
       /**
        * @description The operation triggered when the current operation succeeds (or `then` logic of a condition operation).
        * @example 63716273-0f29-4648-8a2a-2af2948f6f78
        */
       resolve?: string | components["schemas"]["Operations"];
       /**
-       * @description The operation triggered when the current operation fails (or `otherwise` logic of a condition operation).
-       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
+       * @description Type of operation. One of `log`, `mail`, `notification`, `create`, `read`, `request`, `sleep`, `transform`, `trigger`, `condition`, or any type of custom operation extensions.
+       * @example log
        */
-      reject?: string | components["schemas"]["Operations"];
-      flow?: string | components["schemas"]["Flows"];
-      /**
-       * Format: date-time
-       * @description Timestamp in ISO8601 when the operation was created.
-       * @example 2022-05-11T13:14:52Z
-       */
-      date_created?: string | null;
+      type?: string;
       /**
        * @description The user who created the operation.
        * @example 63716273-0f29-4648-8a2a-2af2948f6f78
@@ -1350,74 +1352,56 @@ export interface components {
     };
     Permissions: {
       /**
-       * @description Unique identifier for the permission.
-       * @example 1
-       */
-      id?: number;
-      /**
-       * @description Unique identifier of the role this permission applies to.
-       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
-       */
-      role?: string | null;
-      /**
-       * @description What collection this permission applies to.
-       * @example customers
-       */
-      collection?: string;
-      /**
        * @description What action this permission applies to.
        * @example create
        * @enum {string}
        */
       action?: "create" | "read" | "update" | "delete";
-      /** @description JSON structure containing the permissions checks for this permission. */
-      permissions?: Record<string, unknown> | null;
-      /** @description JSON structure containing the validation checks for this permission. */
-      validation?: Record<string, unknown> | null;
-      /** @description JSON structure containing the preset value for created/updated items. */
-      presets?: Record<string, unknown> | null;
+      /**
+       * @description What collection this permission applies to.
+       * @example customers
+       */
+      collection?: string;
       /** @description CSV of fields that the user is allowed to interact with. */
       fields?: string[] | null;
-    };
-    Presets: {
       /**
-       * @description Unique identifier for this single collection preset.
-       * @example 155
+       * @description Unique identifier for the permission.
+       * @example 1
        */
       id?: number;
+      /** @description JSON structure containing the permissions checks for this permission. */
+      permissions?: Record<string, unknown> | null;
+      /** @description JSON structure containing the preset value for created/updated items. */
+      presets?: Record<string, unknown> | null;
+      /**
+       * @description Unique identifier of the role this permission applies to.
+       * @example 2f24211d-d928-469a-aea3-3c8f53d4e426
+       */
+      role?: string | null;
+      /** @description JSON structure containing the validation checks for this permission. */
+      validation?: Record<string, unknown> | null;
+    };
+    Presets: {
       /** @description Name for the bookmark. If this is set, the preset will be considered a bookmark. */
       bookmark?: string | null;
-      /**
-       * @description The unique identifier of the user to whom this collection preset applies.
-       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
-       */
-      user?: string | components["schemas"]["Users"] | null;
-      /**
-       * @description The unique identifier of a role in the platform. If `user` is null, this will be used to apply the collection preset or bookmark for all users in the role.
-       * @example 50419801-0f30-8644-2b3c-9bc2d980d0a0
-       */
-      role?: string | components["schemas"]["Roles"] | null;
       /**
        * @description What collection this collection preset is used for.
        * @example articles
        */
       collection?: string | components["schemas"]["Collections"];
-      /** @description Search query. */
-      search?: string | null;
+      color?: string | null;
+      filter?: unknown;
+      icon?: string | null;
+      /**
+       * @description Unique identifier for this single collection preset.
+       * @example 155
+       */
+      id?: number;
       /**
        * @description Key of the layout that is used.
        * @example null
        */
       layout?: string;
-      /**
-       * @description Layout query that's saved per layout type. Controls what data is fetched on load. These follow the same format as the JS SDK parameters.
-       * @example {
-       *   "cards": {
-       *     "sort": "-published_on"
-       *   }
-       * }
-       */
-      layout_query?: unknown;
       /**
        * @description Options of the views. The properties in here are controlled by the layout.
        * @example {
@@ -1430,10 +1414,28 @@ export interface components {
        * }
        */
       layout_options?: unknown;
+      /**
+       * @description Layout query that's saved per layout type. Controls what data is fetched on load. These follow the same format as the JS SDK parameters.
+       * @example {
+       *   "cards": {
+       *     "sort": "-published_on"
+       *   }
+       * }
+       */
+      layout_query?: unknown;
       refresh_interval?: number | null;
-      filter?: unknown;
-      icon?: string | null;
-      color?: string | null;
+      /**
+       * @description The unique identifier of a role in the platform. If `user` is null, this will be used to apply the collection preset or bookmark for all users in the role.
+       * @example 50419801-0f30-8644-2b3c-9bc2d980d0a0
+       */
+      role?: string | components["schemas"]["Roles"] | null;
+      /** @description Search query. */
+      search?: string | null;
+      /**
+       * @description The unique identifier of the user to whom this collection preset applies.
+       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
+       */
+      user?: string | components["schemas"]["Users"] | null;
     };
     Relations: {
       /**
@@ -1441,6 +1443,11 @@ export interface components {
        * @example 1
        */
       id?: number;
+      /**
+       * @description Field on the junction table that holds the many field of the related relation.
+       * @example null
+       */
+      junction_field?: string | null;
       /**
        * @description Collection that has the field that holds the foreign key.
        * @example directus_activity
@@ -1451,32 +1458,22 @@ export interface components {
        * @example user
        */
       many_field?: string;
+      one_allowed_collections?: string[] | null;
       /**
        * @description Collection on the _one_ side of the relationship.
        * @example directus_users
        */
       one_collection?: string;
+      one_collection_field?: string | null;
+      one_deselect_action?: string;
       /**
        * @description Alias column that serves as the _one_ side of the relationship.
        * @example null
        */
       one_field?: string | null;
-      one_collection_field?: string | null;
-      one_allowed_collections?: string[] | null;
-      /**
-       * @description Field on the junction table that holds the many field of the related relation.
-       * @example null
-       */
-      junction_field?: string | null;
       sort_field?: string | null;
-      one_deselect_action?: string;
     };
     Revisions: {
-      /**
-       * @description Unique identifier for the revision.
-       * @example 1
-       */
-      id?: number;
       /**
        * @description Unique identifier for the activity record.
        * @example 2
@@ -1487,11 +1484,6 @@ export interface components {
        * @example articles
        */
       collection?: string | components["schemas"]["Collections"];
-      /**
-       * @description Primary key of updated item.
-       * @example 168
-       */
-      item?: string;
       /**
        * @description Copy of item state at time of update.
        * @example {
@@ -1511,6 +1503,16 @@ export interface components {
        */
       delta?: Record<string, never>;
       /**
+       * @description Unique identifier for the revision.
+       * @example 1
+       */
+      id?: number;
+      /**
+       * @description Primary key of updated item.
+       * @example 168
+       */
+      item?: string;
+      /**
        * @description If the current item was updated relationally, this is the id of the parent revision record
        * @example null
        */
@@ -1523,10 +1525,37 @@ export interface components {
     };
     Settings: {
       /**
+       * @description Allowed authentication login attempts before the user's status is set to blocked.
+       * @example 25
+       */
+      auth_login_attempts?: number;
+      /** @description Authentication password policy. */
+      auth_password_policy?: string | null;
+      basemaps?: unknown;
+      custom_aspect_ratios?: unknown;
+      custom_css?: string | null;
+      default_appearance?: string;
+      default_language?: string;
+      default_theme_dark?: string | null;
+      default_theme_light?: string | null;
+      /**
        * @description Unique identifier for the setting.
        * @example 1
        */
       id?: number;
+      mapbox_key?: string | null;
+      module_bar?: unknown;
+      /**
+       * @description The brand color of the project.
+       * @example null
+       */
+      project_color?: string | null;
+      project_descriptor?: string | null;
+      /**
+       * @description The logo of the project.
+       * @example null
+       */
+      project_logo?: string | null;
       /**
        * @description The name of the project.
        * @example Directus
@@ -1538,21 +1567,6 @@ export interface components {
        */
       project_url?: string | null;
       /**
-       * @description The brand color of the project.
-       * @example null
-       */
-      project_color?: string | null;
-      /**
-       * @description The logo of the project.
-       * @example null
-       */
-      project_logo?: string | null;
-      /**
-       * @description The foreground of the project.
-       * @example null
-       */
-      public_foreground?: string | null;
-      /**
        * @description The background of the project.
        * @example null
        */
@@ -1560,24 +1574,29 @@ export interface components {
         id?: string;
         type?: string;
       } | null;
+      /** @description $t:field_options.directus_settings.project_favicon_note */
+      public_favicon?: string | components["schemas"]["Files"] | null;
+      /**
+       * @description The foreground of the project.
+       * @example null
+       */
+      public_foreground?: string | null;
       /**
        * @description Note rendered on the public pages of the app.
        * @example null
        */
       public_note?: string | null;
-      /**
-       * @description Allowed authentication login attempts before the user's status is set to blocked.
-       * @example 25
-       */
-      auth_login_attempts?: number;
-      /** @description Authentication password policy. */
-      auth_password_policy?: string | null;
-      /**
-       * @description What transformations are allowed in the assets endpoint.
-       * @example all
-       * @enum {string|null}
-       */
-      storage_asset_transform?: "all" | "none" | "presets" | null;
+      /** @description $t:fields.directus_settings.public_registration_note */
+      public_registration?: boolean;
+      /** @description $t:fields.directus_settings.public_registration_email_filter_note */
+      public_registration_email_filter?: unknown;
+      /** @description $t:fields.directus_settings.public_registration_role_note */
+      public_registration_role?: string | components["schemas"]["Roles"] | null;
+      /** @description $t:fields.directus_settings.public_registration_verify_email_note */
+      public_registration_verify_email?: boolean;
+      report_bug_url?: string | null;
+      report_error_url?: string | null;
+      report_feature_url?: string | null;
       /**
        * @description Array of allowed
        * @example null
@@ -1614,64 +1633,26 @@ export interface components {
                 }[] | null;
             })[]) | null;
         })[]) | null;
-      custom_css?: string | null;
+      /**
+       * @description What transformations are allowed in the assets endpoint.
+       * @example all
+       * @enum {string|null}
+       */
+      storage_asset_transform?: "all" | "none" | "presets" | null;
       /**
        * Format: uuid
        * @description Default folder to place files
        */
       storage_default_folder?: string;
-      basemaps?: unknown;
-      mapbox_key?: string | null;
-      module_bar?: unknown;
-      project_descriptor?: string | null;
-      default_language?: string;
-      custom_aspect_ratios?: unknown;
-      /** @description $t:field_options.directus_settings.project_favicon_note */
-      public_favicon?: string | components["schemas"]["Files"] | null;
-      default_appearance?: string;
-      default_theme_light?: string | null;
-      theme_light_overrides?: unknown;
-      default_theme_dark?: string | null;
       theme_dark_overrides?: unknown;
-      report_error_url?: string | null;
-      report_bug_url?: string | null;
-      report_feature_url?: string | null;
-      /** @description $t:fields.directus_settings.public_registration_note */
-      public_registration?: boolean;
-      /** @description $t:fields.directus_settings.public_registration_verify_email_note */
-      public_registration_verify_email?: boolean;
-      /** @description $t:fields.directus_settings.public_registration_role_note */
-      public_registration_role?: string | components["schemas"]["Roles"] | null;
-      /** @description $t:fields.directus_settings.public_registration_email_filter_note */
-      public_registration_email_filter?: unknown;
+      theme_light_overrides?: unknown;
     };
     Versions: {
-      /**
-       * @description Primary key of the Content Version.
-       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
-       */
-      id?: string;
-      /**
-       * @description Key of the Content Version, used as the value for the "version" query parameter.
-       * @example draft
-       */
-      key?: string;
-      /**
-       * @description Descriptive name of the Content Version.
-       * @example My Draft
-       */
-      name?: string;
       /**
        * @description Name of the collection the Content Version is created on.
        * @example articles
        */
       collection?: string | components["schemas"]["Collections"];
-      /**
-       * @description The item the Content Version is created on.
-       * @example 168
-       */
-      item?: string;
-      hash?: string | null;
       /**
        * Format: date-time
        * @description When the Content Version was created.
@@ -1684,6 +1665,27 @@ export interface components {
        * @example 2022-05-11T13:14:53Z
        */
       date_updated?: string | null;
+      hash?: string | null;
+      /**
+       * @description Primary key of the Content Version.
+       * @example 63716273-0f29-4648-8a2a-2af2948f6f78
+       */
+      id?: string;
+      /**
+       * @description The item the Content Version is created on.
+       * @example 168
+       */
+      item?: string;
+      /**
+       * @description Key of the Content Version, used as the value for the "version" query parameter.
+       * @example draft
+       */
+      key?: string;
+      /**
+       * @description Descriptive name of the Content Version.
+       * @example My Draft
+       */
+      name?: string;
       /**
        * @description User that created the Content Version.
        * @example 63716273-0f29-4648-8a2a-2af2948f6f78
@@ -1697,44 +1699,44 @@ export interface components {
     };
     Webhooks: {
       /**
+       * @description The actions that triggers this webhook.
+       * @example null
+       */
+      actions?: string[] | null;
+      collections?: string[];
+      /**
+       * @description If yes, send the content of what was done
+       * @example true
+       */
+      data?: boolean;
+      headers?: unknown;
+      /**
        * @description The index of the webhook.
        * @example 1
        */
       id?: number;
+      /**
+       * @description Method used in the webhook.
+       * @example POST
+       */
+      method?: string;
+      migrated_flow?: string | components["schemas"]["Flows"] | null;
       /**
        * @description The name of the webhook.
        * @example create articles
        */
       name?: string;
       /**
-       * @description Method used in the webhook.
-       * @example POST
-       */
-      method?: string;
-      /**
-       * @description The url of the webhook.
-       * @example null
-       */
-      url?: string | null;
-      /**
        * @description The status of the webhook.
        * @example inactive
        */
       status?: string;
       /**
-       * @description If yes, send the content of what was done
-       * @example true
-       */
-      data?: boolean;
-      /**
-       * @description The actions that triggers this webhook.
+       * @description The url of the webhook.
        * @example null
        */
-      actions?: string[] | null;
-      collections?: string[];
-      headers?: unknown;
+      url?: string | null;
       was_active_before_deprecation?: boolean;
-      migrated_flow?: string | components["schemas"]["Flows"] | null;
     };
   };
   responses: {
