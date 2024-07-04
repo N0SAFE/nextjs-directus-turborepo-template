@@ -1,54 +1,63 @@
-"use client";
+'use client'
 
-import Link from "next/link";
+import Link from 'next/link'
 
-import { Button } from "@repo/ui/components/shadcn/button";
-import { Input } from "@repo/ui/components/shadcn/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@repo/ui/components/shadcn/form";
-import { Alert, AlertDescription } from "@repo/ui/components/shadcn/alert";
-import zod, { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { signIn } from "next-auth/react";
-import redirect from "@/actions/redirect";
-import { useSearchParams } from "next/navigation";
-import { AlertCircle, Spinner } from "@repo/ui/components/atomics/atoms/Icon";
+import { Button } from '@repo/ui/components/shadcn/button'
+import { Input } from '@repo/ui/components/shadcn/input'
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@repo/ui/components/shadcn/form'
+import { Alert, AlertDescription } from '@repo/ui/components/shadcn/alert'
+import zod, { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React from 'react'
+import { signIn } from 'next-auth/react'
+import redirect from '@/actions/redirect'
+import { useSearchParams } from 'next/navigation'
+import { AlertCircle, Spinner } from '@repo/ui/components/atomics/atoms/Icon'
 
 const loginSchema = zod.object({
     email: zod.string().email(),
-    password: zod.string().min(6)
-});
+    password: zod.string().min(6),
+})
 
 const LoginPage: React.FC = () => {
-    const searchParams = useSearchParams();
-    const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [error, setError] = React.useState<string>("");
+    const searchParams = useSearchParams()
+    const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [error, setError] = React.useState<string>('')
 
     const form = useForm<z.infer<typeof loginSchema>>({
-        resolver: zodResolver(loginSchema)
-    });
+        resolver: zodResolver(loginSchema),
+    })
 
-    const onSubmit = async (values: z.infer<typeof loginSchema>): Promise<void> => {
-        setIsLoading(true);
-        const res = await signIn("credentials", {
+    const onSubmit = async (
+        values: z.infer<typeof loginSchema>
+    ): Promise<void> => {
+        setIsLoading(true)
+        const res = await signIn('credentials', {
             email: values.email,
             password: values.password,
-            callbackUrl: searchParams.get("callbackUrl") ?? "/",
-            redirect: false
-        });
+            callbackUrl: searchParams.get('callbackUrl') ?? '/',
+            redirect: false,
+        })
         if (res?.error) {
-            setError(res?.error);
-            setIsLoading(false);
+            setError(res?.error)
+            setIsLoading(false)
         } else {
-            redirect(searchParams.get("callbackUrl") ?? "/");
+            redirect(searchParams.get('callbackUrl') ?? '/')
         }
-    };
+    }
 
     return (
-        <div className="w-full h-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+        <div className="h-full w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
             <div className="hidden bg-muted lg:block">
-                <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+                <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
                     <div className="absolute inset-0 bg-zinc-900" />
                     <div className="relative z-20 flex items-center text-lg font-medium">
                         <svg
@@ -67,7 +76,11 @@ const LoginPage: React.FC = () => {
                     </div>
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
-                            <p className="text-lg">&ldquo;This library has saved me countless hours of work and helped me deliver stunning designs to my clients faster than ever before.&rdquo;</p>
+                            <p className="text-lg">
+                                &ldquo;This library has saved me countless hours
+                                of work and helped me deliver stunning designs
+                                to my clients faster than ever before.&rdquo;
+                            </p>
                             <footer className="text-sm">Sofia Davis</footer>
                         </blockquote>
                     </div>
@@ -77,19 +90,30 @@ const LoginPage: React.FC = () => {
                 <div className="mx-auto grid w-[350px] gap-6">
                     <div className="grid gap-2 text-center">
                         <h1 className="text-3xl font-bold">Login</h1>
-                        <p className="text-balance text-muted-foreground">Enter your email below to login to your account</p>
+                        <p className="text-balance text-muted-foreground">
+                            Enter your email below to login to your account
+                        </p>
                     </div>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-8"
+                        >
                             <div className="grid gap-4">
                                 <FormField
                                     control={form.control}
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="email">Email</FormLabel>
+                                            <FormLabel htmlFor="email">
+                                                Email
+                                            </FormLabel>
                                             <FormControl>
-                                                <Input placeholder="m@example.com" id="email" {...field} />
+                                                <Input
+                                                    placeholder="m@example.com"
+                                                    id="email"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -101,13 +125,21 @@ const LoginPage: React.FC = () => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <div className="flex items-center">
-                                                <FormLabel htmlFor="password">Password</FormLabel>
-                                                <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
+                                                <FormLabel htmlFor="password">
+                                                    Password
+                                                </FormLabel>
+                                                <Link
+                                                    href="/forgot-password"
+                                                    className="ml-auto inline-block text-sm underline"
+                                                >
                                                     Forgot your password?
                                                 </Link>
                                             </div>
                                             <FormControl>
-                                                <Input id="password" {...field} />
+                                                <Input
+                                                    id="password"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -130,19 +162,29 @@ const LoginPage: React.FC = () => {
                                 {error && (
                                     <Alert variant="destructive">
                                         <AlertCircle className="h-4 w-4" />
-                                        <AlertDescription>{error}</AlertDescription>
+                                        <AlertDescription>
+                                            {error}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
 
-                                <Button disabled={isLoading} type="submit" className="w-full">
+                                <Button
+                                    disabled={isLoading}
+                                    type="submit"
+                                    className="w-full"
+                                >
                                     {isLoading && <Spinner />} Login
                                 </Button>
-                                <Button type="button" variant="outline" className="w-full">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full"
+                                >
                                     Login with Google
                                 </Button>
                             </div>
                             <div className="mt-4 text-center text-sm">
-                                Don&apos;t have an account?{" "}
+                                Don&apos;t have an account?{' '}
                                 <Link href="#" className="underline">
                                     Sign up
                                 </Link>
@@ -152,7 +194,7 @@ const LoginPage: React.FC = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default LoginPage;
+export default LoginPage

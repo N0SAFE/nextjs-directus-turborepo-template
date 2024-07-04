@@ -18,7 +18,11 @@
             "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
         },
         "lint": {
-            "dependsOn": ["^build"]
+            "cache": false
+        },
+        "pretify": {
+            "dependsOn": ["^lint"],
+            "cache": false
         },
         "test": {
             "dependsOn": ["^build"]

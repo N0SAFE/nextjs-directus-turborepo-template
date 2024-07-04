@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react'
 
 type UIProviderProps = {
-  children: React.ReactNode;
-};
+    children: React.ReactNode
+}
 
 const UIProvider = ({ children }: UIProviderProps) => {
-  return <>{children}</>;
-};
+    return <>{children}</>
+}
 
-export { UIProvider };
+export { UIProvider }

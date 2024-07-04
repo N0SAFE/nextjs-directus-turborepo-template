@@ -1,0 +1,19 @@
+{
+  "name": "@repo/prettier-config",
+  "version": "1.0.0",
+  "exports": {
+    "./base": "./prettierrc.base.js",
+    "./tailwind": "./prettierrc.tailwind.js"
+  },
+  "scripts": {
+    "test": "echo 'all packages:bin tests passed!'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.5"
+  }
+}

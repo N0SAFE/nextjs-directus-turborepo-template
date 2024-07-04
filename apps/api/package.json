@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
+        "pretify": "npx prettier . --write",
         "init": "directus bootstrap",
         "build:force": "npm run schema:export",
         "dev": "directus start",
@@ -21,5 +22,8 @@
         "directus": "^10.13.0",
         "directus-extension-seed": "^2.0.4",
         "mysql": "^2.18.1"
+    },
+    "devDependencies": {
+        "@repo/prettier-config": "^1.0.0"
     }
 }

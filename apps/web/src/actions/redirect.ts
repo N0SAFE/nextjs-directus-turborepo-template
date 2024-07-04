@@ -1,7 +1,7 @@
-"use server";
+'use server'
 
-import { redirect as r } from "next/navigation";
+import { redirect as r } from 'next/navigation'
 
 export default async function redirect(to: string) {
-  return r(to);
+    return r(to)
 }

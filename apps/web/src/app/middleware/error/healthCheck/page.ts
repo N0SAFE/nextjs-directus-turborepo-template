@@ -1,9 +1,9 @@
-"use server";
+'use server'
 
 export default async function HealthCheckPage({
-  searchParams,
+    searchParams,
 }: {
-  searchParams?: { json?: string };
+    searchParams?: { json?: string }
 }) {
-  return searchParams?.json ? searchParams?.json : '{status: "ko"}';
+    return searchParams?.json ? searchParams?.json : '{status: "ko"}'
 }
