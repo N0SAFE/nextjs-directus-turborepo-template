@@ -22,13 +22,13 @@
         "ui:add": "npm run ui:add --workspace=@repo/ui"
     },
     "devDependencies": {
-        "@repo/eslint-config": "*",
         "@repo/bin": "*",
+        "@repo/eslint-config": "*",
         "@repo/tsconfig": "*",
         "eslint": "^8.53.0",
         "prettier": "^3.0.3",
         "prettier-plugin-tailwindcss": "^0.5.7",
-        "turbo": "latest"
+        "turbo": "^2.0.6"
     },
     "engines": {
         "node": ">=18"
