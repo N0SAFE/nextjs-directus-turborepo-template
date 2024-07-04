@@ -11,7 +11,6 @@ This Turborepo includes the following packages/apps:
 ### Apps and Packages
 
 - `api`: a [Directus](https://directus.io/) app with a [seeder extension](https://github.com/ChappIO/directus-extension-seed)
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/) and [Shadcn UI](https://ui.shadcn.com/)
 - `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/) and [Shadcn UI](https://ui.shadcn.com/) and the [directus sdk](https://docs.directus.io/guides/sdk/getting-started.html) linked with [next-auth](https://next-auth.js.org/)
 - `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) and [Shadcn UI](https://ui.shadcn.com/) shared by both `web` and `docs` applications
 - `tailwind-config`: `tailwind.config.ts` used throughout the monorepo
