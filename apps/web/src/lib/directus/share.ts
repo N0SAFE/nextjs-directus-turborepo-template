@@ -1,8 +1,8 @@
-import { ApiCollections } from '@/types/api-collection'
-import { createDirectus, graphql, realtime, rest } from '@directus/sdk'
+import { graphql, realtime, rest } from '@directus/sdk'
+import { createTypedClient } from '@/types/.directus/generated/client'
 
 export const createDefaultDirectusInstance = (url: string) => {
-    return createDirectus<ApiCollections>(url)
+    return createTypedClient(url)
         .with(
             rest({
                 credentials: 'include',

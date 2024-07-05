@@ -9,6 +9,7 @@
         "dev": "directus start",
         "start": "directus start",
         "test": "echo 'all app:api tests passed!'",
+        "generate:directus:types": "npm run schema:export",
         "schema:export": "directus schema snapshot --yes ./snapshot.yaml",
         "schema:import": "directus schema apply --yes ./snapshot.yaml",
         "schema:import:dryRun": "directus schema apply --dry-run ./snapshot.yaml",
