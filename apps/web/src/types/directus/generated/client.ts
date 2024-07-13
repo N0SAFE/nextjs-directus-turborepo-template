@@ -3,190 +3,190 @@
  * Follow the package's instruction to update this file with the latest schema.
  */
 
-import type * as Directus from "@directus/sdk";
+import type * as Directus from '@directus/sdk'
 
-import * as DirectusSDK from "@directus/sdk";
+import * as DirectusSDK from '@directus/sdk'
 
-type DirectusSDK = typeof DirectusSDK;
+type DirectusSDK = typeof DirectusSDK
 
 export namespace Types {
-  // Internal
-  export type Nullable<T> = T | null;
-  export type Optional<T> = Nullable<T>;
-  export type UnknownType<T> = T | unknown;
-  export type PrimaryKey<T> = T;
+    // Internal
+    export type Nullable<T> = T | null
+    export type Optional<T> = Nullable<T>
+    export type UnknownType<T> = T | unknown
+    export type PrimaryKey<T> = T
 
-  // Numbers
-  export type BigInteger = number;
-  export type Decimal = number;
-  export type Float = number;
-  export type Integer = number;
-  export type Number = number;
+    // Numbers
+    export type BigInteger = number
+    export type Decimal = number
+    export type Float = number
+    export type Integer = number
+    export type Number = number
 
-  // Buffers
-  export type Binary = string;
-  export type String = string;
-  export type Text = string;
+    // Buffers
+    export type Binary = string
+    export type String = string
+    export type Text = string
 
-  // Date & Time
-  export type Date = string | globalThis.Date;
-  export type DateTime = string | globalThis.Date;
+    // Date & Time
+    export type Date = string | globalThis.Date
+    export type DateTime = string | globalThis.Date
 
-  // Geometry
-  export namespace Geometry {
-    export type LineString = any;
-    export type MultiLineString = any;
-    export type MultiPoint = any;
-    export type MultiPolygon = any;
-    export type Point = any;
-    export type Polygon = any;
-  }
+    // Geometry
+    export namespace Geometry {
+        export type LineString = any
+        export type MultiLineString = any
+        export type MultiPoint = any
+        export type MultiPolygon = any
+        export type Point = any
+        export type Polygon = any
+    }
 
-  // Complex
-  export type JSON = any;
-  export type JSONSchema = any;
+    // Complex
+    export type JSON = any
+    export type JSONSchema = any
 
-  // Others
-  export type UUID = string;
-  export type Boolean = boolean;
-  export type Enum = string;
+    // Others
+    export type UUID = string
+    export type Boolean = boolean
+    export type Enum = string
 }
 
 /**
  * All collection types.
  */
 export namespace Collections {
-  /**
-   * The resolved directus activity collection type.
-   *
-   */
-  export type DirectusActivity = Directus.DirectusActivity<System>;
+    /**
+     * The resolved directus activity collection type.
+     *
+     */
+    export type DirectusActivity = Directus.DirectusActivity<System>
 
-  /**
-   * The resolved directus collections collection type.
-   *
-   */
-  export type DirectusCollection = Directus.DirectusCollection<System>;
+    /**
+     * The resolved directus collections collection type.
+     *
+     */
+    export type DirectusCollection = Directus.DirectusCollection<System>
 
-  /**
-   * The resolved directus fields collection type.
-   *
-   */
-  export type DirectusField = Directus.DirectusField<System>;
+    /**
+     * The resolved directus fields collection type.
+     *
+     */
+    export type DirectusField = Directus.DirectusField<System>
 
-  /**
-   * The resolved directus files collection type.
-   *
-   */
-  export type DirectusFile = Directus.DirectusFile<System>;
+    /**
+     * The resolved directus files collection type.
+     *
+     */
+    export type DirectusFile = Directus.DirectusFile<System>
 
-  /**
-   * The resolved directus folders collection type.
-   *
-   */
-  export type DirectusFolder = Directus.DirectusFolder<System>;
+    /**
+     * The resolved directus folders collection type.
+     *
+     */
+    export type DirectusFolder = Directus.DirectusFolder<System>
 
-  /**
-   * The resolved directus permissions collection type.
-   *
-   */
-  export type DirectusPermission = Directus.DirectusPermission<System>;
+    /**
+     * The resolved directus permissions collection type.
+     *
+     */
+    export type DirectusPermission = Directus.DirectusPermission<System>
 
-  /**
-   * The resolved directus presets collection type.
-   *
-   */
-  export type DirectusPreset = Directus.DirectusPreset<System>;
+    /**
+     * The resolved directus presets collection type.
+     *
+     */
+    export type DirectusPreset = Directus.DirectusPreset<System>
 
-  /**
-   * The resolved directus relations collection type.
-   *
-   */
-  export type DirectusRelation = Directus.DirectusRelation<System>;
+    /**
+     * The resolved directus relations collection type.
+     *
+     */
+    export type DirectusRelation = Directus.DirectusRelation<System>
 
-  /**
-   * The resolved directus revisions collection type.
-   *
-   */
-  export type DirectusRevision = Directus.DirectusRevision<System>;
+    /**
+     * The resolved directus revisions collection type.
+     *
+     */
+    export type DirectusRevision = Directus.DirectusRevision<System>
 
-  /**
-   * The resolved directus roles collection type.
-   *
-   */
-  export type DirectusRole = Directus.DirectusRole<System>;
+    /**
+     * The resolved directus roles collection type.
+     *
+     */
+    export type DirectusRole = Directus.DirectusRole<System>
 
-  /**
-   * The resolved directus settings collection type.
-   *
-   */
-  export type DirectusSettings = Directus.DirectusSettings<System>;
+    /**
+     * The resolved directus settings collection type.
+     *
+     */
+    export type DirectusSettings = Directus.DirectusSettings<System>
 
-  /**
-   * The resolved directus users collection type.
-   *
-   */
-  export type DirectusUser = Directus.DirectusUser<System>;
+    /**
+     * The resolved directus users collection type.
+     *
+     */
+    export type DirectusUser = Directus.DirectusUser<System>
 
-  /**
-   * The resolved directus webhooks collection type.
-   *
-   */
-  export type DirectusWebhook = Directus.DirectusWebhook<System>;
+    /**
+     * The resolved directus webhooks collection type.
+     *
+     */
+    export type DirectusWebhook = Directus.DirectusWebhook<System>
 
-  /**
-   * The resolved directus dashboards collection type.
-   *
-   */
-  export type DirectusDashboard = Directus.DirectusDashboard<System>;
+    /**
+     * The resolved directus dashboards collection type.
+     *
+     */
+    export type DirectusDashboard = Directus.DirectusDashboard<System>
 
-  /**
-   * The resolved directus panels collection type.
-   *
-   */
-  export type DirectusPanel = Directus.DirectusPanel<System>;
+    /**
+     * The resolved directus panels collection type.
+     *
+     */
+    export type DirectusPanel = Directus.DirectusPanel<System>
 
-  /**
-   * The resolved directus notifications collection type.
-   *
-   */
-  export type DirectusNotification = Directus.DirectusNotification<System>;
+    /**
+     * The resolved directus notifications collection type.
+     *
+     */
+    export type DirectusNotification = Directus.DirectusNotification<System>
 
-  /**
-   * The resolved directus shares collection type.
-   *
-   */
-  export type DirectusShare = Directus.DirectusShare<System>;
+    /**
+     * The resolved directus shares collection type.
+     *
+     */
+    export type DirectusShare = Directus.DirectusShare<System>
 
-  /**
-   * The resolved directus flows collection type.
-   *
-   */
-  export type DirectusFlow = Directus.DirectusFlow<System>;
+    /**
+     * The resolved directus flows collection type.
+     *
+     */
+    export type DirectusFlow = Directus.DirectusFlow<System>
 
-  /**
-   * The resolved directus operations collection type.
-   *
-   */
-  export type DirectusOperation = Directus.DirectusOperation<System>;
+    /**
+     * The resolved directus operations collection type.
+     *
+     */
+    export type DirectusOperation = Directus.DirectusOperation<System>
 
-  /**
-   * The resolved directus translations collection type.
-   *
-   */
-  export type DirectusTranslation = Directus.DirectusTranslation<System>;
+    /**
+     * The resolved directus translations collection type.
+     *
+     */
+    export type DirectusTranslation = Directus.DirectusTranslation<System>
 
-  /**
-   * The resolved directus versions collection type.
-   *
-   */
-  export type DirectusVersion = Directus.DirectusVersion<System>;
+    /**
+     * The resolved directus versions collection type.
+     *
+     */
+    export type DirectusVersion = Directus.DirectusVersion<System>
 
-  /**
-   * The resolved directus extensions collection type.
-   *
-   */
-  export type DirectusExtension = Directus.DirectusExtension<System>;
+    /**
+     * The resolved directus extensions collection type.
+     *
+     */
+    export type DirectusExtension = Directus.DirectusExtension<System>
 }
 
 /**
@@ -194,137 +194,137 @@ export namespace Collections {
  */
 
 export interface System {
-  /**
-   * The definition for the directus activity system collection.
-   *
-   */
-  directus_activity: {}[];
+    /**
+     * The definition for the directus activity system collection.
+     *
+     */
+    directus_activity: {}[]
 
-  /**
-   * The definition for the directus collections system collection.
-   *
-   */
-  directus_collections: {}[];
+    /**
+     * The definition for the directus collections system collection.
+     *
+     */
+    directus_collections: {}[]
 
-  /**
-   * The definition for the directus fields system collection.
-   *
-   */
-  directus_fields: {}[];
+    /**
+     * The definition for the directus fields system collection.
+     *
+     */
+    directus_fields: {}[]
 
-  /**
-   * The definition for the directus files system collection.
-   *
-   */
-  directus_files: {}[];
+    /**
+     * The definition for the directus files system collection.
+     *
+     */
+    directus_files: {}[]
 
-  /**
-   * The definition for the directus folders system collection.
-   *
-   */
-  directus_folders: {}[];
+    /**
+     * The definition for the directus folders system collection.
+     *
+     */
+    directus_folders: {}[]
 
-  /**
-   * The definition for the directus permissions system collection.
-   *
-   */
-  directus_permissions: {}[];
+    /**
+     * The definition for the directus permissions system collection.
+     *
+     */
+    directus_permissions: {}[]
 
-  /**
-   * The definition for the directus presets system collection.
-   *
-   */
-  directus_presets: {}[];
+    /**
+     * The definition for the directus presets system collection.
+     *
+     */
+    directus_presets: {}[]
 
-  /**
-   * The definition for the directus relations system collection.
-   *
-   */
-  directus_relations: {}[];
+    /**
+     * The definition for the directus relations system collection.
+     *
+     */
+    directus_relations: {}[]
 
-  /**
-   * The definition for the directus revisions system collection.
-   *
-   */
-  directus_revisions: {}[];
+    /**
+     * The definition for the directus revisions system collection.
+     *
+     */
+    directus_revisions: {}[]
 
-  /**
-   * The definition for the directus roles system collection.
-   *
-   */
-  directus_roles: {}[];
+    /**
+     * The definition for the directus roles system collection.
+     *
+     */
+    directus_roles: {}[]
 
-  /**
-   * The definition for the directus settings system collection.
-   *
-   */
-  directus_settings: {};
+    /**
+     * The definition for the directus settings system collection.
+     *
+     */
+    directus_settings: {}
 
-  /**
-   * The definition for the directus users system collection.
-   *
-   */
-  directus_users: {}[];
+    /**
+     * The definition for the directus users system collection.
+     *
+     */
+    directus_users: {}[]
 
-  /**
-   * The definition for the directus webhooks system collection.
-   *
-   */
-  directus_webhooks: {}[];
+    /**
+     * The definition for the directus webhooks system collection.
+     *
+     */
+    directus_webhooks: {}[]
 
-  /**
-   * The definition for the directus dashboards system collection.
-   *
-   */
-  directus_dashboards: {}[];
+    /**
+     * The definition for the directus dashboards system collection.
+     *
+     */
+    directus_dashboards: {}[]
 
-  /**
-   * The definition for the directus panels system collection.
-   *
-   */
-  directus_panels: {}[];
+    /**
+     * The definition for the directus panels system collection.
+     *
+     */
+    directus_panels: {}[]
 
-  /**
-   * The definition for the directus notifications system collection.
-   *
-   */
-  directus_notifications: {}[];
+    /**
+     * The definition for the directus notifications system collection.
+     *
+     */
+    directus_notifications: {}[]
 
-  /**
-   * The definition for the directus shares system collection.
-   *
-   */
-  directus_shares: {}[];
+    /**
+     * The definition for the directus shares system collection.
+     *
+     */
+    directus_shares: {}[]
 
-  /**
-   * The definition for the directus flows system collection.
-   *
-   */
-  directus_flows: {}[];
+    /**
+     * The definition for the directus flows system collection.
+     *
+     */
+    directus_flows: {}[]
 
-  /**
-   * The definition for the directus operations system collection.
-   *
-   */
-  directus_operations: {}[];
+    /**
+     * The definition for the directus operations system collection.
+     *
+     */
+    directus_operations: {}[]
 
-  /**
-   * The definition for the directus translations system collection.
-   *
-   */
-  directus_translations: {}[];
+    /**
+     * The definition for the directus translations system collection.
+     *
+     */
+    directus_translations: {}[]
 
-  /**
-   * The definition for the directus versions system collection.
-   *
-   */
-  directus_versions: {}[];
+    /**
+     * The definition for the directus versions system collection.
+     *
+     */
+    directus_versions: {}[]
 
-  /**
-   * The definition for the directus extensions system collection.
-   *
-   */
-  directus_extensions: {}[];
+    /**
+     * The definition for the directus extensions system collection.
+     *
+     */
+    directus_extensions: {}[]
 }
 
 /**
@@ -333,92 +333,94 @@ export interface System {
 export interface Schema extends System {}
 
 export interface TypedCollectionItemsWrapper<Collection extends object> {
-  /**
-   * Creates many items in the collection.
-   */
-  create<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    items: Partial<Collection>[],
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
+    /**
+     * Creates many items in the collection.
+     */
+    create<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        items: Partial<Collection>[],
+        query?: Query
+    ): Promise<
+        DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>[]
+    >
 
-  /**
-   * Read many items from the collection.
-   */
-  query<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
+    /**
+     * Read many items from the collection.
+     */
+    query<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        query?: Query
+    ): Promise<
+        DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>[]
+    >
 
-  /**
-   * Read the first item from the collection matching the query.
-   */
-  find<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
+    /**
+     * Read the first item from the collection matching the query.
+     */
+    find<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        query?: Query
+    ): Promise<
+        | DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>
+        | undefined
+    >
 
-  /**
-   * Update many items in the collection.
-   */
-  update<const Query extends DirectusSDK.Query<Schema, Collection[]>>(
-    keys: string[] | number[],
-    patch: Partial<Collection>,
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
+    /**
+     * Update many items in the collection.
+     */
+    update<const Query extends DirectusSDK.Query<Schema, Collection[]>>(
+        keys: string[] | number[],
+        patch: Partial<Collection>,
+        query?: Query
+    ): Promise<
+        DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>[]
+    >
 
-  /**
-   * Remove many items in the collection.
-   */
-  remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    keys: string[] | number[],
-  ): Promise<void>;
+    /**
+     * Remove many items in the collection.
+     */
+    remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        keys: string[] | number[]
+    ): Promise<void>
 }
 
 export interface TypedCollectionItemWrapper<Collection extends object> {
-  /**
-   * Create a single item in the collection.
-   */
-  create<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    item: Partial<Collection>,
-    query?: Query,
-  ): Promise<DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>>;
+    /**
+     * Create a single item in the collection.
+     */
+    create<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        item: Partial<Collection>,
+        query?: Query
+    ): Promise<
+        DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>
+    >
 
-  /**
-   * Read a single item from the collection.
-   */
-  get<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
+    /**
+     * Read a single item from the collection.
+     */
+    get<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        key: string | number,
+        query?: Query
+    ): Promise<
+        | DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>
+        | undefined
+    >
 
-  /**
-   * Update a single item from the collection.
-   */
-  update<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-    patch: Partial<Collection>,
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
+    /**
+     * Update a single item from the collection.
+     */
+    update<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        key: string | number,
+        patch: Partial<Collection>,
+        query?: Query
+    ): Promise<
+        | DirectusSDK.ApplyQueryFields<Schema, Collection, Query['fields']>
+        | undefined
+    >
 
-  /**
-   * Remove many items in the collection.
-   */
-  remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-  ): Promise<void>;
+    /**
+     * Remove many items in the collection.
+     */
+    remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
+        key: string | number
+    ): Promise<void>
 }
 
 /**
@@ -430,16 +432,16 @@ export interface TypedCollectionItemWrapper<Collection extends object> {
  */
 
 export type DirectusRestCommands<T extends Record<any, any>> = keyof {
-  [K in keyof T as T[K] extends (
-    ...any: any[]
-  ) => Directus.RestCommand<any, any>
-    ? K
-    : never]: K;
-};
+    [K in keyof T as T[K] extends (
+        ...any: any[]
+    ) => Directus.RestCommand<any, any>
+        ? K
+        : never]: K
+}
 
-export type TypedClient = {} & DirectusCommands;
+export type TypedClient = {} & DirectusCommands
 
-type ExcludedDirectusCommands = "withOptions" | "withToken" | "withSearch";
+type ExcludedDirectusCommands = 'withOptions' | 'withToken' | 'withSearch'
 
 /**
  * This is almost a sanity check for protecting against breaking changes in the SDK.
@@ -447,125 +449,130 @@ type ExcludedDirectusCommands = "withOptions" | "withToken" | "withSearch";
  */
 
 const excludedDirectusCommands: {
-  [K in keyof Omit<
-    DirectusSDK,
-    Exclude<keyof DirectusCommands, ExcludedDirectusCommands>
-  >]: true;
+    [K in keyof Omit<
+        DirectusSDK,
+        Exclude<keyof DirectusCommands, ExcludedDirectusCommands>
+    >]: true
 } = {
-  ["auth"]: true,
-  ["authentication"]: true,
-  ["createDirectus"]: true,
-  ["rest"]: true,
-  ["formatFields"]: true,
-  ["generateUid"]: true,
-  ["getAuthEndpoint"]: true,
-  ["graphql"]: true,
-  ["memoryStorage"]: true,
-  ["messageCallback"]: true,
-  ["pong"]: true,
-  ["queryToParams"]: true,
-  ["realtime"]: true,
-  ["sleep"]: true,
-  ["staticToken"]: true,
-  ["throwIfCoreCollection"]: true,
-  ["throwIfEmpty"]: true,
-  ["withOptions"]: true,
-  ["withToken"]: true,
-  ["withSearch"]: true,
-} as const;
+    ['auth']: true,
+    ['authentication']: true,
+    ['createDirectus']: true,
+    ['rest']: true,
+    ['formatFields']: true,
+    ['generateUid']: true,
+    ['getAuthEndpoint']: true,
+    ['graphql']: true,
+    ['memoryStorage']: true,
+    ['messageCallback']: true,
+    ['pong']: true,
+    ['queryToParams']: true,
+    ['realtime']: true,
+    ['sleep']: true,
+    ['staticToken']: true,
+    ['throwIfCoreCollection']: true,
+    ['throwIfEmpty']: true,
+    ['withOptions']: true,
+    ['withToken']: true,
+    ['withSearch']: true,
+} as const
 
 export type DirectusCommands = {
-  [K in DirectusRestCommands<DirectusSDK>]: (
-    ...args: Parameters<DirectusSDK[K]>
-  ) => Promise<
-    ReturnType<DirectusSDK[K]> extends Directus.RestCommand<infer Output, any>
-      ? Output
-      : unknown
-  >;
-};
+    [K in DirectusRestCommands<DirectusSDK>]: (
+        ...args: Parameters<DirectusSDK[K]>
+    ) => Promise<
+        ReturnType<DirectusSDK[K]> extends Directus.RestCommand<
+            infer Output,
+            any
+        >
+            ? Output
+            : unknown
+    >
+}
 
 function isDirectusRestCommand(
-  pair: [any, any],
+    pair: [any, any]
 ): pair is [string, (...args: any[]) => Directus.RestCommand<any, any>] {
-  return (
-    !((pair?.[0] as any) in excludedDirectusCommands) &&
-    typeof pair?.[1] === "function"
-  );
+    return (
+        !((pair?.[0] as any) in excludedDirectusCommands) &&
+        typeof pair?.[1] === 'function'
+    )
 }
 
 function isDirectusRestClient<Schema>(
-  client: DirectusSDK.DirectusClient<Schema>,
+    client: DirectusSDK.DirectusClient<Schema>
 ): client is DirectusSDK.DirectusClient<Schema> &
-  DirectusSDK.RestClient<Schema> {
-  return client && "request" in client;
+    DirectusSDK.RestClient<Schema> {
+    return client && 'request' in client
 }
 
 export const schema = () => {
-  return <Schema,>(client: Directus.DirectusClient<Schema>): TypedClient => {
-    if (!isDirectusRestClient(client)) {
-      throw new Error("Directus client must have the REST plugin enabled.");
-    }
+    return <Schema>(client: Directus.DirectusClient<Schema>): TypedClient => {
+        if (!isDirectusRestClient(client)) {
+            throw new Error(
+                'Directus client must have the REST plugin enabled.'
+            )
+        }
 
-    return Object.fromEntries([
-      ...Object.entries(DirectusSDK)
-        .filter(isDirectusRestCommand)
-        .map(([key, value]) => {
-          return [
-            key,
-            (...args: any[]): any => {
-              return client.request(value(...args));
-            },
-          ];
-        }),
-    ]);
-  };
-};
+        return Object.fromEntries([
+            ...Object.entries(DirectusSDK)
+                .filter(isDirectusRestCommand)
+                .map(([key, value]) => {
+                    return [
+                        key,
+                        (...args: any[]): any => {
+                            return client.request(value(...args))
+                        },
+                    ]
+                }),
+        ])
+    }
+}
 
 export interface BindableClient {
-  with: <
-    Client extends DirectusSDK.DirectusClient<any>,
-    Extension extends object,
-  >(
-    createExtension: (client: Client) => Extension,
-  ) => this & Extension;
+    with: <
+        Client extends DirectusSDK.DirectusClient<any>,
+        Extension extends object,
+    >(
+        createExtension: (client: Client) => Extension
+    ) => this & Extension
 }
 
 export const bindings = () => {
-  return <Schema, Client extends DirectusSDK.DirectusClient<Schema>>(
-    client: Client,
-  ): BindableClient => {
-    return {
-      with(createExtension: any) {
-        const extension = createExtension(this);
-        const extensions = Object.entries(
-          extension,
-        ).reduce<PropertyDescriptorMap>((properties, [name, value]) => {
-          return {
-            ...properties,
-            [name]: {
-              value,
-              configurable: true,
-              writable: true,
-              enumerable: true,
+    return <Schema, Client extends DirectusSDK.DirectusClient<Schema>>(
+        client: Client
+    ): BindableClient => {
+        return {
+            with(createExtension: any) {
+                const extension = createExtension(this)
+                const extensions = Object.entries(
+                    extension
+                ).reduce<PropertyDescriptorMap>((properties, [name, value]) => {
+                    return {
+                        ...properties,
+                        [name]: {
+                            value,
+                            configurable: true,
+                            writable: true,
+                            enumerable: true,
+                        },
+                    }
+                }, {})
+
+                Object.defineProperties(this, extensions)
+
+                return this
             },
-          };
-        }, {});
-
-        Object.defineProperties(this, extensions);
-
-        return this;
-      },
-    } as any;
-  };
-};
-
-export function createDirectusWithTypes(
-  url: string,
-): Directus.DirectusClient<Schema> & Directus.RestClient<Schema> & TypedClient {
-  return DirectusSDK.createDirectus<Schema>(url)
-    .with(bindings())
-    .with(DirectusSDK.rest())
-    .with(schema());
+        } as any
+    }
 }
 
-export const createTypedClient = createDirectusWithTypes;
+export function createDirectusWithTypes(
+    url: string
+): Directus.DirectusClient<Schema> & Directus.RestClient<Schema> & TypedClient {
+    return DirectusSDK.createDirectus<Schema>(url)
+        .with(bindings())
+        .with(DirectusSDK.rest())
+        .with(schema())
+}
+
+export const createTypedClient = createDirectusWithTypes

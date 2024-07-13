@@ -1,0 +1,36 @@
+{
+    "name": "@repo/types",
+    "version": "1.0.0",
+    "exports": {
+        "./*": {
+            "import": {
+                "types": "./dist/*.d.ts"
+            },
+            "require": {
+                "types": "./dist/*.d.ts"
+            }
+        }
+    },
+    "scripts": {
+        "clean": "rimraf dist",
+        "init": "npm run build",
+        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"rimraf types/ && tsc --watch\"",
+        "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"rimraf types/ && tsc\"",
+        "lint": "eslint \"**/*.ts*\"",
+        "test": "echo 'all packages:bin tests passed!'"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/prettier-config": "*",
+        "@repo/tsconfig": "*",
+        "@repo/tsup-config": "*"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "concurrently": "^8.2.2",
+        "rimraf": "^6.0.1"
+    }
+}

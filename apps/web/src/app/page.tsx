@@ -86,7 +86,7 @@ export default function Page(): JSX.Element {
                     </div>
                 </div>
 
-                <div className="relative flex place-items-center ">
+                <div className="relative flex place-items-center">
                     <div className="relative z-0 flex w-auto flex-col items-center justify-between gap-8 pb-16 pt-[48px] font-sans md:pb-24 md:pt-16 lg:pb-32 lg:pt-20">
                         <div className="z-50 flex w-full items-center justify-center">
                             <div className="absolute min-h-[614px] min-w-[614px]">

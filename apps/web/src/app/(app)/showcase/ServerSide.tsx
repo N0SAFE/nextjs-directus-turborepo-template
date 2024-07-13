@@ -2,12 +2,12 @@ import directus from '@/lib/directus'
 import { readUsers } from '@directus/sdk'
 import React from 'react'
 import ListItemShowcase from './ListItem'
-import { components } from '@/types/api-collection'
+import { Collections } from '@repo/directus-sdk/client'
 
 const ServerSideShowcase: React.FC = async () => {
     const users = (await directus.request(
         readUsers()
-    )) as components['schemas']['Users'][]
+    )) as Collections.DirectusUser[]
 
     return <ListItemShowcase users={users} />
 }

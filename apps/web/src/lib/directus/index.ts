@@ -1,4 +1,4 @@
-import { authentication, AuthenticationStorage } from '@directus/sdk'
+import { authentication, AuthenticationStorage } from '@repo/directus-sdk'
 import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
@@ -34,7 +34,7 @@ const directusStore = new DirectusStore()
 export const createDirectusInstance = (url: string) => {
     const directusInstance = createDefaultDirectusInstance(url)
     return directusInstance.with(
-        authentication('cookie', {
+        authentication('json', {
             credentials: 'include',
             autoRefresh: true,
             storage: directusStore,

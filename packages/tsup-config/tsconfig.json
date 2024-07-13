@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/react-library.json",
+  "extends": "@repo/tsconfig/base.json",
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",

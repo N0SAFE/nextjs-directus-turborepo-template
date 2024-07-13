@@ -1,0 +1,2 @@
+import{defineConfig as n}from"tsup";function r(e){return n(t=>({entry:["./src/**/*.{ts,tsx}"],format:["esm"],minify:!0,sourcemap:!0,clean:!0,outDir:"dist",...e?e(t):t}))}export{r as default};
+//# sourceMappingURL=index.mjs.map

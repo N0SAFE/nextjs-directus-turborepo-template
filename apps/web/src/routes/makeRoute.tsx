@@ -2,7 +2,7 @@
 Derived from: https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety
 */
 import { z } from 'zod'
-import qs from 'qs'
+import queryString from 'query-string'
 import Link from 'next/link'
 
 type LinkProps = Parameters<typeof Link>[0]
@@ -198,7 +198,7 @@ function createRouteBuilder<
         }
 
         const baseUrl = fn(checkedParams)
-        const searchString = search && qs.stringify(search)
+        const searchString = search && queryString.stringify(search)
         return [baseUrl, searchString ? `?${searchString}` : ''].join('')
     }
 }

@@ -1,0 +1,65 @@
+{
+    "name": "@repo/directus-sdk",
+    "version": "1.0.0",
+    "main": "index.js",
+    "exports": {
+        "./schema": "./src/cache/schema.json",
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
+        },
+        "./utils": {
+            "import": {
+                "types": "./dist/utils.d.ts",
+                "default": "./dist/utils.mjs"
+            },
+            "require": {
+                "types": "./dist/utils.d.ts",
+                "default": "./dist/utils.js"
+            }
+        },
+        "./client": {
+            "import": {
+                "types": "./dist/client.d.ts",
+                "default": "./dist/client.mjs"
+            },
+            "require": {
+                "types": "./dist/client.d.ts",
+                "default": "./dist/client.js"
+            }
+        }
+    },
+    "scripts": {
+        "clean": "rimraf dist",
+        "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write",
+        "init": "npm run build",
+        "dev": "concurrently -c \"blue,green,magenta\" -n \"files,types,directus:types\" \"tsup --watch\" \"rimraf types/ && tsc --watch\" \"npm run generate:directus:types:schedule\"",
+        "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"rimraf types/ && tsc\"",
+        "lint": "eslint \"**/*.ts*\"",
+        "test": "echo 'all packages:ui tests passed!'",
+        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_PING_URL} && indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src --outputDir ./src\"",
+        "generate:directus:types:schedule": "scheduleCli \"*/30 * * * *\" \"npm run generate:directus:types\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@repo/eslint-config": "*",
+        "@repo/prettier-config": "*",
+        "@repo/tsconfig": "*",
+        "indirectus": "^1.0.2"
+    },
+    "dependencies": {
+        "@directus/sdk": "^16.1.1",
+        "@repo/bin": "*",
+        "@repo/tsup-config": "*",
+        "wait-port": "^1.1.0"
+    }
+}

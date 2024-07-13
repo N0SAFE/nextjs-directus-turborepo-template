@@ -1,7 +1,7 @@
 import { NextAuthOptions, Awaitable, User, Session } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
-import { readMe, refresh, withToken } from '@directus/sdk'
+import { readMe, refresh, withToken } from '@repo/directus-sdk'
 import { JWT } from 'next-auth/jwt'
 import { AuthRefresh, UserSession, UserParams } from '@/types/next-auth'
 import { validateEnvSafe } from '#/env'
@@ -40,10 +40,12 @@ export const options: NextAuthOptions = {
                         password: string
                     }
                     const directus = createDirectusEdgeWithDefaultUrl()
+                    console.log('login: Logging in')
                     const auth = await directus.login(email, password, {
-                        mode: 'cookie',
+                        mode: 'json',
                     })
 
+                    console.log('login: Auth:', auth)
                     const loggedInUser = await directus.request(
                         withToken(
                             auth.access_token ?? '',
@@ -57,6 +59,7 @@ export const options: NextAuthOptions = {
                             })
                         )
                     )
+                    console.log('login: LoggedInUser:', loggedInUser)
                     const user: Awaitable<User> = {
                         id: loggedInUser.id,
                         first_name: loggedInUser.first_name ?? '',
@@ -66,6 +69,7 @@ export const options: NextAuthOptions = {
                         expires: Math.floor(Date.now() + (auth.expires ?? 0)),
                         refresh_token: auth.refresh_token ?? '',
                     }
+                    console.log('login: User:', user)
                     return user
                 } catch (error: any) {
                     return handleError(
@@ -103,12 +107,16 @@ export const options: NextAuthOptions = {
             } else {
                 try {
                     const directus = createDirectusEdgeWithDefaultUrl()
+                    console.log('refreshToken: Refreshing token')
+                    console.log('refreshToken: User:', user)
+                    console.log('refreshToken: Token:', token)
                     const result: AuthRefresh = await directus.request(
                         refresh(
                             'json',
                             user?.refresh_token ?? token?.refresh_token ?? ''
                         )
                     )
+                    console.log('refreshToken: result', result)
                     const resultToken = {
                         ...token,
                         access_token: result.access_token ?? '',
@@ -119,8 +127,10 @@ export const options: NextAuthOptions = {
                         error: null,
                         tokenIsRefreshed: true,
                     }
+                    console.log(resultToken)
                     return resultToken
                 } catch (error) {
+                    console.error(error)
                     return handleError(
                         typeof error === 'string'
                             ? error

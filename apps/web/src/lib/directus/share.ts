@@ -1,5 +1,5 @@
-import { graphql, realtime, rest } from '@directus/sdk'
-import { createTypedClient } from '@/types/directus/generated/client'
+import { graphql, realtime, rest } from '@repo/directus-sdk'
+import { createTypedClient } from '@repo/directus-sdk/client'
 
 export const createDefaultDirectusInstance = (url: string) => {
     return createTypedClient(url)

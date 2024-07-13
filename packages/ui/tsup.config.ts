@@ -3,9 +3,8 @@ import defineTsupConfig from '@repo/tsup-config'
 export default defineTsupConfig((options) => ({
     entry: ['./src/**/*.{ts,tsx}'],
     format: ['esm', 'cjs'],
-    dts: true,
-    clean: true,
+    clean: process.env.NODE_ENV === 'production',
     minify: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', 'next'],
     ...options,
 }))

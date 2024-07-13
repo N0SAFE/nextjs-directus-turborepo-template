@@ -4,19 +4,17 @@
     "private": true,
     "scripts": {
         "pretify": "npx prettier . --write",
-        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_PING_URL} && indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src/types/directus --outputDir ./src/types/directus/generated\"",
-        "generate:directus:types:schedule": "scheduleCli \"*/30 * * * *\" \"npm run generate:directus:types\"",
-        "dev": "npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && concurrently --kill-others-on-fail -n next,type,routing -c green,blue,magenta \"next dev --turbo\" \"npm run generate:directus:types:schedule\" \"npm run dr:build:watch\"",
-        "build": "npm run dr:build && npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && npm run generate:directus:types && next build",
-        "start": "envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && npm run generate:directus:types && next start",
-        "start:local": "envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && npm run generate:directus:types && next start",
+        "dev": "npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"next dev --turbo\" \"npm run dr:build:watch\"",
+        "build": "npm run dr:build && npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && next build",
+        "start": "envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && next start",
+        "start:local": "envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && next start",
         "lint": "next lint",
         "test": "echo 'all app:web tests passed!'",
         "clean": "delete .next",
         "dr:build": "npx --yes declarative-routing build",
         "dr:build:watch": "npx --yes declarative-routing build --watch",
         "openapi": "npm run openapi:yaml && npm run openapi:html",
-        "openapi:yaml": "ts-node ./src/routes/openapi.ts",
+        "openapi:yaml": "tsx ./src/routes/openapi.ts",
         "openapi:html": "npx --yes @redocly/cli build-docs openapi-docs.yml"
     },
     "dependencies": {
@@ -42,6 +40,7 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
+        "prettier-plugin-tailwindcss": "^0.6.5",
         "@asteasolutions/zod-to-openapi": "^7.1.1",
         "@next/eslint-plugin-next": "^14.0.2",
         "@repo/eslint-config": "*",
@@ -58,7 +57,6 @@
         "node-env-run": "^4.0.2",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.3.5",
-        "ts-node": "^10.9.2",
         "typescript": "^5.2.2",
         "yaml": "^2.4.5"
     }

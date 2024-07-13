@@ -1,4 +1,4 @@
-import { components } from '@/types/api-collection'
+import { Collections } from '@repo/directus-sdk/client'
 import {
     Card,
     CardContent,
@@ -8,7 +8,7 @@ import {
 import React from 'react'
 
 type ListItemShowcaseProps = {
-    users?: components['schemas']['Users'][]
+    users?: Collections.DirectusUser[]
 }
 
 const ListItemShowcase: React.FC<ListItemShowcaseProps> = ({ users }) => {

@@ -8,8 +8,6 @@ const publicEnv = {
 const env = {
     ...publicEnv,
     API_ADMIN_TOKEN: zod.string(),
-    API_ADMIN_EMAIL: zod.string().email(),
-    API_ADMIN_PASSWORD: zod.string(),
     NODE_ENV: zod.string(),
     NEXTAUTH_SECRET: zod.string(),
     NEXTAUTH_URL: zod.string().url(),
