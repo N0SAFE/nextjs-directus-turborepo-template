@@ -24,8 +24,8 @@
         "clean": "rimraf dist",
         "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write",
         "init": "npm run build",
-        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"rimraf types/ && tsc --watch\"",
-        "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"rimraf types/ && tsc\"",
+        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+        "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
         "ui:add": "npx shadcn-ui@latest add"

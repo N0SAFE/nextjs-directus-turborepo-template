@@ -6,13 +6,13 @@
         "packages/*"
     ],
     "scripts": {
-        "init": "npm ci && dotenv -v FORCE_COLOR=1 -- turbo run init",
+        "init": "npm ci && node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run init\"",
         "generate:directus:types": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\"",
         "build:force": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
         "build": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
         "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",
         "start": "dotenv -v FORCE_COLOR=1 -- turbo start",
-        "test": "dotenv -v FORCE_COLOR=1 -- turbo test",
+        "test": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo test\"",
         "start:local": "dotenv -v FORCE_COLOR=1 -- turbo start:local",
         "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",
         "pretify": "dotenv -v FORCE_COLOR=1 -- turbo pretify",

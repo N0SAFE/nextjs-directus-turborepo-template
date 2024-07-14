@@ -14,11 +14,11 @@
     }
   },
   "scripts": {
-    "init": "tsup",
-    "dev": "tsup --watch",
-    "build": "tsup",
+    "init": "npm run build",
+    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+    "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "echo 'all packages:bin tests passed!'",
+    "test": "echo 'all packages:tsup-config tests passed!'",
     "clean": "rimraf dist"
   },
   "author": "",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/tsconfig": "*"
+    "@repo/tsconfig": "*",
+    "typescript": "^5.5.3"
   }
 }

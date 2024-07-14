@@ -14,7 +14,7 @@
             "cache": false
         },
         "api#build": {
-            "dependsOn": ["api#build:force"]
+            "dependsOn": ["^api#build:force"]
         },
         "build": {  
             "dependsOn": ["^build"],
@@ -26,6 +26,9 @@
         "pretify": {
             "dependsOn": ["^lint"],
             "cache": false
+        },
+        "web#test": {
+            "dependsOn": ["web#build"]
         },
         "test": {
             "dependsOn": ["^build"]
