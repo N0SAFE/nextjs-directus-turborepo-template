@@ -6,13 +6,13 @@
         "packages/*"
     ],
     "scripts": {
-        "init": "npm ci && node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run init\"",
+        "init": "node generate-env.js && dotenv -v FORCE_COLOR=1 -- turbo run bootstrap && node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && node init.js && dotenv -v FORCE_COLOR=1 -- turbo run init && npm run\" && npm run generate:directus:types",
         "generate:directus:types": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\"",
-        "build:force": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
-        "build": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
+        "build:force": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
+        "build": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
         "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",
         "start": "dotenv -v FORCE_COLOR=1 -- turbo start",
-        "test": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_PING_URL} && dotenv -v FORCE_COLOR=1 -- turbo test\"",
+        "test": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo test\"",
         "start:local": "dotenv -v FORCE_COLOR=1 -- turbo start:local",
         "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",
         "pretify": "dotenv -v FORCE_COLOR=1 -- turbo pretify",
@@ -25,6 +25,7 @@
     },
     "devDependencies": {
         "@repo/bin": "*",
+        "prompts": "^2.4.2",
         "turbo": "^2.0.6"
     },
     "engines": {
@@ -32,6 +33,9 @@
     },
     "packageManager": "npm@10.8.1",
     "dependencies": {
-        "dotenv-cli": "^7.4.2"
+        "dotenv": "^16.4.5",
+        "dotenv-cli": "^7.4.2",
+        "random-hash": "^4.0.1",
+        "wait-port": "^1.1.0"
     }
 }

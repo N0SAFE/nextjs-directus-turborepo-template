@@ -2,7 +2,6 @@ import zod from 'zod'
 
 const publicEnv = {
     NEXT_PUBLIC_API_URL: zod.string().url(),
-    NEXT_PUBLIC_API_PING_URL: zod.string().url(),
 }
 
 const env = {

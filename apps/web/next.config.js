@@ -6,6 +6,6 @@ module.exports = {
     transpilePackages: ['@repo/ui'],
     images: {
         dangerouslyAllowSVG: true,
-        domains: [process.env.NEXT_PUBLIC_API_HOSTNAME],
+        domains: [new URL(process.env.NEXT_PUBLIC_API_URL).hostname],
     },
 }

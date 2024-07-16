@@ -1,8 +1,13 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "ui": "tui",
-    "globalDependencies": ["**/.env.*local", "**/.env"],
+    "globalDependencies": ["**/.env.*local", "**/.env", ".env.local"],
+    "globalPassThroughEnv": [".env.local"],
+    "globalEnv": ["DEFAULT_ADMIN_EMAIL", "DEFAULT_ADMIN_PASSWORD", "NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEST"],
     "tasks": {
+        "api#bootstrap": {
+            "cache": false
+        },
         "init": {
             "dependsOn": ["^init", "clean"],
             "outputs": ["dist/**"]
@@ -16,7 +21,7 @@
         "api#build": {
             "dependsOn": ["^api#build:force"]
         },
-        "build": {  
+        "build": {
             "dependsOn": ["^build"],
             "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
         },

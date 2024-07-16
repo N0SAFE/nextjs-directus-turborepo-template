@@ -43,7 +43,7 @@
         "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_PING_URL} && indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src --outputDir ./src\"",
+        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src --outputDir ./src\"",
         "generate:directus:types:schedule": "scheduleCli \"*/30 * * * *\" \"npm run generate:directus:types\""
     },
     "keywords": [],

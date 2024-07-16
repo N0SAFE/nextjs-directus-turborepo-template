@@ -9,6 +9,7 @@ import * as HealthCheckMiddleware from './middlewares/WithHealthCheck'
 import * as AuthMiddleware from './middlewares/WithAuth'
 import * as EnvMiddleware from './middlewares/WithEnv'
 // import * as WithRedirect from "./middlewares/WithRedirect";
+import getConfig from 'next/config';
 
 const middlewares: Middleware[] = [
     withHeaders,

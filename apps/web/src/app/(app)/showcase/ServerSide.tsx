@@ -8,7 +8,7 @@ const ServerSideShowcase: React.FC = async () => {
     const users = (await directus.request(
         readUsers()
     )) as Collections.DirectusUser[]
-
+    
     return <ListItemShowcase users={users} />
 }
 
