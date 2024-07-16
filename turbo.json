@@ -3,7 +3,7 @@
     "ui": "tui",
     "globalDependencies": ["**/.env.*local", "**/.env", ".env.local"],
     "globalPassThroughEnv": [".env.local"],
-    "globalEnv": ["DEFAULT_ADMIN_EMAIL", "DEFAULT_ADMIN_PASSWORD", "NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEST"],
+    "globalEnv": ["DEFAULT_ADMIN_EMAIL", "DEFAULT_ADMIN_PASSWORD", "NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN"],
     "tasks": {
         "api#bootstrap": {
             "cache": false
