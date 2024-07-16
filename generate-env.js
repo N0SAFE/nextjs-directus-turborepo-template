@@ -39,7 +39,7 @@ const stringIsAValidUrl = (s, protocols) => {
         type: "text",
         name: "value",
         message: "Enter the admin password",
-        initial: "admin"
+        initial: "adminadmin"
     })).value;
     fs.writeFileSync('.env', Object.entries({
         NEXT_PUBLIC_API_URL: apiUrl.href,
