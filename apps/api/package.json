@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "update": "npm update  --legacy-peer-deps && dotenv -v CONFIG_PATH=config.js -- directus database migrate:latest",
-        "bootstrap": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap",
+        "bootstrap": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap && npm run schema:import",
         "build:force": "npm run schema:export",
         "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
         "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
