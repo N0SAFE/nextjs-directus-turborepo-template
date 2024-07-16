@@ -26,9 +26,11 @@ require("dotenv").config();
             token: randomHash
         })
     });
+    console.log(res)
     if (res.ok) {
         fs.writeFileSync(".env", `${["NEXT_PUBLIC_API_URL", "API_PING_PATH"].map((n) => `${n}=${process.env[n]}`).join("\n")}\nAPI_ADMIN_TOKEN=${randomHash}\n`);
         fs.writeFileSync(".initiated", "");
         console.log("Generating .env file with random token:", randomHash);
     }
+    throw new Error("Failed to generate token");
 })();
