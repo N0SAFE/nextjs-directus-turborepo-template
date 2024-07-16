@@ -6,7 +6,7 @@
         "packages/*"
     ],
     "scripts": {
-        "init": "node generate-env.js && dotenv -v FORCE_COLOR=1 -- turbo run bootstrap && node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && node init.js && dotenv -v FORCE_COLOR=1 -- turbo run init && npm run\" && npm run generate:directus:types",
+        "init": "npm ci && node generate-env.js && dotenv -v FORCE_COLOR=1 -- turbo run bootstrap && node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && node init.js && dotenv -v FORCE_COLOR=1 -- turbo run init && npm run\" && npm run generate:directus:types",
         "generate:directus:types": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\"",
         "build:force": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
         "build": "node ./packages/bin/dist/runUntil.js \"npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
