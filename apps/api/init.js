@@ -75,14 +75,14 @@ const promptConfig = [
         initial: "./data.db"
     },
     {
-        type: "ADMIN-ADMIN_EMAIL",
-        name: "value",
+        name: "ADMIN-ADMIN_EMAIL",
+        type: "text",
         message: "Enter the admin email",
         initial: "admin@admin.com"
     },
     {
-        type: "ADMIN-ADMIN_PASSWORD",
-        name: "value",
+        name: "ADMIN-ADMIN_PASSWORD",
+        type: "text",
         message: "Enter the admin password",
         initial: "adminadmin"
     }
