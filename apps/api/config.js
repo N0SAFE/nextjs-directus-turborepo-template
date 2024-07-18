@@ -12,5 +12,6 @@ module.exports = function (env) {
         HOST: host,
         PORT: port,
         PUBLIC_URL: apiUrl.href,
+        ADMIN_TOKEN: env.API_ADMIN_TOKEN,
     };
 };
