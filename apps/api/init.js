@@ -21,23 +21,23 @@ const promptConfig = [
     },
     {
         name: "DATABASE-DB_HOST",
-        type: (prev, all) => !['oracledb', 'sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database host',
+        type: (prev, all) => (!["oracledb", "sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database host",
         initial: "localhost"
     },
     {
         name: "DATABASE-DB_PORT",
-        type: (prev, all) => !['oracledb', 'sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'number' : null,
-        message: 'Enter the database port',
+        type: (prev, all) => (!["oracledb", "sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "number" : null),
+        message: "Enter the database port",
         initial: (prev, all) => {
-            switch (all['DATABASE-DB_CLIENT']) {
-                case 'pg':
+            switch (all["DATABASE-DB_CLIENT"]) {
+                case "pg":
                     return 5432;
-                case 'mysql':
+                case "mysql":
                     return 3306;
-                case 'mssql':
+                case "mssql":
                     return 1433;
-                case 'cockroachdb':
+                case "cockroachdb":
                     return 26257;
                 default:
                     return 0;
@@ -46,49 +46,65 @@ const promptConfig = [
     },
     {
         name: "DATABASE-DB_CONNECT_STRING",
-        type: (prev, all) => ['oracledb'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database connect string',
-        initial: 'localhost:1521/XE'
+        type: (prev, all) => (["oracledb"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database connect string",
+        initial: "localhost:1521/XE"
     },
     {
         name: "DATABASE-DB_DATABASE",
-        type: (prev, all) => !['oracledb', 'sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database name',
-        initial: 'directus'
+        type: (prev, all) => (!["oracledb", "sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database name",
+        initial: "directus"
     },
     {
         name: "DATABASE-DB_USER",
-        type: (prev, all) => !['sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database user name',
-        initial: 'root'
+        type: (prev, all) => (!["sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database user name",
+        initial: "root"
     },
     {
         name: "DATABASE-DB_PASSWORD",
-        type: (prev, all) => !['sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database user password',
-        initial: 'secret'
+        type: (prev, all) => (!["sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database user password",
+        initial: "secret"
     },
     {
         name: "DATABASE-DB_FILENAME",
-        type: (prev, all) => ['sqlite'].includes(all['DATABASE-DB_CLIENT']) ? 'text' : null,
-        message: 'Enter the database filename',
-        initial: './data.db'
+        type: (prev, all) => (["sqlite"].includes(all["DATABASE-DB_CLIENT"]) ? "text" : null),
+        message: "Enter the database filename",
+        initial: "./data.db"
+    },
+    {
+        type: "ADMIN-ADMIN_EMAIL",
+        name: "value",
+        message: "Enter the admin email",
+        initial: "admin@admin.com"
+    },
+    {
+        type: "ADMIN-ADMIN_PASSWORD",
+        name: "value",
+        message: "Enter the admin password",
+        initial: "adminadmin"
     }
 ];
 
 (async () => {
     const envValue = await prompts(promptConfig);
-    
+
     const unusedKeys = promptConfig.filter(({ name }) => !Object.keys(envValue).includes(name)).map(({ name }) => name);
-    
+
     let env = envTemplate;
 
     Object.entries(envValue).forEach(([key, value]) => {
         env = env.replace(`\${:${key}}`, value);
     });
-    
+
+    Object.entries({ NEXT_PUBLIC_API_URL: "GENERAL-PUBLIC_URL" }).forEach(([envKey, envTemplateName]) => {
+        env = env.replace(`\${:${envTemplateName}}`, env[envKey]);
+    });
+
     unusedKeys.forEach((key) => {
-        env = env.replace(`${key.split('-').at(-1)}=\${:${key}}`, `# ${key.split('-').at(-1)}=\${:${key}}`);
+        env = env.replace(`${key.split("-").at(-1)}=\${:${key}}`, `# ${key.split("-").at(-1)}=\${:${key}}`);
     });
 
     fs.writeFileSync(".env", env);

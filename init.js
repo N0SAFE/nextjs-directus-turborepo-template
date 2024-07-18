@@ -1,36 +1,44 @@
-const generateHash = require("random-hash").generateHash;
 const fs = require("fs");
-require("dotenv").config();
+const prompts = require('prompts');
+const { generateHash } = require("random-hash");
+const { URL } = require('url');
+
+const envTemplate = fs.readFileSync(".env.template").toString();
+
+if (fs.existsSync('.initiated')) {
+    throw new Error("This project has already been initiated");
+}
+
+const stringIsAValidUrl = (s, protocols) => {
+    try {
+        url = new URL(s);
+        return protocols
+            ? url.protocol
+                ? protocols.map(x => `${x.toLowerCase()}:`).includes(url.protocol)
+                : false
+            : true;
+    } catch (err) {
+        return false;
+    }
+};
+
 
 (async () => {
+    const apiUrl = new URL((await prompts({
+        type: "text",
+        name: "value",
+        message: "Enter the API URL",
+        initial: "http://127.0.0.1:8055",
+        validate: (v) => stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL"
+    })).value);
     const randomHash = generateHash({ length: 20 });
+    const env = Object.entries({
+        NEXT_PUBLIC_API_URL: apiUrl.href,
+        API_PING_PATH: "server/ping",
+        API_ADMIN_TOKEN: randomHash
+    }).reduce((acc, [k, v]) => acc.replace(`\${:${k}}`, v), envTemplate);
 
-    const apiUrl = new URL(process.env.NEXT_PUBLIC_API_URL);
-    const user = await fetch(apiUrl.href + "auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: process.env.DEFAULT_ADMIN_EMAIL,
-            password: process.env.DEFAULT_ADMIN_PASSWORD
-        })
-    }).then((res) => res.json());
-    const res = await fetch(apiUrl.href + "users/me", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.data.access_token}`
-        },
-        body: JSON.stringify({
-            token: randomHash
-        })
-    });
-    console.log(res)
-    if (res.ok) {
-        fs.writeFileSync(".env", `${["NEXT_PUBLIC_API_URL", "API_PING_PATH"].map((n) => `${n}=${process.env[n]}`).join("\n")}\nAPI_ADMIN_TOKEN=${randomHash}\n`);
-        fs.writeFileSync(".initiated", "");
-        console.log("Generating .env file with random token:", randomHash);
-    }
-    throw new Error("Failed to generate token");
+    fs.writeFileSync('.env', env);
+    fs.writeFileSync(".initiated", "");
+    console.log("Generating .env file");
 })();

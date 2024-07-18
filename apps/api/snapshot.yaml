@@ -1,5 +1,5 @@
 version: 1
-directus: 10.13.0
+directus: 10.13.1
 vendor: mysql
 collections: []
 fields: []
