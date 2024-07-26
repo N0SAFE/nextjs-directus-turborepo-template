@@ -2,25 +2,19 @@
 import { NextResponse } from 'next/server'
 import {
     CustomNextMiddleware,
-    Matcher,
     MatcherCondition,
     MatcherType,
-    MiddlewareFactory,
+    Middleware,
 } from './types'
 
-export type Middleware =
-    | MiddlewareFactory
-    | {
-          default: MiddlewareFactory
-          matcher?: Matcher
-      }
 export function stackMiddlewares(
     functions: Middleware[] = [],
+    config?: any,
     index = 0
 ): CustomNextMiddleware {
     const current = functions[index]
     if (current) {
-        const next = stackMiddlewares(functions, index + 1)
+        const next = stackMiddlewares(functions, config, index + 1)
         if (typeof current === 'function') {
             return current(next)
         }

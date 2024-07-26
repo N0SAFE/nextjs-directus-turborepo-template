@@ -4,7 +4,12 @@ import {
     NextRequest,
     NextResponse,
 } from 'next/server'
-import { Matcher, MiddlewareFactory } from './utils/types'
+import {
+    ConfigFactory,
+    Matcher,
+    MatcherTypeArray,
+    MiddlewareFactory,
+} from './utils/types'
 import { NextRequestWithAuth, withAuth as w } from 'next-auth/middleware'
 import { getToken } from 'next-auth/jwt'
 import { options } from '@/lib/auth/options'
@@ -83,3 +88,8 @@ export const matcher: Matcher = [
         ],
     },
 ]
+
+export const config: ConfigFactory = {
+    name: 'withAuth',
+    matcher: true,
+}

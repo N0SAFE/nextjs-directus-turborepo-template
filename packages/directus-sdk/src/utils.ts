@@ -1,20 +1,24 @@
 import { DirectusClient } from '@directus/sdk'
+import { Types } from './client'
+
+export type DirectusIdType = string | number
 
 // Define a more flexible Item type that can cover various scenarios
 export type DirectusItemType =
-    | { id?: string | number | null }
-    | string
-    | number
+    | { id: DirectusIdType }
+    | DirectusIdType
     | undefined
     | null
 
-export type RelationIdType<T extends DirectusItemType> = T extends
-    | string
-    | number
-    ? T
-    : T extends { id: any }
-      ? T['id']
-      : never
+export type DirectusItemIntoRelation<T extends DirectusItemType> =
+    | RelationType<T>
+    | RelationType<T>['id']
+
+export type RelationIdType<T extends DirectusItemType> = Exclude<
+    T extends { id: infer U } ? U : T,
+    { id?: DirectusIdType }
+>
+
 export type RelationType<T extends DirectusItemType> = Exclude<
     T,
     string | number | null | undefined
@@ -23,16 +27,13 @@ export type RelationType<T extends DirectusItemType> = Exclude<
 // Refactor the getItemId function to use a more straightforward generic approach
 export function getItemId<T extends DirectusItemType>(
     item: T
-): Exclude<T extends { id: infer U } ? U : T, { id?: any }> {
+): RelationIdType<T> {
     if (typeof item === 'object' && item !== null && 'id' in item) {
         // Explicitly cast the return type based on the conditional type
-        return item.id as Exclude<
-            T extends { id: infer U } ? U : T,
-            { id?: any }
-        >
+        return item.id as RelationIdType<T>
     }
     // Handle cases where item is not an object or doesn't have an 'id' property
-    return item as Exclude<T extends { id: infer U } ? U : T, { id?: any }>
+    return item as RelationIdType<T>
 }
 
 export function getFileUrl<Schema>(
@@ -64,9 +65,12 @@ export function getFileUrl<Schema>(
 export function useFileUrl<
     Schema,
     DirectusInstance extends DirectusClient<Schema>,
->(directus: DirectusInstance) {
+>(directus: DirectusInstance, globalOptions?: DirectusFile.Props) {
     return (item?: DirectusItemType, options?: DirectusFile.Props) =>
-        getFileUrl(directus, item, options)
+        getFileUrl(directus, item, {
+            ...globalOptions,
+            ...options,
+        })
 }
 
 export function getRelation<
@@ -76,6 +80,16 @@ export function getRelation<
         return relation as T extends object | null | undefined ? T : never
     }
     throw new Error('relation is not loaded')
+}
+
+export function getStringDate<
+    T extends Types.Date | Types.DateTime | null | undefined,
+>(date: T) {
+    if (date instanceof Date) {
+        return date.toISOString()
+    } else {
+        return date as Exclude<T, Date>
+    }
 }
 
 export namespace DirectusFile {

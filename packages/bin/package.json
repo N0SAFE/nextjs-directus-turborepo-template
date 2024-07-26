@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.7.0",
     "@repo/tsconfig": "*",
     "@types/node-cron": "^3.0.11",
     "tsup": "^8.1.0",
@@ -18,12 +20,12 @@
   },
   "scripts": {
     "init": "npm run build",
-        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
-        "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
-        "lint": "eslint \"**/*.ts*\"",
-        "test": "echo 'all packages:bin tests passed!'",
-        "envCli": "node dist/envCli.js",
-        "scheduleCli": "node dist/scheduleCli.js"
+    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+    "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "echo 'all packages:bin tests passed!'",
+    "envCli": "node dist/envCli.js",
+    "scheduleCli": "node dist/scheduleCli.js"
   },
   "author": "",
   "license": "ISC",

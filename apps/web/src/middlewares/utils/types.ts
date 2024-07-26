@@ -16,6 +16,13 @@ export type CustomNextMiddleware = AddParameters<
 export type MiddlewareFactory = (
     middleware: CustomNextMiddleware
 ) => CustomNextMiddleware
+export type Middleware =
+    | MiddlewareFactory
+    | {
+          default: MiddlewareFactory
+          matcher?: Matcher
+          config?: ConfigFactory
+      }
 export type MatcherCondition = {
     and?: MatcherTypeArray
     or?: MatcherTypeArray
@@ -30,8 +37,17 @@ export type MatcherType =
     | boolean
 export type MatcherTypeArray = MatcherType[]
 export type MatcherTypeRecord = Record<string, MatcherType>
+export type ConfiguredMatcher = (
+    matcher: MatcherTypeArray | MatcherCallback
+) => Exclude<Matcher, ConfiguredMatcher>
 export type Matcher =
     | MatcherTypeArray
     | MatcherTypeRecord
     | MatcherCallback
     | boolean
+    | ConfiguredMatcher
+
+export type ConfigFactory = {
+    name: string
+    matcher?: true
+}

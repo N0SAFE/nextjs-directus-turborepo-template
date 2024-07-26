@@ -34,6 +34,8 @@
         "react": "^18.2.0"
     },
     "devDependencies": {
+        "@eslint/eslintrc": "^3.1.0",
+        "@eslint/js": "^9.7.0",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tailwind-config": "*",

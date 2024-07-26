@@ -5,11 +5,7 @@ import {
 import * as yaml from 'yaml'
 import * as fs from 'fs'
 
-
-
 const registry = new OpenAPIRegistry()
-
-
 
 const generator = new OpenApiGeneratorV3(registry.definitions)
 const docs = generator.generateDocument({
