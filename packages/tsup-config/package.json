@@ -15,7 +15,6 @@
   },
   "scripts": {
     "init": "npm run build",
-    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
     "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:tsup-config tests passed!'",

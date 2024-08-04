@@ -11,7 +11,7 @@ type ListItemShowcaseProps = {
     users?: Collections.DirectusUser[]
 }
 
-const ListItemShowcase: React.FC<ListItemShowcaseProps> = ({ users }) => {
+const ListItemShowcase: React.FC<ListItemShowcaseProps> = function ListItemShowcase({ users }) {
     return (
         <div className="flex flex-col gap-4">
             {users?.map((user) => (

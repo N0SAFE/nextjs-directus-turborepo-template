@@ -13,7 +13,7 @@ import { z } from 'zod'
 const middlewares: Middleware[] = [
     withHeaders,
     EnvMiddleware,
-    HealthCheckMiddleware,
+    // HealthCheckMiddleware,
     AuthMiddleware,
     // WithRedirect,
 ]

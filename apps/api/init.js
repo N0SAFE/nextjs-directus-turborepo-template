@@ -74,7 +74,7 @@ const promptConfig = [
         message: "Enter the database filename",
         initial: "./data.db"
     },
-    {
+    {   
         name: "ADMIN-ADMIN_EMAIL",
         type: "text",
         message: "Enter the admin email",

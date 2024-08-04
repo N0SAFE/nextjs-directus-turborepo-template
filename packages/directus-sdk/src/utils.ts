@@ -1,5 +1,25 @@
-import { DirectusClient } from '@directus/sdk'
-import { Types } from './client'
+import {
+    ApplyQueryFields,
+    CollectionType,
+    DirectusClient,
+    Query,
+    RegularCollections,
+} from '@directus/sdk'
+import { Types, Schema } from './client'
+import { Collections } from '@repo/directus-sdk/client'
+
+export type __unfinished_ApplyFields<
+    Collection extends RegularCollections<Schema>,
+    Fields extends Query<Schema, CollectionType<Schema, Collection>>['fields'],
+> = ApplyQueryFields<Schema, CollectionType<Schema, Collection>, Fields>
+
+export type ItemNoRelations<Collection extends object> = {
+    [Key in keyof Collection]: Collection[Key] extends { id: any }
+        ? DirectusItemExcludeRelations<Collection[Key]>
+        : Collection[Key] extends { id: any }[]
+          ? DirectusItemExcludeRelations<Collection[Key][number]>[]
+          : Collection[Key]
+}
 
 export type DirectusIdType = string | number
 
@@ -23,6 +43,10 @@ export type RelationType<T extends DirectusItemType> = Exclude<
     T,
     string | number | null | undefined
 >
+
+export type DirectusItemExcludeRelations<T extends DirectusItemType> =
+    | Exclude<T, { id: any }>
+    | RelationIdType<T>
 
 // Refactor the getItemId function to use a more straightforward generic approach
 export function getItemId<T extends DirectusItemType>(
@@ -75,9 +99,26 @@ export function useFileUrl<
 
 export function getRelation<
     T extends string | number | object | null | undefined,
->(relation: T): T extends object | null | undefined ? T : never {
+    R extends boolean,
+>(
+    relation: T,
+    required: R
+): T extends object | null | undefined
+    ? R extends true
+        ? NonNullable<T>
+        : T
+    : never {
+    if (required) {
+        if (relation === null || relation === undefined) {
+            throw new Error('relation is not loaded')
+        }
+    }
     if (relation === undefined || typeof relation === 'object') {
-        return relation as T extends object | null | undefined ? T : never
+        return relation as T extends object | null | undefined
+            ? R extends true
+                ? NonNullable<T>
+                : T
+            : never
     }
     throw new Error('relation is not loaded')
 }

@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "update": "npm update --legacy-peer-deps && directus database migrate:latest",
-        "bootstrap": "node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap && npm run schema:import",
+        "bootstrap": "runWhileError \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
         "build:force": "npm run schema:export",
         "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
         "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
@@ -20,6 +20,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@repo/bin": "*",
         "directus": "^10.13.0",
         "directus-extension-seed": "^2.0.4",
         "mysql": "^2.18.1"

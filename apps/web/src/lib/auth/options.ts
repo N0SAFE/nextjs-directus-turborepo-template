@@ -1,11 +1,19 @@
 import { NextAuthOptions, Awaitable, User, Session } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
-import { readMe, refresh, withToken } from '@repo/directus-sdk'
+import {
+    AuthenticationData,
+    readMe,
+    refresh,
+    withToken,
+} from '@repo/directus-sdk'
 import { JWT } from 'next-auth/jwt'
-import { AuthRefresh, UserSession, UserParams } from '@/types/next-auth'
+import { UserSession, UserParams } from '@/types/next-auth'
 import { validateEnvSafe } from '#/env'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
+import { unstable_cache } from 'next/cache'
+import { memoize } from '@/lib/better-unstable-cache'
+import { validateEnv } from '#/env'
 
 const userParams = (user: UserSession): UserParams => {
     return {
@@ -16,6 +24,40 @@ const userParams = (user: UserSession): UserParams => {
         name: `${user.first_name} ${user.last_name}`,
     }
 }
+
+const getCachedRefreshToken = memoize(
+    (
+        directus: ReturnType<typeof createDirectusEdgeWithDefaultUrl>,
+        refresh_token: string
+    ) =>
+        fetch(
+            validateEnv(process.env).NEXTAUTH_URL + '/api/auth/refresh_token',
+            {
+                method: 'POST',
+                body: JSON.stringify({ refresh_token }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        ).then((res) => res.json()) as Promise<AuthenticationData>,
+    {
+        persist: true,
+        duration: 3600,
+        revalidateTags: (_directus, refresh_token) => [
+            `refreshToken:${refresh_token}`,
+        ],
+        log: ['dedupe', 'datacache', 'verbose'],
+    }
+)
+
+const cacheRefreshToken = unstable_cache(
+    (
+        directus: ReturnType<typeof createDirectusEdgeWithDefaultUrl>,
+        refresh_token: string
+    ) => directus.request(refresh('json', refresh_token)),
+    ['refreshToken', 'user?.refresh_token ?? token?.refresh_token'],
+    { revalidate: 60 * 2 }
+)
 
 export const options: NextAuthOptions = {
     providers: [
@@ -34,13 +76,14 @@ export const options: NextAuthOptions = {
                 },
             },
             authorize: async function (credentials) {
+                console.log('authorize')
                 try {
                     const { email, password } = credentials as {
                         email: string
                         password: string
                     }
                     const directus = createDirectusEdgeWithDefaultUrl()
-                    console.log('login: Logging in')
+                    console.log('login: Logging in as :', email)
                     const auth = await directus.login(email, password, {
                         mode: 'json',
                     })
@@ -69,7 +112,6 @@ export const options: NextAuthOptions = {
                         expires: Math.floor(Date.now() + (auth.expires ?? 0)),
                         refresh_token: auth.refresh_token ?? '',
                     }
-                    console.log('login: User:', user)
                     return user
                 } catch (error: any) {
                     return handleError(
@@ -87,6 +129,7 @@ export const options: NextAuthOptions = {
     secret: validateEnvSafe(process.env as any).data?.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, account, user, trigger, session }): Promise<JWT> {
+            // console.log('callback: jwt')
             if (trigger === 'update' && !session?.tokenIsRefreshed) {
                 token.access_token = session.access_token
                 token.refresh_token = session.refresh_token
@@ -105,16 +148,21 @@ export const options: NextAuthOptions = {
             } else if (Date.now() < (token.expires_at ?? 0)) {
                 return { ...token, error: null }
             } else {
+                if (!(user?.refresh_token ?? token?.refresh_token)) {
+                    return handleError('RefreshTokenMissing')
+                }
                 try {
                     const directus = createDirectusEdgeWithDefaultUrl()
                     console.log('refreshToken: Refreshing token')
                     console.log('refreshToken: User:', user)
                     console.log('refreshToken: Token:', token)
-                    const result: AuthRefresh = await directus.request(
-                        refresh(
-                            'json',
-                            user?.refresh_token ?? token?.refresh_token ?? ''
-                        )
+                    console.log(
+                        'refresh using token :',
+                        user?.refresh_token ?? token?.refresh_token
+                    )
+                    const result = await getCachedRefreshToken(
+                        directus,
+                        user?.refresh_token ?? token?.refresh_token
                     )
                     console.log('refreshToken: result', result)
                     const resultToken = {
@@ -127,10 +175,8 @@ export const options: NextAuthOptions = {
                         error: null,
                         tokenIsRefreshed: true,
                     }
-                    console.log(resultToken)
                     return resultToken
                 } catch (error) {
-                    console.error(error)
                     return handleError(
                         typeof error === 'string'
                             ? error
@@ -140,6 +186,7 @@ export const options: NextAuthOptions = {
             }
         },
         async session({ session, token }): Promise<Session> {
+            // console.log('callback: session')
             if (token.error) {
                 session.error = token.error
                 session.expires = new Date(

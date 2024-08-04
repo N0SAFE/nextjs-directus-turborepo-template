@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import Loader from '@repo/ui/components/atomics/atoms/Loader'
 import { Collections } from '@repo/directus-sdk/client'
 
-const ClientSideShowcase: React.FC = () => {
+const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const { data: users } = useQuery({
         queryKey: ['example'],
         queryFn: async () => {
@@ -16,6 +16,8 @@ const ClientSideShowcase: React.FC = () => {
                 readUsers()
             )) as Collections.DirectusUser[]
         },
+        refetchOnWindowFocus: false,
+        refetchInterval: 2 * 60 * 1000,
     })
 
     return (

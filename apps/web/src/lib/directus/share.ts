@@ -3,12 +3,6 @@ import { createTypedClient } from '@repo/directus-sdk/client'
 
 export const createDefaultDirectusInstance = (url: string) => {
     return createTypedClient(url)
-        .with(
-            rest({
-                credentials: 'include',
-                onRequest: (options) => ({ ...options, cache: 'no-store' }),
-            })
-        )
         .with(realtime())
         .with(graphql({ credentials: 'include' }))
 }

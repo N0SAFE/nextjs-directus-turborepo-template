@@ -16,7 +16,8 @@
   "bin": {
     "envCli": "dist/envCli.js",
     "scheduleCli": "dist/scheduleCli.js",
-    "runUntil": "dist/runUntil.js"
+    "runUntil": "dist/runUntil.js",
+    "runWhileError": "dist/runWhileError.js"
   },
   "scripts": {
     "init": "npm run build",

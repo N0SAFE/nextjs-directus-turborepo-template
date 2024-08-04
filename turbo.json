@@ -3,7 +3,7 @@
     "ui": "tui",
     "globalDependencies": ["**/.env.*local", "**/.env", ".env.local"],
     "globalPassThroughEnv": [".env.local"],
-    "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN"],
+    "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEMP_APP_NEXTAUTH_URL"],
     "tasks": {
         "api#update": {
             "cache": false

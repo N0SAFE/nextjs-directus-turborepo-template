@@ -8,6 +8,7 @@ import Loader from '@repo/ui/components/atomics/atoms/Loader'
 import ReactQueryProviders from '@/utils/providers/ReactQueryProviders'
 import { Suspense } from 'react'
 import NextAuthProviders from '@/utils/providers/NextAuthProviders/index'
+import NextTopLoader from 'nextjs-toploader'
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -36,6 +37,7 @@ export default async function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
+                        <NextTopLoader />
                         <ReactQueryProviders>
                             <Suspense
                                 fallback={

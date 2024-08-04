@@ -1,4 +1,4 @@
-import { authentication, AuthenticationStorage } from '@repo/directus-sdk'
+import { authentication, AuthenticationStorage, rest } from '@repo/directus-sdk'
 import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
@@ -9,12 +9,11 @@ if ((process.env as any).NEXT_RUNTIME! === 'edge') {
 
 class DirectusStore implements AuthenticationStorage {
     async get() {
-        const getServerSession = await import('next-auth').then(
-            (m) => m.getServerSession
-        )
+        console.log('DirectusStore: get')
         const session = await (typeof window === 'undefined'
-            ? getServerSession(options)
+            ? await import('next-auth').then((m) => m.getServerSession(options))
             : getSession())
+        console.log(session)
         return (
             session && {
                 access_token: session.access_token ?? null,
@@ -26,20 +25,30 @@ class DirectusStore implements AuthenticationStorage {
             }
         )
     }
-    set() {}
+    set() {
+        console.log('DirectusStore: set')
+    }
 }
 
 const directusStore = new DirectusStore()
 
 export const createDirectusInstance = (url: string) => {
-    const directusInstance = createDefaultDirectusInstance(url)
-    return directusInstance.with(
+    const directusInstance = createDefaultDirectusInstance(url).with(
+        rest({
+            credentials: 'include',
+            onRequest: (options) => ({ ...options, cache: 'no-store' }),
+        })
+    )
+    const enhanceDirectusInstance = directusInstance.with(
         authentication('json', {
             credentials: 'include',
-            autoRefresh: true,
+            autoRefresh: false,
+            msRefreshBeforeExpires: 0,
             storage: directusStore,
         })
     )
+    enhanceDirectusInstance.stopRefreshing()
+    return enhanceDirectusInstance
 }
 
 export const createDirectusWithDefaultUrl = () => {

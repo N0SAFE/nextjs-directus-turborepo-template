@@ -57,7 +57,7 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
                                 encodeURIComponent(
                                     '?callbackUrl=' +
                                         req.nextUrl.pathname +
-                                        req.nextUrl.search ?? ''
+                                        (req.nextUrl.search ?? '')
                                 )
                     )
                 }

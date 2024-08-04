@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { format } = require("path");
 const prompts = require("prompts");
 const { generateHash } = require("random-hash");
 const { URL } = require("url");
@@ -37,9 +38,22 @@ const stringIsAValidUrl = (s, protocols) => {
             })
         ).value
     );
+    const appUrl = new URL(
+        (
+            await prompts({
+                type: "text",
+                name: "value",
+                message: "Enter the APP URL",
+                initial: "http://127.0.0.1:3000",
+                validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL"),
+            })
+        ).value
+    )
     const randomHash = generateHash({ length: 20 });
     const env = Object.entries({
         NEXT_PUBLIC_API_URL: apiUrl.href,
+        NEXT_PUBLIC_APP_URL: appUrl.href,
+        TEMP_APP_NEXTAUTH_URL: appUrl.href,
         API_PING_PATH: "server/ping",
         API_ADMIN_TOKEN: randomHash
     }).reduce((acc, [k, v]) => acc.replace(`\${:${k}}`, v), envTemplate);
@@ -56,6 +70,5 @@ const stringIsAValidUrl = (s, protocols) => {
         )
     );
     fs.writeFileSync(".env", env);
-    fs.writeFileSync(".initiated", "");
     console.log("Generating .env file");
 })();

@@ -4,7 +4,7 @@ import { Separator } from '@repo/ui/components/shadcn/separator'
 import ServerSideShowcase from './ServerSide'
 import ClientSideShowcase from './ClientSide'
 
-const ShowcasePage: React.FC = async () => {
+const ShowcasePage: React.FC = async function ShowcasePage () {
     // console.log(await directus.getToken());
     return (
         <div className="flex h-full w-full">
