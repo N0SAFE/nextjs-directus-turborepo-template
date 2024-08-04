@@ -100,7 +100,7 @@ const promptConfig = [
     });
 
     Object.entries({ NEXT_PUBLIC_API_URL: "GENERAL-PUBLIC_URL" }).forEach(([envKey, envTemplateName]) => {
-        env = env.replace(`\${:${envTemplateName}}`, env[envKey]);
+        env = env.replace(`\${:${envTemplateName}}`, process.env[envKey]);
     });
 
     unusedKeys.forEach((key) => {
