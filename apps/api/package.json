@@ -5,6 +5,9 @@
     "scripts": {
         "update": "npm update --legacy-peer-deps && directus database migrate:latest",
         "bootstrap": "runWhileError \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
+        "migrate:up": "npx directus database migrate:up",
+        "migrate:down": "npx directus database migrate:down",
+        "migrate:latest": "npx directus database migrate:latest",
         "build:force": "npm run schema:export",
         "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
         "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
