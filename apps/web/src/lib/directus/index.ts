@@ -9,11 +9,9 @@ if ((process.env as any).NEXT_RUNTIME! === 'edge') {
 
 class DirectusStore implements AuthenticationStorage {
     async get() {
-        console.log('DirectusStore: get')
         const session = await (typeof window === 'undefined'
             ? await import('next-auth').then((m) => m.getServerSession(options))
             : getSession())
-        console.log(session)
         return (
             session && {
                 access_token: session.access_token ?? null,
