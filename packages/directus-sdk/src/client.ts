@@ -57,6 +57,12 @@ export namespace Types {
  */
 export namespace Collections {
   /**
+   * The resolved directus access collection type.
+   *
+   */
+  export type DirectusAcces = Directus.DirectusAcces<System>;
+
+  /**
    * The resolved directus activity collection type.
    *
    */
@@ -91,6 +97,12 @@ export namespace Collections {
    *
    */
   export type DirectusPermission = Directus.DirectusPermission<System>;
+
+  /**
+   * The resolved directus policies collection type.
+   *
+   */
+  export type DirectusPolicie = Directus.DirectusPolicie<System>;
 
   /**
    * The resolved directus presets collection type.
@@ -195,6 +207,12 @@ export namespace Collections {
 
 export interface System {
   /**
+   * The definition for the directus access system collection.
+   *
+   */
+  directus_access: {}[];
+
+  /**
    * The definition for the directus activity system collection.
    *
    */
@@ -229,6 +247,12 @@ export interface System {
    *
    */
   directus_permissions: {}[];
+
+  /**
+   * The definition for the directus policies system collection.
+   *
+   */
+  directus_policies: {}[];
 
   /**
    * The definition for the directus presets system collection.

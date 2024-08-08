@@ -1,31 +1,31 @@
 {
-    "name": "api",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "update": "npm update --legacy-peer-deps && directus database migrate:latest",
-        "bootstrap": "runWhileError \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
-        "migrate:up": "npx directus database migrate:up",
-        "migrate:down": "npx directus database migrate:down",
-        "migrate:latest": "npx directus database migrate:latest",
-        "build:force": "npm run schema:export",
-        "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
-        "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
-        "test": "echo 'all app:api tests passed!'",
-        "generate:directus:types": "npm run schema:export",
-        "schema:export": "dotenv -v CONFIG_PATH=config.js -- directus schema snapshot --yes ./snapshot.yaml",
-        "schema:import": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --yes ./snapshot.yaml",
-        "schema:import:dryRun": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --dry-run ./snapshot.yaml",
-        "seed:run": "dotenv -v CONFIG_PATH=config.js -- directus data apply ./seed.yaml"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "description": "",
-    "dependencies": {
-        "@repo/bin": "*",
-        "directus": "^10.13.0",
-        "directus-extension-seed": "^2.0.4",
-        "mysql": "^2.18.1"
-    }
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "update": "npm update --legacy-peer-deps && directus database migrate:latest",
+    "bootstrap": "runWhileError \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
+    "migrate:up": "npx directus database migrate:up",
+    "migrate:down": "npx directus database migrate:down",
+    "migrate:latest": "npx directus database migrate:latest",
+    "build:force": "npm run schema:export",
+    "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
+    "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
+    "test": "echo 'all app:api tests passed!'",
+    "generate:directus:types": "npm run schema:export",
+    "schema:export": "dotenv -v CONFIG_PATH=config.js -- directus schema snapshot --yes ./snapshot.yaml",
+    "schema:import": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --yes ./snapshot.yaml",
+    "schema:import:dryRun": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --dry-run ./snapshot.yaml",
+    "seed:run": "dotenv -v CONFIG_PATH=config.js -- directus data apply ./seed.yaml"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@repo/bin": "*",
+    "directus": "^11.0.1",
+    "directus-extension-seed": "^2.0.4",
+    "mysql2": "^3.11.0"
+  }
 }
