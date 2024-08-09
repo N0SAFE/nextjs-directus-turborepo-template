@@ -11,12 +11,12 @@ const promptConfig = [
         type: "select",
         message: "Enter the API URL",
         choices: [
-            { title: "Postgres", value: "pg" },
-            { title: "MySQL (5.7, 8) | MariaDB", value: "mysql" },
+            { title: "PostgreSQL / Redshift", value: "pg" },
+            { title: "CockroachDB (Beta)", value: "cockroachdb" },
+            { title: "MySQL / MariaDB / Aurora", value: "mysql" },
             { title: "SQLite", value: "sqlite" },
-            { title: "MS SQL", value: "mssql" },
-            { title: "Oracle", value: "oracledb" },
-            { title: "CockroachDB", value: "cockroachdb" }
+            { title: "Microsoft SQL Server", value: "mssql" },
+            { title: "Oracle Database", value: "oracledb" },
         ]
     },
     {
