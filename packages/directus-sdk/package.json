@@ -52,14 +52,14 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.8.0",
+        "@n0safe/indirectus": "^1.0.6",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
-        "indirectus": "^1.0.2",
         "typescript": "^5.5.3"
     },
     "dependencies": {
-        "@directus/sdk": "^16.1.1",
+        "@directus/sdk": "^17.0.0",
         "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"

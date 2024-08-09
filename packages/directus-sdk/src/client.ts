@@ -57,10 +57,20 @@ export namespace Types {
  */
 export namespace Collections {
   /**
-   * The resolved directus access collection type.
+   * The resolved system collection type.
    *
    */
-  export type DirectusAcces = Directus.DirectusAcces<System>;
+  export type DirectusAccess = Directus.MergeCoreCollection<
+    Schema,
+    "directus_access",
+    {
+      id: Types.UUID;
+      role: Collections.DirectusRole;
+      user: Collections.DirectusUser;
+      policy: Collections.DirectusPolicy;
+      sort: Types.Integer;
+    }
+  >;
 
   /**
    * The resolved directus activity collection type.
@@ -102,7 +112,7 @@ export namespace Collections {
    * The resolved directus policies collection type.
    *
    */
-  export type DirectusPolicie = Directus.DirectusPolicie<System>;
+  export type DirectusPolicy = Directus.DirectusPolicy<System>;
 
   /**
    * The resolved directus presets collection type.
