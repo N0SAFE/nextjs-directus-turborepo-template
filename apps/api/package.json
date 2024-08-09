@@ -12,6 +12,7 @@
     "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
     "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
     "test": "echo 'all app:api tests passed!'",
+    "init": "npm run generate:directus:types",
     "generate:directus:types": "npm run schema:export",
     "schema:export": "dotenv -v CONFIG_PATH=config.js -- directus schema snapshot --yes ./snapshot.yaml",
     "schema:import": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --yes ./snapshot.yaml",
