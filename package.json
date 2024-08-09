@@ -7,7 +7,7 @@
     ],
     "scripts": {
         "update:api": "dotenv -v FORCE_COLOR=1 -- turbo run api#update",
-        "init": "npm ci && node init.js && dotenv -e .env -- npm run bootstrap -w apps/api && node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo run init && npm run\" && npm run generate:directus:types && node post-init.js",
+        "init": "npm ci && node init.js && dotenv -e .env -- npm run bootstrap -w apps/api && node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo run init\" && npm run generate:directus:types && node post-init.js",
         "generate:directus:types": "node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\"",
         "prod:update": "npm ci && dotenv -e .env -- npm run migrate:latest -w apps/api && dotenv -e .env -- npm run schema:import -w apps/api",
         "build:force": "node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
