@@ -102,7 +102,7 @@ export function getRelation<
     R extends boolean,
 >(
     relation: T,
-    required: R
+    required?: R
 ): T extends object | null | undefined
     ? R extends true
         ? NonNullable<T>
@@ -195,3 +195,5 @@ export namespace DirectusFile {
         filename?: string
     }
 }
+
+export type TypedDirectusClient = DirectusClient<Schema>
