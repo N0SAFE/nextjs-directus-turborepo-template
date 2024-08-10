@@ -1,11 +1,14 @@
+const MillionLint = require('@million/lint');
 /**
  * @type {import('next').NextConfig}
  */
-module.exports = {
-    reactStrictMode: true,
-    transpilePackages: ['@repo/ui'],
-    images: {
-        dangerouslyAllowSVG: true,
-        domains: [new URL(process.env.NEXT_PUBLIC_API_URL).hostname],
-    },
-}
+module.exports = MillionLint.next({
+  rsc: true
+})({
+  reactStrictMode: true,
+  transpilePackages: ['@repo/ui'],
+  images: {
+    dangerouslyAllowSVG: true,
+    domains: [new URL(process.env.NEXT_PUBLIC_API_URL).hostname]
+  }
+});
