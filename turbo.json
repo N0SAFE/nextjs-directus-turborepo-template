@@ -5,12 +5,6 @@
     "globalPassThroughEnv": [".env.local"],
     "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEMP_APP_NEXTAUTH_URL"],
     "tasks": {
-        "api#update": {
-            "cache": false
-        },
-        "api#bootstrap": {
-            "cache": false
-        },
         "init": {
             "dependsOn": ["^init", "clean"],
             "outputs": ["dist/**"]
