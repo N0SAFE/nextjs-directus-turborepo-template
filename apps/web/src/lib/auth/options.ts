@@ -1,17 +1,11 @@
 import { NextAuthOptions, Awaitable, User, Session } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
-import {
-    AuthenticationData,
-    readMe,
-    refresh,
-    withToken,
-} from '@repo/directus-sdk'
+import { AuthenticationData, readMe, withToken } from '@repo/directus-sdk'
 import { JWT } from 'next-auth/jwt'
 import { UserSession, UserParams } from '@/types/next-auth'
 import { validateEnvSafe } from '#/env'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
-import { unstable_cache } from 'next/cache'
 import { memoize } from '@/lib/better-unstable-cache'
 import { validateEnv } from '#/env'
 
@@ -48,15 +42,6 @@ const getCachedRefreshToken = memoize(
         ],
         log: ['dedupe', 'datacache', 'verbose'],
     }
-)
-
-const cacheRefreshToken = unstable_cache(
-    (
-        directus: ReturnType<typeof createDirectusEdgeWithDefaultUrl>,
-        refresh_token: string
-    ) => directus.request(refresh('json', refresh_token)),
-    ['refreshToken', 'user?.refresh_token ?? token?.refresh_token'],
-    { revalidate: 60 * 2 }
 )
 
 export const options: NextAuthOptions = {

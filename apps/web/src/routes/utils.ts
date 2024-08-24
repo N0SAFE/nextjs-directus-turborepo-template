@@ -70,7 +70,7 @@ function parseShape(
     const parsed: Record<string, any> = {}
 
     for (const key in shape) {
-        if (shape.hasOwnProperty(key)) {
+        if (Object.hasOwn(shape, key)) {
             const fieldSchema: z.ZodTypeAny = shape[key]
             if (paramsArray[key]) {
                 const fieldData = convertToRequiredType(

@@ -4,7 +4,7 @@ import { refresh } from '@directus/sdk'
 export const revalidate = 20
 export const runtime = 'nodejs'
 
-export const POST = async (req: Request, res: Response) => {
+export const POST = async (req: Request) => {
     const data = await req.json()
     const { refresh_token } = data
     if (!refresh_token) {

@@ -6,7 +6,7 @@ import React, { Suspense } from 'react'
 import ListItemShowcase from './ListItem'
 import { useQuery } from '@tanstack/react-query'
 import { Collections } from '@repo/directus-sdk/client'
-import {Loader2} from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const { data: users, isFetched } = useQuery({
@@ -28,7 +28,12 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
                 </div>
             }
         >
-            {!isFetched && <div className="flex h-full w-full items-center justify-center"> <Loader2 className="animate-spin" /> </div>}
+            {!isFetched && (
+                <div className="flex h-full w-full items-center justify-center">
+                    {' '}
+                    <Loader2 className="animate-spin" />{' '}
+                </div>
+            )}
             <ListItemShowcase users={users} />
         </Suspense>
     )

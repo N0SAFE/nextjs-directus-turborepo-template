@@ -1,8 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const Route = {
-  name: "AppshowcaseClient",
-  params: z.object({
-  })
-};
-
+    name: 'AppshowcaseClient',
+    params: z.object({}),
+}

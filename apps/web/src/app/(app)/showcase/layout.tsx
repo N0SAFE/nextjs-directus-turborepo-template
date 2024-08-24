@@ -1,8 +1,7 @@
 'use client'
 
 import Validate from '@/lib/auth/validate'
-import { getSession, useSession } from 'next-auth/react'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 export default function ShowcaseLayout({
     children,
@@ -11,9 +10,7 @@ export default function ShowcaseLayout({
 }) {
     return (
         <Validate>
-            <div className="flex h-full w-full flex-col">
-                {children}
-            </div>
+            <div className="flex h-full w-full flex-col">{children}</div>
         </Validate>
     )
 }

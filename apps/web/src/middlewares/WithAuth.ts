@@ -4,12 +4,7 @@ import {
     NextRequest,
     NextResponse,
 } from 'next/server'
-import {
-    ConfigFactory,
-    Matcher,
-    MatcherTypeArray,
-    MiddlewareFactory,
-} from './utils/types'
+import { ConfigFactory, Matcher, MiddlewareFactory } from './utils/types'
 import { NextRequestWithAuth, withAuth as w } from 'next-auth/middleware'
 import { getToken } from 'next-auth/jwt'
 import { options } from '@/lib/auth/options'

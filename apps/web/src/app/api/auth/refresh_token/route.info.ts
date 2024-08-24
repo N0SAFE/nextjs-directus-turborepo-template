@@ -1,16 +1,8 @@
 import { z } from 'zod'
-import {refresh} from '@repo/directus-sdk'
 
 export const Route = {
     name: 'Apiauthrefreshtoken',
     params: z.object({}),
-}
-
-type AuthData = {
-    access_token: string | null;
-    refresh_token: string | null;
-    expires: number | null;
-    expires_at: number | null;
 }
 
 export const POST = {

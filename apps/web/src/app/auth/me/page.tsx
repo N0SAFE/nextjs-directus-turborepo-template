@@ -1,6 +1,6 @@
 import directus from '@/lib/directus'
 import { Authlogin } from '@/routes/index'
-import { readMe } from '@directus/sdk'
+import { readMe } from '@repo/directus-sdk'
 import { Button } from '@repo/ui/components/shadcn/button'
 import {
     Card,
