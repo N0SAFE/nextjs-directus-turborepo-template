@@ -36,6 +36,7 @@ const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())
     
     const urls = []
     for (const app of listOfApp) {
+        const name = app.match(/NEXT_PUBLIC_(.*)URL/)[1];
         const url = new URL(
             (
                 await prompts({
@@ -48,7 +49,8 @@ const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())
             ).value
         );
         urls.push({
-            name: app,
+            name,
+            app,
             url: url.href
         })
     }
@@ -76,7 +78,7 @@ const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())
     // );
     const randomHash = generateHash({ length: 20 });
     const env = Object.entries({
-        ...urls.reduce((acc, { name, url }) => ({ ...acc, [name]: url }), {}),
+        ...urls.reduce((acc, { name, url }) => ({ ...acc, [app]: url, [`NEXT_PUBLIC_${name}_PORT`]: new URL(url).port }), {}),
         API_PING_PATH: "server/ping",
         API_ADMIN_TOKEN: randomHash
     }).reduce((acc, [k, v]) => acc.replace(`\${:${k}}`, v), envTemplate);

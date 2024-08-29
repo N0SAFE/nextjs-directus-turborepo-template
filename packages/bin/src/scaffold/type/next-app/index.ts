@@ -4,6 +4,7 @@ import path from "path";
 import prompt from "prompts";
 import * as fs from "fs";
 import Utils from "@/scaffold/utils";
+import nunjucks from 'nunjucks';
 const { parse, stringify } = require("envfile");
 
 const utilsInstance = new Utils({
@@ -49,7 +50,7 @@ export default async function run() {
     function testIfValidURL(str: string) {
         const pattern = new RegExp(
             "^https?:\\/\\/" + // protocol
-                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+                "(((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|localhost)|" + // domain name
                 "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
                 "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
                 "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
@@ -58,6 +59,14 @@ export default async function run() {
         ); // fragment locator
 
         return !!pattern.test(str);
+    }
+    
+    const getNextPort = (portToTest: string, appUrls: URL[]) => {
+        const port = portToTest;
+        if (appUrls.some((a) => a.port === port)) {
+            return getNextPort(`${Number(port) + 1}`, appUrls);
+        }
+        return port
     }
 
     const projectDir = await prompt({
@@ -78,6 +87,7 @@ export default async function run() {
         type: "text",
         name: "url",
         message: "Enter the app url",
+        initial: `http://localhost:${getNextPort("3000", appUrls.map((a) => new URL(a)))}`,
         validate: (value) => {
             if (!testIfValidURL(value)) {
                 return "Please enter a valid url";
@@ -103,14 +113,16 @@ export default async function run() {
     const packageJSON = JSON.parse(fs.readFileSync(path.resolve(appLocation, "package.json"), "utf-8"));
     
     const envName = `NEXT_PUBLIC_${projectDir.toUpperCase()}_URL`;
+    const envPortName = `NEXT_PUBLIC_${projectDir.toUpperCase()}_PORT`;
 
     envTemplateFile[envName] = `\${:${envName}}`;
     envFile[envName] = appUrl;
+    envFile[envPortName] = new URL(appUrl).port;
 
     fs.writeFileSync(path.resolve(locations.root, ".env"), stringify(envFile));
     fs.writeFileSync(path.resolve(locations.root, ".env.template"), stringify(envTemplateFile));
 
-    packageJSON.scripts = JSON.parse(fs.readFileSync(path.resolve(locations.templates, "package.script.json"), "utf-8"));
+    packageJSON.scripts = JSON.parse(nunjucks.renderString(fs.readFileSync(path.resolve(locations.templates, "package.script.json.njk"), "utf-8"), {envPortName}));
 
     utilsInstance.copyFiles(
         [path.resolve(locations.templates, "tailwind.config.ts.njk"), path.resolve(appLocation, "tailwind.config.ts"), { context: {} }],
@@ -362,5 +374,5 @@ export default async function run() {
     await runDeffered();
     installDependencies();
     
-    spawnSync("npm run init", { cwd: appLocation, stdio: "inherit", shell: true });
+    spawnSync("npm run init", { cwd: appLocation, stdio: "inherit", shell: true, env: {...process.env, [envName]:appUrl, [envPortName]: new URL(appUrl).port } });
 }
