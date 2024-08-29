@@ -101,9 +101,11 @@ export default async function run() {
 
     const appLocation = path.resolve(locations.apps, projectDir);
     const packageJSON = JSON.parse(fs.readFileSync(path.resolve(appLocation, "package.json"), "utf-8"));
+    
+    const envName = `NEXT_PUBLIC_${projectDir.toUpperCase()}_URL`;
 
-    envTemplateFile[`NEXT_PUBLIC_${projectDir.toUpperCase()}_URL`] = `\${:NEXT_PUBLIC_${projectDir.toUpperCase()}_URL}`;
-    envFile[`NEXT_PUBLIC_${projectDir.toUpperCase()}_URL`] = appUrl;
+    envTemplateFile[envName] = `\${:${envName}}`;
+    envFile[envName] = appUrl;
 
     fs.writeFileSync(path.resolve(locations.root, ".env"), stringify(envFile));
     fs.writeFileSync(path.resolve(locations.root, ".env.template"), stringify(envTemplateFile));
@@ -116,7 +118,7 @@ export default async function run() {
         [path.resolve(locations.templates, "app/page.tsx.njk"), path.resolve(appLocation, "src/app/page.tsx")],
         [path.resolve(locations.templates, "env.ts.njk"), path.resolve(appLocation, "env.ts")],
         [path.resolve(locations.templates, "env.template.njk"), path.resolve(appLocation, ".env.template")],
-        [path.resolve(locations.templates, "init.js.njk"), path.resolve(appLocation, "init.js"), { context: { appUrl, envName: `NEXT_PUBLIC_${projectDir}_URL` } }],
+        [path.resolve(locations.templates, "init.js.njk"), path.resolve(appLocation, "init.js"), { context: { appUrl, envName: envName } }],
         [path.resolve(locations.templates, "utils/providers/ReactQueryProviders.tsx.njk"), path.resolve(appLocation, "src/utils/providers/ReactQueryProviders.tsx")],
         [path.resolve(locations.templates, "utils/providers/NextAuthProviders/index.tsx.njk"), path.resolve(appLocation, "src/utils/providers/NextAuthProviders/index.tsx")],
         [
