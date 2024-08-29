@@ -1,0 +1,17 @@
+{
+    "echo": "envCli echo ${NEXT_PUBLIC_API_URL}${API_PING_PATH}",
+    "init": "node init.js",
+    "pretify": "npx prettier . --write",
+    "dev": "npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"next dev\" \"npm run dr:build:watch\"",
+    "build": "npm run dr:build && npm run openapi && envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && next build",
+    "start": "envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && next start",
+    "start:local": "envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && next start",
+    "lint": "next lint",
+    "test": "echo 'all app:web tests passed!'",
+    "clean": "rimraf .next",
+    "dr:build": "npx --yes declarative-routing build",
+    "dr:build:watch": "npx --yes declarative-routing build --watch",
+    "openapi": "npm run openapi:yaml && npm run openapi:html",
+    "openapi:yaml": "tsx ./src/routes/openapi.ts",
+    "openapi:html": "npx --yes @redocly/cli build-docs openapi-docs.yml"
+}

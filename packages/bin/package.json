@@ -7,6 +7,9 @@
     "@eslint/js": "^9.7.0",
     "@repo/tsconfig": "*",
     "@types/node-cron": "^3.0.11",
+    "@types/nunjucks": "^3.2.6",
+    "@types/prompts": "^2.4.9",
+    "copy-and-watch": "^0.1.8",
     "tsup": "^8.1.0",
     "typescript": "^5.5.3"
   },
@@ -20,9 +23,13 @@
     "runWhileError": "dist/runWhileError.js"
   },
   "scripts": {
+    "copy": "copy-and-watch src/**/*.{html,json,njk} dist/",
+    "copy:watch": "copy-and-watch --watch src/**/*.{html,json,njk} dist/",
+    "tsup": "tsup --onSuccess \"npm run copy\"",
+    "tsup:watch": "tsup --watch --onSuccess \"npm run copy\"",
     "init": "npm run build",
-    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
-    "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
+    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup:watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+    "build": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:bin tests passed!'",
     "envCli": "node dist/envCli.js",
@@ -35,6 +42,11 @@
     "@repo/crontimev2": "*",
     "@repo/eslint-config": "*",
     "commander": "^12.1.0",
-    "node-cron": "^3.0.3"
+    "envfile": "^7.1.0",
+    "node-cron": "^3.0.3",
+    "nunjucks": "^3.2.4",
+    "prompt": "^1.3.0",
+    "tsc-hooks": "^1.1.2",
+    "wait-cli": "^1.0.0"
   }
 }

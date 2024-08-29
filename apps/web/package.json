@@ -20,8 +20,8 @@
         "openapi:html": "npx --yes @redocly/cli build-docs openapi-docs.yml"
     },
     "dependencies": {
-        "@directus/sdk": "^16.1.0",
         "@million/lint": "^1.0.0-rc.84",
+        "@repo/directus-sdk": "*",
         "@repo/bin": "*",
         "@repo/ui": "*",
         "@tanstack/react-query": "^5.40.1",

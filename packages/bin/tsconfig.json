@@ -4,16 +4,23 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-          "@/*": ["src/*"],
-      },"rootDir": "src",
-      "outDir": "dist",
-      "noEmit": false,
-      "declaration": true,
-      "declarationDir": "./dist",
-      "emitDeclarationOnly": true,
-      "declarationMap": true
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": false,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "emitDeclarationOnly": true,
+    "declarationMap": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tsup.config.ts"]
+  "include": [
+    "src/**/*",
+    "src/.ts"
+  ],
+  "exclude": [
+    "tsup.config.ts"
+  ],
 }
-

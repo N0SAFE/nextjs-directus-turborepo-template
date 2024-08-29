@@ -15,10 +15,10 @@ const envTemplate = fs.readFileSync('.env.template').toString()
         NEXTAUTH_SECRET: RANDOM_NEXTAUTH_SECRET,
     }
 
-    if (!process.env.TEMP_APP_NEXTAUTH_URL) {
-        throw new Error('TEMP_APP_NEXTAUTH_URL is not defined')
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+        throw new Error('NEXT_PUBLIC_APP_URL is not defined')
     } else {
-        envValue.NEXTAUTH_URL = process.env.TEMP_APP_NEXTAUTH_URL
+        envValue.NEXTAUTH_URL = process.env.NEXT_PUBLIC_APP_URL
     }
 
     let env = envTemplate

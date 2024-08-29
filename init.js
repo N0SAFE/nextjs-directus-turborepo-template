@@ -3,13 +3,14 @@ const { format } = require("path");
 const prompts = require("prompts");
 const { generateHash } = require("random-hash");
 const { URL } = require("url");
+const { parse, stringify } = require("envfile");
 
 const envTemplate = fs.readFileSync(".env.template").toString();
 const packageJson = JSON.parse(fs.readFileSync("package.json").toString());
 
-if (fs.existsSync(".initiated")) {
-    throw new Error("This project has already been initiated");
-}
+// if (fs.existsSync(".initiated")) {
+//     throw new Error("This project has already been initiated");
+// }
 
 const stringIsAValidUrl = (s, protocols) => {
     try {
@@ -20,6 +21,11 @@ const stringIsAValidUrl = (s, protocols) => {
     }
 };
 
+const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())).filter((key) => {
+    // regexp to check all NEXT_PUBLIC_${somethings}_URL
+    return key.match(/NEXT_PUBLIC_(.*)URL/);
+});
+
 (async () => {
     const projectName = await prompts({
         type: "text",
@@ -27,33 +33,50 @@ const stringIsAValidUrl = (s, protocols) => {
         message: "Enter the project name",
         initial: packageJson.name
     });
-    const apiUrl = new URL(
-        (
-            await prompts({
-                type: "text",
-                name: "value",
-                message: "Enter the API URL",
-                initial: "http://127.0.0.1:8055",
-                validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL")
-            })
-        ).value
-    );
-    const appUrl = new URL(
-        (
-            await prompts({
-                type: "text",
-                name: "value",
-                message: "Enter the APP URL",
-                initial: "http://127.0.0.1:3000",
-                validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL"),
-            })
-        ).value
-    )
+    
+    const urls = []
+    for (const app of listOfApp) {
+        const url = new URL(
+            (
+                await prompts({
+                    type: "text",
+                    name: "value",
+                    message: `Enter the ${app} URL`,
+                    initial: app === "NEXT_PUBLIC_API_URL" ? "http://127.0.0.1:8055" : app === "NEXT_PUBLIC_APP_URL" ? "http://127.0.0.1:3000" : `http://127.0.0.1:300${index + 1}`,
+                    validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL")
+                })
+            ).value
+        );
+        urls.push({
+            name: app,
+            url: url.href
+        })
+    }
+    // const apiUrl = new URL(
+    //     (
+    //         await prompts({
+    //             type: "text",
+    //             name: "value",
+    //             message: "Enter the API URL",
+    //             initial: "http://127.0.0.1:8055",
+    //             validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL")
+    //         })
+    //     ).value
+    // );
+    // const appUrl = new URL(
+    //     (
+    //         await prompts({
+    //             type: "text",
+    //             name: "value",
+    //             message: "Enter the APP URL",
+    //             initial: "http://127.0.0.1:3000",
+    //             validate: (v) => (stringIsAValidUrl(v, ["http", "https"]) ? true : "Invalid URL")
+    //         })
+    //     ).value
+    // );
     const randomHash = generateHash({ length: 20 });
     const env = Object.entries({
-        NEXT_PUBLIC_API_URL: apiUrl.href,
-        NEXT_PUBLIC_APP_URL: appUrl.href,
-        TEMP_APP_NEXTAUTH_URL: appUrl.href,
+        ...urls.reduce((acc, { name, url }) => ({ ...acc, [name]: url }), {}),
         API_PING_PATH: "server/ping",
         API_ADMIN_TOKEN: randomHash
     }).reduce((acc, [k, v]) => acc.replace(`\${:${k}}`, v), envTemplate);

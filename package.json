@@ -37,6 +37,7 @@
     "dependencies": {
         "dotenv": "^16.4.5",
         "dotenv-cli": "^7.4.2",
+        "envfile": "^7.1.0",
         "random-hash": "^4.0.1",
         "wait-port": "^1.1.0"
     }
