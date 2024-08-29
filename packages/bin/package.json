@@ -17,6 +17,7 @@
     "./*": "./dist/*"
   },
   "bin": {
+    "scaffold": "dist/scaffold/index.js",
     "envCli": "dist/envCli.js",
     "scheduleCli": "dist/scheduleCli.js",
     "runUntil": "dist/runUntil.js",
@@ -25,15 +26,18 @@
   "scripts": {
     "copy": "copy-and-watch src/**/*.{html,json,njk} dist/",
     "copy:watch": "copy-and-watch --watch src/**/*.{html,json,njk} dist/",
-    "tsup": "tsup --onSuccess \"npm run copy\"",
-    "tsup:watch": "tsup --watch --onSuccess \"npm run copy\"",
+    "tsup": "tsup --onSuccess \"npm run copy && npm run lint\"",
+    "tsup:watch": "tsup --watch --onSuccess \"npm run copy && npm run lint\"",
     "init": "npm run build",
     "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup:watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
     "build": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:bin tests passed!'",
     "envCli": "node dist/envCli.js",
-    "scheduleCli": "node dist/scheduleCli.js"
+    "scheduleCli": "node dist/scheduleCli.js",
+    "runUntil": "node dist/runUntil.js",
+    "runWhileError": "node dist/runWhileError.js",
+    "scaffold": "node dist/scaffold/index.js"
   },
   "author": "",
   "license": "ISC",
