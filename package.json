@@ -19,11 +19,18 @@
         "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",
         "format": "dotenv -v FORCE_COLOR=1 -- turbo pretify",
         "clean": "dotenv -v FORCE_COLOR=1 -- turbo clean",
-        "docs": "npm run dev --workspace=@repo/docs",
-        "api": "dotenv -e .env -- npm run dev -w apps/api",
-        "web": "npm run dev --workspace=@repo/web",
-        "ui": "npm run dev --workspace=@repo/ui",
-        "ui:add": "npm run ui:add --workspace=@repo/ui"
+        "ui:add": "dotenv -e .env -- npm run ui:add --workspace=@repo/ui",
+        "api": "dotenv -e .env -- npm run --workspace=web",
+        "web": "dotenv -e .env -- npm run --workspace=web",
+        "@repo/ui": "dotenv -e .env -- npm run --workspace=@repo/ui",
+        "@repo/bin": "dotenv -e .env -- npm run --workspace=@repo/bin",
+        "@repo/types": "dotenv -e .env -- npm run --workspace=@repo/types",
+        "@repo/tsup-config": "dotenv -e .env -- npm run --workspace=@repo/tsup-config",
+        "@repo/tsconfig": "dotenv -e .env -- npm run --workspace=@repo/tsconfig",
+        "@repo/tailwind-config": "dotenv -e .env -- npm run --workspace=@repo/tailwind-config",
+        "@repo/eslint-config": "dotenv -e .env -- npm run --workspace=@repo/eslint-config",
+        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk",
+        "@repo/cronTimeV2": "dotenv -e .env -- npm run --workspace=@repo/crontimev2"
     },
     "devDependencies": {
         "@repo/bin": "*",
