@@ -28,7 +28,7 @@
         "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "ui:add": "npx shadcn-ui@latest add"
+        "ui:add": "npx shadcn add --"
     },
     "peerDependencies": {
         "react": "^18.2.0"
@@ -56,11 +56,12 @@
     },
     "dependencies": {
         "@hookform/resolvers": "^3.6.0",
+        "@radix-ui/react-alert-dialog": "^1.1.1",
         "@radix-ui/react-dialog": "^1.0.5",
         "@radix-ui/react-dropdown-menu": "^2.0.6",
         "@radix-ui/react-label": "^2.0.2",
         "@radix-ui/react-separator": "^1.0.3",
-        "@radix-ui/react-slot": "^1.0.2",
+        "@radix-ui/react-slot": "^1.1.0",
         "@repo/tsup-config": "*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",

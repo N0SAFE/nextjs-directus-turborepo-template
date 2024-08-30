@@ -207,7 +207,6 @@ export default async function run(subCommand: Command) {
         message: "Select the features you want to add",
         choices: [
             { title: "Directus", value: "directus", description: "install the directus sdk with all the other side package then create the library" },
-            { title: "shadcnui", value: "shadcnui", description: "install the shadcnui" },
             { title: "next-auth", value: "next-auth", description: "install next-auth" },
             { title: "auth-page", value: "auth-page", description: "create the page for the login and me route (use next-auth if installed)" },
             { title: "declarative-routing", value: "declarative-routing", description: "Declarative routing is a way to define routes in a single file and use it in the app" }
@@ -226,14 +225,6 @@ export default async function run(subCommand: Command) {
                 },
                 context: { useNextAuth: answer.features.includes("next-auth") }
             });
-        });
-    }
-
-    if (answer.features.includes("shadcnui")) {
-        deffered.push(() => {
-            console.log("install the shadcnui features");
-
-            spawnSync(`npx shadcn-ui@latest init`, { cwd: appLocation, stdio: "inherit", shell: true });
         });
     }
 
