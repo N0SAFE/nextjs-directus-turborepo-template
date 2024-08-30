@@ -4,32 +4,70 @@ import { Command } from "commander";
 import prompts from "prompts";
 import * as fs from "fs";
 
-const program = new Command();
+const autoFunc = (func: () => unknown) => {
+    return func();
+};
 
-program.name("cron").description("CLI to run cron jobs that run cli").version("0.0.0");
+const getModules = async (program: Command) => {
+    const listOfProgram = fs.readdirSync(__dirname + "/program");
 
-program.option("type, t", "type of the scafold to run");
+    return await Promise.all(
+        listOfProgram.map(async (moduleName) => {
+            const module = await require(`${__dirname}/program/${moduleName}`);
+            const subCommand = program.command(moduleName);
+            if (module?.defineCommand) {
+                module?.defineCommand(subCommand);
+            }
+            return {
+                moduleName,
+                module,
+                subCommand
+            };
+        })
+    );
+};
 
-const command = program.parse(process.argv);
+autoFunc(async () => {
+    const program = new Command();
 
-const allowedType = fs.readdirSync(__dirname + "/type");
-const name = command.args[0];
+    program.name("scaffold").description("Scaffold generator").version("0.0.1");
 
-(async () => {
-    if (allowedType.includes(name)) {
-        const { default: run } = await import(`${__dirname}/type/${name}`);
-        run();
-        return;
-    }
-    const response = await prompts({
-        type: "select",
-        name: "value",
-        message: "Select the type of scaffold to run",
-        choices: allowedType.map((t) => ({ title: t, value: t }))
+    program
+        .command("init")
+        .description("Initialize scaffold")
+
+    const modules = await getModules(program);
+
+    modules.forEach(({ subCommand, moduleName }) => {
+        subCommand.action(() => {
+            console.log("running", moduleName);
+            const modulePack = modules.find(({ moduleName: name }) => name === moduleName);
+            if (!modulePack) {
+                throw new Error("Invalid module name");
+            }
+            const { default: run } = modulePack.module;
+            run(subCommand);
+        });
     });
-    const t = response.value;
-    const { default: run } = await require(`${__dirname}/type/${t}`);
-    console.log(`\nrunning the ${t} scaffolder\n\n`)
-    run();
-    return;
-})();
+
+    program.action(async () => {
+        const name = (
+            await prompts({
+                type: "select",
+                name: "value",
+                message: "Select the type of scaffold to run",
+                choices: modules.map(({ moduleName }) => ({ title: moduleName, value: moduleName }))
+            })
+        ).value;
+        const modulePack = modules.find(({ moduleName }) => moduleName === name);
+        if (!modulePack || !modules.some(({ moduleName }) => moduleName === modulePack.moduleName)) {
+            throw new Error("Invalid module name");
+        }
+
+        const { default: run } = modulePack.module;
+        run(modulePack.subCommand);
+        return;
+    });
+
+    program.parse(process.argv);
+});

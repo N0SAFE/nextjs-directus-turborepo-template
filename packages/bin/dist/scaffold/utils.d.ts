@@ -8,7 +8,12 @@ export declare const copyDir: <T>(src: string, dest: string, opts?: {
     context?: T | ((fileName: string) => T);
     createDirIfNot?: boolean;
     contentTransform?: (content: string) => string;
-    fileNameTransform?: (dest: string) => string;
+    fileNameTransform?: (file: string) => string;
+    asToCopyy?: (path: string, type: "directory" | "file", ctx: {
+        file: string;
+        src: string;
+        dest: string;
+    }) => boolean;
 }) => void;
 export default class Utils {
     private opts;
@@ -26,7 +31,12 @@ export default class Utils {
         context?: unknown;
         createDirIfNot?: boolean;
         contentTransform?: (content: string) => string;
-        fileNameTransform?: (dest: string) => string;
+        fileNameTransform?: (file: string) => string;
+        asToCopyy?: (path: string, type: "directory" | "file", ctx: {
+            file: string;
+            src: string;
+            dest: string;
+        }) => boolean;
     } | undefined) => void;
 }
 //# sourceMappingURL=utils.d.ts.map

@@ -25,12 +25,12 @@
   },
   "scripts": {
     "copy": "copy-and-watch src/**/*.{html,json,njk} dist/",
-    "copy:watch": "copy-and-watch --watch src/**/*.{html,json,njk} dist/",
     "tsup": "tsup --onSuccess \"npm run copy && npm run lint\"",
     "tsup:watch": "tsup --watch --onSuccess \"npm run copy && npm run lint\"",
+    "clean": "rimraf dist",
     "init": "npm run build",
-    "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup:watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
-    "build": "concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
+    "dev": "npm run clean && concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup:watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+    "build": "npm run clean && concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:bin tests passed!'",
     "envCli": "node dist/envCli.js",
@@ -50,6 +50,7 @@
     "node-cron": "^3.0.3",
     "nunjucks": "^3.2.4",
     "prompt": "^1.3.0",
+    "rimraf": "^6.0.1",
     "tsc-hooks": "^1.1.2",
     "wait-cli": "^1.0.0"
   }
