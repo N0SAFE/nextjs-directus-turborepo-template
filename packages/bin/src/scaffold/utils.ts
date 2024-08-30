@@ -3,7 +3,6 @@ import nunjucks from "nunjucks";
 import path from "path";
 export const copyFile = <T>(src: string, dest: string, opts?: { context?: T; createDirIfNot?: boolean; contentTransform?: (content: string) => string }) => {
     if ((opts?.createDirIfNot ?? true) && !fs.existsSync(path.resolve(dest, "../"))) {
-        console.log("Creating directory: " + path.resolve(dest, "../"));
         fs.mkdirSync(path.resolve(dest, "../"), { recursive: true });
     }
     console.log("Copying file: " + src + " to " + dest);
@@ -38,10 +37,7 @@ export const copyDir = <T>(
 ) => {
     const rec = (newSrc: string, newDest: string) => {
         const path = newSrc.replace(src, "");
-        console.log('newSrc', newSrc);
-        console.log('newDest', newDest);
         if (!fs.existsSync(newDest)) {
-            console.log('Creating directory: ' + newDest);
             fs.mkdirSync(newDest, { recursive: true });
         }
         const files = fs.readdirSync(newSrc);
@@ -71,8 +67,6 @@ export const copyDir = <T>(
             }
         }
     }
-    
-    console.log('dest', dest)
     
     return rec(src, dest);
 };
