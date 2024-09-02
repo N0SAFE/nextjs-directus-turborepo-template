@@ -63,6 +63,7 @@
         "@radix-ui/react-separator": "^1.0.3",
         "@radix-ui/react-slot": "^1.1.0",
         "@repo/tsup-config": "*",
+        "@repo/directus-sdk": "*",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
         "concurrently": "^8.2.2",
