@@ -1,17 +1,14 @@
 import {
     ApplyQueryFields,
-    CollectionType,
     DirectusClient,
     Query,
-    RegularCollections,
 } from '@directus/sdk'
-import { Types, Schema } from './client'
-import { Collections } from '@repo/directus-sdk/client'
+import { Types, Schema, CollectionsType } from './client'
 
-export type __unfinished_ApplyFields<
-    Collection extends RegularCollections<Schema>,
-    Fields extends Query<Schema, CollectionType<Schema, Collection>>['fields'],
-> = ApplyQueryFields<Schema, CollectionType<Schema, Collection>, Fields>
+export type ApplyFields<
+    Collection extends CollectionsType[keyof CollectionsType],
+    Fields extends Query<CollectionsType, Collection>['fields'],
+> = ApplyQueryFields<CollectionsType, Collection, Fields>
 
 export type ItemNoRelations<Collection extends object> = {
     [Key in keyof Collection]: Collection[Key] extends { id: any }

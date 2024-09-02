@@ -43,7 +43,7 @@
         "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src --outputDir ./src\""
+        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && n0safe-indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src --outputDir ./src\""
     },
     "keywords": [],
     "author": "",
@@ -52,7 +52,6 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.8.0",
-        "indirectus": "^1.1.0",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
@@ -60,6 +59,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
+        "@n0safe/indirectus": "^1.0.8",
         "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"

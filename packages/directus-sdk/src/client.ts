@@ -208,6 +208,143 @@ export namespace Collections {
 }
 
 /**
+ * All collection types.
+ */
+export type CollectionsType = {
+  /**
+   * The resolved directus activity collection type.
+   *
+   */
+  DirectusActivity: Collections.DirectusActivity;
+
+  /**
+   * The resolved directus collections collection type.
+   *
+   */
+  DirectusCollection: Collections.DirectusCollection;
+
+  /**
+   * The resolved directus fields collection type.
+   *
+   */
+  DirectusField: Collections.DirectusField;
+
+  /**
+   * The resolved directus files collection type.
+   *
+   */
+  DirectusFile: Collections.DirectusFile;
+
+  /**
+   * The resolved directus folders collection type.
+   *
+   */
+  DirectusFolder: Collections.DirectusFolder;
+
+  /**
+   * The resolved directus permissions collection type.
+   *
+   */
+  DirectusPermission: Collections.DirectusPermission;
+
+  /**
+   * The resolved directus presets collection type.
+   *
+   */
+  DirectusPreset: Collections.DirectusPreset;
+
+  /**
+   * The resolved directus relations collection type.
+   *
+   */
+  DirectusRelation: Collections.DirectusRelation;
+
+  /**
+   * The resolved directus revisions collection type.
+   *
+   */
+  DirectusRevision: Collections.DirectusRevision;
+
+  /**
+   * The resolved directus roles collection type.
+   *
+   */
+  DirectusRole: Collections.DirectusRole;
+
+  /**
+   * The resolved directus settings collection type.
+   *
+   */
+  DirectusSettings: Collections.DirectusSettings;
+
+  /**
+   * The resolved directus users collection type.
+   *
+   */
+  DirectusUser: Collections.DirectusUser;
+
+  /**
+   * The resolved directus webhooks collection type.
+   *
+   */
+  DirectusWebhook: Collections.DirectusWebhook;
+
+  /**
+   * The resolved directus dashboards collection type.
+   *
+   */
+  DirectusDashboard: Collections.DirectusDashboard;
+
+  /**
+   * The resolved directus panels collection type.
+   *
+   */
+  DirectusPanel: Collections.DirectusPanel;
+
+  /**
+   * The resolved directus notifications collection type.
+   *
+   */
+  DirectusNotification: Collections.DirectusNotification;
+
+  /**
+   * The resolved directus shares collection type.
+   *
+   */
+  DirectusShare: Collections.DirectusShare;
+
+  /**
+   * The resolved directus flows collection type.
+   *
+   */
+  DirectusFlow: Collections.DirectusFlow;
+
+  /**
+   * The resolved directus operations collection type.
+   *
+   */
+  DirectusOperation: Collections.DirectusOperation;
+
+  /**
+   * The resolved directus translations collection type.
+   *
+   */
+  DirectusTranslation: Collections.DirectusTranslation;
+
+  /**
+   * The resolved directus versions collection type.
+   *
+   */
+  DirectusVersion: Collections.DirectusVersion;
+
+  /**
+   * The resolved directus extensions collection type.
+   *
+   */
+  DirectusExtension: Collections.DirectusExtension;
+};
+
+/**
  * System schema extensions.
  */
 
@@ -492,7 +629,7 @@ const excludedDirectusCommands: {
   ["withSearch"]: true,
 } as const;
 
-type _InjectSchemaSystemTypes<T, Schema> =
+export type _InjectSchemaSystemTypes<T, Schema> =
   T extends Directus.Query<any, infer C>
     ? Directus.Query<Schema, C>
     : T extends Directus.DirectusActivity<any>
@@ -543,12 +680,12 @@ type _InjectSchemaSystemTypes<T, Schema> =
                                                   ? Directus.DirectusUser<Schema>
                                                   : T;
 
-type InjectSchemaSystemTypes<T, Schema> =
+export type InjectSchemaSystemTypes<T, Schema> =
   T extends Partial<infer Nested>
     ? Partial<_InjectSchemaSystemTypes<Nested, Schema>>
     : _InjectSchemaSystemTypes<T, Schema>;
 
-type InjectSchema<T, Schema> = T extends []
+export type InjectSchema<T, Schema> = T extends []
   ? []
   : T extends [infer Param]
     ? [InjectSchema<Param, Schema>]
