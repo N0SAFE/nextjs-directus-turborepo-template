@@ -1,19 +1,22 @@
 import {
-    ApplyQueryFields,
     DirectusClient,
-    Query,
+    QueryFields,
+    UnpackList,
 } from '@directus/sdk'
 import { Types, Schema, CollectionsType } from './client'
+import {
+    ApplyQueryFields,
+} from './types/ApplyQueryFields'
 
 export type ApplyFields<
-    Collection extends CollectionsType[keyof CollectionsType],
-    Fields extends Query<CollectionsType, Collection>['fields'],
+    Collection extends UnpackList<CollectionsType[keyof CollectionsType]>,
+    Fields extends QueryFields<CollectionsType, Collection>,
 > = ApplyQueryFields<CollectionsType, Collection, Fields>
 
 export type ItemNoRelations<Collection extends object> = {
-    [Key in keyof Collection]: Collection[Key] extends { id: any }
+    [Key in keyof Collection]: Collection[Key] extends { id: DirectusIdType }
         ? DirectusItemExcludeRelations<Collection[Key]>
-        : Collection[Key] extends { id: any }[]
+        : Collection[Key] extends { id: DirectusIdType }[]
           ? DirectusItemExcludeRelations<Collection[Key][number]>[]
           : Collection[Key]
 }
@@ -42,7 +45,7 @@ export type RelationType<T extends DirectusItemType> = Exclude<
 >
 
 export type DirectusItemExcludeRelations<T extends DirectusItemType> =
-    | Exclude<T, { id: any }>
+    | Exclude<T, { id: DirectusIdType }>
     | RelationIdType<T>
 
 // Refactor the getItemId function to use a more straightforward generic approach

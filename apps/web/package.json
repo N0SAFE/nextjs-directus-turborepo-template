@@ -21,8 +21,8 @@
     },
     "dependencies": {
         "@million/lint": "^1.0.0-rc.84",
-        "@repo/directus-sdk": "*",
         "@repo/bin": "*",
+        "@repo/directus-sdk": "*",
         "@repo/ui": "*",
         "@tanstack/react-query": "^5.40.1",
         "@tanstack/react-query-devtools": "^5.40.1",

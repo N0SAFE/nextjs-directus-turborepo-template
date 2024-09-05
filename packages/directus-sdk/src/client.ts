@@ -111,6 +111,12 @@ export namespace Collections {
   export type DirectusPermission = Directus.DirectusPermission<System>;
 
   /**
+   * The resolved directus policies collection type.
+   *
+   */
+  export type DirectusPolicy = Directus.DirectusPolicy<System>;
+
+  /**
    * The resolved directus presets collection type.
    *
    */
@@ -215,61 +221,67 @@ export type CollectionsType = {
    * The resolved directus activity collection type.
    *
    */
-  DirectusActivity: Collections.DirectusActivity;
+  DirectusActivity: Collections.DirectusActivity[];
 
   /**
    * The resolved directus collections collection type.
    *
    */
-  DirectusCollection: Collections.DirectusCollection;
+  DirectusCollection: Collections.DirectusCollection[];
 
   /**
    * The resolved directus fields collection type.
    *
    */
-  DirectusField: Collections.DirectusField;
+  DirectusField: Collections.DirectusField[];
 
   /**
    * The resolved directus files collection type.
    *
    */
-  DirectusFile: Collections.DirectusFile;
+  DirectusFile: Collections.DirectusFile[];
 
   /**
    * The resolved directus folders collection type.
    *
    */
-  DirectusFolder: Collections.DirectusFolder;
+  DirectusFolder: Collections.DirectusFolder[];
 
   /**
    * The resolved directus permissions collection type.
    *
    */
-  DirectusPermission: Collections.DirectusPermission;
+  DirectusPermission: Collections.DirectusPermission[];
+
+  /**
+   * The resolved directus policies collection type.
+   *
+   */
+  DirectusPolicy: Collections.DirectusPolicy[];
 
   /**
    * The resolved directus presets collection type.
    *
    */
-  DirectusPreset: Collections.DirectusPreset;
+  DirectusPreset: Collections.DirectusPreset[];
 
   /**
    * The resolved directus relations collection type.
    *
    */
-  DirectusRelation: Collections.DirectusRelation;
+  DirectusRelation: Collections.DirectusRelation[];
 
   /**
    * The resolved directus revisions collection type.
    *
    */
-  DirectusRevision: Collections.DirectusRevision;
+  DirectusRevision: Collections.DirectusRevision[];
 
   /**
    * The resolved directus roles collection type.
    *
    */
-  DirectusRole: Collections.DirectusRole;
+  DirectusRole: Collections.DirectusRole[];
 
   /**
    * The resolved directus settings collection type.
@@ -281,67 +293,67 @@ export type CollectionsType = {
    * The resolved directus users collection type.
    *
    */
-  DirectusUser: Collections.DirectusUser;
+  DirectusUser: Collections.DirectusUser[];
 
   /**
    * The resolved directus webhooks collection type.
    *
    */
-  DirectusWebhook: Collections.DirectusWebhook;
+  DirectusWebhook: Collections.DirectusWebhook[];
 
   /**
    * The resolved directus dashboards collection type.
    *
    */
-  DirectusDashboard: Collections.DirectusDashboard;
+  DirectusDashboard: Collections.DirectusDashboard[];
 
   /**
    * The resolved directus panels collection type.
    *
    */
-  DirectusPanel: Collections.DirectusPanel;
+  DirectusPanel: Collections.DirectusPanel[];
 
   /**
    * The resolved directus notifications collection type.
    *
    */
-  DirectusNotification: Collections.DirectusNotification;
+  DirectusNotification: Collections.DirectusNotification[];
 
   /**
    * The resolved directus shares collection type.
    *
    */
-  DirectusShare: Collections.DirectusShare;
+  DirectusShare: Collections.DirectusShare[];
 
   /**
    * The resolved directus flows collection type.
    *
    */
-  DirectusFlow: Collections.DirectusFlow;
+  DirectusFlow: Collections.DirectusFlow[];
 
   /**
    * The resolved directus operations collection type.
    *
    */
-  DirectusOperation: Collections.DirectusOperation;
+  DirectusOperation: Collections.DirectusOperation[];
 
   /**
    * The resolved directus translations collection type.
    *
    */
-  DirectusTranslation: Collections.DirectusTranslation;
+  DirectusTranslation: Collections.DirectusTranslation[];
 
   /**
    * The resolved directus versions collection type.
    *
    */
-  DirectusVersion: Collections.DirectusVersion;
+  DirectusVersion: Collections.DirectusVersion[];
 
   /**
    * The resolved directus extensions collection type.
    *
    */
-  DirectusExtension: Collections.DirectusExtension;
+  DirectusExtension: Collections.DirectusExtension[];
 };
 
 /**
@@ -384,6 +396,12 @@ export interface System {
    *
    */
   directus_permissions: {}[];
+
+  /**
+   * The definition for the directus policies system collection.
+   *
+   */
+  directus_policies: {}[];
 
   /**
    * The definition for the directus presets system collection.
@@ -644,41 +662,43 @@ export type _InjectSchemaSystemTypes<T, Schema> =
               ? Directus.DirectusFolder<Schema>
               : T extends Directus.DirectusPermission<any>
                 ? Directus.DirectusPermission<Schema>
-                : T extends Directus.DirectusPreset<any>
-                  ? Directus.DirectusPreset<Schema>
-                  : T extends Directus.DirectusRelation<any>
-                    ? Directus.DirectusRelation<Schema>
-                    : T extends Directus.DirectusRevision<any>
-                      ? Directus.DirectusRevision<Schema>
-                      : T extends Directus.DirectusRole<any>
-                        ? Directus.DirectusRole<Schema>
-                        : T extends Directus.DirectusSettings<any>
-                          ? Directus.DirectusSettings<Schema>
-                          : T extends Directus.DirectusUser<any>
-                            ? Directus.DirectusUser<Schema>
-                            : T extends Directus.DirectusWebhook<any>
-                              ? Directus.DirectusWebhook<Schema>
-                              : T extends Directus.DirectusDashboard<any>
-                                ? Directus.DirectusDashboard<Schema>
-                                : T extends Directus.DirectusPanel<any>
-                                  ? Directus.DirectusPanel<Schema>
-                                  : T extends Directus.DirectusNotification<any>
-                                    ? Directus.DirectusNotification<Schema>
-                                    : T extends Directus.DirectusShare<any>
-                                      ? Directus.DirectusShare<Schema>
-                                      : T extends Directus.DirectusFlow<any>
-                                        ? Directus.DirectusFlow<Schema>
-                                        : T extends Directus.DirectusOperation<any>
-                                          ? Directus.DirectusOperation<Schema>
-                                          : T extends Directus.DirectusTranslation<any>
-                                            ? Directus.DirectusTranslation<Schema>
-                                            : T extends Directus.DirectusVersion<any>
-                                              ? Directus.DirectusVersion<Schema>
-                                              : T extends Directus.DirectusExtension<any>
-                                                ? Directus.DirectusExtension<Schema>
-                                                : T extends Directus.DirectusUser<any>
-                                                  ? Directus.DirectusUser<Schema>
-                                                  : T;
+                : T extends Directus.DirectusPolicy<any>
+                  ? Directus.DirectusPolicy<Schema>
+                  : T extends Directus.DirectusPreset<any>
+                    ? Directus.DirectusPreset<Schema>
+                    : T extends Directus.DirectusRelation<any>
+                      ? Directus.DirectusRelation<Schema>
+                      : T extends Directus.DirectusRevision<any>
+                        ? Directus.DirectusRevision<Schema>
+                        : T extends Directus.DirectusRole<any>
+                          ? Directus.DirectusRole<Schema>
+                          : T extends Directus.DirectusSettings<any>
+                            ? Directus.DirectusSettings<Schema>
+                            : T extends Directus.DirectusUser<any>
+                              ? Directus.DirectusUser<Schema>
+                              : T extends Directus.DirectusWebhook<any>
+                                ? Directus.DirectusWebhook<Schema>
+                                : T extends Directus.DirectusDashboard<any>
+                                  ? Directus.DirectusDashboard<Schema>
+                                  : T extends Directus.DirectusPanel<any>
+                                    ? Directus.DirectusPanel<Schema>
+                                    : T extends Directus.DirectusNotification<any>
+                                      ? Directus.DirectusNotification<Schema>
+                                      : T extends Directus.DirectusShare<any>
+                                        ? Directus.DirectusShare<Schema>
+                                        : T extends Directus.DirectusFlow<any>
+                                          ? Directus.DirectusFlow<Schema>
+                                          : T extends Directus.DirectusOperation<any>
+                                            ? Directus.DirectusOperation<Schema>
+                                            : T extends Directus.DirectusTranslation<any>
+                                              ? Directus.DirectusTranslation<Schema>
+                                              : T extends Directus.DirectusVersion<any>
+                                                ? Directus.DirectusVersion<Schema>
+                                                : T extends Directus.DirectusExtension<any>
+                                                  ? Directus.DirectusExtension<Schema>
+                                                  : T extends Directus.DirectusUser<any>
+                                                    ? Directus.DirectusUser<Schema>
+                                                    : T;
 
 export type InjectSchemaSystemTypes<T, Schema> =
   T extends Partial<infer Nested>

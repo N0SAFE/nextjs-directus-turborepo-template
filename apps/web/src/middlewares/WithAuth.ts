@@ -5,7 +5,7 @@ import {
     NextResponse,
 } from 'next/server'
 import { ConfigFactory, Matcher, MiddlewareFactory } from './utils/types'
-import { NextRequestWithAuth, withAuth as w } from 'next-auth/middleware'
+import { withAuth as w } from 'next-auth/middleware'
 import { getToken } from 'next-auth/jwt'
 import { options } from '@/lib/auth/options'
 import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
@@ -57,7 +57,7 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
                     )
                 }
 
-                const res = next(req, _next)
+                const res = next(req as any, _next)
                 return res
             },
             {
@@ -68,7 +68,7 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
                 },
                 pages: options.pages,
             }
-        )(request as NextRequestWithAuth, _next)
+        )(request as unknown as any, _next as any)
     }
 }
 
