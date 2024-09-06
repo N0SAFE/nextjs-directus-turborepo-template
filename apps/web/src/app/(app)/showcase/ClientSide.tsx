@@ -17,7 +17,6 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
             )) as Collections.DirectusUser[]
         },
         refetchOnWindowFocus: false,
-        refetchInterval: 2 * 60 * 1000,
     })
 
     return (

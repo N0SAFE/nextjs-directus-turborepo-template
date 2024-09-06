@@ -1,3 +1,4 @@
+import { DirectusIdType } from '@/utils'
 import {
     FieldOutputMap,
     FieldsWildcard,
@@ -67,7 +68,7 @@ type MapFlatFields<
         : Extract<Item[F], keyof FieldOutputMap> extends infer A
           ? A[] extends never[]
               ? Item[F] extends any[]
-                  ? Exclude<Item[F], object[]> // all this code as been change for this line 
+                  ? Exclude<Item[F], object[]> // all this code as been change for this line
                   : Exclude<Item[F], object>
               : A extends keyof FieldOutputMap
                 ? FieldOutputMap[A] | Exclude<Item[F], A>
@@ -148,6 +149,16 @@ type MappedFunctionFields<Schema, Item> = Merge<
         >
 >
 
+type RemoveDuplicateIdAndItem<T> = {
+    [Key in keyof T]: Exclude<T[Key], null | undefined> extends any[]
+        ? Exclude<T[Key], null | undefined | DirectusIdType[]> extends never
+            ? T[Key]
+            : Exclude<T[Key], DirectusIdType[]>
+        : Exclude<T[Key], null | undefined | DirectusIdType> extends never
+          ? T[Key]
+          : Exclude<T[Key], DirectusIdType>
+}
+
 type ApplyQueryFields<
     Schema,
     Collection extends object,
@@ -163,52 +174,54 @@ type ApplyQueryFields<
         CollectionItem,
         Exclude<Fields, RelationalKeys>
     >,
-> = IfAny<
-    Schema,
-    Record<string, any>,
-    Merge<
-        MappedFunctionFields<Schema, CollectionItem> extends infer FF
-            ? MapFlatFields<
-                  CollectionItem,
-                  FlatFields,
-                  FF extends Record<string, string>
-                      ? FF
-                      : Record<string, string>
-              >
-            : never,
-        RelationalFields extends never
-            ? never
-            : {
-                  [Field in keyof RelationalFields]: Field extends keyof CollectionItem
-                      ? Extract<
-                            CollectionItem[Field],
-                            ItemType<Schema>
-                        > extends infer RelatedCollection
-                          ? RelationNullable<
+> = RemoveDuplicateIdAndItem<
+    IfAny<
+        Schema,
+        Record<string, any>,
+        Merge<
+            MappedFunctionFields<Schema, CollectionItem> extends infer FF
+                ? MapFlatFields<
+                      CollectionItem,
+                      FlatFields,
+                      FF extends Record<string, string>
+                          ? FF
+                          : Record<string, string>
+                  >
+                : never,
+            RelationalFields extends never
+                ? never
+                : {
+                      [Field in keyof RelationalFields]: Field extends keyof CollectionItem
+                          ? Extract<
                                 CollectionItem[Field],
-                                RelatedCollection extends any[]
-                                    ? HasManyToAnyRelation<RelatedCollection> extends never
-                                        ?
-                                              | ApplyNestedQueryFields<
-                                                    Schema,
-                                                    RelatedCollection,
-                                                    RelationalFields[Field]
-                                                >[]
-                                              | null
-                                        : ApplyManyToAnyFields<
+                                ItemType<Schema>
+                            > extends infer RelatedCollection
+                              ? RelationNullable<
+                                    CollectionItem[Field],
+                                    RelatedCollection extends any[]
+                                        ? HasManyToAnyRelation<RelatedCollection> extends never
+                                            ?
+                                                  | ApplyNestedQueryFields<
+                                                        Schema,
+                                                        RelatedCollection,
+                                                        RelationalFields[Field]
+                                                    >[]
+                                                  | null
+                                            : ApplyManyToAnyFields<
+                                                  Schema,
+                                                  RelatedCollection,
+                                                  RelationalFields[Field]
+                                              >[]
+                                        : ApplyNestedQueryFields<
                                               Schema,
                                               RelatedCollection,
                                               RelationalFields[Field]
-                                          >[]
-                                    : ApplyNestedQueryFields<
-                                          Schema,
-                                          RelatedCollection,
-                                          RelationalFields[Field]
-                                      >
-                            >
+                                          >
+                                >
+                              : never
                           : never
-                      : never
-              }
+                  }
+        >
     >
 >
 
@@ -217,4 +230,5 @@ export type {
     ApplyManyToAnyFields,
     ApplyNestedQueryFields,
     MapFlatFields,
+    RemoveDuplicateIdAndItem,
 }

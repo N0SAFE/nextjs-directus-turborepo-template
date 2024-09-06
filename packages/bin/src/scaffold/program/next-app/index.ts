@@ -233,6 +233,8 @@ export default async function run(subCommand: Command) {
             console.log("install the next-auth features");
 
             packageListToInstall.dependencies.push("next-auth");
+            packageListToInstall.dependencies.push("async-lock");
+            packageListToInstall.devDependencies.push("@types/async-lock");
             utilsInstance.copyDir(path.resolve(locations.templates, "features", "next-auth"), path.resolve(appLocation), {
                 fileNameTransform: (file) => {
                     return file.replace(".njk", "");
