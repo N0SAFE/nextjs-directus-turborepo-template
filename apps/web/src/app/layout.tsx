@@ -9,6 +9,7 @@ import ReactQueryProviders from '@/utils/providers/ReactQueryProviders'
 import { Suspense } from 'react'
 import NextAuthProviders from '@/utils/providers/NextAuthProviders/index'
 import NextTopLoader from 'nextjs-toploader'
+import Validate from '@/lib/auth/validate'
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -31,25 +32,27 @@ export default async function RootLayout({
                 )}
             >
                 <NextAuthProviders>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <NextTopLoader />
-                        <ReactQueryProviders>
-                            <Suspense
-                                fallback={
-                                    <div className="flex h-screen w-screen items-center justify-center">
-                                        <Loader />
-                                    </div>
-                                }
-                            >
-                                {children}
-                            </Suspense>
-                        </ReactQueryProviders>
-                    </ThemeProvider>
+                    <Validate>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            <NextTopLoader />
+                            <ReactQueryProviders>
+                                <Suspense
+                                    fallback={
+                                        <div className="flex h-screen w-screen items-center justify-center">
+                                            <Loader />
+                                        </div>
+                                    }
+                                >
+                                    {children}
+                                </Suspense>
+                            </ReactQueryProviders>
+                        </ThemeProvider>
+                    </Validate>
                 </NextAuthProviders>
             </body>
         </html>

@@ -1,4 +1,5 @@
 import { Collections } from '@repo/directus-sdk/client'
+import { ApplyFields } from '@repo/directus-sdk/utils'
 import {
     Card,
     CardContent,
@@ -8,7 +9,7 @@ import {
 import React from 'react'
 
 type ListItemShowcaseProps = {
-    users?: Collections.DirectusUser[]
+    users?: ApplyFields<Collections.DirectusUser, ['id', 'status']>[]
 }
 
 const ListItemShowcase: React.FC<ListItemShowcaseProps> =

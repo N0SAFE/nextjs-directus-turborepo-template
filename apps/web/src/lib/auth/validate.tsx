@@ -1,23 +1,31 @@
 'use client'
 
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from '@/state/session'
+import { signOut, useSession as us } from 'next-auth/react'
 import { useEffect } from 'react'
 
-export default function Validate({ children }: { children: React.ReactNode }) {
-    const { data: session, update } = useSession()
+export default function Validate({ children }: React.PropsWithChildren<{}>) {
+    const { data: session, update } = us()
+    const setSession = useSession((state) => state.setSession)
     useEffect(() => {
         if (session?.tokenIsRefreshed) {
             update({
-                access_token: session.access_token,
-                expires_at: session.expires_at,
-                refresh_token: session.refresh_token,
+                ...session,
                 tokenIsRefreshed: false,
             })
+            setSession({
+                ...session,
+                tokenIsRefreshed: false,
+            })
+            return
         }
         if (session?.error && session.error === 'RefreshAccessTokenError') {
             signOut()
+            setSession(null)
+            return
         }
-    }, [session, update])
+        setSession(session)
+    }, [session, update, setSession])
 
     return children
 }

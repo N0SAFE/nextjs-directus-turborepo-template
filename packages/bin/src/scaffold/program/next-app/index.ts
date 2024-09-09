@@ -94,7 +94,7 @@ const appUrls = Object.entries(envFile as Record<string, string>)
 
 export default async function run(subCommand: Command) {
     const opts = subCommand.opts();
-    console.log(opts)
+    console.log(opts);
     const packageListToInstall = {
         devDependencies: [] as ({ name: string; version: string } | string)[],
         dependencies: [
@@ -209,7 +209,8 @@ export default async function run(subCommand: Command) {
             { title: "Directus", value: "directus", description: "install the directus sdk with all the other side package then create the library" },
             { title: "next-auth", value: "next-auth", description: "install next-auth" },
             { title: "auth-page", value: "auth-page", description: "create the page for the login and me route (use next-auth if installed)" },
-            { title: "declarative-routing", value: "declarative-routing", description: "Declarative routing is a way to define routes in a single file and use it in the app" }
+            { title: "declarative-routing", value: "declarative-routing", description: "Declarative routing is a way to define routes in a single file and use it in the app" },
+            { title: "millionjs", value: "millionjs", description: "install millionjs" }
         ]
     });
 
@@ -233,8 +234,7 @@ export default async function run(subCommand: Command) {
             console.log("install the next-auth features");
 
             packageListToInstall.dependencies.push("next-auth");
-            packageListToInstall.dependencies.push("async-lock");
-            packageListToInstall.devDependencies.push("@types/async-lock");
+            packageListToInstall.dependencies.push("zustand");
             utilsInstance.copyDir(path.resolve(locations.templates, "features", "next-auth"), path.resolve(appLocation), {
                 fileNameTransform: (file) => {
                     return file.replace(".njk", "");
@@ -271,6 +271,20 @@ export default async function run(subCommand: Command) {
 
             spawnSync("npx declarative-routing build", { cwd: appLocation, stdio: "inherit", shell: true });
         });
+    }
+    
+    if (answer.features.includes("millionjs")) {
+        deffered.push(() => {
+            console.log("install the millionjs features");
+
+            spawnSync("npx million@latest", { cwd: appLocation, stdio: "inherit", shell: true });
+            
+            utilsInstance.copyDir(path.resolve(locations.templates, "features", "millionjs"), path.resolve(appLocation), {
+                fileNameTransform: (file) => {
+                    return file.replace(".njk", "");
+                }
+            });
+        })
     }
 
     utilsInstance.copyFile(path.resolve(locations.templates, "main", "tailwind.config.ts.njk"), path.resolve(appLocation, "tailwind.config.ts"));

@@ -7,6 +7,11 @@ import type * as Directus from "@directus/sdk";
 
 import * as DirectusSDK from "@directus/sdk";
 
+import { ApplyQueryFields } from "./types/ApplyQueryFields";
+
+import * as SystemBinding from "./bindings/system-binding";
+import * as ItemBinding from "./bindings/item-binding";
+
 type DirectusSDK = typeof DirectusSDK;
 
 /*
@@ -221,139 +226,139 @@ export type CollectionsType = {
    * The resolved directus activity collection type.
    *
    */
-  DirectusActivity: Collections.DirectusActivity[];
+  directus_activity: Collections.DirectusActivity[];
 
   /**
    * The resolved directus collections collection type.
    *
    */
-  DirectusCollection: Collections.DirectusCollection[];
+  directus_collections: Collections.DirectusCollection[];
 
   /**
    * The resolved directus fields collection type.
    *
    */
-  DirectusField: Collections.DirectusField[];
+  directus_fields: Collections.DirectusField[];
 
   /**
    * The resolved directus files collection type.
    *
    */
-  DirectusFile: Collections.DirectusFile[];
+  directus_files: Collections.DirectusFile[];
 
   /**
    * The resolved directus folders collection type.
    *
    */
-  DirectusFolder: Collections.DirectusFolder[];
+  directus_folders: Collections.DirectusFolder[];
 
   /**
    * The resolved directus permissions collection type.
    *
    */
-  DirectusPermission: Collections.DirectusPermission[];
+  directus_permissions: Collections.DirectusPermission[];
 
   /**
    * The resolved directus policies collection type.
    *
    */
-  DirectusPolicy: Collections.DirectusPolicy[];
+  directus_policies: Collections.DirectusPolicy[];
 
   /**
    * The resolved directus presets collection type.
    *
    */
-  DirectusPreset: Collections.DirectusPreset[];
+  directus_presets: Collections.DirectusPreset[];
 
   /**
    * The resolved directus relations collection type.
    *
    */
-  DirectusRelation: Collections.DirectusRelation[];
+  directus_relations: Collections.DirectusRelation[];
 
   /**
    * The resolved directus revisions collection type.
    *
    */
-  DirectusRevision: Collections.DirectusRevision[];
+  directus_revisions: Collections.DirectusRevision[];
 
   /**
    * The resolved directus roles collection type.
    *
    */
-  DirectusRole: Collections.DirectusRole[];
+  directus_roles: Collections.DirectusRole[];
 
   /**
    * The resolved directus settings collection type.
    *
    */
-  DirectusSettings: Collections.DirectusSettings;
+  directus_settings: Collections.DirectusSettings;
 
   /**
    * The resolved directus users collection type.
    *
    */
-  DirectusUser: Collections.DirectusUser[];
+  directus_users: Collections.DirectusUser[];
 
   /**
    * The resolved directus webhooks collection type.
    *
    */
-  DirectusWebhook: Collections.DirectusWebhook[];
+  directus_webhooks: Collections.DirectusWebhook[];
 
   /**
    * The resolved directus dashboards collection type.
    *
    */
-  DirectusDashboard: Collections.DirectusDashboard[];
+  directus_dashboards: Collections.DirectusDashboard[];
 
   /**
    * The resolved directus panels collection type.
    *
    */
-  DirectusPanel: Collections.DirectusPanel[];
+  directus_panels: Collections.DirectusPanel[];
 
   /**
    * The resolved directus notifications collection type.
    *
    */
-  DirectusNotification: Collections.DirectusNotification[];
+  directus_notifications: Collections.DirectusNotification[];
 
   /**
    * The resolved directus shares collection type.
    *
    */
-  DirectusShare: Collections.DirectusShare[];
+  directus_shares: Collections.DirectusShare[];
 
   /**
    * The resolved directus flows collection type.
    *
    */
-  DirectusFlow: Collections.DirectusFlow[];
+  directus_flows: Collections.DirectusFlow[];
 
   /**
    * The resolved directus operations collection type.
    *
    */
-  DirectusOperation: Collections.DirectusOperation[];
+  directus_operations: Collections.DirectusOperation[];
 
   /**
    * The resolved directus translations collection type.
    *
    */
-  DirectusTranslation: Collections.DirectusTranslation[];
+  directus_translations: Collections.DirectusTranslation[];
 
   /**
    * The resolved directus versions collection type.
    *
    */
-  DirectusVersion: Collections.DirectusVersion[];
+  directus_versions: Collections.DirectusVersion[];
 
   /**
    * The resolved directus extensions collection type.
    *
    */
-  DirectusExtension: Collections.DirectusExtension[];
+  directus_extensions: Collections.DirectusExtension[];
 };
 
 /**
@@ -505,99 +510,6 @@ export interface System {
  */
 export interface Schema extends System {}
 
-export interface TypedCollectionItemsWrapper<Collection extends object> {
-  /**
-   * Creates many items in the collection.
-   */
-  create<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    items: Partial<Collection>[],
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
-
-  /**
-   * Read many items from the collection.
-   */
-  query<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
-
-  /**
-   * Read the first item from the collection matching the query.
-   */
-  find<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
-
-  /**
-   * Update many items in the collection.
-   */
-  update<const Query extends DirectusSDK.Query<Schema, Collection[]>>(
-    keys: string[] | number[],
-    patch: Partial<Collection>,
-    query?: Query,
-  ): Promise<
-    DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>[]
-  >;
-
-  /**
-   * Remove many items in the collection.
-   */
-  remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    keys: string[] | number[],
-  ): Promise<void>;
-}
-
-export interface TypedCollectionItemWrapper<Collection extends object> {
-  /**
-   * Create a single item in the collection.
-   */
-  create<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    item: Partial<Collection>,
-    query?: Query,
-  ): Promise<DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>>;
-
-  /**
-   * Read a single item from the collection.
-   */
-  get<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
-
-  /**
-   * Update a single item from the collection.
-   */
-  update<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-    patch: Partial<Collection>,
-    query?: Query,
-  ): Promise<
-    | DirectusSDK.ApplyQueryFields<Schema, Collection, Query["fields"]>
-    | undefined
-  >;
-
-  /**
-   * Remove many items in the collection.
-   */
-  remove<const Query extends DirectusSDK.Query<Schema, Collection>>(
-    key: string | number,
-  ): Promise<void>;
-}
-
-/**
- * Helper functions
- */
-
 /**
  * The Directus Client.
  */
@@ -610,7 +522,243 @@ export type DirectusRestCommands<T extends Record<any, any>> = keyof {
     : never]: K;
 };
 
-export type TypedClient = {} & DirectusCommands;
+export type TypedClient = {
+  /**
+   * Manages multiple items from the DirectusActivity collection.
+   */
+  DirectusActivities: SystemBinding.DirectusActivityItems;
+
+  /**
+   * Manages individual items from the DirectusActivity collection.
+   */
+  DirectusActivity: SystemBinding.DirectusActivityItem;
+
+  /**
+   * Manages multiple items from the DirectusCollection collection.
+   */
+  DirectusCollections: SystemBinding.DirectusCollectionItems;
+
+  /**
+   * Manages individual items from the DirectusCollection collection.
+   */
+  DirectusCollection: SystemBinding.DirectusCollectionItem;
+
+  /**
+   * Manages multiple items from the DirectusField collection.
+   */
+  DirectusFields: SystemBinding.DirectusFieldItems;
+
+  /**
+   * Manages individual items from the DirectusField collection.
+   */
+  DirectusField: SystemBinding.DirectusFieldItem;
+
+  /**
+   * Manages multiple items from the DirectusFile collection.
+   */
+  DirectusFiles: SystemBinding.DirectusFileItems;
+
+  /**
+   * Manages individual items from the DirectusFile collection.
+   */
+  DirectusFile: SystemBinding.DirectusFileItem;
+
+  /**
+   * Manages multiple items from the DirectusFolder collection.
+   */
+  DirectusFolders: SystemBinding.DirectusFolderItems;
+
+  /**
+   * Manages individual items from the DirectusFolder collection.
+   */
+  DirectusFolder: SystemBinding.DirectusFolderItem;
+
+  /**
+   * Manages multiple items from the DirectusPermission collection.
+   */
+  DirectusPermissions: SystemBinding.DirectusPermissionItems;
+
+  /**
+   * Manages individual items from the DirectusPermission collection.
+   */
+  DirectusPermission: SystemBinding.DirectusPermissionItem;
+
+  /**
+   * Manages multiple items from the DirectusPolicy collection.
+   */
+  DirectusPolicies: SystemBinding.DirectusPolicyItems;
+
+  /**
+   * Manages individual items from the DirectusPolicy collection.
+   */
+  DirectusPolicy: SystemBinding.DirectusPolicyItem;
+
+  /**
+   * Manages multiple items from the DirectusPreset collection.
+   */
+  DirectusPresets: SystemBinding.DirectusPresetItems;
+
+  /**
+   * Manages individual items from the DirectusPreset collection.
+   */
+  DirectusPreset: SystemBinding.DirectusPresetItem;
+
+  /**
+   * Manages multiple items from the DirectusRelation collection.
+   */
+  DirectusRelations: SystemBinding.DirectusRelationItems;
+
+  /**
+   * Manages individual items from the DirectusRelation collection.
+   */
+  DirectusRelation: SystemBinding.DirectusRelationItem;
+
+  /**
+   * Manages multiple items from the DirectusRevision collection.
+   */
+  DirectusRevisions: SystemBinding.DirectusRevisionItems;
+
+  /**
+   * Manages individual items from the DirectusRevision collection.
+   */
+  DirectusRevision: SystemBinding.DirectusRevisionItem;
+
+  /**
+   * Manages multiple items from the DirectusRole collection.
+   */
+  DirectusRoles: SystemBinding.DirectusRoleItems;
+
+  /**
+   * Manages individual items from the DirectusRole collection.
+   */
+  DirectusRole: SystemBinding.DirectusRoleItem;
+
+  /**
+   * Fetches the only DirectusSetting instance available.
+   */
+  ["DirectusSettings"]<
+    const Query extends Directus.Query<
+      CollectionsType,
+      Collections.DirectusSettings
+    >,
+  >(
+    query?: Query,
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusSettings,
+      Query["fields"]
+    >
+  >;
+
+  /**
+   * Manages multiple items from the DirectusUser collection.
+   */
+  DirectusUsers: SystemBinding.DirectusUserItems;
+
+  /**
+   * Manages individual items from the DirectusUser collection.
+   */
+  DirectusUser: SystemBinding.DirectusUserItem;
+
+  /**
+   * Manages multiple items from the DirectusWebhook collection.
+   */
+  DirectusWebhooks: SystemBinding.DirectusWebhookItems;
+
+  /**
+   * Manages individual items from the DirectusWebhook collection.
+   */
+  DirectusWebhook: SystemBinding.DirectusWebhookItem;
+
+  /**
+   * Manages multiple items from the DirectusDashboard collection.
+   */
+  DirectusDashboards: SystemBinding.DirectusDashboardItems;
+
+  /**
+   * Manages individual items from the DirectusDashboard collection.
+   */
+  DirectusDashboard: SystemBinding.DirectusDashboardItem;
+
+  /**
+   * Manages multiple items from the DirectusPanel collection.
+   */
+  DirectusPanels: SystemBinding.DirectusPanelItems;
+
+  /**
+   * Manages individual items from the DirectusPanel collection.
+   */
+  DirectusPanel: SystemBinding.DirectusPanelItem;
+
+  /**
+   * Manages multiple items from the DirectusNotification collection.
+   */
+  DirectusNotifications: SystemBinding.DirectusNotificationItems;
+
+  /**
+   * Manages individual items from the DirectusNotification collection.
+   */
+  DirectusNotification: SystemBinding.DirectusNotificationItem;
+
+  /**
+   * Manages multiple items from the DirectusShare collection.
+   */
+  DirectusShares: SystemBinding.DirectusShareItems;
+
+  /**
+   * Manages individual items from the DirectusShare collection.
+   */
+  DirectusShare: SystemBinding.DirectusShareItem;
+
+  /**
+   * Manages multiple items from the DirectusFlow collection.
+   */
+  DirectusFlows: SystemBinding.DirectusFlowItems;
+
+  /**
+   * Manages individual items from the DirectusFlow collection.
+   */
+  DirectusFlow: SystemBinding.DirectusFlowItem;
+
+  /**
+   * Manages multiple items from the DirectusOperation collection.
+   */
+  DirectusOperations: SystemBinding.DirectusOperationItems;
+
+  /**
+   * Manages individual items from the DirectusOperation collection.
+   */
+  DirectusOperation: SystemBinding.DirectusOperationItem;
+
+  /**
+   * Manages multiple items from the DirectusTranslation collection.
+   */
+  DirectusTranslations: SystemBinding.DirectusTranslationItems;
+
+  /**
+   * Manages individual items from the DirectusTranslation collection.
+   */
+  DirectusTranslation: SystemBinding.DirectusTranslationItem;
+
+  /**
+   * Manages multiple items from the DirectusExtension collection.
+   */
+  DirectusExtensions: SystemBinding.DirectusExtensionItems;
+
+  /**
+   * Manages individual items from the DirectusExtension collection.
+   */
+  DirectusExtension: SystemBinding.DirectusExtensionItem;
+} & {
+  [K in keyof DirectusCommands as K extends
+    | `read${string}`
+    | `delete${string}`
+    | `update${string}`
+    | `create${string}`
+    ? never
+    : K]: DirectusCommands[K];
+};
 
 type ExcludedDirectusCommands = "withOptions" | "withToken" | "withSearch";
 
@@ -728,7 +876,13 @@ function isDirectusRestCommand(
 ): pair is [string, (...args: any[]) => Directus.RestCommand<any, any>] {
   return (
     !((pair?.[0] as any) in excludedDirectusCommands) &&
-    typeof pair?.[1] === "function"
+    typeof pair?.[1] === "function" &&
+    !(
+      (pair?.[0]).startsWith("read") ||
+      (pair?.[0]).startsWith("create") ||
+      (pair?.[0]).startsWith("update") ||
+      (pair?.[0]).startsWith("delete")
+    )
   );
 }
 
@@ -756,6 +910,142 @@ export const schema = () => {
             },
           ];
         }),
+
+      [
+        "DirectusActivities",
+        new SystemBinding.DirectusActivityItems(client as any),
+      ],
+      [
+        "DirectusActivity",
+        new SystemBinding.DirectusActivityItem(client as any),
+      ],
+
+      [
+        "DirectusCollections",
+        new SystemBinding.DirectusCollectionItems(client as any),
+      ],
+      [
+        "DirectusCollection",
+        new SystemBinding.DirectusCollectionItem(client as any),
+      ],
+
+      ["DirectusFields", new SystemBinding.DirectusFieldItems(client as any)],
+      ["DirectusField", new SystemBinding.DirectusFieldItem(client as any)],
+
+      ["DirectusFiles", new SystemBinding.DirectusFileItems(client as any)],
+      ["DirectusFile", new SystemBinding.DirectusFileItem(client as any)],
+
+      ["DirectusFolders", new SystemBinding.DirectusFolderItems(client as any)],
+      ["DirectusFolder", new SystemBinding.DirectusFolderItem(client as any)],
+
+      [
+        "DirectusPermissions",
+        new SystemBinding.DirectusPermissionItems(client as any),
+      ],
+      [
+        "DirectusPermission",
+        new SystemBinding.DirectusPermissionItem(client as any),
+      ],
+
+      [
+        "DirectusPolicies",
+        new SystemBinding.DirectusPolicyItems(client as any),
+      ],
+      ["DirectusPolicy", new SystemBinding.DirectusPolicyItem(client as any)],
+
+      ["DirectusPresets", new SystemBinding.DirectusPresetItems(client as any)],
+      ["DirectusPreset", new SystemBinding.DirectusPresetItem(client as any)],
+
+      [
+        "DirectusRelations",
+        new SystemBinding.DirectusRelationItems(client as any),
+      ],
+      [
+        "DirectusRelation",
+        new SystemBinding.DirectusRelationItem(client as any),
+      ],
+
+      [
+        "DirectusRevisions",
+        new SystemBinding.DirectusRevisionItems(client as any),
+      ],
+      [
+        "DirectusRevision",
+        new SystemBinding.DirectusRevisionItem(client as any),
+      ],
+
+      ["DirectusRoles", new SystemBinding.DirectusRoleItems(client as any)],
+      ["DirectusRole", new SystemBinding.DirectusRoleItem(client as any)],
+
+      [
+        "DirectusSettings",
+        (query: any) => {
+          return client.request(SystemBinding.readDirectusSettings(query));
+        },
+      ],
+
+      ["DirectusUsers", new SystemBinding.DirectusUserItems(client as any)],
+      ["DirectusUser", new SystemBinding.DirectusUserItem(client as any)],
+
+      [
+        "DirectusWebhooks",
+        new SystemBinding.DirectusWebhookItems(client as any),
+      ],
+      ["DirectusWebhook", new SystemBinding.DirectusWebhookItem(client as any)],
+
+      [
+        "DirectusDashboards",
+        new SystemBinding.DirectusDashboardItems(client as any),
+      ],
+      [
+        "DirectusDashboard",
+        new SystemBinding.DirectusDashboardItem(client as any),
+      ],
+
+      ["DirectusPanels", new SystemBinding.DirectusPanelItems(client as any)],
+      ["DirectusPanel", new SystemBinding.DirectusPanelItem(client as any)],
+
+      [
+        "DirectusNotifications",
+        new SystemBinding.DirectusNotificationItems(client as any),
+      ],
+      [
+        "DirectusNotification",
+        new SystemBinding.DirectusNotificationItem(client as any),
+      ],
+
+      ["DirectusShares", new SystemBinding.DirectusShareItems(client as any)],
+      ["DirectusShare", new SystemBinding.DirectusShareItem(client as any)],
+
+      ["DirectusFlows", new SystemBinding.DirectusFlowItems(client as any)],
+      ["DirectusFlow", new SystemBinding.DirectusFlowItem(client as any)],
+
+      [
+        "DirectusOperations",
+        new SystemBinding.DirectusOperationItems(client as any),
+      ],
+      [
+        "DirectusOperation",
+        new SystemBinding.DirectusOperationItem(client as any),
+      ],
+
+      [
+        "DirectusTranslations",
+        new SystemBinding.DirectusTranslationItems(client as any),
+      ],
+      [
+        "DirectusTranslation",
+        new SystemBinding.DirectusTranslationItem(client as any),
+      ],
+
+      [
+        "DirectusExtensions",
+        new SystemBinding.DirectusExtensionItems(client as any),
+      ],
+      [
+        "DirectusExtension",
+        new SystemBinding.DirectusExtensionItem(client as any),
+      ],
     ]);
   };
 };

@@ -33,6 +33,16 @@
                 "types": "./dist/client.d.ts",
                 "default": "./dist/client.js"
             }
+        },
+        "./types/*": {
+            "import": {
+                "types": "./dist/types/*",
+                "default": "./dist/types/*"
+            },
+            "require": {
+                "types": "./dist/types/*",
+                "default": "./dist/types/*"
+            }
         }
     },
     "scripts": {
@@ -59,7 +69,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.1.0",
+        "@n0safe/indirectus": "^1.2.5",
         "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"

@@ -2,7 +2,7 @@ import { authentication, AuthenticationStorage, rest } from '@repo/directus-sdk'
 import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
-import { asyncLock } from '../asyncLock'
+import { useSession } from '@/state/session'
 
 if ((process.env as any).NEXT_RUNTIME! === 'edge') {
     throw new Error('The module is not compatible with the runtime')
@@ -20,16 +20,26 @@ class DirectusStore implements AuthenticationStorage {
                     refresh_token: session.refresh_token ?? null,
                     expires: session.expires_at
                         ? new Date(session.expires_at).getTime() - Date.now()
-                        : null,
+                        : null, 
                     expires_at: session.expires_at ?? null,
                 }
             )
         }
-        if (localStorage.getItem('directus_session')) {
-            return JSON.parse(localStorage.getItem('directus_session')!)
+        if (useSession.getState().session) {
+            const session = useSession.getState().session
+            return (
+                session && {
+                    access_token: session.access_token ?? null,
+                    refresh_token: session.refresh_token ?? null,
+                    expires: session.expires_at
+                        ? new Date(session.expires_at).getTime() - Date.now()
+                        : null,
+                    expires_at: session.expires_at ?? null,
+                }
+            )
         } else {
-            const session = await asyncLock.acquire('getSession', getSession)
-            localStorage.setItem('directus_session', JSON.stringify(session))
+            const session = await getSession()
+            useSession.getState().setSession(session)
             return (
                 session && {
                     access_token: session.access_token ?? null,
