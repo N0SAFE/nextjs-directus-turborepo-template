@@ -1,8 +1,9 @@
-import { authentication, AuthenticationStorage, rest } from '@repo/directus-sdk'
+import { authentication, AuthenticationClient, AuthenticationStorage, rest } from '@repo/directus-sdk'
 import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
 import { useSession } from '@/state/session'
+import { Schema } from '@repo/directus-sdk/client'
 
 if ((process.env as any).NEXT_RUNTIME! === 'edge') {
     throw new Error('The module is not compatible with the runtime')
@@ -59,7 +60,7 @@ class DirectusStore implements AuthenticationStorage {
 
 const directusStore = new DirectusStore()
 
-export const createDirectusInstance = (url: string) => {
+export const createDirectusInstance = (url: string): ReturnType<typeof createDefaultDirectusInstance> & AuthenticationClient<Schema> => {
     const directusInstance = createDefaultDirectusInstance(url).with(
         rest({
             credentials: 'include',
@@ -78,10 +79,10 @@ export const createDirectusInstance = (url: string) => {
     return enhanceDirectusInstance
 }
 
-export const createDirectusWithDefaultUrl = () => {
+export const createDirectusWithDefaultUrl = (): ReturnType<typeof createDirectusInstance> => {
     return createDirectusInstance(directusUrl!)
 }
 
-const directus = createDirectusWithDefaultUrl()
+const directus: ReturnType<typeof createDirectusWithDefaultUrl>  = createDirectusWithDefaultUrl()
 
 export default directus

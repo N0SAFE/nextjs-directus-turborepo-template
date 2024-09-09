@@ -1,8 +1,8 @@
-import { graphql, realtime, DirectusClient, RestClient } from '@repo/directus-sdk'
-import { createTypedClient, Schema, TypedClient } from '@repo/directus-sdk/client'
+import { graphql, realtime, WebSocketClient, GraphqlClient } from '@repo/directus-sdk'
+import { createTypedClient, Schema } from '@repo/directus-sdk/client'
 
-export const createDefaultDirectusInstance = (url: string) => {
-    return (createTypedClient(url) as DirectusClient<Schema> & RestClient<Schema> & TypedClient)
+export const createDefaultDirectusInstance = (url: string): ReturnType<typeof createTypedClient> & WebSocketClient<Schema> & GraphqlClient<Schema> => {
+    return createTypedClient(url)
         .with(realtime())
         .with(graphql({ credentials: 'include' }))
 }
