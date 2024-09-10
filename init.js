@@ -23,7 +23,7 @@ const stringIsAValidUrl = (s, protocols) => {
 
 const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())).filter((key) => {
     // regexp to check all NEXT_PUBLIC_${somethings}_URL
-    return key.match(/NEXT_PUBLIC_(.*)URL/);
+    return key.match(/NEXT_PUBLIC_(.*)_URL/);
 });
 
 (async () => {
