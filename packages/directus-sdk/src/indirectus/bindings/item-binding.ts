@@ -13,14 +13,38 @@ export interface TypedCollectionItemsWrapper<Collection extends object> {
   create<const Query extends DirectusSDK.Query<CollectionsType, Collection>>(
     items: Partial<Collection>[],
     query?: Query,
-  ): Promise<ApplyQueryFields<CollectionsType, Collection, Query["fields"]>[]>;
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collection,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >[]
+  >;
 
   /**
    * Read many items from the collection.
    */
   query<const Query extends DirectusSDK.Query<CollectionsType, Collection>>(
     query?: Query,
-  ): Promise<ApplyQueryFields<CollectionsType, Collection, Query["fields"]>[]>;
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collection,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >[]
+  >;
 
   /**
    * Read the first item from the collection matching the query.
@@ -28,7 +52,18 @@ export interface TypedCollectionItemsWrapper<Collection extends object> {
   find<const Query extends DirectusSDK.Query<CollectionsType, Collection>>(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collection, Query["fields"]> | undefined
+    | ApplyQueryFields<
+        CollectionsType,
+        Collection,
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
+      >
+    | undefined
   >;
 
   /**
@@ -38,7 +73,19 @@ export interface TypedCollectionItemsWrapper<Collection extends object> {
     keys: string[] | number[],
     patch: Partial<Collection>,
     query?: Query,
-  ): Promise<ApplyQueryFields<CollectionsType, Collection, Query["fields"]>[]>;
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collection,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >[]
+  >;
 
   /**
    * Remove many items in the collection.
@@ -55,7 +102,19 @@ export interface TypedCollectionItemWrapper<Collection extends object> {
   create<const Query extends DirectusSDK.Query<CollectionsType, Collection>>(
     item: Partial<Collection>,
     query?: Query,
-  ): Promise<ApplyQueryFields<CollectionsType, Collection, Query["fields"]>>;
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collection,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >
+  >;
 
   /**
    * Read a single item from the collection.
@@ -64,7 +123,18 @@ export interface TypedCollectionItemWrapper<Collection extends object> {
     key: string | number,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collection, Query["fields"]> | undefined
+    | ApplyQueryFields<
+        CollectionsType,
+        Collection,
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
+      >
+    | undefined
   >;
 
   /**
@@ -75,7 +145,18 @@ export interface TypedCollectionItemWrapper<Collection extends object> {
     patch: Partial<Collection>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collection, Query["fields"]> | undefined
+    | ApplyQueryFields<
+        CollectionsType,
+        Collection,
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
+      >
+    | undefined
   >;
 
   /**

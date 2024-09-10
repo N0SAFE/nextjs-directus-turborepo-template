@@ -70,7 +70,13 @@ export class DirectusActivityItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusActivity,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusActivityItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -90,7 +96,13 @@ export class DirectusActivityItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusActivity,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -130,7 +142,13 @@ export class DirectusActivityItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusActivity,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -252,7 +270,13 @@ export class DirectusCollectionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusCollection,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -274,7 +298,13 @@ export class DirectusCollectionItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusCollection,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -312,7 +342,13 @@ export class DirectusCollectionItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusCollection,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -335,7 +371,13 @@ export class DirectusCollectionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusCollection,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -360,7 +402,13 @@ export class DirectusCollectionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusCollection,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -491,7 +539,13 @@ export class DirectusFieldItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusField,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusFieldItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -511,7 +565,13 @@ export class DirectusFieldItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusField,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -550,7 +610,13 @@ export class DirectusFieldItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusField,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -589,7 +655,13 @@ export class DirectusFieldItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusField,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -726,7 +798,13 @@ export class DirectusFileItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFile,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusFileItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -746,7 +824,13 @@ export class DirectusFileItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFile,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -777,7 +861,13 @@ export class DirectusFileItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFile,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -828,7 +918,13 @@ export class DirectusFileItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFile,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -853,7 +949,13 @@ export class DirectusFileItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFile,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1029,7 +1131,13 @@ export class DirectusFolderItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFolder,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1051,7 +1159,13 @@ export class DirectusFolderItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFolder,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusFolderItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -1071,7 +1185,13 @@ export class DirectusFolderItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFolder,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1102,7 +1222,13 @@ export class DirectusFolderItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFolder,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1151,7 +1277,13 @@ export class DirectusFolderItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFolder,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -1176,7 +1308,13 @@ export class DirectusFolderItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFolder,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1203,7 +1341,13 @@ export class DirectusFolderItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFolder,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1387,7 +1531,13 @@ export class DirectusPermissionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPermission,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1409,7 +1559,13 @@ export class DirectusPermissionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPermission,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1431,7 +1587,13 @@ export class DirectusPermissionItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPermission,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1462,7 +1624,13 @@ export class DirectusPermissionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPermission,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1511,7 +1679,13 @@ export class DirectusPermissionItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPermission,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -1536,7 +1710,13 @@ export class DirectusPermissionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPermission,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1563,7 +1743,13 @@ export class DirectusPermissionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPermission,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1739,7 +1925,13 @@ export class DirectusPolicyItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPolicy,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1761,7 +1953,13 @@ export class DirectusPolicyItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPolicy,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusPolicyItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -1781,7 +1979,13 @@ export class DirectusPolicyItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPolicy,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1812,7 +2016,13 @@ export class DirectusPolicyItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPolicy,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -1861,7 +2071,13 @@ export class DirectusPolicyItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPolicy,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -1886,7 +2102,13 @@ export class DirectusPolicyItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPolicy,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -1913,7 +2135,13 @@ export class DirectusPolicyItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPolicy,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2089,7 +2317,13 @@ export class DirectusPresetItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPreset,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -2111,7 +2345,13 @@ export class DirectusPresetItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPreset,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusPresetItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -2131,7 +2371,13 @@ export class DirectusPresetItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPreset,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2162,7 +2408,13 @@ export class DirectusPresetItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPreset,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -2211,7 +2463,13 @@ export class DirectusPresetItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPreset,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -2236,7 +2494,13 @@ export class DirectusPresetItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPreset,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2263,7 +2527,13 @@ export class DirectusPresetItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPreset,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2395,7 +2665,13 @@ export class DirectusRelationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRelation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusRelationItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -2415,7 +2691,13 @@ export class DirectusRelationItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRelation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2453,7 +2735,13 @@ export class DirectusRelationItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRelation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -2478,7 +2766,13 @@ export class DirectusRelationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRelation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2504,7 +2798,13 @@ export class DirectusRelationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRelation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2588,7 +2888,13 @@ export class DirectusRevisionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRevision,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusRevisionItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -2608,7 +2914,13 @@ export class DirectusRevisionItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRevision,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2648,7 +2960,13 @@ export class DirectusRevisionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRevision,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2790,7 +3108,13 @@ export class DirectusRoleItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRole,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -2812,7 +3136,13 @@ export class DirectusRoleItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRole,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusRoleItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -2832,7 +3162,13 @@ export class DirectusRoleItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRole,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2863,7 +3199,13 @@ export class DirectusRoleItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusRole,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -2909,7 +3251,17 @@ export class DirectusRoleItem {
     item: Partial<Collections.DirectusRole>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collections.DirectusRole, Query["fields"]>
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusRole,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >
   > {
     return (await this.client.request(
       createDirectusRoleItem(item, query as any),
@@ -2933,7 +3285,13 @@ export class DirectusRoleItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRole,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -2958,7 +3316,13 @@ export class DirectusRoleItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusRole,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3133,7 +3497,13 @@ export class DirectusUserItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusUser,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3155,7 +3525,13 @@ export class DirectusUserItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusUser,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusUserItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -3175,7 +3551,13 @@ export class DirectusUserItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusUser,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3206,7 +3588,13 @@ export class DirectusUserItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusUser,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3252,7 +3640,17 @@ export class DirectusUserItem {
     item: Partial<Collections.DirectusUser>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collections.DirectusUser, Query["fields"]>
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusUser,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >
   > {
     return (await this.client.request(
       createDirectusUserItem(item, query as any),
@@ -3276,7 +3674,13 @@ export class DirectusUserItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusUser,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3301,7 +3705,13 @@ export class DirectusUserItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusUser,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3477,7 +3887,13 @@ export class DirectusWebhookItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusWebhook,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3499,7 +3915,13 @@ export class DirectusWebhookItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusWebhook,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusWebhookItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -3519,7 +3941,13 @@ export class DirectusWebhookItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusWebhook,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3550,7 +3978,13 @@ export class DirectusWebhookItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusWebhook,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3599,7 +4033,13 @@ export class DirectusWebhookItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusWebhook,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -3624,7 +4064,13 @@ export class DirectusWebhookItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusWebhook,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3651,7 +4097,13 @@ export class DirectusWebhookItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusWebhook,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3831,7 +4283,13 @@ export class DirectusDashboardItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusDashboard,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3853,7 +4311,13 @@ export class DirectusDashboardItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusDashboard,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3875,7 +4339,13 @@ export class DirectusDashboardItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusDashboard,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -3906,7 +4376,13 @@ export class DirectusDashboardItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusDashboard,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -3955,7 +4431,13 @@ export class DirectusDashboardItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusDashboard,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -3980,7 +4462,13 @@ export class DirectusDashboardItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusDashboard,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4007,7 +4495,13 @@ export class DirectusDashboardItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusDashboard,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4183,7 +4677,13 @@ export class DirectusPanelItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPanel,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4205,7 +4705,13 @@ export class DirectusPanelItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPanel,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusPanelItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -4225,7 +4731,13 @@ export class DirectusPanelItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPanel,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4256,7 +4768,13 @@ export class DirectusPanelItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPanel,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4305,7 +4823,13 @@ export class DirectusPanelItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusPanel,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -4330,7 +4854,13 @@ export class DirectusPanelItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPanel,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4357,7 +4887,13 @@ export class DirectusPanelItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusPanel,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4541,7 +5077,13 @@ export class DirectusNotificationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusNotification,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4563,7 +5105,13 @@ export class DirectusNotificationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusNotification,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4585,7 +5133,13 @@ export class DirectusNotificationItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusNotification,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4616,7 +5170,13 @@ export class DirectusNotificationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusNotification,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4665,7 +5225,13 @@ export class DirectusNotificationItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusNotification,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -4690,7 +5256,13 @@ export class DirectusNotificationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusNotification,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4717,7 +5289,13 @@ export class DirectusNotificationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusNotification,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4893,7 +5471,13 @@ export class DirectusShareItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusShare,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -4915,7 +5499,13 @@ export class DirectusShareItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusShare,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusShareItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -4935,7 +5525,13 @@ export class DirectusShareItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusShare,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -4966,7 +5562,13 @@ export class DirectusShareItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusShare,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5015,7 +5617,13 @@ export class DirectusShareItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusShare,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -5040,7 +5648,13 @@ export class DirectusShareItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusShare,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5067,7 +5681,13 @@ export class DirectusShareItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusShare,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5225,7 +5845,13 @@ export class DirectusFlowItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFlow,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5247,7 +5873,13 @@ export class DirectusFlowItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFlow,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(readDirectusFlowItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
@@ -5267,7 +5899,13 @@ export class DirectusFlowItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFlow,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5298,7 +5936,13 @@ export class DirectusFlowItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusFlow,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5344,7 +5988,17 @@ export class DirectusFlowItem {
     item: Partial<Collections.DirectusFlow>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<CollectionsType, Collections.DirectusFlow, Query["fields"]>
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusFlow,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >
   > {
     return (await this.client.request(
       createDirectusFlowItem(item, query as any),
@@ -5368,7 +6022,13 @@ export class DirectusFlowItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFlow,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5393,7 +6053,13 @@ export class DirectusFlowItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusFlow,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5573,7 +6239,13 @@ export class DirectusOperationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusOperation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5595,7 +6267,13 @@ export class DirectusOperationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusOperation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5617,7 +6295,13 @@ export class DirectusOperationItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusOperation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5648,7 +6332,13 @@ export class DirectusOperationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusOperation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5697,7 +6387,13 @@ export class DirectusOperationItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusOperation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -5722,7 +6418,13 @@ export class DirectusOperationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusOperation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5749,7 +6451,13 @@ export class DirectusOperationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusOperation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -5933,7 +6641,13 @@ export class DirectusTranslationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusTranslation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5955,7 +6669,13 @@ export class DirectusTranslationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusTranslation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -5977,7 +6697,13 @@ export class DirectusTranslationItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusTranslation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -6008,7 +6734,13 @@ export class DirectusTranslationItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusTranslation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -6057,7 +6789,13 @@ export class DirectusTranslationItem {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusTranslation,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >
   > {
     return (await this.client.request(
@@ -6082,7 +6820,13 @@ export class DirectusTranslationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusTranslation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -6109,7 +6853,13 @@ export class DirectusTranslationItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusTranslation,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -6191,7 +6941,13 @@ export class DirectusExtensionItems {
     ApplyQueryFields<
       CollectionsType,
       Collections.DirectusExtension,
-      Query["fields"]
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
     >[]
   > {
     return (await this.client.request(
@@ -6213,7 +6969,13 @@ export class DirectusExtensionItems {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusExtension,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
@@ -6252,7 +7014,13 @@ export class DirectusExtensionItem {
     | ApplyQueryFields<
         CollectionsType,
         Collections.DirectusExtension,
-        Query["fields"]
+        Query extends undefined
+          ? ["*"]
+          : Query["fields"] extends undefined
+            ? ["*"]
+            : Query["fields"] extends Readonly<any[]>
+              ? Query["fields"]
+              : ["*"]
       >
     | undefined
   > {
