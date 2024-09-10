@@ -36,7 +36,7 @@ const listOfApp = Object.keys(parse(fs.readFileSync(".env.template").toString())
     
     const urls = []
     for (const app of listOfApp) {
-        const name = app.match(/NEXT_PUBLIC_(.*)URL/)[1];
+        const name = app.match(/NEXT_PUBLIC_(.*)_URL/)[1];
         const url = new URL(
             (
                 await prompts({
