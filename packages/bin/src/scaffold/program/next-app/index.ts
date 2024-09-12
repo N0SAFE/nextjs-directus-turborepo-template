@@ -276,8 +276,8 @@ export default async function run(subCommand: Command) {
     if (answer.features.includes("millionjs")) {
         deffered.push(() => {
             console.log("install the millionjs features");
-
-            spawnSync("npx million@latest", { cwd: appLocation, stdio: "inherit", shell: true });
+            
+            packageListToInstall.devDependencies.push('@million/lint@latest')
             
             utilsInstance.copyDir(path.resolve(locations.templates, "features", "millionjs"), path.resolve(appLocation), {
                 fileNameTransform: (file) => {
