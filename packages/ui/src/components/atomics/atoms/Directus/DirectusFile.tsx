@@ -1,4 +1,3 @@
-import { use } from 'react'
 import {
     DirectusFileNamespace,
     DirectusItemType,
@@ -12,8 +11,7 @@ export interface RenderPropsFile extends Omit<DirectusFileProps, 'render'> {
 
 export type DirectusFileRenderer = (props: RenderPropsFile) => JSX.Element
 
-export interface DirectusFileProps
- extends DirectusFileNamespace.Props {
+export interface DirectusFileProps extends DirectusFileNamespace.Props {
     /** The Directus client that should be used to fetch the image. */
     directus: TypedDirectusClient & {
         getToken?: () => Promise<string | null>
@@ -23,7 +21,7 @@ export interface DirectusFileProps
     /** The asset that should be rendered. */
     asset: DirectusItemType
     /** A function that returns the React element to be rendered.*/
-    render: (props: RenderPropsFile) => React.ReactNode
+    render: (props: RenderPropsFile) => React.ReactElement
 }
 
 /**
@@ -60,7 +58,7 @@ import directus from '@/lib/directus/index';
  * ```
  */
 
-export const DirectusFile = ({
+export const DirectusFile: React.FC<DirectusFileProps> = ({
     directus,
     apiUrl: propsApiUrl,
     accessToken: propsAccessToken,
@@ -69,14 +67,12 @@ export const DirectusFile = ({
     filename,
     directusTransform,
     render,
-}: DirectusFileProps): React.ReactNode => {
-    const token = use(directus?.getToken?.() ?? Promise.resolve(null))
-
+}) => {
     const fileUrl = getFileUrl(directus, asset, {
-        accessToken: propsAccessToken || (token ?? undefined),
+        accessToken: propsAccessToken ?? undefined,
         directusTransform,
         download,
-        filename
+        filename,
     })
 
     return render({

@@ -1,4 +1,9 @@
-import { authentication, AuthenticationClient, AuthenticationStorage, rest } from '@repo/directus-sdk'
+import {
+    authentication,
+    AuthenticationClient,
+    AuthenticationStorage,
+    rest,
+} from '@repo/directus-sdk'
 import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
@@ -21,7 +26,7 @@ class DirectusStore implements AuthenticationStorage {
                     refresh_token: session.refresh_token ?? null,
                     expires: session.expires_at
                         ? new Date(session.expires_at).getTime() - Date.now()
-                        : null, 
+                        : null,
                     expires_at: session.expires_at ?? null,
                 }
             )
@@ -60,7 +65,10 @@ class DirectusStore implements AuthenticationStorage {
 
 const directusStore = new DirectusStore()
 
-export const createDirectusInstance = (url: string): ReturnType<typeof createDefaultDirectusInstance> & AuthenticationClient<Schema> => {
+export const createDirectusInstance = (
+    url: string
+): ReturnType<typeof createDefaultDirectusInstance> &
+    AuthenticationClient<Schema> => {
     const directusInstance = createDefaultDirectusInstance(url).with(
         rest({
             credentials: 'include',
@@ -79,10 +87,13 @@ export const createDirectusInstance = (url: string): ReturnType<typeof createDef
     return enhanceDirectusInstance
 }
 
-export const createDirectusWithDefaultUrl = (): ReturnType<typeof createDirectusInstance> => {
+export const createDirectusWithDefaultUrl = (): ReturnType<
+    typeof createDirectusInstance
+> => {
     return createDirectusInstance(directusUrl!)
 }
 
-const directus: ReturnType<typeof createDirectusWithDefaultUrl>  = createDirectusWithDefaultUrl()
+const directus: ReturnType<typeof createDirectusWithDefaultUrl> =
+    createDirectusWithDefaultUrl()
 
 export default directus

@@ -1,8 +1,21 @@
-import { authentication, AuthenticationClient, DirectusClient, rest, RestClient, WebSocketClient } from '@repo/directus-sdk'
+import {
+    authentication,
+    AuthenticationClient,
+    DirectusClient,
+    rest,
+    RestClient,
+    WebSocketClient,
+} from '@repo/directus-sdk'
 import { createDefaultDirectusInstance, directusUrl } from './share'
 import { Schema, TypedClient } from '@repo/directus-sdk/client'
 
-export const createDirectusEdge = (url: string): DirectusClient<Schema> & RestClient<Schema> & TypedClient & WebSocketClient<Schema> & AuthenticationClient<Schema> => {
+export const createDirectusEdge = (
+    url: string
+): DirectusClient<Schema> &
+    RestClient<Schema> &
+    TypedClient &
+    WebSocketClient<Schema> &
+    AuthenticationClient<Schema> => {
     const directusInstance = createDefaultDirectusInstance(url).with(
         rest({
             credentials: 'include',
@@ -20,6 +33,8 @@ export const createDirectusEdge = (url: string): DirectusClient<Schema> & RestCl
     )
 }
 
-export const createDirectusEdgeWithDefaultUrl = (): ReturnType<typeof createDirectusEdge> => {
+export const createDirectusEdgeWithDefaultUrl = (): ReturnType<
+    typeof createDirectusEdge
+> => {
     return createDirectusEdge(directusUrl!)
 }

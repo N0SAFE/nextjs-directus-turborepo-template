@@ -1,1 +1,1 @@
-export * from './indirectus/client';
+export * from './indirectus/client'
