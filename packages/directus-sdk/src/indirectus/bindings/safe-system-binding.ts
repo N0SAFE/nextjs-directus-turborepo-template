@@ -67,19 +67,27 @@ export class DirectusActivityItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusActivity,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusActivity,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusActivityItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusActivityItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -93,26 +101,34 @@ export class DirectusActivityItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusActivity,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusActivity,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusActivityItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusActivityItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -139,22 +155,29 @@ export class DirectusActivityItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusActivity,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusActivity,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusActivityItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusActivityItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -239,6 +262,7 @@ export function deleteDirectusCollectionItem(
 ) {
   return DirectusSDK.deleteCollection<CollectionsType>(key);
 }
+
 export class DirectusCollectionItems {
   /**
    *
@@ -259,21 +283,27 @@ export class DirectusCollectionItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusCollection,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusCollection,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusCollectionItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusCollectionItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -287,26 +317,34 @@ export class DirectusCollectionItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusCollection,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusCollection,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusCollectionItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusCollectionItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -331,21 +369,27 @@ export class DirectusCollectionItem {
     item: Partial<Collections.DirectusCollection>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusCollection,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusCollection,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusCollectionItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusCollectionItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -360,22 +404,29 @@ export class DirectusCollectionItem {
     collection: keyof CollectionsType,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusCollection,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusCollection,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusCollectionItem(collection, query),
-    )) as any;
+    return this.client
+      .request(readDirectusCollectionItem(collection, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -391,22 +442,29 @@ export class DirectusCollectionItem {
     patch: Partial<Collections.DirectusCollection>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusCollection,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusCollection,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusCollectionItem(collection, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusCollectionItem(collection, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -528,19 +586,27 @@ export class DirectusFieldItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusField,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusField,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFieldItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusFieldItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -554,26 +620,34 @@ export class DirectusFieldItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusField,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusField,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusFieldItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusFieldItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -599,21 +673,27 @@ export class DirectusFieldItem {
     item: Partial<Collections.DirectusField>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusField,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusField,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusFieldItem(collection, item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusFieldItem(collection, item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -623,9 +703,10 @@ export class DirectusFieldItem {
     collection: keyof CollectionsType,
     field: Directus.DirectusField<CollectionsType>["field"],
   ): Promise<Directus.ReadFieldOutput<CollectionsType>> {
-    return (await this.client.request(
-      readDirectusFieldItem(collection, field),
-    )) as any;
+    return this.client
+      .request(readDirectusFieldItem(collection, field))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -644,22 +725,29 @@ export class DirectusFieldItem {
     patch: Partial<Collections.DirectusField>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusField,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusField,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFieldItem(key, field, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusFieldItem(key, field, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -787,19 +875,27 @@ export class DirectusFileItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFile,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFile,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFileItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusFileItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -813,26 +909,34 @@ export class DirectusFileItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFile,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFile,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusFileItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusFileItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -850,21 +954,27 @@ export class DirectusFileItems {
     patch: Partial<Collections.DirectusFile>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFile,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFile,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFileItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusFileItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -907,20 +1017,29 @@ export class DirectusFileItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFile,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFile,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFileItem(key, query))) as any;
+    return this.client
+      .request(readDirectusFileItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -938,22 +1057,29 @@ export class DirectusFileItem {
     patch: Partial<Collections.DirectusFile>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFile,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFile,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFileItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusFileItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1120,21 +1246,27 @@ export class DirectusFolderItems {
     items: Partial<Collections.DirectusFolder>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFolder,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFolder,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusFolderItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusFolderItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1148,19 +1280,27 @@ export class DirectusFolderItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFolder,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFolder,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFolderItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusFolderItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1174,26 +1314,34 @@ export class DirectusFolderItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFolder,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFolder,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusFolderItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusFolderItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1211,21 +1359,27 @@ export class DirectusFolderItems {
     patch: Partial<Collections.DirectusFolder>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFolder,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFolder,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFolderItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusFolderItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1266,21 +1420,27 @@ export class DirectusFolderItem {
     item: Partial<Collections.DirectusFolder>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFolder,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFolder,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusFolderItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusFolderItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1297,22 +1457,29 @@ export class DirectusFolderItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFolder,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFolder,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusFolderItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusFolderItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1330,22 +1497,29 @@ export class DirectusFolderItem {
     patch: Partial<Collections.DirectusFolder>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFolder,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFolder,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFolderItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusFolderItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1520,21 +1694,27 @@ export class DirectusPermissionItems {
     items: Partial<Collections.DirectusPermission>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPermission,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPermission,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPermissionItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusPermissionItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1548,21 +1728,27 @@ export class DirectusPermissionItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPermission,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPermission,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusPermissionItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusPermissionItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1576,26 +1762,34 @@ export class DirectusPermissionItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPermission,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPermission,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusPermissionItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusPermissionItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1613,21 +1807,27 @@ export class DirectusPermissionItems {
     patch: Partial<Collections.DirectusPermission>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPermission,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPermission,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPermissionItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusPermissionItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1668,21 +1868,27 @@ export class DirectusPermissionItem {
     item: Partial<Collections.DirectusPermission>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPermission,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPermission,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPermissionItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusPermissionItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1699,22 +1905,29 @@ export class DirectusPermissionItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPermission,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPermission,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusPermissionItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusPermissionItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1732,22 +1945,29 @@ export class DirectusPermissionItem {
     patch: Partial<Collections.DirectusPermission>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPermission,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPermission,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPermissionItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusPermissionItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -1914,21 +2134,27 @@ export class DirectusPolicyItems {
     items: Partial<Collections.DirectusPolicy>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPolicy,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPolicy,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPolicyItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusPolicyItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1942,19 +2168,27 @@ export class DirectusPolicyItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPolicy,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPolicy,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusPolicyItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusPolicyItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -1968,26 +2202,34 @@ export class DirectusPolicyItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPolicy,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPolicy,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusPolicyItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusPolicyItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2005,21 +2247,27 @@ export class DirectusPolicyItems {
     patch: Partial<Collections.DirectusPolicy>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPolicy,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPolicy,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPolicyItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusPolicyItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2060,21 +2308,27 @@ export class DirectusPolicyItem {
     item: Partial<Collections.DirectusPolicy>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPolicy,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPolicy,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPolicyItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusPolicyItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2091,22 +2345,29 @@ export class DirectusPolicyItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPolicy,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPolicy,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusPolicyItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusPolicyItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2124,22 +2385,29 @@ export class DirectusPolicyItem {
     patch: Partial<Collections.DirectusPolicy>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPolicy,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPolicy,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPolicyItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusPolicyItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2155,7 +2423,10 @@ export class DirectusPolicyItem {
       ? Collections.DirectusPolicy["id"]
       : string | number,
   ): Promise<void> {
-    return await this.client.request(deleteDirectusPolicyItem(key));
+    return this.client
+      .request(deleteDirectusPolicyItem(key))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2306,21 +2577,27 @@ export class DirectusPresetItems {
     items: Partial<Collections.DirectusPreset>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPreset,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPreset,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPresetItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusPresetItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2334,19 +2611,27 @@ export class DirectusPresetItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPreset,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPreset,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusPresetItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusPresetItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2360,26 +2645,34 @@ export class DirectusPresetItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPreset,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPreset,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusPresetItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusPresetItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2397,21 +2690,27 @@ export class DirectusPresetItems {
     patch: Partial<Collections.DirectusPreset>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPreset,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPreset,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPresetItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusPresetItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2427,7 +2726,10 @@ export class DirectusPresetItems {
       ? Collections.DirectusPreset["id"][]
       : string[] | number[],
   ): Promise<void> {
-    return await this.client.request(deleteDirectusPresetItems(keys));
+    return this.client
+      .request(deleteDirectusPresetItems(keys))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2452,21 +2754,27 @@ export class DirectusPresetItem {
     item: Partial<Collections.DirectusPreset>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPreset,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPreset,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPresetItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusPresetItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2483,22 +2791,29 @@ export class DirectusPresetItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPreset,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPreset,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusPresetItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusPresetItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2516,22 +2831,29 @@ export class DirectusPresetItem {
     patch: Partial<Collections.DirectusPreset>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPreset,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPreset,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPresetItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusPresetItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2547,7 +2869,10 @@ export class DirectusPresetItem {
       ? Collections.DirectusPreset["id"]
       : string | number,
   ): Promise<void> {
-    return await this.client.request(deleteDirectusPresetItem(key));
+    return this.client
+      .request(deleteDirectusPresetItem(key))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2654,19 +2979,27 @@ export class DirectusRelationItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRelation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRelation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusRelationItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusRelationItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2680,26 +3013,34 @@ export class DirectusRelationItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRelation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRelation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusRelationItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusRelationItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2724,21 +3065,27 @@ export class DirectusRelationItem {
     item: Partial<Collections.DirectusRelation>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRelation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRelation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusRelationItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusRelationItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2755,22 +3102,29 @@ export class DirectusRelationItem {
       : string | number,
     field: Directus.DirectusRelation<CollectionsType>["field"],
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRelation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRelation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusRelationItem(key, field),
-    )) as any;
+    return this.client
+      .request(readDirectusRelationItem(key, field))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2787,22 +3141,31 @@ export class DirectusRelationItem {
     patch: Partial<Collections.DirectusRelation>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRelation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRelation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusRelationItem(collection, field, patch, query as any),
-    )) as any;
+    return this.client
+      .request(
+        updateDirectusRelationItem(collection, field, patch, query as any),
+      )
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -2812,9 +3175,10 @@ export class DirectusRelationItem {
     collection: Directus.DirectusRelation<CollectionsType>["collection"],
     field: Directus.DirectusRelation<CollectionsType>["field"],
   ): Promise<void> {
-    return await this.client.request(
-      deleteDirectusRelationItem(collection, field),
-    );
+    return this.client
+      .request(deleteDirectusRelationItem(collection, field))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2877,19 +3241,27 @@ export class DirectusRevisionItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRevision,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRevision,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusRevisionItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusRevisionItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -2903,26 +3275,34 @@ export class DirectusRevisionItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRevision,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRevision,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusRevisionItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusRevisionItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -2949,22 +3329,29 @@ export class DirectusRevisionItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRevision,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRevision,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusRevisionItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusRevisionItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -3097,21 +3484,27 @@ export class DirectusRoleItems {
     items: Partial<Collections.DirectusRole>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRole,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRole,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusRoleItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusRoleItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3125,19 +3518,27 @@ export class DirectusRoleItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRole,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRole,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusRoleItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusRoleItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3151,26 +3552,34 @@ export class DirectusRoleItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRole,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRole,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusRoleItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusRoleItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3188,21 +3597,27 @@ export class DirectusRoleItems {
     patch: Partial<Collections.DirectusRole>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRole,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRole,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusRoleItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusRoleItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3218,7 +3633,10 @@ export class DirectusRoleItems {
       ? Collections.DirectusRole["id"][]
       : string[] | number[],
   ): Promise<void> {
-    return await this.client.request(deleteDirectusRoleItems(keys));
+    return this.client
+      .request(deleteDirectusRoleItems(keys))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -3243,21 +3661,27 @@ export class DirectusRoleItem {
     item: Partial<Collections.DirectusRole>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusRole,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusRole,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusRoleItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusRoleItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3274,20 +3698,29 @@ export class DirectusRoleItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRole,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRole,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusRoleItem(key, query))) as any;
+    return this.client
+      .request(readDirectusRoleItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3305,22 +3738,29 @@ export class DirectusRoleItem {
     patch: Partial<Collections.DirectusRole>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusRole,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusRole,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusRoleItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusRoleItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3336,7 +3776,10 @@ export class DirectusRoleItem {
       ? Collections.DirectusRole["id"]
       : string | number,
   ): Promise<void> {
-    return await this.client.request(deleteDirectusRoleItem(key));
+    return this.client
+      .request(deleteDirectusRoleItem(key))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -3389,19 +3832,27 @@ export class DirectusSettingsSingleton {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusSettings,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusSettings,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusSettings(query))) as any;
+    return this.client
+      .request(readDirectusSettings(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3416,21 +3867,27 @@ export class DirectusSettingsSingleton {
     patch: Partial<Collections.DirectusSettings>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusSettings,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusSettings,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusSettings(patch, query),
-    )) as any;
+    return this.client
+      .request(updateDirectusSettings(patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -3563,21 +4020,27 @@ export class DirectusUserItems {
     items: Partial<Collections.DirectusUser>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusUser,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusUser,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusUserItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusUserItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3591,19 +4054,27 @@ export class DirectusUserItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusUser,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusUser,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusUserItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusUserItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3617,26 +4088,34 @@ export class DirectusUserItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusUser,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusUser,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusUserItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusUserItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3654,21 +4133,27 @@ export class DirectusUserItems {
     patch: Partial<Collections.DirectusUser>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusUser,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusUser,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusUserItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusUserItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3709,21 +4194,27 @@ export class DirectusUserItem {
     item: Partial<Collections.DirectusUser>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusUser,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusUser,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusUserItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusUserItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3740,20 +4231,29 @@ export class DirectusUserItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusUser,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusUser,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusUserItem(key, query))) as any;
+    return this.client
+      .request(readDirectusUserItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3771,22 +4271,29 @@ export class DirectusUserItem {
     patch: Partial<Collections.DirectusUser>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusUser,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusUser,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusUserItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusUserItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -3953,21 +4460,27 @@ export class DirectusWebhookItems {
     items: Partial<Collections.DirectusWebhook>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusWebhook,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusWebhook,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusWebhookItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusWebhookItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -3981,19 +4494,27 @@ export class DirectusWebhookItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusWebhook,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusWebhook,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusWebhookItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusWebhookItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4007,26 +4528,34 @@ export class DirectusWebhookItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusWebhook,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusWebhook,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusWebhookItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusWebhookItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4044,21 +4573,27 @@ export class DirectusWebhookItems {
     patch: Partial<Collections.DirectusWebhook>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusWebhook,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusWebhook,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusWebhookItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusWebhookItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4099,21 +4634,27 @@ export class DirectusWebhookItem {
     item: Partial<Collections.DirectusWebhook>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusWebhook,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusWebhook,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusWebhookItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusWebhookItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4130,22 +4671,29 @@ export class DirectusWebhookItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusWebhook,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusWebhook,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusWebhookItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusWebhookItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4163,22 +4711,29 @@ export class DirectusWebhookItem {
     patch: Partial<Collections.DirectusWebhook>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusWebhook,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusWebhook,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusWebhookItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusWebhookItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4349,21 +4904,27 @@ export class DirectusDashboardItems {
     items: Partial<Collections.DirectusDashboard>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusDashboard,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusDashboard,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusDashboardItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusDashboardItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4377,21 +4938,27 @@ export class DirectusDashboardItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusDashboard,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusDashboard,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusDashboardItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusDashboardItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4405,26 +4972,34 @@ export class DirectusDashboardItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusDashboard,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusDashboard,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusDashboardItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusDashboardItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4442,21 +5017,27 @@ export class DirectusDashboardItems {
     patch: Partial<Collections.DirectusDashboard>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusDashboard,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusDashboard,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusDashboardItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusDashboardItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4497,21 +5078,27 @@ export class DirectusDashboardItem {
     item: Partial<Collections.DirectusDashboard>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusDashboard,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusDashboard,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusDashboardItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusDashboardItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4528,22 +5115,29 @@ export class DirectusDashboardItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusDashboard,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusDashboard,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusDashboardItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusDashboardItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4561,22 +5155,29 @@ export class DirectusDashboardItem {
     patch: Partial<Collections.DirectusDashboard>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusDashboard,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusDashboard,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusDashboardItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusDashboardItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4743,21 +5344,27 @@ export class DirectusPanelItems {
     items: Partial<Collections.DirectusPanel>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPanel,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPanel,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPanelItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusPanelItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4771,19 +5378,27 @@ export class DirectusPanelItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPanel,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPanel,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusPanelItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusPanelItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4797,26 +5412,34 @@ export class DirectusPanelItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPanel,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPanel,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusPanelItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusPanelItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4834,21 +5457,27 @@ export class DirectusPanelItems {
     patch: Partial<Collections.DirectusPanel>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPanel,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPanel,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPanelItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusPanelItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -4889,21 +5518,27 @@ export class DirectusPanelItem {
     item: Partial<Collections.DirectusPanel>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusPanel,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusPanel,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusPanelItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusPanelItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4920,22 +5555,29 @@ export class DirectusPanelItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPanel,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPanel,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusPanelItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusPanelItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -4953,22 +5595,29 @@ export class DirectusPanelItem {
     patch: Partial<Collections.DirectusPanel>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusPanel,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusPanel,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusPanelItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusPanelItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5143,21 +5792,27 @@ export class DirectusNotificationItems {
     items: Partial<Collections.DirectusNotification>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusNotification,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusNotification,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusNotificationItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusNotificationItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5171,21 +5826,27 @@ export class DirectusNotificationItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusNotification,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusNotification,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusNotificationItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusNotificationItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5199,26 +5860,34 @@ export class DirectusNotificationItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusNotification,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusNotification,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusNotificationItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusNotificationItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5236,21 +5905,27 @@ export class DirectusNotificationItems {
     patch: Partial<Collections.DirectusNotification>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusNotification,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusNotification,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusNotificationItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusNotificationItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5291,21 +5966,27 @@ export class DirectusNotificationItem {
     item: Partial<Collections.DirectusNotification>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusNotification,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusNotification,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusNotificationItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusNotificationItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5322,22 +6003,29 @@ export class DirectusNotificationItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusNotification,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusNotification,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusNotificationItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusNotificationItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5355,22 +6043,29 @@ export class DirectusNotificationItem {
     patch: Partial<Collections.DirectusNotification>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusNotification,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusNotification,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusNotificationItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusNotificationItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5537,21 +6232,27 @@ export class DirectusShareItems {
     items: Partial<Collections.DirectusShare>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusShare,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusShare,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusShareItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusShareItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5565,19 +6266,27 @@ export class DirectusShareItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusShare,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusShare,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusShareItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusShareItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5591,26 +6300,34 @@ export class DirectusShareItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusShare,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusShare,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusShareItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusShareItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5628,21 +6345,27 @@ export class DirectusShareItems {
     patch: Partial<Collections.DirectusShare>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusShare,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusShare,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusShareItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusShareItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5683,21 +6406,27 @@ export class DirectusShareItem {
     item: Partial<Collections.DirectusShare>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusShare,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusShare,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusShareItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusShareItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5714,22 +6443,29 @@ export class DirectusShareItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusShare,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusShare,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusShareItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusShareItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5747,22 +6483,29 @@ export class DirectusShareItem {
     patch: Partial<Collections.DirectusShare>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusShare,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusShare,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusShareItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusShareItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -5911,21 +6654,27 @@ export class DirectusFlowItems {
     items: Partial<Collections.DirectusFlow>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFlow,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFlow,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusFlowItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusFlowItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5939,19 +6688,27 @@ export class DirectusFlowItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFlow,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFlow,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFlowItems(query))) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusFlowItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -5965,26 +6722,34 @@ export class DirectusFlowItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFlow,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFlow,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusFlowItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusFlowItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6002,21 +6767,27 @@ export class DirectusFlowItems {
     patch: Partial<Collections.DirectusFlow>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFlow,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFlow,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFlowItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusFlowItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6057,21 +6828,27 @@ export class DirectusFlowItem {
     item: Partial<Collections.DirectusFlow>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusFlow,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusFlow,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusFlowItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusFlowItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6088,20 +6865,29 @@ export class DirectusFlowItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFlow,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFlow,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(readDirectusFlowItem(key, query))) as any;
+    return this.client
+      .request(readDirectusFlowItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6119,22 +6905,29 @@ export class DirectusFlowItem {
     patch: Partial<Collections.DirectusFlow>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusFlow,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusFlow,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusFlowItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusFlowItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6305,21 +7098,27 @@ export class DirectusOperationItems {
     items: Partial<Collections.DirectusOperation>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusOperation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusOperation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusOperationItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusOperationItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6333,21 +7132,27 @@ export class DirectusOperationItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusOperation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusOperation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusOperationItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusOperationItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6361,26 +7166,34 @@ export class DirectusOperationItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusOperation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusOperation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusOperationItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusOperationItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6398,21 +7211,27 @@ export class DirectusOperationItems {
     patch: Partial<Collections.DirectusOperation>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusOperation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusOperation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusOperationItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusOperationItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6453,21 +7272,27 @@ export class DirectusOperationItem {
     item: Partial<Collections.DirectusOperation>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusOperation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusOperation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusOperationItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusOperationItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6484,22 +7309,29 @@ export class DirectusOperationItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusOperation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusOperation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusOperationItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusOperationItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6517,22 +7349,29 @@ export class DirectusOperationItem {
     patch: Partial<Collections.DirectusOperation>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusOperation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusOperation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusOperationItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusOperationItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6707,21 +7546,27 @@ export class DirectusTranslationItems {
     items: Partial<Collections.DirectusTranslation>[],
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusTranslation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusTranslation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusTranslationItems(items, query as any),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(createDirectusTranslationItems(items, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6735,21 +7580,27 @@ export class DirectusTranslationItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusTranslation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusTranslation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusTranslationItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusTranslationItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6763,26 +7614,34 @@ export class DirectusTranslationItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusTranslation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusTranslation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusTranslationItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusTranslationItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6800,21 +7659,27 @@ export class DirectusTranslationItems {
     patch: Partial<Collections.DirectusTranslation>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusTranslation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusTranslation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusTranslationItems(keys, patch, query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(updateDirectusTranslationItems(keys, patch, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -6855,21 +7720,27 @@ export class DirectusTranslationItem {
     item: Partial<Collections.DirectusTranslation>,
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusTranslation,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusTranslation,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      createDirectusTranslationItem(item, query as any),
-    )) as any;
+    return this.client
+      .request(createDirectusTranslationItem(item, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6886,22 +7757,29 @@ export class DirectusTranslationItem {
       : string | number,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusTranslation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusTranslation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusTranslationItem(key, query),
-    )) as any;
+    return this.client
+      .request(readDirectusTranslationItem(key, query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -6919,22 +7797,29 @@ export class DirectusTranslationItem {
     patch: Partial<Collections.DirectusTranslation>,
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusTranslation,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusTranslation,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusTranslationItem(key, patch, query as any),
-    )) as any;
+    return this.client
+      .request(updateDirectusTranslationItem(key, patch, query as any))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 
   /**
@@ -7007,21 +7892,27 @@ export class DirectusExtensionItems {
   >(
     query?: Query,
   ): Promise<
-    ApplyQueryFields<
-      CollectionsType,
-      Collections.DirectusExtension,
-      Query extends undefined
-        ? ["*"]
-        : Query["fields"] extends undefined
-          ? ["*"]
-          : Query["fields"] extends Readonly<any[]>
-            ? Query["fields"]
-            : ["*"]
-    >[]
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collections.DirectusExtension,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      readDirectusExtensionItems(query),
-    )) as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(readDirectusExtensionItems(query))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true })); // the any type is here because we transform the type through or custom ApplyQueryFields type.
   }
 
   /**
@@ -7035,26 +7926,34 @@ export class DirectusExtensionItems {
   >(
     query?: Query,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusExtension,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusExtension,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    const items = await this.client.request(
-      readDirectusExtensionItems({
-        ...query,
-        limit: 1,
-      }),
-    );
-    return items?.[0] as any; // the any type is here because we transform the type through or custom ApplyQueryFields type.
+    return this.client
+      .request(
+        readDirectusExtensionItems({
+          ...query,
+          limit: 1,
+        }),
+      )
+      .then((items) => ({ data: items?.[0], isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }
 
@@ -7080,21 +7979,28 @@ export class DirectusExtensionItem {
     name: string,
     data: Directus.NestedPartial<Directus.DirectusExtension<CollectionsType>>,
   ): Promise<
-    | ApplyQueryFields<
-        CollectionsType,
-        Collections.DirectusExtension,
-        Query extends undefined
-          ? ["*"]
-          : Query["fields"] extends undefined
-            ? ["*"]
-            : Query["fields"] extends Readonly<any[]>
-              ? Query["fields"]
-              : ["*"]
-      >
-    | undefined
+    | {
+        data:
+          | ApplyQueryFields<
+              CollectionsType,
+              Collections.DirectusExtension,
+              Query extends undefined
+                ? ["*"]
+                : Query["fields"] extends undefined
+                  ? ["*"]
+                  : Query["fields"] extends Readonly<any[]>
+                    ? Query["fields"]
+                    : ["*"]
+            >
+          | undefined;
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
   > {
-    return (await this.client.request(
-      updateDirectusExtensionItem(bundle, name, data),
-    )) as any;
+    return this.client
+      .request(updateDirectusExtensionItem(bundle, name, data))
+      .then((data) => ({ data, isError: false }) as any)
+      .catch((error) => ({ error, isError: true }));
   }
 }

@@ -53,7 +53,7 @@
         "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && n0safe-indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus\""
+        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && n0safe-indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus -- safe\""
     },
     "keywords": [],
     "author": "",
@@ -69,7 +69,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.2.9",
+        "@n0safe/indirectus": "^1.3.1",
         "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"
