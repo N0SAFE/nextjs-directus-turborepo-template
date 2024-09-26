@@ -160,6 +160,33 @@ export interface TypedCollectionItemsWrapper<Collection extends object> {
   >;
 
   /**
+   * update many items with batch
+   */
+  updateBatch<
+    const Query extends Directus.Query<CollectionsType, Collection[]>,
+  >(
+    items: Partial<Directus.UnpackList<Collection>>[],
+    query?: Query,
+  ): Promise<
+    | {
+        data: ApplyQueryFields<
+          CollectionsType,
+          Collection,
+          Query extends undefined
+            ? ["*"]
+            : Query["fields"] extends undefined
+              ? ["*"]
+              : Query["fields"] extends Readonly<any[]>
+                ? Query["fields"]
+                : ["*"]
+        >[];
+        isError: false;
+        error: never;
+      }
+    | { error: Error; isError: true; data: never }
+  >;
+
+  /**
    * Remove many items in the collection.
    */
   remove<const Query extends DirectusSDK.Query<CollectionsType, Collection>>(

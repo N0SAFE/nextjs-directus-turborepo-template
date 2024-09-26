@@ -1,6 +1,6 @@
 import { Session } from 'next-auth'
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware' // add to the useSession store
+// import { devtools, persist } from 'zustand/middleware' // add to the useSession store
 
 interface SessionState {
     session: Session | null

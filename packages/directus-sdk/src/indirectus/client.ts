@@ -956,15 +956,9 @@ export type TypedClient = {
      * Manages safely individual items from the DirectusExtension collection.
      */
     DirectusExtension: SafeSystemBinding.DirectusExtensionItem;
-  };
+  } & { [K in keyof SystemBinding.Requests]: SafeSystemBinding.Requests[K] };
 } & {
-  [K in keyof DirectusCommands as K extends
-    | `read${string}`
-    | `delete${string}`
-    | `update${string}`
-    | `create${string}`
-    ? never
-    : K]: DirectusCommands[K];
+  [K in keyof SystemBinding.Requests]: SystemBinding.Requests[K];
 };
 
 type ExcludedDirectusCommands = "withOptions" | "withToken" | "withSearch";
@@ -1078,21 +1072,6 @@ export type DirectusCommands = {
   >;
 };
 
-function isDirectusRestCommand(
-  pair: [any, any],
-): pair is [string, (...args: any[]) => Directus.RestCommand<any, any>] {
-  return (
-    !((pair?.[0] as any) in excludedDirectusCommands) &&
-    typeof pair?.[1] === "function" &&
-    !(
-      (pair?.[0]).startsWith("read") ||
-      (pair?.[0]).startsWith("create") ||
-      (pair?.[0]).startsWith("update") ||
-      (pair?.[0]).startsWith("delete")
-    )
-  );
-}
-
 function isDirectusRestClient<Schema>(
   client: DirectusSDK.DirectusClient<Schema>,
 ): client is DirectusSDK.DirectusClient<Schema> &
@@ -1107,16 +1086,7 @@ export const schema = () => {
     }
 
     return Object.fromEntries([
-      ...Object.entries(DirectusSDK)
-        .filter(isDirectusRestCommand)
-        .map(([key, value]) => {
-          return [
-            key,
-            (...args: any[]): any => {
-              return client.request(value(...args));
-            },
-          ];
-        }),
+      ...Object.entries(new SystemBinding.Requests(client as any)),
 
       [
         "DirectusActivities",
