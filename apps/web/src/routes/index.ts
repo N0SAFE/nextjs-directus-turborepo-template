@@ -7,16 +7,16 @@ const defaultInfo = {
 };
 
 import * as HomeRoute from "@/app/page.info";
-import * as AppshowcaseRoute from "@/app/(app)/showcase/page.info";
-import * as AppshowcaseClientRoute from "@/app/(app)/showcase/client/page.info";
-import * as AppshowcaseServerRoute from "@/app/(app)/showcase/server/page.info";
+import * as MiddlewareerrorenvRoute from "@/app/(internal)/middleware/error/env/page.info";
+import * as MiddlewareerrorhealthCheckRoute from "@/app/(internal)/middleware/error/healthCheck/page.info";
 import * as ApiauthnextauthRoute from "@/app/api/auth/[...nextauth]/route.info";
 import * as ApiauthrefreshtokenRoute from "@/app/api/auth/refresh_token/route.info";
 import * as AutherrorRoute from "@/app/auth/error/page.info";
 import * as AuthloginRoute from "@/app/auth/login/page.info";
 import * as AuthmeRoute from "@/app/auth/me/page.info";
-import * as MiddlewareerrorenvRoute from "@/app/middleware/error/env/page.info";
-import * as MiddlewareerrorhealthCheckRoute from "@/app/middleware/error/healthCheck/page.info";
+import * as AppshowcaseRoute from "@/app/showcase/page.info";
+import * as AppshowcaseClientRoute from "@/app/showcase/client/page.info";
+import * as AppshowcaseServerRoute from "@/app/showcase/server/page.info";
 
 export const Home = makeRoute(
   "/",
@@ -25,25 +25,18 @@ export const Home = makeRoute(
     ...HomeRoute.Route
   }
 );
-export const Appshowcase = makeRoute(
-  "/(app)/showcase",
+export const Middlewareerrorenv = makeRoute(
+  "/(internal)/middleware/error/env",
   {
     ...defaultInfo,
-    ...AppshowcaseRoute.Route
+    ...MiddlewareerrorenvRoute.Route
   }
 );
-export const AppshowcaseClient = makeRoute(
-  "/(app)/showcase/client",
+export const MiddlewareerrorhealthCheck = makeRoute(
+  "/(internal)/middleware/error/healthCheck",
   {
     ...defaultInfo,
-    ...AppshowcaseClientRoute.Route
-  }
-);
-export const AppshowcaseServer = makeRoute(
-  "/(app)/showcase/server",
-  {
-    ...defaultInfo,
-    ...AppshowcaseServerRoute.Route
+    ...MiddlewareerrorhealthCheckRoute.Route
   }
 );
 export const Apiauthnextauth = makeRoute(
@@ -74,18 +67,25 @@ export const Authme = makeRoute(
     ...AuthmeRoute.Route
   }
 );
-export const Middlewareerrorenv = makeRoute(
-  "/middleware/error/env",
+export const Appshowcase = makeRoute(
+  "/showcase",
   {
     ...defaultInfo,
-    ...MiddlewareerrorenvRoute.Route
+    ...AppshowcaseRoute.Route
   }
 );
-export const MiddlewareerrorhealthCheck = makeRoute(
-  "/middleware/error/healthCheck",
+export const AppshowcaseClient = makeRoute(
+  "/showcase/client",
   {
     ...defaultInfo,
-    ...MiddlewareerrorhealthCheckRoute.Route
+    ...AppshowcaseClientRoute.Route
+  }
+);
+export const AppshowcaseServer = makeRoute(
+  "/showcase/server",
+  {
+    ...defaultInfo,
+    ...AppshowcaseServerRoute.Route
   }
 );
 

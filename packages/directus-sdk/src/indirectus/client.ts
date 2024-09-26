@@ -55,8 +55,8 @@ export namespace Types {
   export type Text = string;
 
   // Date & Time
-  export type Date = string | globalThis.Date;
-  export type DateTime = string | globalThis.Date;
+  export type Date = "datetime";
+  export type DateTime = "datetime";
 
   // Geometry
   export namespace Geometry {
