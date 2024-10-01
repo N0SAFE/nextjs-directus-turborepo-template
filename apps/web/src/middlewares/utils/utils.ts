@@ -1,4 +1,4 @@
-import { MatcherCondition, MatcherType } from "./types"
+import { MatcherCondition, MatcherType } from './types'
 
 type Hitted<T extends object> = ({ hit: true } & T) | { hit: false }
 type Ret<

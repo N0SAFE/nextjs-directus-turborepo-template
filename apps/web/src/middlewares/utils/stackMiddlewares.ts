@@ -1,10 +1,6 @@
 // middlewares/stackMiddlewares
 import { NextResponse } from 'next/server'
-import {
-    CustomNextMiddleware,
-    MatcherType,
-    Middleware,
-} from './types'
+import { CustomNextMiddleware, MatcherType, Middleware } from './types'
 import { matcherHandler } from './utils'
 
 export function stackMiddlewares(
@@ -20,15 +16,19 @@ export function stackMiddlewares(
         }
         const { default: middleware, matcher } = current
         return (req, _next) => {
-            
             if (!matcher) {
                 return middleware(next)(req, _next)
             }
 
-            
             if (Array.isArray(matcher)) {
                 const ctx = Array(matcher.length).fill({})
-                const matched = matcherHandler(req.nextUrl.pathname, matcher.map((m, i) => [m, () => i]) as [matcher: MatcherType, callback: () => number][])
+                const matched = matcherHandler(
+                    req.nextUrl.pathname,
+                    matcher.map((m, i) => [m, () => i]) as [
+                        matcher: MatcherType,
+                        callback: () => number,
+                    ][]
+                )
                 if (matched.hit) {
                     return middleware(next)(req, _next, {
                         key: matched.data,
@@ -40,7 +40,13 @@ export function stackMiddlewares(
                     (acc, key) => ({ ...acc, [key]: {} }),
                     {}
                 )
-                const matched = matcherHandler(req.nextUrl.pathname, Object.keys(matcher).map((m) => [matcher[m], () => m]) as [matcher: MatcherType, callback: () => string][])
+                const matched = matcherHandler(
+                    req.nextUrl.pathname,
+                    Object.keys(matcher).map((m) => [matcher[m], () => m]) as [
+                        matcher: MatcherType,
+                        callback: () => string,
+                    ][]
+                )
                 if (matched.hit) {
                     return middleware(next)(req, _next, {
                         key: matched.data,

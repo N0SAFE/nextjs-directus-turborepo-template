@@ -1,8 +1,8 @@
-const { spawnSync } = require('child_process');
+const { spawnSync } = require('child_process')
 
 ;(async () => {
     spawnSync('npx auth secret', {
         stdio: 'inherit',
-        shell: true
+        shell: true,
     })
 })()

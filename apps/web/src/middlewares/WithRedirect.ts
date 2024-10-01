@@ -1,8 +1,4 @@
-import {
-    NextFetchEvent,
-    NextMiddleware,
-    NextRequest,
-} from 'next/server'
+import { NextFetchEvent, NextMiddleware, NextRequest } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
 import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
 import { matcherHandler } from './utils/utils'

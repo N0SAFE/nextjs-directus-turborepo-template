@@ -65,8 +65,9 @@ export default async function MePage() {
                             </p>
                             <p>
                                 <strong>Name:</strong>{' '}
-                                {directusMe?.first_name && directusMe?.last_name ? `${directusMe?.first_name} ${directusMe?.last_name}` :
-                                    'Unknown'}
+                                {directusMe?.first_name && directusMe?.last_name
+                                    ? `${directusMe?.first_name} ${directusMe?.last_name}`
+                                    : 'Unknown'}
                             </p>
                             <p>
                                 <strong>Email:</strong>{' '}

@@ -28,7 +28,10 @@ export type MatcherCondition<Context = unknown> = {
     or?: MatcherTypeArray<Context>
     not?: MatcherTypeArray<Context> | MatcherType<Context>
 }
-export type MatcherCallback<Context = unknown> = (string: string, ctx: Context) => MatcherType<Context>
+export type MatcherCallback<Context = unknown> = (
+    string: string,
+    ctx: Context
+) => MatcherType<Context>
 export type MatcherType<Context = unknown> =
     | string
     | RegExp
@@ -36,7 +39,10 @@ export type MatcherType<Context = unknown> =
     | MatcherCallback<Context>
     | boolean
 export type MatcherTypeArray<Context = unknown> = MatcherType<Context>[]
-export type MatcherTypeRecord<Context = unknown> = Record<string, MatcherType<Context>>
+export type MatcherTypeRecord<Context = unknown> = Record<
+    string,
+    MatcherType<Context>
+>
 export type ConfiguredMatcher<Context = unknown> = (
     matcher: MatcherTypeArray<Context> | MatcherCallback<Context>
 ) => Exclude<Matcher<Context>, ConfiguredMatcher<Context>>
