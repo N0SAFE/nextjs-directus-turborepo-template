@@ -5,70 +5,75 @@ import {
     NextResponse,
 } from 'next/server'
 import { ConfigFactory, Matcher, MiddlewareFactory } from './utils/types'
-import { withAuth as w } from 'next-auth/middleware'
-import { getToken } from 'next-auth/jwt'
-import { options } from '@/lib/auth/options'
 import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
-import { validateEnv } from '#/env'
+import { auth, pages } from '@/lib/auth/index'
+import { matcherHandler } from './utils/utils'
+import { validateEnvSafe } from '#/env'
+
+const env = validateEnvSafe(process.env).data
 
 const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
+    if (!env) {
+        throw new Error('env is not valid')
+    }
     return async (request: NextRequest, _next: NextFetchEvent) => {
-        return w(
-            async function middleware(req) {
-                const env = validateEnv(process.env)
-                const token = await getToken({ req })
-                const isAuth = !!token
+        const res = await auth(async function middleware(req) {
+            const toNext = async () => (await next(req as any, _next))!
+            const isAuth = !!req.auth
 
-                console.log(isAuth)
-
-                if (isAuth) {
-                    const resSession = await fetch(
-                        env.NEXTAUTH_URL + '/api/auth/session',
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Content-type': 'application/json',
-                                Cookie: req.headers.get('cookie')! ?? undefined,
-                            },
-                        }
-                    )
-                    const me = await resSession.json()
-                    // const requestForNextAuth = {
-                    //   ...req,
-                    //   headers: {
-                    //     ...Object.fromEntries(req.headers),
-                    //   },
-                    // };
-                    // const me = await getSession({ req: requestForNextAuth }).then(
-                    //   (s) => s?.user,
-                    // );
-                    if (req.nextUrl.pathname.match(new RegExp('/showcase'))) {
-                        me // TODO: auth by role
-                    }
-                } else {
-                    return NextResponse.redirect(
-                        options.pages?.signIn ??
-                            ('/auth/login' as string) +
-                                encodeURIComponent(
-                                    '?callbackUrl=' +
-                                        req.nextUrl.pathname +
-                                        (req.nextUrl.search ?? '')
-                                )
-                    )
-                }
-
-                const res = next(req as any, _next)
-                return res
-            },
-            {
-                callbacks: {
-                    async authorized({ token }) {
-                        return !!token
+            if (isAuth) {
+                const matcher = matcherHandler(req.nextUrl.pathname, [
+                    {
+                        and: ['/showcase', '/me/customer'],
                     },
-                },
-                pages: options.pages,
+                    () => {
+                        // in this route we can check if the user is authenticated with the customer role
+                        // if (session?.role === 'customer') {
+                        //     return toNext()
+                        // }
+                        // return NextResponse.redirect(
+                        //     process.env.NEXT_PUBLIC_APP_URL!.replace(/\/$/, '') +
+                        //         (pages?.signIn ||
+                        //             process.env.NEXT_PUBLIC_SIGNIN_PATH ||
+                        //             '/auth/login') +
+                        //         '?' +
+                        //         encodeURIComponent(
+                        //             'callbackUrl=' +
+                        //                 req.nextUrl.pathname +
+                        //                 (req.nextUrl.search ?? '')
+                        //         )
+                        // )
+                    },
+                ])
+                if (matcher.hit) {
+                    return matcher.data // return the Response associated
+                } 
+                return toNext() // call the next middleware because the route is good
+            } else {
+                // this else is hit when the user is not authenticated and on the routes listed on the export matcher
+                return NextResponse.redirect(
+                    env?.NEXT_PUBLIC_APP_URL!.replace(/\/$/, '') +
+                        (pages?.signIn ||
+                            env?.NEXT_PUBLIC_SIGNIN_PATH ||
+                            '/auth/login') +
+                        '?' +
+                        encodeURIComponent(
+                            'callbackUrl=' +
+                                req.nextUrl.pathname +
+                                (req.nextUrl.search ?? '')
+                        )
+                ) // not authenticated, redirect to login
             }
-        )(request as unknown as any, _next as any)
+        })(request as unknown as any, _next as any)
+        if (res) {
+            return new NextResponse(res.body, {
+                url: res.url,
+                status: res.status,
+                statusText: res.statusText,
+                headers: res.headers,
+            }) // convert to NextResponse
+        }
+        return NextResponse.next()
     }
 }
 

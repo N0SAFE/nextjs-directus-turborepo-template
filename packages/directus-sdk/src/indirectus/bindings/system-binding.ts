@@ -844,6 +844,96 @@ export class DirectusFileItems {
       Directus.RestClient<Schema>,
   ) {}
 
+  async create<
+    const Query extends Directus.Query<
+      CollectionsType,
+      Collections.DirectusFile
+    >,
+  >(
+    items: (Partial<Collections.DirectusFile> & { file: File })[],
+    query?: Query,
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusFile,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >[]
+  > {
+    const arraySymbol = Symbol("array");
+
+    const formData = new FormData();
+    const pathToFormDataPath = (path: (string | typeof arraySymbol)[]) => {
+      const result: string[] = [];
+      const first = path.shift();
+      path.forEach((part) => {
+        if (part === arraySymbol) {
+          result.push("[]");
+        } else {
+          result.push(`[${part}]`);
+        }
+      });
+      if (first === arraySymbol) {
+        return result.join("");
+      }
+      return first + result.join("");
+    };
+    const populateFormData = (
+      item: object,
+      path: (string | typeof arraySymbol)[] = [],
+    ) => {
+      Object.entries(item).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formData.append(pathToFormDataPath([...path, key]), value);
+        } else if (value instanceof Array) {
+          value.forEach((item) => {
+            if (item instanceof File) {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item,
+              );
+            } else if (item instanceof Date) {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item.toISOString(),
+              );
+            } else if (item instanceof Object) {
+              populateFormData(item, [...path, key, arraySymbol]);
+            } else {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item,
+              );
+            }
+          });
+        } else if (value instanceof Date) {
+          formData.append(
+            pathToFormDataPath([...path, key]),
+            value.toISOString(),
+          );
+        } else if (value instanceof Object) {
+          populateFormData(value, [...path, key]);
+        } else {
+          formData.append(pathToFormDataPath([...path, key]), value);
+        }
+      });
+      return formData;
+    };
+
+    items.forEach((item) => {
+      populateFormData(item);
+    });
+
+    return (await this.client.request(
+      DirectusSDK.uploadFiles<CollectionsType, Query>(formData, query),
+    )) as any;
+  }
+
   /**
    * Read many items from the collection.
    */
@@ -989,6 +1079,94 @@ export class DirectusFileItem {
     private client: Directus.DirectusClient<Schema> &
       Directus.RestClient<Schema>,
   ) {}
+
+  async create<
+    const Query extends Directus.Query<
+      CollectionsType,
+      Collections.DirectusFile
+    >,
+  >(
+    item: Partial<Collections.DirectusFile> & { file: File },
+    query?: Query,
+  ): Promise<
+    ApplyQueryFields<
+      CollectionsType,
+      Collections.DirectusFile,
+      Query extends undefined
+        ? ["*"]
+        : Query["fields"] extends undefined
+          ? ["*"]
+          : Query["fields"] extends Readonly<any[]>
+            ? Query["fields"]
+            : ["*"]
+    >
+  > {
+    const arraySymbol = Symbol("array");
+
+    const formData = new FormData();
+    const pathToFormDataPath = (path: (string | typeof arraySymbol)[]) => {
+      const result: string[] = [];
+      const first = path.shift();
+      path.forEach((part) => {
+        if (part === arraySymbol) {
+          result.push("[]");
+        } else {
+          result.push(`[${part}]`);
+        }
+      });
+      if (first === arraySymbol) {
+        return result.join("");
+      }
+      return first + result.join("");
+    };
+    const populateFormData = (
+      item: object,
+      path: (string | typeof arraySymbol)[] = [],
+    ) => {
+      Object.entries(item).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formData.append(pathToFormDataPath([...path, key]), value);
+        } else if (value instanceof Array) {
+          value.forEach((item) => {
+            if (item instanceof File) {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item,
+              );
+            } else if (item instanceof Date) {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item.toISOString(),
+              );
+            } else if (item instanceof Object) {
+              populateFormData(item, [...path, key, arraySymbol]);
+            } else {
+              formData.append(
+                pathToFormDataPath([...path, key, arraySymbol]),
+                item,
+              );
+            }
+          });
+        } else if (value instanceof Date) {
+          formData.append(
+            pathToFormDataPath([...path, key]),
+            value.toISOString(),
+          );
+        } else if (value instanceof Object) {
+          populateFormData(value, [...path, key]);
+        } else {
+          formData.append(pathToFormDataPath([...path, key]), value);
+        }
+      });
+      return formData;
+    };
+
+    populateFormData(item);
+
+    return (await this.client.request(
+      DirectusSDK.uploadFiles<CollectionsType, Query>(formData, query),
+    )) as any;
+  }
 
   /**
    * Read a single item from the collection.

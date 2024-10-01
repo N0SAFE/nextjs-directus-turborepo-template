@@ -1086,7 +1086,12 @@ export const schema = () => {
     }
 
     return Object.fromEntries([
-      ...Object.entries(new SystemBinding.Requests(client as any)),
+      ...(() => {
+        const requests = new SystemBinding.Requests(client as any) as any;
+        return Object.getOwnPropertyNames(Object.getPrototypeOf(requests)).map(
+          (n) => [n, requests[n].bind(requests)],
+        );
+      })(),
 
       [
         "DirectusActivities",
@@ -1225,6 +1230,15 @@ export const schema = () => {
       [
         "Safe",
         Object.fromEntries([
+          ...(() => {
+            const requests = new SafeSystemBinding.Requests(
+              client as any,
+            ) as any;
+            return Object.getOwnPropertyNames(
+              Object.getPrototypeOf(requests),
+            ).map((n) => [n, requests[n].bind(requests)]);
+          })(),
+
           [
             "DirectusActivities",
             new SafeSystemBinding.DirectusActivityItems(client as any),

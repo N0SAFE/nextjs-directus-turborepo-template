@@ -9,14 +9,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@repo/ui/components/shadcn/card'
-import { getServerSession } from 'next-auth'
 import { headers } from 'next/headers'
 import React from 'react'
 import SignOutButton from './SignOutButton'
-import { options } from '@/lib/auth/options'
+import { auth } from '@/lib/auth/index'
 
 export default async function MePage() {
-    const nextauthSession = await getServerSession(options)
+    const nextauthSession = await auth()
     const directusMe = await directus.request(readMe()).catch(() => null)
     const headersList = headers()
     const url = headersList.get('x-pathname')
@@ -66,7 +65,7 @@ export default async function MePage() {
                             </p>
                             <p>
                                 <strong>Name:</strong>{' '}
-                                {`${directusMe?.first_name} ${directusMe?.last_name}` ||
+                                {directusMe?.first_name && directusMe?.last_name ? `${directusMe?.first_name} ${directusMe?.last_name}` :
                                     'Unknown'}
                             </p>
                             <p>

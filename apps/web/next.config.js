@@ -12,9 +12,16 @@ const nextConfig = {
     },
 }
 
-const millionLintConfig = {
-    rsc: true,
-    dev: process.env.NODE_ENV === 'development' ? 'debug' : false,
+let exp
+
+if (process.env.NODE_ENV === 'development') {
+    const millionLintConfig = {
+        rsc: true,
+        dev: 'debug',
+    }
+    exp = MillionLint.next(millionLintConfig)(nextConfig)
+} else {
+    exp = nextConfig
 }
 
-module.exports = MillionLint.next(millionLintConfig)(nextConfig)
+module.exports = exp

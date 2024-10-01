@@ -4,11 +4,11 @@ import {
     AuthenticationStorage,
     rest,
 } from '@repo/directus-sdk'
-import { options } from '../auth/options'
 import { getSession } from 'next-auth/react'
 import { createDefaultDirectusInstance, directusUrl } from './share'
 import { useSession } from '@/state/session'
 import { Schema } from '@repo/directus-sdk/client'
+import { auth } from '../auth/index'
 
 if ((process.env as any).NEXT_RUNTIME! === 'edge') {
     throw new Error('The module is not compatible with the runtime')
@@ -17,9 +17,7 @@ if ((process.env as any).NEXT_RUNTIME! === 'edge') {
 class DirectusStore implements AuthenticationStorage {
     async get() {
         if (typeof window === 'undefined') {
-            const session = await import('next-auth').then((m) =>
-                m.getServerSession(options)
-            )
+            const session = await auth()
             return (
                 session && {
                     access_token: session.access_token ?? null,

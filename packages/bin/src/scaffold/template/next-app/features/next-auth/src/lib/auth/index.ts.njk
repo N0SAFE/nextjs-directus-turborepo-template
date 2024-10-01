@@ -1,4 +1,4 @@
-import { NextAuthOptions, Awaitable, User, Session } from 'next-auth'
+import NextAuth, { User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
 {% if useDirectus %}
@@ -6,10 +6,16 @@ import { AuthenticationData, readMe, withToken } from '@repo/directus-sdk'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
 import { memoize } from '@/lib/better-unstable-cache'
 {% endif %}
+import { UserSession, UserParams } from '@/types/auth'
 import { JWT } from 'next-auth/jwt'
-import { UserSession, UserParams } from '@/types/next-auth'
-import { validateEnvSafe } from '#/env'
 import { validateEnv } from '#/env'
+import { Session, NextAuthResult } from 'next-auth'
+
+export const pages = {
+    signIn: '/auth/login',
+    signOut: '/auth/logout',
+    error: '/auth/error',
+} as const
 
 {% if useDirectus %}
 const userParams = (user: UserSession): UserParams => {
@@ -48,25 +54,30 @@ const getCachedRefreshToken = memoize(
 )
 {% endif %}
 
-export const options: NextAuthOptions = {
+const result = NextAuth({
+    session: {
+        strategy: 'jwt',
+    },
     providers: [
-        CredentialsProvider({
-            name: 'credentials',
+        Credentials({
+            // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+            // e.g. domain, username, password, 2FA token, etc.
             credentials: {
                 email: {
                     label: 'Email',
-                    type: 'text',
-                    placeholder: 'Enter your email',
+                    type: 'email',
+                    placeholder: 'Email',
                 },
                 password: {
                     label: 'Password',
                     type: 'password',
-                    placeholder: 'Enter your password',
+                    placeholder: 'Password',
                 },
             },
             {% if useDirectus %}
-            authorize: async function (credentials) {
+            authorize: async (credentials) => {
                 console.log('authorize')
+
                 try {
                     const { email, password } = credentials as {
                         email: string
@@ -93,7 +104,7 @@ export const options: NextAuthOptions = {
                         )
                     )
                     console.log('login: LoggedInUser:', loggedInUser)
-                    const user: Awaitable<User> = {
+                    const user: User = {
                         id: loggedInUser.id,
                         first_name: loggedInUser.first_name ?? '',
                         last_name: loggedInUser.last_name ?? '',
@@ -114,79 +125,93 @@ export const options: NextAuthOptions = {
             {% endif %}
         }),
     ],
-    session: {
-        strategy: 'jwt',
-    },
-    secret: validateEnvSafe(process.env as any).data?.NEXTAUTH_SECRET,
     {% if useDirectus %}
     callbacks: {
         async jwt({ token, account, user, trigger, session }): Promise<JWT> {
-            // console.log('callback: jwt')
-            if (trigger === 'update' && !session?.tokenIsRefreshed) {
-                token.access_token = session.access_token
-                token.refresh_token = session.refresh_token
-                token.expires_at = session.expires_at
-                token.tokenIsRefreshed = false
-            }
+            try {
+                console.log('callback: jwt')
+                console.log({
+                    token,
+                    account,
+                    user,
+                    trigger,
+                    session,
+                })
+                if (trigger === 'update' && !session?.tokenIsRefreshed) {
+                    token.access_token = session.access_token
+                    token.refresh_token = session.refresh_token
+                    token.expires_at = session.expires_at
+                    token.tokenIsRefreshed = false
+                }
 
-            if (account) {
-                return {
-                    access_token: user.access_token,
-                    expires_at: user.expires,
-                    refresh_token: user.refresh_token,
-                    user: userParams(user),
-                    error: null,
-                }
-            } else if (Date.now() < (token.expires_at ?? 0)) {
-                return { ...token, error: null }
-            } else {
-                if (!(user?.refresh_token ?? token?.refresh_token)) {
-                    return handleError('RefreshTokenMissing')
-                }
-                try {
-                    const directus = createDirectusEdgeWithDefaultUrl()
-                    console.log('refreshToken: Refreshing token')
-                    console.log('refreshToken: User:', user)
-                    console.log('refreshToken: Token:', token)
-                    console.log(
-                        'refresh using token :',
-                        user?.refresh_token ?? token?.refresh_token
-                    )
-                    const result = await getCachedRefreshToken(
-                        directus,
-                        user?.refresh_token ?? token?.refresh_token
-                    )
-                    console.log('refreshToken: result', result)
-                    const resultToken = {
-                        ...token,
-                        access_token: result.access_token ?? '',
-                        expires_at: Math.floor(
-                            Date.now() + (result.expires ?? 0)
-                        ),
-                        refresh_token: result.refresh_token ?? '',
+                if (account) {
+                    return {
+                        access_token: user.access_token,
+                        expires_at: user.expires,
+                        refresh_token: user.refresh_token,
+                        user: userParams(user as any),
                         error: null,
-                        tokenIsRefreshed: true,
                     }
-                    return resultToken
-                } catch (error) {
-                    return handleError(
-                        typeof error === 'string'
-                            ? error
-                            : 'RefreshAccessTokenError'
-                    )
+                } else if (Date.now() < (token.expires_at ?? 0)) {
+                    return { ...token, error: null }
+                } else {
+                    if (!(user?.refresh_token ?? token?.refresh_token)) {
+                        return handleError('RefreshTokenMissing')
+                    }
+                    try {
+                        const directus = createDirectusEdgeWithDefaultUrl()
+                        console.log('refreshToken: Refreshing token')
+                        console.log('refreshToken: User:', user)
+                        console.log('refreshToken: Token:', token)
+                        console.log(
+                            'refresh using token :',
+                            user?.refresh_token ?? token?.refresh_token
+                        )
+                        const result = await getCachedRefreshToken(
+                            directus,
+                            user?.refresh_token ?? token?.refresh_token
+                        )
+                        console.log('refreshToken: result', result)
+                        const resultToken = {
+                            ...token,
+                            access_token: result.access_token ?? '',
+                            expires_at: Math.floor(
+                                Date.now() + (result.expires ?? 0)
+                            ),
+                            refresh_token: result.refresh_token ?? '',
+                            error: null,
+                            tokenIsRefreshed: true,
+                        }
+                        return resultToken
+                    } catch (error) {
+                        return handleError(
+                            typeof error === 'string'
+                                ? error
+                                : 'RefreshAccessTokenError'
+                        )
+                    }
                 }
+            } catch (error: any) {
+                console.error('jwt error:', error)
+                return handleError(
+                    typeof error === 'string' ? error : JSON.stringify(error)
+                )
             }
         },
-        async session({ session, token }): Promise<Session> {
-            // console.log('callback: session')
+        async session({ session, token, user }): Promise<Session> {
+            console.log('callback: session')
             if (token.error) {
                 session.error = token.error
                 session.expires = new Date(
                     new Date().setDate(new Date().getDate() - 1)
-                ).toISOString()
+                ).toISOString() as Date & string
             } else {
-                const { id, name, email } = token.user as UserParams
-                session.user = { id, name, email }
+                const { id, name } = token.user as UserParams
+                session.user = {
+                    name,
+                    ...user,
+                    id: id as StringConstructor & string,
+                }
                 session.access_token = token.access_token
                 session.tokenIsRefreshed = token?.tokenIsRefreshed ?? false
                 session.expires_at = token.expires_at
@@ -196,9 +221,8 @@ export const options: NextAuthOptions = {
         },
     },
     {% endif %}
-    pages: {
-        signIn: '/auth/login',
-        signOut: '/auth/logout',
-        error: '/auth/error',
-    },
-}
+    pages,
+})
+
+export const { handlers, signIn, signOut } = result
+export const auth = result.auth as NextAuthResult['auth']

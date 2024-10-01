@@ -233,7 +233,7 @@ export default async function run(subCommand: Command) {
         deffered.push(() => {
             console.log("install the next-auth features");
 
-            packageListToInstall.dependencies.push("next-auth");
+            packageListToInstall.dependencies.push("next-auth@beta");
             packageListToInstall.dependencies.push("zustand");
             utilsInstance.copyDir(path.resolve(locations.templates, "features", "next-auth"), path.resolve(appLocation), {
                 fileNameTransform: (file) => {
@@ -244,6 +244,7 @@ export default async function run(subCommand: Command) {
                     useDeclarativeRouting: answer.features.includes("declarative-routing")
                 }
             });
+            spawnSync('npx auth secret', { cwd: appLocation, stdio: "inherit", shell: true });
         });
     }
 

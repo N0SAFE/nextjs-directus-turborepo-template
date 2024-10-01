@@ -1,12 +1,11 @@
-import { options } from '@/lib/auth/options'
-import { getServerSession } from 'next-auth'
 import React from 'react'
 import ClientNextAuthProviders from './ClientNextAuthProviders'
+import { auth } from '@/lib/auth'
 
 const NextAuthProviders: React.FC<React.PropsWithChildren> = async ({
     children,
 }) => {
-    const session = await getServerSession(options)
+    const session = await auth()
     return (
         <ClientNextAuthProviders session={session}>
             {children}

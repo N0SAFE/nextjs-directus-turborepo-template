@@ -10,14 +10,11 @@ import { validateEnvSafe } from '#/env'
 import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
 import { createDirectusEdgeWithDefaultUrl } from '@/lib/directus/directus-edge'
 
+const env = validateEnvSafe(process.env).data
 const errorPageRenderingPath = '/middleware/error/healthCheck'
 
 const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request: NextRequest, _next: NextFetchEvent) => {
-        if (request.nextUrl.pathname.startsWith('/_next')) {
-            return await next(request, _next)
-        }
-        const env = validateEnvSafe(process.env).data
         if (env?.NODE_ENV === 'development') {
             try {
                 const directus = createDirectusEdgeWithDefaultUrl()
@@ -26,7 +23,7 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                         ? directus.request(
                               withToken(env.API_ADMIN_TOKEN, serverHealth())
                           )
-                        : directus.request(serverHealth()))
+                        : directus.serverHealth())
                     if (!(data.status === 'ok')) {
                         if (
                             request.nextUrl.pathname === errorPageRenderingPath

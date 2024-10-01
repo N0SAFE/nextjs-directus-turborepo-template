@@ -1,14 +1,14 @@
 'use client'
 
 import { Button } from '@repo/ui/components/shadcn/button'
-import { signOut } from 'next-auth/react'
+import { logout } from './action'
 
 const SignOutButton: React.FC = () => {
     return (
         <Button
             variant={'destructive'}
             onClick={async () => {
-                await signOut({ redirect: false })
+                await logout({ redirect: false })
                 window.location.reload()
             }}
         >

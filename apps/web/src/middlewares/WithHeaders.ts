@@ -10,7 +10,7 @@ export const withHeaders: MiddlewareFactory = (next: NextMiddleware) => {
             res.headers.set('x-pathname', request.nextUrl.pathname)
             setCookie('x-pathname', request.nextUrl.pathname, {
                 req: request,
-                res: res,
+                res
             })
         }
         return res

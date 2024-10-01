@@ -5,7 +5,7 @@ import {
     NextResponse,
 } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
-import { envIsValid } from '#/env'
+import { envIsValid, validateEnvSafe } from '#/env'
 import { nextjsRegexpPageOnly, nextNoApi, noPublic } from './utils/static'
 
 const errorPageRenderingPath = '/middleware/error/env'
@@ -14,14 +14,18 @@ const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request: NextRequest, _next: NextFetchEvent) => {
         const isValid = envIsValid(process.env as any)
         if (!isValid) {
-            if (request.nextUrl.pathname === errorPageRenderingPath) {
-                return NextResponse.next()
+            if (process.env.NODE_ENV === 'development') {
+                if (request.nextUrl.pathname === errorPageRenderingPath) {
+                    return NextResponse.next()
+                } else {
+                    return NextResponse.redirect(
+                        request.nextUrl.origin +
+                            errorPageRenderingPath +
+                            `?from=${encodeURIComponent(request.url)}`
+                    )
+                }
             } else {
-                return NextResponse.redirect(
-                    request.nextUrl.origin +
-                        errorPageRenderingPath +
-                        `?from=${encodeURIComponent(request.url)}`
-                )
+                throw new Error('Invalid environment variables:' + JSON.stringify(validateEnvSafe(process.env).error))
             }
         } else {
             if (request.nextUrl.pathname === errorPageRenderingPath) {

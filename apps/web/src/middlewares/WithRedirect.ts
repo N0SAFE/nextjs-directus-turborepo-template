@@ -1,26 +1,44 @@
-// import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
-// import { Matcher, MiddlewareFactory } from "./utils/types";
-// import ObjectToMap from "./utils/ObjectToMap";
+import {
+    NextFetchEvent,
+    NextMiddleware,
+    NextRequest,
+} from 'next/server'
+import { Matcher, MiddlewareFactory } from './utils/types'
+import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
+import { matcherHandler } from './utils/utils'
 
-// const withRedirect: MiddlewareFactory = (next: NextMiddleware) => {
-//     return async (request: NextRequest, _next: NextFetchEvent, meta: { key: number | string; ctx: any }) => {
-//         const res = await next(request, _next);
-//         if (request.nextUrl.pathname.startsWith("/_next")) {
-//             return res;
-//         }
-//         const redirectMap = ObjectToMap({
-//             auth: "/auth/me"
-//         });
-//         const path = redirectMap.get(meta.key as string);
-//         if (meta.key && path) {
-//             return NextResponse.redirect(new URL(path, request.url));
-//         }
-//         return res;
-//     };
-// };
+const withRedirect: MiddlewareFactory = (next: NextMiddleware) => {
+    return async (request: NextRequest, _next: NextFetchEvent) => {
+        const matcher = matcherHandler(request.nextUrl.pathname, [
+            // [
+            //     { or: ['/profile'] },
+            //     () => {
+            //         return NextResponse.redirect('/profile/me')
+            //     },
+            // ],
+            // [
+            //     { or: ['/auth/login'] },
+            //     () => {
+            //         if (comeFromForbiddenRoute(request)) {
+            //             return NextResponse.redirect(
+            //                 '/auth/login?from=forbidden'
+            //             )
+            //         }
+            //         return NextResponse.redirect('/auth/login')
+            //     },
+            // ],
+        ])
+        if (matcher.hit) {
+            return matcher.data
+        }
+        return next(request, _next)
+    }
+}
 
-// export default withRedirect;
+export default withRedirect
 
-// export const matcher: Matcher = {
-//     auth: "^/auth$"
-// };
+export const matcher: Matcher = [
+    {
+        and: [nextjsRegexpPageOnly, nextauthNoApi],
+    },
+]

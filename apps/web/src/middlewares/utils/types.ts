@@ -1,6 +1,6 @@
 // middleware/types.ts
 
-import { NextMiddleware, NextRequest } from 'next/server'
+import { NextMiddleware } from 'next/server'
 
 type AddParameters<
     TFunction extends (...args: any) => any,
@@ -16,36 +16,36 @@ export type CustomNextMiddleware = AddParameters<
 export type MiddlewareFactory = (
     middleware: CustomNextMiddleware
 ) => CustomNextMiddleware
-export type Middleware =
+export type Middleware<Context = unknown> =
     | MiddlewareFactory
     | {
           default: MiddlewareFactory
-          matcher?: Matcher
+          matcher?: Matcher<Context>
           config?: ConfigFactory
       }
-export type MatcherCondition = {
-    and?: MatcherTypeArray
-    or?: MatcherTypeArray
-    not?: MatcherTypeArray | MatcherType
+export type MatcherCondition<Context = unknown> = {
+    and?: MatcherTypeArray<Context>
+    or?: MatcherTypeArray<Context>
+    not?: MatcherTypeArray<Context> | MatcherType<Context>
 }
-export type MatcherCallback = (req: NextRequest, ctx: any) => MatcherType
-export type MatcherType =
+export type MatcherCallback<Context = unknown> = (string: string, ctx: Context) => MatcherType<Context>
+export type MatcherType<Context = unknown> =
     | string
     | RegExp
-    | MatcherCondition
-    | MatcherCallback
+    | MatcherCondition<Context>
+    | MatcherCallback<Context>
     | boolean
-export type MatcherTypeArray = MatcherType[]
-export type MatcherTypeRecord = Record<string, MatcherType>
-export type ConfiguredMatcher = (
-    matcher: MatcherTypeArray | MatcherCallback
-) => Exclude<Matcher, ConfiguredMatcher>
-export type Matcher =
-    | MatcherTypeArray
-    | MatcherTypeRecord
-    | MatcherCallback
+export type MatcherTypeArray<Context = unknown> = MatcherType<Context>[]
+export type MatcherTypeRecord<Context = unknown> = Record<string, MatcherType<Context>>
+export type ConfiguredMatcher<Context = unknown> = (
+    matcher: MatcherTypeArray<Context> | MatcherCallback<Context>
+) => Exclude<Matcher<Context>, ConfiguredMatcher<Context>>
+export type Matcher<Context = unknown> =
+    | MatcherTypeArray<Context>
+    | MatcherTypeRecord<Context>
+    | MatcherCallback<Context>
     | boolean
-    | ConfiguredMatcher
+    | ConfiguredMatcher<Context>
 
 export type ConfigFactory = {
     name: string

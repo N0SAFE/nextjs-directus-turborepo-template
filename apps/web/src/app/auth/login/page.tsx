@@ -13,19 +13,15 @@ import {
     FormMessage,
 } from '@repo/ui/components/shadcn/form'
 import { Alert, AlertDescription } from '@repo/ui/components/shadcn/alert'
-import zod, { z } from 'zod'
+import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
-import { signIn } from 'next-auth/react'
 import redirect from '@/actions/redirect'
 import { useSearchParams } from 'next/navigation'
 import { AlertCircle, Spinner } from '@repo/ui/components/atomics/atoms/Icon'
-
-const loginSchema = zod.object({
-    email: zod.string().email(),
-    password: zod.string().min(6),
-})
+import { login } from './action'
+import { loginSchema } from './schema'
 
 const LoginPage: React.FC = () => {
     const searchParams = useSearchParams()
@@ -40,12 +36,7 @@ const LoginPage: React.FC = () => {
         values: z.infer<typeof loginSchema>
     ): Promise<void> => {
         setIsLoading(true)
-        const res = await signIn('credentials', {
-            email: values.email,
-            password: values.password,
-            callbackUrl: searchParams.get('callbackUrl') ?? '/',
-            redirect: false,
-        })
+        const res = await login(values)
         if (res?.error) {
             setError(res?.error)
             setIsLoading(false)
