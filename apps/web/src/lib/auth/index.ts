@@ -31,7 +31,7 @@ const getCachedRefreshToken = memoize(
         refresh_token: string
     ) =>
         fetch(
-            validateEnv(process.env).NEXTAUTH_URL + '/api/auth/refresh_token',
+            validateEnv(process.env).NEXT_PUBLIC_APP_URL + '/api/auth/refresh_token',
             {
                 method: 'POST',
                 body: JSON.stringify({ refresh_token }),

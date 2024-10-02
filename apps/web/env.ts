@@ -10,8 +10,7 @@ const env = {
     ...publicEnv,
     API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
-    NEXTAUTH_SECRET: zod.string(),
-    NEXTAUTH_URL: zod.string().url(),
+    AUTH_SECRET: zod.string(),
 }
 
 export const envSchemaPublic = zod.object(publicEnv)
