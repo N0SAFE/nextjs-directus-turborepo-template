@@ -51,6 +51,7 @@ const getCachedRefreshToken = memoize(
 )
 
 const result = NextAuth({
+    trustHost: true,
     session: {
         strategy: 'jwt',
     },
