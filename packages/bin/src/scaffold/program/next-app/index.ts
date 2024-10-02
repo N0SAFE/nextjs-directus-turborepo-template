@@ -244,7 +244,7 @@ export default async function run(subCommand: Command) {
                     useDeclarativeRouting: answer.features.includes("declarative-routing")
                 }
             });
-            spawnSync('npx auth secret', { cwd: appLocation, stdio: "inherit", shell: true });
+            spawnSync('npx --yes auth secret', { cwd: appLocation, stdio: "inherit", shell: true });
         });
     }
 
