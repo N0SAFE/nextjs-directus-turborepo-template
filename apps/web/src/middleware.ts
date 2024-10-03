@@ -8,12 +8,12 @@ import * as EnvMiddleware from './middlewares/WithEnv'
 // import * as WithRedirect from "./middlewares/WithRedirect";
 import { Middleware } from './middlewares/utils/types'
 
-const middlewares: Middleware[] = [
+const middlewares = [
     EnvMiddleware,
     HealthCheckMiddleware,
     // WithRedirect,
     AuthMiddleware,
     withHeaders,
-]
+] satisfies Middleware[]
 
 export default stackMiddlewares(middlewares)
