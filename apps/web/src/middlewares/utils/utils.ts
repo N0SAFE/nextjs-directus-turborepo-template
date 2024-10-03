@@ -65,7 +65,7 @@ export function matcherHandler<
             return andBool && orBool && notBool
         }
         if (typeof m === 'string') {
-            return new RegExp(m).test(toMatch)
+            return m === toMatch
         } else if (m instanceof RegExp) {
             return m.test(toMatch)
         } else if (typeof m === 'function') {
