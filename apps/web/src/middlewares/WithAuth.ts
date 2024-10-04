@@ -56,11 +56,10 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
                         (pages?.signIn ||
                             env?.NEXT_PUBLIC_SIGNIN_PATH ||
                             '/auth/login') +
-                        '?' +
+                        '?callbackUrl=' +
                         encodeURIComponent(
-                            'callbackUrl=' +
                                 req.nextUrl.pathname +
-                                (req.nextUrl.search ?? '')
+                                (req.nextUrl.search ?? '')      
                         )
                 ) // not authenticated, redirect to login
             }

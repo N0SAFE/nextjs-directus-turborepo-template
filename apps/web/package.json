@@ -20,7 +20,7 @@
         "openapi:html": "npx --yes @redocly/cli build-docs openapi-docs.yml"
     },
     "dependencies": {
-        "@million/lint": "^1.0.0",
+        "@million/lint": "^1.0.8",
         "@repo/bin": "*",
         "@repo/directus-sdk": "*",
         "@repo/ui": "*",
