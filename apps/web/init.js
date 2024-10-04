@@ -1,8 +1,11 @@
-const { spawnSync } = require('child_process')
+const { spawn } = require('child_process')
 
 ;(async () => {
-    spawnSync('npx --yes auth secret', {
-        stdio: 'inherit',
+    const child = spawn('npx --yes auth secret', {
+        stdio: 'pipe',
         shell: true,
     })
+    child.stdout.pipe(process.stdout)
+    child.stdin.write('Y\n')
+    child.stdin.end()
 })()
