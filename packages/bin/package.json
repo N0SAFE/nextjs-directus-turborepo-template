@@ -28,7 +28,7 @@
     "tsup": "tsup --onSuccess \"npm run copy && npm run lint\"",
     "tsup:watch": "tsup --watch --onSuccess \"npm run copy && npm run lint\"",
     "clean": "rimraf dist",
-    "init": "npm run build",
+    "init": "npm run build:no:check",
     "dev": "npm run clean && concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup:watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
     "build": "npm run clean && concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "build:no:check": "npm run clean && concurrently -c \"blue,green\" -n \"files,types\" \"npm run tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics\"",

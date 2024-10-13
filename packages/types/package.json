@@ -13,7 +13,7 @@
     },
     "scripts": {
         "clean": "rimraf dist",
-        "init": "npm run build",
+        "init": "npm run build:no:check",
         "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
         "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
         "build:no:check": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics\"",

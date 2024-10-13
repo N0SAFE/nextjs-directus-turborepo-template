@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "init": "npm run build",
+    "init": "npm run build:no:check",
     "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "build:no:check": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
