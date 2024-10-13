@@ -120,11 +120,7 @@ export function getRelation<
 export function getStringDate<
   T extends Types.Date | Types.DateTime | null | undefined,
 >(date: T) {
-  if (date instanceof Date) {
-    return date.toISOString();
-  } else {
-    return date as Exclude<T, Date>;
-  }
+  return date as Exclude<T, Date>;
 }
 
 export namespace DirectusFileNamespace {
@@ -191,3 +187,37 @@ export namespace DirectusFileNamespace {
 }
 
 export type TypedDirectusClient = DirectusClient<Schema>;
+
+export type ToSafeOutput<Output> =
+  | {
+      data: Output;
+      isError: false;
+      error: never;
+    }
+  | {
+      error: Error;
+      isError: true;
+      data: never;
+    };
+
+export const toSafe = <Output,>(
+  promise: Promise<Output>,
+): Promise<ToSafeOutput<Output>> => {
+  return promise
+    .then(
+      (data) =>
+        ({ data, isError: false }) as {
+          data: typeof data;
+          isError: false;
+          error: never;
+        },
+    )
+    .catch(
+      (error) =>
+        ({ error, isError: true }) as {
+          error: Error;
+          isError: true;
+          data: never;
+        },
+    );
+};

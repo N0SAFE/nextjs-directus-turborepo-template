@@ -7,13 +7,9 @@ import type * as Directus from "@directus/sdk";
 
 import * as DirectusSDK from "@directus/sdk";
 
-import { ApplyQueryFields } from "./types/ApplyQueryFields";
+import * as SystemBinding from "./bindings/system-binding/index";
 
-import * as SystemBinding from "./bindings/system-binding";
-import * as ItemBinding from "./bindings/item-binding";
-
-import * as SafeSystemBinding from "./bindings/safe-system-binding";
-import * as SafeItemBinding from "./bindings/safe-item-binding";
+import * as SafeSystemBinding from "./bindings/safe-system-binding/index";
 
 type DirectusSDK = typeof DirectusSDK;
 
@@ -86,139 +82,139 @@ export namespace Collections {
    * The resolved directus activity collection type.
    *
    */
-  export type DirectusActivity = Directus.DirectusActivity<System>;
+  export type DirectusActivity = Directus.DirectusActivity<Schema>;
 
   /**
    * The resolved directus collections collection type.
    *
    */
-  export type DirectusCollection = Directus.DirectusCollection<System>;
+  export type DirectusCollection = Directus.DirectusCollection<Schema>;
 
   /**
    * The resolved directus fields collection type.
    *
    */
-  export type DirectusField = Directus.DirectusField<System>;
+  export type DirectusField = Directus.DirectusField<Schema>;
 
   /**
    * The resolved directus files collection type.
    *
    */
-  export type DirectusFile = Directus.DirectusFile<System>;
+  export type DirectusFile = Directus.DirectusFile<Schema>;
 
   /**
    * The resolved directus folders collection type.
    *
    */
-  export type DirectusFolder = Directus.DirectusFolder<System>;
+  export type DirectusFolder = Directus.DirectusFolder<Schema>;
 
   /**
    * The resolved directus permissions collection type.
    *
    */
-  export type DirectusPermission = Directus.DirectusPermission<System>;
+  export type DirectusPermission = Directus.DirectusPermission<Schema>;
 
   /**
    * The resolved directus policies collection type.
    *
    */
-  export type DirectusPolicy = Directus.DirectusPolicy<System>;
+  export type DirectusPolicy = Directus.DirectusPolicy<Schema>;
 
   /**
    * The resolved directus presets collection type.
    *
    */
-  export type DirectusPreset = Directus.DirectusPreset<System>;
+  export type DirectusPreset = Directus.DirectusPreset<Schema>;
 
   /**
    * The resolved directus relations collection type.
    *
    */
-  export type DirectusRelation = Directus.DirectusRelation<System>;
+  export type DirectusRelation = Directus.DirectusRelation<Schema>;
 
   /**
    * The resolved directus revisions collection type.
    *
    */
-  export type DirectusRevision = Directus.DirectusRevision<System>;
+  export type DirectusRevision = Directus.DirectusRevision<Schema>;
 
   /**
    * The resolved directus roles collection type.
    *
    */
-  export type DirectusRole = Directus.DirectusRole<System>;
+  export type DirectusRole = Directus.DirectusRole<Schema>;
 
   /**
    * The resolved directus settings collection type.
    *
    */
-  export type DirectusSettings = Directus.DirectusSettings<System>;
+  export type DirectusSettings = Directus.DirectusSettings<Schema>;
 
   /**
    * The resolved directus users collection type.
    *
    */
-  export type DirectusUser = Directus.DirectusUser<System>;
+  export type DirectusUser = Directus.DirectusUser<Schema>;
 
   /**
    * The resolved directus webhooks collection type.
    *
    */
-  export type DirectusWebhook = Directus.DirectusWebhook<System>;
+  export type DirectusWebhook = Directus.DirectusWebhook<Schema>;
 
   /**
    * The resolved directus dashboards collection type.
    *
    */
-  export type DirectusDashboard = Directus.DirectusDashboard<System>;
+  export type DirectusDashboard = Directus.DirectusDashboard<Schema>;
 
   /**
    * The resolved directus panels collection type.
    *
    */
-  export type DirectusPanel = Directus.DirectusPanel<System>;
+  export type DirectusPanel = Directus.DirectusPanel<Schema>;
 
   /**
    * The resolved directus notifications collection type.
    *
    */
-  export type DirectusNotification = Directus.DirectusNotification<System>;
+  export type DirectusNotification = Directus.DirectusNotification<Schema>;
 
   /**
    * The resolved directus shares collection type.
    *
    */
-  export type DirectusShare = Directus.DirectusShare<System>;
+  export type DirectusShare = Directus.DirectusShare<Schema>;
 
   /**
    * The resolved directus flows collection type.
    *
    */
-  export type DirectusFlow = Directus.DirectusFlow<System>;
+  export type DirectusFlow = Directus.DirectusFlow<Schema>;
 
   /**
    * The resolved directus operations collection type.
    *
    */
-  export type DirectusOperation = Directus.DirectusOperation<System>;
+  export type DirectusOperation = Directus.DirectusOperation<Schema>;
 
   /**
    * The resolved directus translations collection type.
    *
    */
-  export type DirectusTranslation = Directus.DirectusTranslation<System>;
+  export type DirectusTranslation = Directus.DirectusTranslation<Schema>;
 
   /**
    * The resolved directus versions collection type.
    *
    */
-  export type DirectusVersion = Directus.DirectusVersion<System>;
+  export type DirectusVersion = Directus.DirectusVersion<Schema>;
 
   /**
    * The resolved directus extensions collection type.
    *
    */
-  export type DirectusExtension = Directus.DirectusExtension<System>;
+  export type DirectusExtension = Directus.DirectusExtension<Schema>;
 }
 
 /**
@@ -1340,11 +1336,7 @@ export const schema = () => {
 
           [
             "DirectusSettings",
-            (query: any) => {
-              return client.request(
-                SafeSystemBinding.readDirectusSettings(query),
-              );
-            },
+            new SafeSystemBinding.DirectusSettingsSingleton(client as any),
           ],
 
           [

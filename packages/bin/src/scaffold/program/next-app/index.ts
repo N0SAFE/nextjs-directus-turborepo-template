@@ -118,7 +118,8 @@ export default async function run(subCommand: Command) {
             "zod",
             "@tanstack/react-query",
             "@tanstack/react-query-devtools",
-            "prompts"
+            "prompts",
+            "cross-env"
         ] as ({ name: string; version: string } | string)[]
     };
     const deffered: (() => void)[] = [];

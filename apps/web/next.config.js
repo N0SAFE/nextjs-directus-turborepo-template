@@ -1,14 +1,30 @@
 const MillionLint = require('@million/lint')
 
+const url = new URL(process.env.NEXT_PUBLIC_API_URL)
+
+const noCheck = process.env.NO_CHECK === 'true'
+
 /**
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+    eslint: {
+        ignoreDuringBuilds: noCheck,
+    },
+    typescript: {
+        ignoreBuildErrors: noCheck,
+    },
     reactStrictMode: true,
     transpilePackages: ['@repo/ui'],
     images: {
         dangerouslyAllowSVG: true,
-        domains: [new URL(process.env.NEXT_PUBLIC_API_URL).hostname],
+        remotePatterns: [
+            {
+                hostname: url.hostname,
+                port: url.port,
+                protocol: url.protocol.replace(':', ''),
+            },
+        ],
     },
 }
 

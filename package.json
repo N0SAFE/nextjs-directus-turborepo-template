@@ -12,6 +12,7 @@
         "prod:update": "npm ci && dotenv -e .env -- npm run migrate:latest -w apps/api && dotenv -e .env -- npm run schema:import -w apps/api",
         "build:force": "node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\"",
         "build": "node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\"",
+        "build:no:check": "node ./packages/bin/dist/runUntil.js \"dotenv -e .env -- npm run start -w api\" \"envCli wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build:no:check\"",
         "build:zero": "npm run @repo/bin build && npm run build",
         "build:clean": "npm run clean && npm run build:zero",
         "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",

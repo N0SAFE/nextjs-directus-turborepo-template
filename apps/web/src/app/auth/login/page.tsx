@@ -20,7 +20,7 @@ import React from 'react'
 import redirect from '@/actions/redirect'
 import { useSearchParams } from 'next/navigation'
 import { AlertCircle, Spinner } from '@repo/ui/components/atomics/atoms/Icon'
-import { login } from './action'
+import {signIn} from '@/lib/auth/actions'
 import { loginSchema } from './schema'
 
 const LoginPage: React.FC = () => {
@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
         values: z.infer<typeof loginSchema>
     ): Promise<void> => {
         setIsLoading(true)
-        const res = await login(values)
+        const res = await signIn('credentials', { ...values, redirect: false })
         if (res?.error) {
             setError(res?.error)
             setIsLoading(false)

@@ -22,6 +22,10 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
         },
+        "build:no:check": {
+            "dependsOn": ["^build:no:check"],
+            "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+        },
         "lint": {
             "cache": false
         },

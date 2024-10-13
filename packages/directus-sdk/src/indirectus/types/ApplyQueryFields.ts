@@ -154,7 +154,7 @@ type RemoveDuplicateIdAndItem<T> = {
 type ApplyQueryFields<
   Schema,
   Collection extends object,
-  ReadonlyFields,
+  ReadonlyFields = ["*"],
   CollectionItem extends object = UnpackList<Collection>,
   Fields = UnpackList<Mutable<ReadonlyFields>>,
   RelationalFields = PickRelationalFields<Fields>,

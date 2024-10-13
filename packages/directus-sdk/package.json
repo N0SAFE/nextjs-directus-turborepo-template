@@ -43,14 +43,27 @@
                 "types": "./dist/indirectus/types/*",
                 "default": "./dist/indirectus/types/*"
             }
+        },
+        "./commands/*": {
+            "import": {
+                "types": "./dist/commands/*",
+                "default": "./dist/commands/*"
+            },
+            "require": {
+                "types": "./dist/commands/*",
+                "default": "./dist/commands/*"
+            }
         }
     },
     "scripts": {
         "clean": "rimraf dist",
         "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write",
         "init": "npm run build",
-        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
+        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
         "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
+        "build:no:update": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
+        "build:no:check": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
+        "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
         "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && n0safe-indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus -- safe\""
@@ -69,7 +82,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.3.7",
+        "@n0safe/indirectus": "^1.4.4",
         "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"

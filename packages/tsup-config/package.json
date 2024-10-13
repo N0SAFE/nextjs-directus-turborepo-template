@@ -16,6 +16,7 @@
   "scripts": {
     "init": "npm run build",
     "build": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
+    "build:no:check": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:tsup-config tests passed!'",
     "clean": "rimraf dist"

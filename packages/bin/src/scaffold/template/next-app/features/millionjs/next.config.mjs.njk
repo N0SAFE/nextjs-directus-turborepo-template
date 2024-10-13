@@ -1,5 +1,7 @@
 import MillionLint from '@million/lint'
 
+const url = new URL(process.env.NEXT_PUBLIC_API_URL)
+
 /**
  * @type {import('next').NextConfig}
  */
@@ -8,7 +10,13 @@ const nextConfig = {
     transpilePackages: ['@repo/ui'],
     images: {
         dangerouslyAllowSVG: true,
-        domains: [new URL(process.env.NEXT_PUBLIC_API_URL).hostname],
+        remotePatterns: [
+            {
+                hostname: url.hostname,
+                port: url.port,
+                protocol: url.protocol.replace(':', ''),
+            }
+        ]
     },
 }
 

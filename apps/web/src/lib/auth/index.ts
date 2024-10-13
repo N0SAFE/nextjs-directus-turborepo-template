@@ -217,5 +217,5 @@ const result = NextAuth({
     pages,
 })
 
-export const { handlers, signIn, signOut } = result
+export const { handlers, signIn: _, signOut: __ } = result
 export const auth = result.auth as NextAuthResult['auth']

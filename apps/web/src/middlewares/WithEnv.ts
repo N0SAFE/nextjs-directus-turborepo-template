@@ -10,7 +10,6 @@ import { nextjsRegexpPageOnly, nextNoApi, noPublic } from './utils/static'
 import { matcherHandler } from './utils/utils'
 
 const errorPageRenderingPath = '/middleware/error/env'
-const env = validateEnvSafe(process.env).data
 
 const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request: NextRequest, _next: NextFetchEvent) => {
@@ -33,7 +32,7 @@ const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
                     if (isValid) {
                         return next(request, _next)
                     } else {
-                        if (env?.NODE_ENV === 'development') {
+                        if (process.env?.NODE_ENV === 'development') {
                             return NextResponse.redirect(
                                 request.nextUrl.origin +
                                     errorPageRenderingPath +
