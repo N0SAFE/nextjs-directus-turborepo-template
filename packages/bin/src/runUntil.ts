@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { spawnSync, spawn, exec } from "child_process";
+import { killPortProcess } from "kill-port-process";
 
 const program = new Command();
 
@@ -32,22 +33,27 @@ spawnSync(program.args[1], {
 });
 childProcessRun.off("exit", onExit);
 
-setTimeout(() => {
+function Try(callback: () => void) {
+  try{
+    callback();
+  } catch {}
+}
+
+  console.log(process.platform)
   if (process.platform == "win32") {
     exec(`taskkill /PID ${childProcessRun.pid!} /T /F`, (error) => {
       if (error) {
         console.log("error: " + error.message);
       }
-      setTimeout(() => {
+        Try(() => process.kill(-process.pid, "SIGKILL"));
         process.exit(0);
-      }, 1500);
     });
   } else {
+    console.log("killing process with pid " + childProcessRun.pid);
     // see https://nodejs.org/api/child_process.html#child_process_options_detached
     // If pid is less than -1, then sig is sent to every process in the process group whose ID is -pid.
-    process.kill(-childProcessRun.pid!, "SIGKILL");
-    setTimeout(() => {
+    Try(() => process.kill(-childProcessRun.pid!, "SIGKILL"));
+    Try(() => childProcessRun.kill());
+      Try(() => process.kill(-process.pid, "SIGKILL"));
       process.exit(0);
-    }, 1500);
   }
-}, 3000);

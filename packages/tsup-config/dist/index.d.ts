@@ -1,3 +1,0 @@
-import { defineConfig } from "tsup";
-export default function defineTsupConfig(callback?: (options: Parameters<typeof defineConfig>[0]) => ReturnType<typeof defineConfig>): import("tsup").Options | import("tsup").Options[] | ((overrideOptions: import("tsup").Options) => import("tsup").Options | import("tsup").Options[] | Promise<import("tsup").Options | import("tsup").Options[]>);
-//# sourceMappingURL=index.d.ts.map

@@ -1,17 +1,9 @@
 const url = new URL(process.env.NEXT_PUBLIC_API_URL)
 
-const noCheck = process.env.NO_CHECK === 'true'
-
 /**
  * @type {import('next').NextConfig}
  */
 export default {
-    eslint: {
-        ignoreDuringBuilds: noCheck,
-    },
-    typescript: {
-        ignoreBuildErrors: noCheck,
-    },
     reactStrictMode: true,
     transpilePackages: ['@repo/ui'],
     images: {
