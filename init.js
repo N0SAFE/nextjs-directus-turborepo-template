@@ -8,9 +8,9 @@ const { parse, stringify } = require("envfile");
 const envTemplate = fs.readFileSync(".env.template").toString();
 const packageJson = JSON.parse(fs.readFileSync("package.json").toString());
 
-// if (fs.existsSync(".initiated")) {
-//     throw new Error("This project has already been initiated");
-// }
+if (fs.existsSync(".initiated")) {
+    throw new Error("This project has already been initiated");
+}
 
 const stringIsAValidUrl = (s, protocols) => {
     try {

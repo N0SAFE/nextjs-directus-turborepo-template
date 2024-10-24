@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "update": "npm update --legacy-peer-deps && directus database migrate:latest",
-    "bootstrap": "runWhileError \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
+    "bootstrap": "runwhileerror \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\" && npm run schema:import",
     "migrate:up": "npx directus database migrate:up",
     "migrate:down": "npx directus database migrate:down",
     "migrate:latest": "npx directus database migrate:latest",
@@ -24,9 +24,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@repo/bin": "*",
     "directus": "^11.0.1",
     "directus-extension-seed": "^2.0.4",
     "mysql2": "^3.11.0"
+  },
+  "devDependencies": {
+    "@n0safe/runwhileerror": "^1.0.0"
   }
 }

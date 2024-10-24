@@ -66,7 +66,7 @@
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "generate:directus:types": "envCli \"wait-port ${NEXT_PUBLIC_API_URL}${API_PING_PATH} && n0safe-indirectus sdk generate --url ${NEXT_PUBLIC_API_URL} --token ${API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus -- safe\""
+        "generate:directus:types": "envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus -- safe\""
     },
     "keywords": [],
     "author": "",
@@ -75,6 +75,7 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.8.0",
+        "@n0safe/envcli": "^1.0.2",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
@@ -83,7 +84,6 @@
     "dependencies": {
         "@directus/sdk": "^17.0.0",
         "@n0safe/indirectus": "^1.4.4",
-        "@repo/bin": "*",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"
     }

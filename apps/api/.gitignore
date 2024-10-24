@@ -1,3 +1,4 @@
 .env
 /uploads/*
 !**/.gitkeep
+**/*.db
