@@ -16,11 +16,8 @@
         "generate:directus:types": {
             "cache": false
         },
-        "api#build": {
-            "dependsOn": ["^api#build:force"]
-        },
         "build": {
-            "dependsOn": ["^build"],
+            "dependsOn": ["^build", "api#build:force"],
             "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
         },
         "build:no:check": {
