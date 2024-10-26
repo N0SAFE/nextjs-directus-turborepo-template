@@ -4,6 +4,8 @@ import ModeToggle from '@repo/ui/components/shadcn/mode-toggle'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Authlogin } from '@/routes/index'
 
+import type { JSX } from "react";
+
 function Gradient({
     conic,
     className,

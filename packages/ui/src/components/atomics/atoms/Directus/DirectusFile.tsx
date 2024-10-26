@@ -5,6 +5,8 @@ import {
     TypedDirectusClient,
 } from '@repo/directus-sdk/utils'
 
+import type { JSX } from "react";
+
 export interface RenderPropsFile extends Omit<DirectusFileProps, 'render'> {
     url: string | undefined
 }

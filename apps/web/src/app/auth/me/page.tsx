@@ -17,7 +17,7 @@ import { auth } from '@/lib/auth/index'
 export default async function MePage() {
     const nextauthSession = await auth()
     const directusMe = await directus.request(readMe()).catch(() => null)
-    const headersList = headers()
+    const headersList = await headers()
     const url = headersList.get('x-pathname')
 
     if (!url) {
