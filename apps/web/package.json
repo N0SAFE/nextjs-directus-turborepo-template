@@ -5,7 +5,7 @@
     "scripts": {
         "echo": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH}",
         "init": "node init.js",
-        "pretify": "npx prettier . --write",
+        "pretify": "npx prettier . --write --no-error-on-unmatched-pattern",
         "dev": "npm run openapi && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli next dev -p $:{NEXT_PUBLIC_APP_PORT}\" \"npm run dr:build:watch\"",
         "build": "npm run dr:build && npm run openapi && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && next build",
         "build:no:check": "npm run dr:build && npm run openapi && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && cross-env NO_CHECK=true next build",

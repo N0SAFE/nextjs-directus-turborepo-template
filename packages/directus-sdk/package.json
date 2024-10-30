@@ -57,7 +57,7 @@
     },
     "scripts": {
         "clean": "rimraf {dist,src/indirectus} -g",
-        "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write",
+        "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "init": "npm run build:no:check",
         "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
         "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
