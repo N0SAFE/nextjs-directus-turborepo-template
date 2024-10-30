@@ -56,7 +56,7 @@
         }
     },
     "scripts": {
-        "clean": "rimraf dist",
+        "clean": "rimraf {dist,src/indirectus} -g",
         "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write",
         "init": "npm run build:no:check",
         "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
