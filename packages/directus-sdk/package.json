@@ -83,7 +83,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.4.5",
+        "@n0safe/indirectus": "^1.4.6",
         "@repo/tsup-config": "*",
         "wait-port": "^1.1.0"
     }
