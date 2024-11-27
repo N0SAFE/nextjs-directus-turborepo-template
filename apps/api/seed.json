@@ -1,0 +1,137 @@
+{
+  "lastAdminRoleId": "6b41700f-5aae-438e-a0a6-3c101d659f19",
+  "data": [
+    {
+      "id": "adding directus_roles",
+      "items": [
+        {
+          "id": "6b41700f-5aae-438e-a0a6-3c101d659f19",
+          "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
+          "parent": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "adding creatingdirectus_policies",
+      "items": [
+        {
+          "id": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "name": "$t:public_label",
+          "icon": "public",
+          "description": "$t:public_description",
+          "ip_access": null,
+          "enforce_tfa": false,
+          "admin_access": false,
+          "app_access": false
+        },
+        {
+          "id": "e6fc8dbc-aa17-44dd-822e-cc48d82a0217",
+          "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
+          "ip_access": null,
+          "enforce_tfa": false,
+          "admin_access": true,
+          "app_access": true
+        }
+      ]
+    },
+    {
+      "id": "adding directus_permissions",
+      "items": []
+    },
+    {
+      "id": "adding directus_access",
+      "items": [
+        {
+          "id": "0f40b43c-d991-49be-b6e9-b50548285be3",
+          "role": "6b41700f-5aae-438e-a0a6-3c101d659f19",
+          "user": null,
+          "policy": "e6fc8dbc-aa17-44dd-822e-cc48d82a0217",
+          "sort": null
+        },
+        {
+          "id": "6d2715e2-6663-43b1-bac5-f082b765e00d",
+          "role": null,
+          "user": null,
+          "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "sort": 1
+        }
+      ]
+    },
+    {
+      "id": "adding directus_flows",
+      "items": [
+        {
+          "id": "af0ced6f-414f-498b-a7d1-0800701b0c6c",
+          "name": "test",
+          "icon": "bolt",
+          "color": null,
+          "description": null,
+          "status": "active",
+          "trigger": "event",
+          "accountability": "all",
+          "options": {
+            "type": "action",
+            "scope": [
+              "items.create"
+            ],
+            "collections": [
+              "directus_fields",
+              "directus_dashboards"
+            ]
+          },
+          "date_created": "2024-11-27T02:34:21.000Z",
+          "user_created": "8421d44a-48f8-4cb3-9587-fb1a60840ae3"
+        }
+      ]
+    },
+    {
+      "id": "adding directus_operations",
+      "items": [
+        {
+          "id": "d03b4d33-72fd-4565-8162-b4ab87efabdb",
+          "name": "Read Data",
+          "key": "item_read_229kq",
+          "type": "item-read",
+          "position_x": 37,
+          "position_y": 1,
+          "options": {
+            "permissions": "$full"
+          },
+          "resolve": null,
+          "reject": null,
+          "flow": "af0ced6f-414f-498b-a7d1-0800701b0c6c",
+          "date_created": "2024-11-27T02:34:37.000Z",
+          "user_created": "8421d44a-48f8-4cb3-9587-fb1a60840ae3"
+        },
+        {
+          "id": "bc7493ad-e5a0-4aa5-9212-4490816a21c8",
+          "name": "Condition",
+          "key": "condition_5bvq2",
+          "type": "condition",
+          "position_x": 19,
+          "position_y": 1,
+          "options": {},
+          "resolve": "d03b4d33-72fd-4565-8162-b4ab87efabdb",
+          "reject": null,
+          "flow": "af0ced6f-414f-498b-a7d1-0800701b0c6c",
+          "date_created": "2024-11-27T02:34:37.000Z",
+          "user_created": "8421d44a-48f8-4cb3-9587-fb1a60840ae3"
+        }
+      ]
+    },
+    {
+      "id": "updating directus_flows",
+      "items": [
+        {
+          "id": "af0ced6f-414f-498b-a7d1-0800701b0c6c",
+          "operation": "bc7493ad-e5a0-4aa5-9212-4490816a21c8"
+        }
+      ]
+    }
+  ]
+}

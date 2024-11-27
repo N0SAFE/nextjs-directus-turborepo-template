@@ -1,4 +1,4 @@
-import '@repo/ui/globals.css' // ! load the local stylesheets first to allow for overrides of the ui package components
+import '@repo/ui/styles/globals.css' // ! load the local stylesheets first to allow for overrides of the ui package components
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'

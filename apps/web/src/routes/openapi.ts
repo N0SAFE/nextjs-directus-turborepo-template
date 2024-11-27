@@ -5,37 +5,56 @@ import {
 import * as yaml from 'yaml'
 import * as fs from 'fs'
 
-import * as Apiauthrefreshtoken from "../../src/app/api/auth/refresh_token/route.info";
+import * as ApisentryExampleApi from '../../src/app/api/sentry-example-api/route.info'
 
+import * as Apiauthrefreshtoken from '../../src/app/api/auth/refresh_token/route.info'
 
 const registry = new OpenAPIRegistry()
 
 registry.registerPath({
-  method: "post",
-  path: "/api/auth/refresh_token",
-  summary: "",
-  request: {
-  params: Apiauthrefreshtoken.Route.params,
-  body: {
-      required: true,
-      content: {
-        "application/json": {
-          schema: Apiauthrefreshtoken.POST.body,
-        },
-      },
+    method: 'get',
+    path: '/api/sentry-example-api',
+    summary: '',
+    request: {
+        params: ApisentryExampleApi.Route.params,
     },
-  },
-  responses: {
-    200: {
-      description: "Success",
-      content: {
-        "application/json": {
-          schema: Apiauthrefreshtoken.POST.result,
+    responses: {
+        200: {
+            description: 'Success',
+            content: {
+                'application/json': {
+                    schema: ApisentryExampleApi.GET.result,
+                },
+            },
         },
-      },
     },
-  },
-});
+})
+registry.registerPath({
+    method: 'post',
+    path: '/api/auth/refresh_token',
+    summary: '',
+    request: {
+        params: Apiauthrefreshtoken.Route.params,
+        body: {
+            required: true,
+            content: {
+                'application/json': {
+                    schema: Apiauthrefreshtoken.POST.body,
+                },
+            },
+        },
+    },
+    responses: {
+        200: {
+            description: 'Success',
+            content: {
+                'application/json': {
+                    schema: Apiauthrefreshtoken.POST.result,
+                },
+            },
+        },
+    },
+})
 
 const generator = new OpenApiGeneratorV3(registry.definitions)
 const docs = generator.generateDocument({

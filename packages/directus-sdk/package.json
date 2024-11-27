@@ -3,70 +3,64 @@
     "version": "1.0.0",
     "main": "index.js",
     "exports": {
-        "./schema": "./src/cache/schema.json",
+        "./schema": "./cache/schema.json",
         ".": {
             "import": {
-                "types": "./dist/index.d.ts",
-                "default": "./dist/index.mjs"
+                "types": "./index.ts",
+                "default": "./index.ts"
             },
             "require": {
-                "types": "./dist/index.d.ts",
-                "default": "./dist/index.js"
+                "types": "./index.ts",
+                "default": "./index.ts"
             }
         },
         "./utils": {
             "import": {
-                "types": "./dist/utils.d.ts",
-                "default": "./dist/utils.mjs"
+                "types": "./utils.ts",
+                "default": "./utils.ts"
             },
             "require": {
-                "types": "./dist/utils.d.ts",
-                "default": "./dist/utils.js"
+                "types": "./utils.ts",
+                "default": "./utils.ts"
             }
         },
         "./client": {
             "import": {
-                "types": "./dist/client.d.ts",
-                "default": "./dist/client.mjs"
+                "types": "./client.ts",
+                "default": "./client.ts"
             },
             "require": {
-                "types": "./dist/client.d.ts",
-                "default": "./dist/client.js"
+                "types": "./client.ts",
+                "default": "./client.ts"
             }
         },
         "./indirectus/types/*": {
             "import": {
-                "types": "./dist/indirectus/types/*",
-                "default": "./dist/indirectus/types/*"
+                "types": "./indirectus/types/*",
+                "default": "./indirectus/types/*"
             },
             "require": {
-                "types": "./dist/indirectus/types/*",
-                "default": "./dist/indirectus/types/*"
+                "types": "./indirectus/types/*",
+                "default": "./indirectus/types/*"
             }
         },
         "./commands/*": {
             "import": {
-                "types": "./dist/commands/*",
-                "default": "./dist/commands/*"
+                "types": "./commands/*",
+                "default": "./commands/*"
             },
             "require": {
-                "types": "./dist/commands/*",
-                "default": "./dist/commands/*"
+                "types": "./commands/*",
+                "default": "./commands/*"
             }
         }
     },
     "scripts": {
-        "clean": "rimraf {dist,src/indirectus} -g",
-        "pretify": "npx prettier ./src/**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
-        "init": "npm run build:no:check",
-        "dev": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup --watch\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --watch\"",
-        "build": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
-        "build:no:update": "concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
-        "build:no:check": "npm run generate:directus:types && concurrently -c \"blue,green\" -n \"files,types\" \"tsup\" \"tsc --build --noCheck --force --pretty --preserveWatchOutput --verbose --diagnostics --force\"",
+        "pretify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "generate:directus:types": "envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./src/indirectus --outputDir ./src/indirectus -- safe\""
+        "generate:directus:types": "envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
     },
     "keywords": [],
     "author": "",
@@ -83,8 +77,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.4.6",
-        "@repo/tsup-config": "*",
+        "@n0safe/indirectus": "^1.5.1",
         "wait-port": "^1.1.0"
     }
 }

@@ -4,17 +4,16 @@
     "rsc": true,
     "tsx": true,
     "tailwind": {
-        "prefix": "ui-",
-        "config": "tailwind.config.ts",
-        "css": "src/styles/globals.css",
-        "baseColor": "zinc",
+        "config": "../tailwind-config/tailwind.config.ts",
+        "css": "styles/globals.css",
+        "baseColor": "neutral",
         "cssVariables": true
     },
     "aliases": {
-        "components": "@/components",
-        "utils": "@/lib/utils",
-        "ui": "@/components/shadcn",
-        "lib": "@/lib",
-        "hooks": "@/hooks"
+        "components": "@repo/ui/components",
+        "utils": "@repo/ui/lib/utils",
+        "ui": "@repo/ui/components/shadcn",
+        "lib": "@repo/ui/lib",
+        "hooks": "@repo/ui/hooks"
     }
 }

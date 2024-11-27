@@ -4,24 +4,20 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
+      "@repo/ui/*": [
+        "./*"
       ],
+      "@repo/*": [
+        "../*"
+      ]
     },
-    "rootDir": "src",
-    "outDir": "dist",
-    "noEmit": false,
-    "declaration": true,
-    "declarationDir": "./dist",
-    "emitDeclarationOnly": true,
-    "declarationMap": true
   },
   "include": [
-    "src/**/*"
+    "**/*",
+    "utils.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "tsup.config.ts"
+    "dist"
   ]
 }

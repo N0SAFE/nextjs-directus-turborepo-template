@@ -20,7 +20,7 @@ import React from 'react'
 import redirect from '@/actions/redirect'
 import { useSearchParams } from 'next/navigation'
 import { AlertCircle, Spinner } from '@repo/ui/components/atomics/atoms/Icon'
-import {signIn} from '@/lib/auth/actions'
+import { signIn } from '@/lib/auth/actions'
 import { loginSchema } from './schema'
 
 const LoginPage: React.FC = () => {

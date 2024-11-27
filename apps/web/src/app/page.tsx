@@ -3,6 +3,7 @@ import { Card } from '@repo/ui/components/atomics/molecules/Card'
 import ModeToggle from '@repo/ui/components/shadcn/mode-toggle'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Authlogin } from '@/routes/index'
+import directus from '@/lib/directus/index'
 
 function Gradient({
     conic,

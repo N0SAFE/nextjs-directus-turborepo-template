@@ -1,4 +1,5 @@
 const MillionLint = require('@million/lint')
+const withBundleAnalyzer = require('@next/bundle-analyzer')
 
 const url = new URL(process.env.NEXT_PUBLIC_API_URL)
 
@@ -28,16 +29,21 @@ const nextConfig = {
     },
 }
 
-let exp
+let exp = nextConfig
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.ANALYZE === 'true') {
+    exp = withBundleAnalyzer()(exp)
+}
+
+if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.MILLION_LINT === 'true'
+) {
     const millionLintConfig = {
         rsc: true,
         dev: 'debug',
     }
-    exp = MillionLint.next(millionLintConfig)(nextConfig)
-} else {
-    exp = nextConfig
+    exp = MillionLint.next(millionLintConfig)(exp)
 }
 
 module.exports = exp
