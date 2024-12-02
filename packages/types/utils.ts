@@ -188,6 +188,16 @@ export type UnionToArray<T, A extends unknown[] = []> =
         ? UnionToArray<Exclude<T, PopUnion<T>>, [PopUnion<T>, ...A]>
         : [T, ...A]
 
-export type IntersectArray<A extends any[]> = A extends [infer F, ...infer R]
+export type IntersectArray<A extends unknown[]> = A extends [
+    infer F,
+    ...infer R,
+]
     ? F & IntersectArray<R>
     : {}
+
+export type ArrayContains<
+    T extends unknown[],
+    U,
+    Y = true,
+    N = false,
+> = U extends T[number] ? Y : N

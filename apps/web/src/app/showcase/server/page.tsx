@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ServerSideShowcase from '../ServerSide'
+import ServerSideShowcase from './ServerSide'
 
 const ShowcaseServerPage: React.FC = async function ShowcaseServerPage() {
     // console.log(await directus.getToken());

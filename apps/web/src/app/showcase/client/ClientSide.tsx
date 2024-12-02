@@ -2,21 +2,26 @@
 
 import directus from '@/lib/directus'
 import React, { Suspense } from 'react'
-import ListItemShowcase from './ListItem'
-import { useQuery } from '@tanstack/react-query'
+import ListItemShowcase from '../ListItem'
 import { Loader2 } from 'lucide-react'
+import { toUseQuery } from '@/lib/utils'
 
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {
-    const { data: users, isFetched } = useQuery({
-        queryKey: ['example'],
-        queryFn: async () => {
-            console.log('fetching users')
-            return await directus.DirectusUsers.query()
-        },
-        refetchOnWindowFocus: false,
+    const [timeTaken, setTimeTaken] = React.useState<number | null>(null)
+    const startTime = React.useMemo(() => Date.now(), [])
+    const useDirectusUsersQuery = toUseQuery(
+        directus.DirectusUsers.query.bind(directus.DirectusUsers)
+    ) // or toUseQuery(() => directus.DirectusUsers.query())
+    const { data: users, isFetched } = useDirectusUsersQuery({
+        queryKey: ['example1'],
     })
 
-    console.log('users', users)
+    React.useEffect(() => {
+        if (isFetched && !timeTaken) {
+            const endTime = Date.now()
+            setTimeTaken(endTime - startTime)
+        }
+    }, [isFetched])
 
     return (
         <Suspense
@@ -26,6 +31,8 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
                 </div>
             }
         >
+            <p>first load</p>
+            <div>Time taken: {timeTaken}ms</div>
             {!isFetched && (
                 <div className="flex h-full w-full items-center justify-center">
                     {' '}

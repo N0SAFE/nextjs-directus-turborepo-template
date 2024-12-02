@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { Separator } from '@repo/ui/components/shadcn/separator'
-import ServerSideShowcase from './ServerSide'
-import ClientSideShowcase from './ClientSide'
+import ServerSideShowcase from './server/ServerSide'
+import ClientSideShowcase from './client/ClientSide'
 
 const ShowcasePage: React.FC = async function ShowcasePage() {
     // console.log(await directus.getToken());
