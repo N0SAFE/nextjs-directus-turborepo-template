@@ -4,14 +4,14 @@ import directus from '@/lib/directus'
 import React, { Suspense } from 'react'
 import ListItemShowcase from '../ListItem'
 import { Loader2 } from 'lucide-react'
-import { toUseQuery } from '@/lib/utils'
+import { toUseQuery } from '@/utils/tanstack-query'
 
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const [timeTaken, setTimeTaken] = React.useState<number | null>(null)
     const startTime = React.useMemo(() => Date.now(), [])
     const useDirectusUsersQuery = toUseQuery(
         directus.DirectusUsers.query.bind(directus.DirectusUsers)
-    ) // or toUseQuery(() => directus.DirectusUsers.query())
+    ).addQueryKey([1]) // or toUseQuery(() => directus.DirectusUsers.query())
     const { data: users, isFetched } = useDirectusUsersQuery({
         queryKey: ['example1'],
     })
