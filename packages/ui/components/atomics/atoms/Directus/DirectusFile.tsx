@@ -5,6 +5,8 @@ import {
     TypedDirectusClient,
 } from '@repo/directus-sdk/utils'
 
+import type { JSX } from 'react'
+
 export interface RenderPropsFile extends Omit<DirectusFileProps, 'render'> {
     url: string | undefined
 }
@@ -21,7 +23,7 @@ export interface DirectusFileProps extends DirectusFileNamespace.Props {
     /** The asset that should be rendered. */
     asset: DirectusItemType
     /** A function that returns the React element to be rendered.*/
-    render: (props: RenderPropsFile) => React.ReactElement
+    render: (props: RenderPropsFile) => React.ReactElement<any>
 }
 
 /**

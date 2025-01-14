@@ -17,6 +17,11 @@ const nextConfig = {
     },
     reactStrictMode: true,
     transpilePackages: ['@repo/ui'],
+    experimental: {
+        // ppr: 'incremental',
+        reactCompiler: true,
+        forceSwcTransforms: true,
+    },
     images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [

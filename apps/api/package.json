@@ -11,6 +11,7 @@
     "migrate:latest": "npx directus database migrate:latest",
     "build:force": "npm run export",
     "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
+    "dev:open": "(envcli open $:{NEXT_PUBLIC_API_URL} || envcli cmd.exe /c start $:{NEXT_PUBLIC_API_URL}) && dotenv -v CONFIG_PATH=config.js -- directus start",
     "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
     "test": "echo 'all app:api tests passed!'",
     "init": "npm run generate:directus:types",

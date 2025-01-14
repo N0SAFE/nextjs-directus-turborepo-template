@@ -4,7 +4,7 @@ export type Icon = {
     className: string
 }
 
-export const Spinner = (): ReactElement => {
+export const Spinner = (): ReactElement<any> => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ export const Spinner = (): ReactElement => {
     )
 }
 
-export const AlertCircle = (props: Icon): ReactElement => {
+export const AlertCircle = (props: Icon): ReactElement<any> => {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
