@@ -7,7 +7,8 @@
     "tasks": {
         "init": {
             "dependsOn": ["^init", "clean"],
-            "outputs": ["dist/**"]
+            "outputs": ["dist/**"],
+            "cache": false
         },
         "build:force": {
             "dependsOn": ["^build:force"],
@@ -47,6 +48,7 @@
             "persistent": true
         },
         "start": {
+            "cache": false,
             "persistent": true
         },
         "start:local": {
