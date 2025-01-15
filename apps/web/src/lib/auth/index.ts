@@ -122,7 +122,13 @@ const result = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, account, user, trigger, session }): Promise<JWT> {
+        async jwt({
+            token,
+            account,
+            user,
+            trigger,
+            session,
+        }): Promise<JWT | null> {
             try {
                 console.log('callback: jwt')
                 console.log({
@@ -188,9 +194,7 @@ const result = NextAuth({
                 }
             } catch (error: any) {
                 console.error('jwt error:', error)
-                return handleError(
-                    typeof error === 'string' ? error : JSON.stringify(error)
-                )
+                return null
             }
         },
         async session({ session, token, user }): Promise<Session> {
