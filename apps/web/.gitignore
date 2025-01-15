@@ -38,3 +38,8 @@ yarn-error.log*
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+openapo-docs.yml
+openapo-docs.html
+src/routes/openapi.ts
+src/routes/index.ts

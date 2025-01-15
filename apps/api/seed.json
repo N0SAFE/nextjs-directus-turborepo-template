@@ -5,10 +5,10 @@
       "id": "adding directus_roles",
       "items": [
         {
-          "description": "$t:admin_description",
-          "icon": "verified",
           "id": "6b41700f-5aae-438e-a0a6-3c101d659f19",
           "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
           "parent": null,
           "children": []
         }
@@ -18,24 +18,24 @@
       "id": "adding creatingdirectus_policies",
       "items": [
         {
-          "admin_access": false,
-          "app_access": false,
-          "description": "$t:public_description",
-          "enforce_tfa": false,
-          "icon": "public",
           "id": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "name": "$t:public_label",
+          "icon": "public",
+          "description": "$t:public_description",
           "ip_access": null,
-          "name": "$t:public_label"
+          "enforce_tfa": false,
+          "admin_access": false,
+          "app_access": false
         },
         {
-          "admin_access": true,
-          "app_access": true,
-          "description": "$t:admin_description",
-          "enforce_tfa": false,
-          "icon": "verified",
           "id": "e6fc8dbc-aa17-44dd-822e-cc48d82a0217",
+          "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
           "ip_access": null,
-          "name": "Administrator"
+          "enforce_tfa": false,
+          "admin_access": true,
+          "app_access": true
         }
       ]
     },
@@ -48,17 +48,17 @@
       "items": [
         {
           "id": "0f40b43c-d991-49be-b6e9-b50548285be3",
-          "policy": "e6fc8dbc-aa17-44dd-822e-cc48d82a0217",
           "role": "6b41700f-5aae-438e-a0a6-3c101d659f19",
-          "sort": null,
-          "user": null
+          "user": null,
+          "policy": "e6fc8dbc-aa17-44dd-822e-cc48d82a0217",
+          "sort": null
         },
         {
           "id": "6d2715e2-6663-43b1-bac5-f082b765e00d",
-          "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
           "role": null,
-          "sort": 1,
-          "user": null
+          "user": null,
+          "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "sort": 1
         }
       ]
     },

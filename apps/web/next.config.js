@@ -20,7 +20,6 @@ const nextConfig = {
     experimental: {
         // ppr: 'incremental',
         reactCompiler: true,
-        forceSwcTransforms: true,
     },
     images: {
         dangerouslyAllowSVG: true,
