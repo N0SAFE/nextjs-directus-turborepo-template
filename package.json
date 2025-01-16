@@ -1,5 +1,5 @@
 {
-    "name": "demo-nextjs-directus-turborepo",
+    "name": "nextjs-directus-turborepo-template",
     "private": true,
     "workspaces": [
         "apps/*",
