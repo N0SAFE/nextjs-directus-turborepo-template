@@ -5,6 +5,8 @@ import { Button } from '@repo/ui/components/shadcn/button'
 import { Authlogin } from '@/routes/index'
 import directus from '@/lib/directus/index'
 
+import type { JSX } from 'react'
+
 function Gradient({
     conic,
     className,

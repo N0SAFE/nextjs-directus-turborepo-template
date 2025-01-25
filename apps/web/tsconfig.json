@@ -1,6 +1,7 @@
 {
     "extends": "@repo/tsconfig/nextjs.json",
     "compilerOptions": {
+        "useDefineForClassFields": true,
         "baseUrl": ".",
         "incremental": true,
         "plugins": [
@@ -12,7 +13,8 @@
             "@/*": ["./src/*"],
             "#/*": ["./*"],
             "@repo/*": ["../../packages/*"]
-        }
+        },
+        "target": "ES2017"
     },
     "include": [
         "next-env.d.ts",

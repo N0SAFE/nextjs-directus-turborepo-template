@@ -37,11 +37,10 @@ function renderByCode(issue: ZodIssue) {
     }
 }
 
-export default async function EnvPage({
-    searchParams,
-}: {
-    searchParams: { redirect?: string }
+export default async function EnvPage(props: {
+    searchParams: Promise<{ redirect?: string }>
 }) {
+    const searchParams = await props.searchParams
     const parsedEnv = validateEnvSafe(process.env as any)
     if (parsedEnv.success) {
         return (

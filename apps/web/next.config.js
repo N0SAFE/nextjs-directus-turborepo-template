@@ -3,7 +3,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')
 
 const url = new URL(process.env.NEXT_PUBLIC_API_URL)
 
-const noCheck = process.env.NO_CHECK === 'true'
+const noCheck = process.env.CHECK_ON_BUILD !== 'true'
 
 /**
  * @type {import('next').NextConfig}
@@ -14,9 +14,17 @@ const nextConfig = {
     },
     typescript: {
         ignoreBuildErrors: noCheck,
+        compilerOptions: {
+            experimentalDecorators: true,
+            useDefineForClassFields: true,
+        },
     },
     reactStrictMode: true,
     transpilePackages: ['@repo/ui'],
+    experimental: {
+        // ppr: 'incremental',
+        reactCompiler: true,
+    },
     images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
