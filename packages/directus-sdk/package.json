@@ -77,7 +77,7 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.5.1",
+        "@n0safe/indirectus": "^1.5.3",
         "wait-port": "^1.1.0"
     }
 }
