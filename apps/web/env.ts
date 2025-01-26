@@ -1,6 +1,9 @@
 import zod from 'zod'
 
 const publicEnv = {
+    REACT_SCAN_GIT_COMMIT_HASH: zod.string().optional(),
+    REACT_SCAN_GIT_BRANCH: zod.string().optional(),
+    REACT_SCAN_TOKEN: zod.string().optional(),
     NEXT_PUBLIC_API_URL: zod.string().url(),
     NEXT_PUBLIC_APP_URL: zod.string().url(),
     NEXT_PUBLIC_SIGNIN_PATH: zod.string().optional(),
@@ -11,6 +14,8 @@ const env = {
     API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
     AUTH_SECRET: zod.string(),
+    REACT_SCAN: zod.enum(['true', 'false']).transform((value) => value === 'true').optional(),
+    MILLION_LINT: zod.enum(['true', 'false']).transform((value) => value === 'true').optional(),
 }
 
 export const envSchemaPublic = zod.object(publicEnv)
