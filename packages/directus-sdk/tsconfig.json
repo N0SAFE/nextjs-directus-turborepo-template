@@ -15,7 +15,7 @@
   },
   "include": [
     "**/*"
-  ],
+, "../../apps/web/tsconfig.json"  ],
   "exclude": [
     "node_modules",
     "dist",
