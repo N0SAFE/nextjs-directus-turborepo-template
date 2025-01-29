@@ -14,8 +14,9 @@ const env = {
     API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
     AUTH_SECRET: zod.string(),
-    REACT_SCAN: zod.enum(['true', 'false']).transform((value) => value === 'true').optional(),
-    MILLION_LINT: zod.enum(['true', 'false']).transform((value) => value === 'true').optional(),
+    REACT_SCAN: zod.enum(['true', 'false']).transform((value) => value === 'true').optional().default('false'),
+    MILLION_LINT: zod.enum(['true', 'false']).transform((value) => value === 'true').optional().default('false'),
+    SHOW_AUTH_LOGS: zod.enum(['true', 'false']).transform((value) => value === 'true').optional().default('false'),
 }
 
 export const envSchemaPublic = zod.object(publicEnv)

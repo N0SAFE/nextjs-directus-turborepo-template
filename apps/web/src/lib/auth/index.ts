@@ -73,7 +73,11 @@ const result = NextAuth({
                 },
             },
             authorize: async (credentials) => {
-                console.log('authorize')
+                const env = validateEnv(process.env)
+
+                if (env.SHOW_AUTH_LOGS) {
+                    console.log('authorize')
+                }
 
                 try {
                     const { email, password } = credentials as {
@@ -81,12 +85,16 @@ const result = NextAuth({
                         password: string
                     }
                     const directus = createDirectusEdgeWithDefaultUrl()
-                    console.log('login: Logging in as :', email)
+                    if (env.SHOW_AUTH_LOGS) {
+                        console.log('login: Logging in as :', email)
+                    }
                     const auth = await directus.login(email, password, {
                         mode: 'json',
                     })
 
-                    console.log('login: Auth:', auth)
+                    if (env.SHOW_AUTH_LOGS) {
+                        console.log('login: Auth:', auth)
+                    }
                     const loggedInUser = await directus.request(
                         withToken(
                             auth.access_token ?? '',
@@ -100,7 +108,9 @@ const result = NextAuth({
                             })
                         )
                     )
-                    console.log('login: LoggedInUser:', loggedInUser)
+                    if (env.SHOW_AUTH_LOGS) {
+                        console.log('login: LoggedInUser:', loggedInUser)
+                    }
                     const user: User = {
                         id: loggedInUser.id,
                         first_name: loggedInUser.first_name ?? '',
@@ -112,11 +122,7 @@ const result = NextAuth({
                     }
                     return user
                 } catch (error: any) {
-                    return handleError(
-                        typeof error === 'string'
-                            ? error
-                            : JSON.stringify(error)
-                    )
+                    return null
                 }
             },
         }),
@@ -129,15 +135,19 @@ const result = NextAuth({
             trigger,
             session,
         }): Promise<JWT | null> {
+            const env = validateEnv(process.env)
+
             try {
-                console.log('callback: jwt')
-                console.log({
-                    token,
-                    account,
-                    user,
-                    trigger,
-                    session,
-                })
+                if (env.SHOW_AUTH_LOGS) {
+                    console.log('callback: jwt')
+                    console.log({
+                        token,
+                        account,
+                        user,
+                        trigger,
+                        session,
+                    })
+                }
                 if (trigger === 'update' && !session?.tokenIsRefreshed) {
                     token.access_token = session.access_token
                     token.refresh_token = session.refresh_token
@@ -161,18 +171,22 @@ const result = NextAuth({
                     }
                     try {
                         const directus = createDirectusEdgeWithDefaultUrl()
-                        console.log('refreshToken: Refreshing token')
-                        console.log('refreshToken: User:', user)
-                        console.log('refreshToken: Token:', token)
-                        console.log(
-                            'refresh using token :',
-                            user?.refresh_token ?? token?.refresh_token
-                        )
+                        if (env.SHOW_AUTH_LOGS) {
+                            console.log('refreshToken: Refreshing token')
+                            console.log('refreshToken: User:', user)
+                            console.log('refreshToken: Token:', token)
+                            console.log(
+                                'refresh using token :',
+                                user?.refresh_token ?? token?.refresh_token
+                            )
+                        }
                         const result = await getCachedRefreshToken(
                             directus,
                             user?.refresh_token ?? token?.refresh_token
                         )
-                        console.log('refreshToken: result', result)
+                        if (env.SHOW_AUTH_LOGS) {
+                            console.log('refreshToken: result', result)
+                        }
                         const resultToken = {
                             ...token,
                             access_token: result.access_token ?? '',
@@ -193,12 +207,18 @@ const result = NextAuth({
                     }
                 }
             } catch (error: any) {
-                console.error('jwt error:', error)
+                if (env.SHOW_AUTH_LOGS) {
+                    console.error('jwt error:', error)
+                }
                 return null
             }
         },
         async session({ session, token, user }): Promise<Session> {
-            console.log('callback: session')
+            const env = validateEnv(process.env)
+
+            if (env.SHOW_AUTH_LOGS) {
+                console.log('callback: session')
+            }
             if (token.error) {
                 session.error = token.error
                 session.expires = new Date(
