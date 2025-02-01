@@ -22,7 +22,7 @@
             "cache": false
         },
         "build": {
-            "dependsOn": ["^build", "api#build:force"],
+            "dependsOn": ["^build", "build:force"],
             "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
         },
         "build:no:check": {
