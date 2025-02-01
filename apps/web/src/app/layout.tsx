@@ -31,7 +31,7 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <head>
-                {env.REACT_SCAN && (
+                {process.env.NODE_ENV === 'development' && env.REACT_SCAN && (
                     <Script
                         src="https://unpkg.com/react-scan/dist/auto.global.js"
                         strategy="beforeInteractive"
@@ -45,14 +45,16 @@ export default async function RootLayout({
                     'h-screen w-screen overflow-auto bg-background font-sans antialiased'
                 )}
             >
-                {env.REACT_SCAN && env.REACT_SCAN_TOKEN && (
-                    <Monitoring
-                        apiKey={env.REACT_SCAN_TOKEN} // Safe to expose publically
-                        url="https://monitoring.react-scan.com/api/v1/ingest"
-                        commit={env.REACT_SCAN_GIT_COMMIT_HASH} // optional but recommended
-                        branch={env.REACT_SCAN_GIT_BRANCH} // optional but recommended
-                    />
-                )}
+                {process.env.NODE_ENV === 'development' &&
+                    env.REACT_SCAN &&
+                    env.REACT_SCAN_TOKEN && (
+                        <Monitoring
+                            apiKey={env.REACT_SCAN_TOKEN} // Safe to expose publically
+                            url="https://monitoring.react-scan.com/api/v1/ingest"
+                            commit={env.REACT_SCAN_GIT_COMMIT_HASH} // optional but recommended
+                            branch={env.REACT_SCAN_GIT_BRANCH} // optional but recommended
+                        />
+                    )}
                 <NextAuthProviders>
                     <Validate>
                         <ThemeProvider
