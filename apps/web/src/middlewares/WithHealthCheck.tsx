@@ -80,4 +80,6 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
 
 export default withHealthCheck
 
-export const matcher: Matcher = [{ and: [nextjsRegexpPageOnly, nextauthNoApi] }]
+export const matcher: Matcher = [{ and: [nextjsRegexpPageOnly, nextauthNoApi, {
+    not: process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH
+}] }]

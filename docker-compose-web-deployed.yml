@@ -1,0 +1,29 @@
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./deployment/Dockerfile-web-deployed
+      args:
+        API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+        API_PING_PATH: ${API_PING_PATH:-/server/ping}
+        NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: ${NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH:-/api/_directus}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+        NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+        NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3000}
+    command: "npx turbo run build && npm run web dev"
+    restart: always
+    ports:
+      - 3000:3000
+    network_mode: "host"
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+    environment:
+      API_PING_PATH: ${API_PING_PATH:-/server/ping}
+      NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: ${NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH:-/api/_directus}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+      NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055} 
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3000}
+      API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}

@@ -124,3 +124,16 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Directus](https://directus.io/)
 - [Shadcn UI](https://ui.shadcn.com/)
 - [NextAuth.js](https://next-auth.js.org/)
+- [Tailwind CSS](https://tailwindcss.com/) for styles
+- [Shadcn UI](https://ui.shadcn.com/) for ui components
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
+- [next-auth](https://next-auth.js.org/) for authentication {linked with directus}
+- [directus](https://directus.io/) for headless CMS
+- [tsup](https://github.com/egoist/tsup) for bundling
+- [declarative-routing](https://github.com/ProNextJS/declarative-routing/blob/main/docs/nextjs.md) for routing
+
+## deploying
+<!-- using docker -->
+- for deploy: deploy first the `api` then the `web` using `docker-compose up -d --build api` and `docker-compose up -d --build web` respectively
