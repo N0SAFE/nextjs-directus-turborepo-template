@@ -39,3 +39,7 @@ This Turborepo has some additional tools already setup for you:
 - [directus](https://directus.io/) for headless CMS
 - [tsup](https://github.com/egoist/tsup) for bundling
 - [declarative-routing](https://github.com/ProNextJS/declarative-routing/blob/main/docs/nextjs.md) for routing
+
+## deploying
+<!-- using docker -->
+- for deploy: deploy first the `api` then the `web` using `docker-compose up -d --build api` and `docker-compose up -d --build web` respectively

@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  api-db:
+    extends:
+      file: ./apps/api/docker-compose.yml
+      service: api-db
+    volumes:
+      - api_db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  api-cache:
+    extends:
+      file: ./apps/api/docker-compose.yml
+      service: api-cache
+    networks:
+      - app_network
+
+  api:
+    extends:
+      file: ./apps/api/docker-compose.yml
+      service: api
+    depends_on:
+      api-db:
+        condition: service_healthy
+      api-cache:
+        condition: service_healthy
+    environment:
+      ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+
+    networks:
+      - app_network
+
+  web:
+    depends_on:
+      api:
+        condition: service_healthy
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile-dev
+    command: "npx turbo run build && npm run web dev"
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - app_network
+    environment:
+      API_PING_PATH: /server/ping
+      NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: /api/_directus
+      NEXT_PUBLIC_API_URL: http://api:8055
+      NEXT_PUBLIC_API_PORT: 8055
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_PORT: 3000
+      API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+  # api:
+  #   container_name: api
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3001:3001
+  #   networks:
+  #     - app_network
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  app_network:
+
+volumes:
+  api_db_data:

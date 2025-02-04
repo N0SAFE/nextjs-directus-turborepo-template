@@ -34,7 +34,9 @@
         "@repo/tsconfig": "dotenv -e .env -- npm run --workspace=@repo/tsconfig --",
         "@repo/tailwind-config": "dotenv -e .env -- npm run --workspace=@repo/tailwind-config --",
         "@repo/eslint-config": "dotenv -e .env -- npm run --workspace=@repo/eslint-config --",
-        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk --"
+        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk --",
+        "docker:start": "concurrently \"cd apps/api && docker compose up\" \"docker compose up\"",
+        ".": "dotenv -e .env -- npm run --"
     },
     "devDependencies": {
         "@n0safe/envcli": "^1.0.2",
