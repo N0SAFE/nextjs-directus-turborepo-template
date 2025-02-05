@@ -25,6 +25,8 @@ const userParams = (user: UserSession): UserParams => {
     }
 }
 
+process.env.SHOW_AUTH_LOGS = 'true'
+
 const getCachedRefreshToken = memoize(
     (
         directus: ReturnType<typeof createDirectusEdgeWithDefaultUrl>,
@@ -122,6 +124,9 @@ const result = NextAuth({
                     }
                     return user
                 } catch (error: any) {
+                    if (env.SHOW_AUTH_LOGS) {
+                        console.error('authorize error:', error)
+                    }
                     return null
                 }
             },

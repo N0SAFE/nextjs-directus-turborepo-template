@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile-dev
-    command: "npx turbo run build && npm run web dev"
+    command: "npm run dev"
     restart: always
     ports:
       - 3000:3000
