@@ -2,28 +2,34 @@ services:
   web:
     container_name: web
     build:
+      network: host
       context: .
       dockerfile: ./deployment/Dockerfile-web-deployed
       args:
+        AUTH_SECRET: ${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
         API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
         API_PING_PATH: ${API_PING_PATH:-/server/ping}
         NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: ${NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH:-/api/_directus}
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+        NEXT_PUBLIC_API_URL: http://127.0.0.1:8055/
         NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
         NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3000}
-    command: "npx turbo run build && npm run web dev"
     restart: always
     ports:
       - 3000:3000
-    network_mode: "host"
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
+    networks:
+      - app_network
     environment:
+      AUTH_SECRET: ${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
       API_PING_PATH: ${API_PING_PATH:-/server/ping}
       NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: ${NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH:-/api/_directus}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:8055/
       NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055} 
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3000}
       API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+
+networks:
+  app_network:
+    name: nextjs-directus-turborepo-template_app_network
+    external: true

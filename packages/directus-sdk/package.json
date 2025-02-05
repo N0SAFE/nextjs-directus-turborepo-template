@@ -63,7 +63,7 @@
         "init": "npm run generate:directus:types",
         "build": "npm run generate:directus:types",
         "clean": "rimraf indirectus",
-        "generate:directus:types": "envcli \"echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && DEBUG=wait-port wait-port -t 10000 $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
+        "generate:directus:types": "envcli \"echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && DEBUG=wait-port wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
     },
     "keywords": [],
     "author": "",

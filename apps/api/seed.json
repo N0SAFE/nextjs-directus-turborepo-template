@@ -1,14 +1,14 @@
 {
-  "lastAdminRoleId": "590428f4-c0f1-4756-8124-3e51d024a983",
+  "lastAdminRoleId": "f215a77e-2d52-430c-a506-1b3f686f42d1",
   "data": [
     {
       "id": "adding directus_roles",
       "items": [
         {
-          "description": "$t:admin_description",
-          "icon": "verified",
-          "id": "590428f4-c0f1-4756-8124-3e51d024a983",
+          "id": "f215a77e-2d52-430c-a506-1b3f686f42d1",
           "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
           "parent": null,
           "children": []
         }
@@ -18,24 +18,24 @@
       "id": "adding creatingdirectus_policies",
       "items": [
         {
-          "admin_access": true,
-          "app_access": true,
-          "description": "$t:admin_description",
-          "enforce_tfa": false,
-          "icon": "verified",
-          "id": "79a440f4-1207-41ec-977f-55fd06369986",
+          "id": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "name": "$t:public_label",
+          "icon": "public",
+          "description": "$t:public_description",
           "ip_access": null,
-          "name": "Administrator"
+          "enforce_tfa": false,
+          "admin_access": false,
+          "app_access": false
         },
         {
-          "admin_access": false,
-          "app_access": false,
-          "description": "$t:public_description",
-          "enforce_tfa": false,
-          "icon": "public",
-          "id": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "id": "d0521f7e-3c63-437e-af2a-2e3a8721ea45",
+          "name": "Administrator",
+          "icon": "verified",
+          "description": "$t:admin_description",
           "ip_access": null,
-          "name": "$t:public_label"
+          "enforce_tfa": false,
+          "admin_access": true,
+          "app_access": true
         }
       ]
     },
@@ -47,18 +47,18 @@
       "id": "adding directus_access",
       "items": [
         {
-          "id": "131550d8-e150-43b9-a7ed-a9718e0c5913",
-          "policy": "79a440f4-1207-41ec-977f-55fd06369986",
-          "role": "590428f4-c0f1-4756-8124-3e51d024a983",
-          "sort": null,
-          "user": null
+          "id": "cf841273-f0ce-43ca-93e6-325af43512ad",
+          "role": "f215a77e-2d52-430c-a506-1b3f686f42d1",
+          "user": null,
+          "policy": "d0521f7e-3c63-437e-af2a-2e3a8721ea45",
+          "sort": null
         },
         {
-          "id": "96799c46-c629-46f1-8052-9388184eb53f",
-          "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "id": "146526dd-f1d7-4b21-a64d-18fa35c4c555",
           "role": null,
-          "sort": 1,
-          "user": null
+          "user": null,
+          "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
+          "sort": 1
         }
       ]
     },

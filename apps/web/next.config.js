@@ -43,6 +43,7 @@ const nextConfig = {
             },
         ],
     },
+    output: 'standalone'
 }
 
 let exp = nextConfig
