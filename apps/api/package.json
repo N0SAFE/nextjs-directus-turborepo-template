@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "update": "npm update --legacy-peer-deps && directus database migrate:latest",
-    "bootstrap": "runwhileerror \"node init.js && dotenv -v CONFIG_PATH=config.js -- directus bootstrap\"",
+    "bootstrap:no-init": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap",
+    "bootstrap": "runwhileerror \"node init.js && npm run bootstrap:no-init\"",
     "post-bootstrap": "npm run import",
     "migrate:up": "npx directus database migrate:up",
     "migrate:down": "npx directus database migrate:down",
