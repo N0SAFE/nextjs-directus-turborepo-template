@@ -1,6 +1,6 @@
 [build]
   publish = "apps/web/out"
-  command = "npx turbo run build"
+  command = "npm run bootstrap:build && npx turbo run build"
 
 [functions]
   directory = "apps/api"

@@ -11,6 +11,7 @@
         "init": "npm i && node init.js && dotenv -e .env -- npm run bootstrap -w apps/api && rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types && dotenv -e .env -- npm run post-bootstrap -w apps/api && dotenv -v FORCE_COLOR=1 -- turbo run init\" && npm run kill:api && npm run build:clean:force && node post-init.js",
         "generate:directus:types": "rununtil \"dotenv -e .env -- npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\" && npm run kill:api",
         "prod:update": "npm ci && dotenv -e .env -- npm run migrate:latest -w apps/api && dotenv -e .env -- npm run schema:import -w apps/api",
+        "bootstrap:build": "dotenv -e .env -- npm run bootstrap -w apps/api",
         "build:force": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\" && npm run kill:api",
         "build": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\" && npm run kill:api",
         "analyze": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo analyze\" && npm run kill:api",
