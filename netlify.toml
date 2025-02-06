@@ -1,0 +1,25 @@
+[build]
+  publish = "apps/web/out"
+  command = "npm run build"
+
+[functions]
+  directory = "apps/api"
+
+[dev]
+  framework = "#static" # Or "#next"
+  command = "npm run dev"
+  publish = "apps/web"
+  port = 3000 # Or the port your web app runs on
+  targetPort = 3000 # Or the port your web app runs on
+
+  [[proxy]]
+    path = "/directus/*"
+    target = "http://localhost:8055" # API is running on port 8055
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/directus/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
