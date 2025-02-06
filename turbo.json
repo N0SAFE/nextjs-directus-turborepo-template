@@ -3,7 +3,7 @@
     "ui": "tui",
     "globalDependencies": ["**/.env.*local", "**/.env", ".env.local"],
     "globalPassThroughEnv": [".env.local"],
-    "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEMP_APP_NEXTAUTH_URL"],
+    "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEMP_APP_NEXTAUTH_URL", "DB_CLIENT", "DB_FILENAME"],
     "tasks": {
         "init": {
             "dependsOn": ["^init", "clean"],
