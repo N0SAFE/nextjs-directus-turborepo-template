@@ -1,6 +1,6 @@
 [build]
-  publish = "apps/web/out"
-  command = "npm run bootstrap && npx turbo run build"
+  publish = "apps/web/.next"
+  command = "npm run init:with-env"
 
 [functions]
   directory = "apps/api"
