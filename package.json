@@ -46,6 +46,7 @@
     "engines": {
         "node": ">=20"
     },
+    "vercel-build": "apt-get update && apt-get install -y python3-dev build-essential && npm run build",
     "packageManager": "npm@10.8.1",
     "dependencies": {
         "dotenv": "^16.4.5",
