@@ -1,25 +1,15 @@
 [build]
-  publish = "apps/web/.next"
-  command = "npm run init:with-env"
-
-[functions]
-  directory = "apps/api"
+base = "apps/api"
+publish = "public"  # Or the directory where your built assets are
+command = "docker compose --build"
 
 [dev]
-  framework = "#static" # Or "#next"
-  command = "npm run dev"
-  publish = "apps/web"
-  port = 3000 # Or the port your web app runs on
-  targetPort = 3000 # Or the port your web app runs on
-
-  [[proxy]]
-    path = "/directus/*"
-    target = "http://localhost:8055" # API is running on port 8055
-
-[build.environment]
-  NODE_VERSION = "18"
+command = "docker compose up"
+port = 8055 # Or the port your application listens on
+targetPort = 8055 # The port exposed by your Docker container
+publish = "public"
 
 [[redirects]]
-  from = "/directus/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200
