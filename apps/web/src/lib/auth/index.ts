@@ -167,7 +167,10 @@ const result = NextAuth({
                     return { ...token, error: null }
                 } else {
                     if (!(user?.refresh_token ?? token?.refresh_token)) {
-                        return handleError('RefreshTokenMissing', 'No refresh token')
+                        return handleError(
+                            'RefreshTokenMissing',
+                            'No refresh token'
+                        )
                     }
                     try {
                         const directus = createDirectusEdgeWithDefaultUrl()
