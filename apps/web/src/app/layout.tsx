@@ -13,6 +13,7 @@ import NextTopLoader from 'nextjs-toploader'
 import Validate from '@/lib/auth/validate'
 import Script from 'next/script'
 import { validateEnv } from '#/env'
+import { TokenTimer } from '@/components/TokenTimer'
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -65,6 +66,7 @@ export default async function RootLayout({
                         >
                             <NextTopLoader />
                             <ReactQueryProviders>
+                                <TokenTimer />
                                 <Suspense
                                     fallback={
                                         <div className="flex h-screen w-screen items-center justify-center">

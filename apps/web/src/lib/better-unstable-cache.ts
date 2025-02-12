@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { unstable_cache } from 'next/cache'
+import CircularJson from 'circular-json'
 
 type Callback<Parameters extends unknown[], ReturnType> = (
     ...args: Parameters
@@ -75,7 +76,7 @@ export function memoize<P extends unknown[], R>(
                 : []
             const cacheKey = [
                 cb.toString(),
-                JSON.stringify(args),
+                CircularJson.stringify(args),
                 ...additionalCacheKey,
             ]
             const nextOpts = {
@@ -106,7 +107,7 @@ export function memoize<P extends unknown[], R>(
                 )
                 if (logVerbose)
                     console.log(
-                        `${chalk.hex('6A7C8E').bold(` └ ${cb.name ?? 'Anon Func'} ${JSON.stringify(args)}`)}`
+                        `${chalk.hex('6A7C8E').bold(` └ ${cb.name ?? 'Anon Func'} ${CircularJson.stringify(args)}`)}`
                     )
                 oldData = data
                 return data
@@ -117,7 +118,7 @@ export function memoize<P extends unknown[], R>(
                     },
                     [
                         cb.toString(),
-                        JSON.stringify(args),
+                        CircularJson.stringify(args),
                         ...additionalCacheKey,
                     ],
                     {

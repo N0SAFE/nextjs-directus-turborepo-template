@@ -1,5 +1,5 @@
 import { Session } from 'next-auth'
-import { create } from 'zustand'
+import { create, StoreApi } from 'zustand'
 // import { devtools, persist } from 'zustand/middleware' // add to the useSession store
 
 interface SessionState {
@@ -7,7 +7,21 @@ interface SessionState {
     setSession: (session: Session | null) => void
 }
 
-export const useSession = create<SessionState>()((set) => ({
+const useSession = create<SessionState>()((set) => ({
     session: null,
     setSession: (session: Session | null) => set({ session }),
 }))
+
+export const subscribeToUserSession = (
+    listener: (
+        state: typeof useSession extends StoreApi<infer T> ? T : never,
+        prevState: typeof useSession extends StoreApi<infer T> ? T : never
+    ) => void
+) => {
+    return useSession.subscribe(listener)
+}
+
+export const getSession = () => useSession.getState().session
+
+export const setSession = (session: Session | null) =>
+    useSession.getState().setSession(session)

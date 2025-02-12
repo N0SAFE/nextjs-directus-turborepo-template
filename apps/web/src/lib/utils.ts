@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
-export const handleError = (error: string) => {
-    throw new Error(error)
+export const handleError = (error: string, cause: unknown) => {
+    throw new Error(error, { cause })
 }
 
 export function toAbsoluteUrl(path: string) {

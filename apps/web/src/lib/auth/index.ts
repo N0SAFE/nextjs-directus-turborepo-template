@@ -75,7 +75,7 @@ const result = NextAuth({
             authorize: async (credentials) => {
                 const env = validateEnv(process.env)
 
-                if (env.SHOW_AUTH_LOGS) {
+                if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                     console.log('authorize')
                 }
 
@@ -85,14 +85,14 @@ const result = NextAuth({
                         password: string
                     }
                     const directus = createDirectusEdgeWithDefaultUrl()
-                    if (env.SHOW_AUTH_LOGS) {
+                    if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                         console.log('login: Logging in as :', email)
                     }
                     const auth = await directus.login(email, password, {
                         mode: 'json',
                     })
 
-                    if (env.SHOW_AUTH_LOGS) {
+                    if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                         console.log('login: Auth:', auth)
                     }
                     const loggedInUser = await directus.request(
@@ -108,7 +108,7 @@ const result = NextAuth({
                             })
                         )
                     )
-                    if (env.SHOW_AUTH_LOGS) {
+                    if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                         console.log('login: LoggedInUser:', loggedInUser)
                     }
                     const user: User = {
@@ -138,7 +138,7 @@ const result = NextAuth({
             const env = validateEnv(process.env)
 
             try {
-                if (env.SHOW_AUTH_LOGS) {
+                if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                     console.log('callback: jwt')
                     console.log({
                         token,
@@ -167,11 +167,11 @@ const result = NextAuth({
                     return { ...token, error: null }
                 } else {
                     if (!(user?.refresh_token ?? token?.refresh_token)) {
-                        return handleError('RefreshTokenMissing')
+                        return handleError('RefreshTokenMissing', 'No refresh token')
                     }
                     try {
                         const directus = createDirectusEdgeWithDefaultUrl()
-                        if (env.SHOW_AUTH_LOGS) {
+                        if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                             console.log('refreshToken: Refreshing token')
                             console.log('refreshToken: User:', user)
                             console.log('refreshToken: Token:', token)
@@ -184,7 +184,7 @@ const result = NextAuth({
                             directus,
                             user?.refresh_token ?? token?.refresh_token
                         )
-                        if (env.SHOW_AUTH_LOGS) {
+                        if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                             console.log('refreshToken: result', result)
                         }
                         const resultToken = {
@@ -198,16 +198,17 @@ const result = NextAuth({
                             tokenIsRefreshed: true,
                         }
                         return resultToken
-                    } catch (error) {
+                    } catch (error: any) {
                         return handleError(
                             typeof error === 'string'
                                 ? error
-                                : 'RefreshAccessTokenError'
+                                : 'RefreshAccessTokenError',
+                            error
                         )
                     }
                 }
             } catch (error: any) {
-                if (env.SHOW_AUTH_LOGS) {
+                if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                     console.error('jwt error:', error)
                 }
                 return null
@@ -216,7 +217,7 @@ const result = NextAuth({
         async session({ session, token, user }): Promise<Session> {
             const env = validateEnv(process.env)
 
-            if (env.SHOW_AUTH_LOGS) {
+            if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                 console.log('callback: session')
             }
             if (token.error) {
