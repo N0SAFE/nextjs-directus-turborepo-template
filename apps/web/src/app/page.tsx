@@ -61,7 +61,7 @@ export default function Page(): JSX.Element {
             </Authlogin.Link>
             <main className="flex min-h-screen flex-col items-center justify-between p-24">
                 <div className="relative z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-                    <p className="left-0 top-0 z-10 flex w-full justify-center border-b border-neutral-800 bg-zinc-800/30 bg-gradient-to-b from-inherit px-4 pb-6 pt-8 backdrop-blur-2xl md:fixed lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:bg-zinc-800/30 lg:p-4">
+                    <p className="left-0 top-0 z-10 flex w-full justify-center border-b border-neutral-800 bg-zinc-800/30 bg-linear-to-b from-inherit px-4 pb-6 pt-8 backdrop-blur-2xl md:fixed lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:bg-zinc-800/30 lg:p-4">
                         examples/with-directus -&nbsp;
                         <code className="font-mono font-bold">web</code>
                     </p>
@@ -69,7 +69,7 @@ export default function Page(): JSX.Element {
                         <ModeToggle />
                     </div>
 
-                    <div className="bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-black via-black md:fixed lg:static lg:h-auto lg:w-auto lg:bg-none">
+                    <div className="bottom-0 left-0 flex h-48 w-full items-end justify-center bg-linear-to-t from-black via-black md:fixed lg:static lg:h-auto lg:w-auto lg:bg-none">
                         <a
                             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
                             href="https://vercel.com?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"
