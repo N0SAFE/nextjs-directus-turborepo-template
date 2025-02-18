@@ -26,28 +26,15 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
    cd nextjs-directus-turborepo-template
    ```
 
-2. **Install Dependencies**
+2. **Initialize the Project**
    ```bash
-   pnpm install
+   npm run init 
    ```
+   this will install dependencies and question you about your installation preference
 
-3. **Set Up Environment Variables**
-   - Copy `.env.example` to `.env` in both `apps/web` and `apps/api` directories
-   - Configure your environment variables:
-     - Database connection details for Directus
-     - Authentication settings
-     - API endpoints
-
-4. **Initialize the Database**
+3. **Start Development Servers**
    ```bash
-   cd apps/api
-   pnpm run db:init
-   pnpm run seed # Optional: Run seeder for sample data
-   ```
-
-5. **Start Development Servers**
-   ```bash
-   pnpm run dev
+   npm run dev
    ```
    This will start:
    - Next.js frontend at http://localhost:3000
@@ -81,31 +68,30 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 
 1. **Running the Development Environment**
    ```bash
-   pnpm run dev # Starts all services
+   npm run dev # Starts all services
    ```
 
 2. **Building for Production**
    ```bash
-   pnpm run build # Builds all apps and packages
+   npm run build # Builds all apps and packages
    ```
 
 3. **Running Tests**
    ```bash
-   pnpm run test # Runs tests across all packages
+   npm run test # Runs tests across all packages
    ```
 
 4. **Linting and Formatting**
    ```bash
-   pnpm run lint # Run ESLint
-   pnpm run format # Run Prettier
+   npm run lint # Run ESLint
+   npm run format # Run Prettier
    ```
 
 ## Adding New Components
 
 1. Use Shadcn UI CLI to add new components:
    ```bash
-   cd packages/ui
-   pnpm dlx shadcn-ui@latest add [component-name]
+   npm run ui:add [component-name]
    ```
 
 2. Components will be available in `packages/ui/components/`
