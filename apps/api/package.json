@@ -6,7 +6,7 @@
     "update": "npm update --legacy-peer-deps && directus database migrate:latest",
     "directus:bootstrap": "directus bootstrap",
     "directus:bootstrap:config.js": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap",
-    "bootstrap": "runwhileerror \"node init.js && directus:bootstrap:config.js\"",
+    "bootstrap": "runwhileerror \"node init.js && npm run directus:bootstrap:config.js\"",
     "post-bootstrap": "npm run import",
     "migrate:up": "npx directus database migrate:up",
     "migrate:down": "npx directus database migrate:down",
