@@ -15,8 +15,7 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 ## Prerequisites
 
 - Node.js 18 or later
-- MySQL/MariaDB for Directus
-- pnpm (recommended) or yarn/npm
+- npm (recommended) or yarn
 
 ## Getting Started
 
