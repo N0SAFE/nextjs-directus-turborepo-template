@@ -4,6 +4,9 @@ Derived from: https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full
 import { z } from 'zod'
 import queryString from 'query-string'
 import Link from 'next/link'
+import { NextRouter } from 'next/router'
+import NProgress from 'nprogress';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 type LinkProps = Parameters<typeof Link>[0]
 
@@ -110,6 +113,8 @@ export type RouteBuilder<
     Search extends z.ZodSchema,
 > = CoreRouteElements<Params, Search> & {
     (p?: z.input<Params>, search?: z.input<Search>): string
+
+    immediate: (router: AppRouterInstance, p?: z.input<Params>, search?: z.input<Search>) => void
 
     routeName: string
 
@@ -420,6 +425,16 @@ export function makeRoute<
         route,
         info
     ) as RouteBuilder<Params, Search>
+
+    urlBuilder.immediate = function immediate(
+        router: AppRouterInstance,
+        p?: z.input<Params>,
+        search?: z.input<Search>
+    ) {
+        const href = urlBuilder(p, search)
+        NProgress.start();
+        router.push(href)
+    }
 
     urlBuilder.routeName = info.name
 
