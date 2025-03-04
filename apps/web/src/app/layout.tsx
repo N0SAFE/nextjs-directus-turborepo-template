@@ -66,7 +66,19 @@ export default async function RootLayout({
                         >
                             <NextTopLoader />
                             <ReactQueryProviders>
-                                <NextDevtoolsProvider>
+                                {process.env.NODE_ENV === 'development' ? (
+                                    <NextDevtoolsProvider>
+                                        <Suspense
+                                            fallback={
+                                                <div className="flex h-screen w-screen items-center justify-center">
+                                                    <Loader />
+                                                </div>
+                                            }
+                                        >
+                                            {children}
+                                        </Suspense>
+                                    </NextDevtoolsProvider>
+                                ) : (
                                     <Suspense
                                         fallback={
                                             <div className="flex h-screen w-screen items-center justify-center">
@@ -76,7 +88,7 @@ export default async function RootLayout({
                                     >
                                         {children}
                                     </Suspense>
-                                </NextDevtoolsProvider>
+                                )}
                             </ReactQueryProviders>
                         </ThemeProvider>
                     </Validate>
