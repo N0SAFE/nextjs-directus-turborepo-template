@@ -56,7 +56,7 @@
         }
     },
     "scripts": {
-        "pretify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
+        "prettify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
