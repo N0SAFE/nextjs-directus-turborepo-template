@@ -3,28 +3,29 @@
     "private": true,
     "workspaces": [
         "apps/*",
-        "packages/*"
+        "packages/*",
+        "internals/*"
     ],
     "scripts": {
         "kill:api": "trycli-options --command \"envcli kill-port $:{NEXT_PUBLIC_API_PORT} && envcli wait-on $:{NEXT_PUBLIC_API_URL} -r\" --silent",
-        "update:api": "dotenv -e .env -- npm run update -w apps/api",
-        "init": "npm i && node init.js && dotenv -e .env -- npm run bootstrap -w apps/api && rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types && dotenv -e .env -- npm run post-bootstrap -w apps/api && dotenv -v FORCE_COLOR=1 -- turbo run init\" && npm run kill:api && npm run build:clean:force && node post-init.js",
-        "generate:directus:types": "rununtil \"dotenv -e .env -- npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\" && npm run kill:api",
-        "prod:update": "npm ci && dotenv -e .env -- npm run migrate:latest -w apps/api && dotenv -e .env -- npm run schema:import -w apps/api",
-        "build:force": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\" && npm run kill:api",
-        "build": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\" && npm run kill:api",
-        "analyze": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo analyze\" && npm run kill:api",
-        "build:no:check": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build:no:check\" && npm run kill:api",
+        "update:api": "dotenv -e .env -- npm run api update",
+        "init": "npm i && node init.js && dotenv -e .env -- npm run api bootstrap && rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types && dotenv -e .env -- npm run api post-bootstrap && dotenv -v FORCE_COLOR=1 -- turbo run init\" && npm run kill:api && npm run build:clean:force && node post-init.js",
+        "generate:directus:types": "rununtil \"dotenv -e .env -- npm run api start\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate:directus:types\" && npm run kill:api",
+        "prod:update": "npm ci && dotenv -e .env -- npm run api migrate:latest && dotenv -e .env -- npm run api schema:import",
+        "build:force": "rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build --force\" && npm run kill:api",
+        "build": "rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build\" && npm run kill:api",
+        "analyze": "rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo analyze\" && npm run kill:api",
+        "build:no:check": "rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo build:no:check\" && npm run kill:api",
         "build:zero": "npm run build",
         "build:zero:force": "npm run build:force",
         "build:clean": "npm run clean && npm run build:zero",
         "build:clean:force": "npm run clean && npm run build:zero:force",
         "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",
         "start": "dotenv -v FORCE_COLOR=1 -- turbo start",
-        "test": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo test\" && npm run kill:api",
+        "test": "rununtil \"dotenv -e .env -- npm run api start\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo test\" && npm run kill:api",
         "start:local": "dotenv -v FORCE_COLOR=1 -- turbo start:local",
         "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",
-        "format": "dotenv -v FORCE_COLOR=1 -- turbo pretify",
+        "format": "dotenv -v FORCE_COLOR=1 -- turbo prettify",
         "clean": "dotenv -v FORCE_COLOR=1 -- turbo clean",
         "ui:add": "dotenv -e .env -- npm run ui:add --workspace=@repo/ui --",
         "api": "dotenv -e .env -- npm run --workspace=api --",
@@ -34,14 +35,16 @@
         "@repo/tsconfig": "dotenv -e .env -- npm run --workspace=@repo/tsconfig --",
         "@repo/tailwind-config": "dotenv -e .env -- npm run --workspace=@repo/tailwind-config --",
         "@repo/eslint-config": "dotenv -e .env -- npm run --workspace=@repo/eslint-config --",
-        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk --"
+        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk --",
+        "@internals/package-manager": "dotenv -e .env -- npm run --workspace=@internals/package-manager --"
     },
     "devDependencies": {
         "@n0safe/envcli": "^1.0.2",
         "@n0safe/rununtil": "^1.0.5",
         "@n0safe/trycli": "^1.0.4",
         "prompts": "^2.4.2",
-        "turbo": "^2.1.2"
+        "turbo": "^2.1.2",
+        "@internals/package-manager": "*"
     },
     "engines": {
         "node": ">=20"

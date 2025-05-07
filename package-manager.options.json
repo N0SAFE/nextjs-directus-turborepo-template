@@ -1,0 +1,8 @@
+{
+  "packagesDir": "packages",
+  "shared": {
+    "whitelist": [
+      "react"
+    ]
+  }
+}
