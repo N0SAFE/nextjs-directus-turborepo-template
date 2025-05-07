@@ -6,13 +6,16 @@
   ],
   "license": "MIT",
   "scripts": {
-    "pretify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
+    "prettify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
     "lint": "eslint \"**/*.ts*\"",
     "test": "echo 'all packages:ui tests passed!'",
     "ui:add": "npx shadcn add --"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
@@ -24,14 +27,10 @@
     "@repo/types": "*",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20.9.0",
-    "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3",
     "delete-cli": "^0.1.3",
     "next": "15.1.4",
     "postcss": "^8.4.31",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.2.2"
@@ -46,20 +45,17 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@repo/directus-sdk": "*",
+    "@repo/shared": "*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "concurrently": "^8.2.2",
-    "framer-motion": "^10.16.4",
-    "lucide-react": "^0.292.0",
-    "next-themes": "^0.3.0",
+    "framer-motion": "^12.10.0",
+    "lucide-react": "^0.507.0",
+    "next-themes": "^0.4.6",
     "react-hook-form": "^7.53.0",
     "rimraf": "^6.0.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
-  },
-  "overrides": {
-    "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3"
   }
 }
