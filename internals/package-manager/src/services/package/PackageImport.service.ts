@@ -8,7 +8,9 @@ export class PackageImportService {
   // Import a package from GitHub, GitLab, local folder, or URL
   static async importPackage(source: string, destination: string): Promise<void> {
     if (source.startsWith('http')) {
-      if (source.includes('github.com') || source.includes('gitlab.com')) {
+      const allowedHosts = ['github.com', 'gitlab.com'];
+      const urlHost = new URL(source).host;
+      if (allowedHosts.includes(urlHost)) {
         // GitHub or GitLab repo
         await this.cloneRepo(source, destination);
       } else if (source.match(/\.(zip|tar\.gz|tgz)$/)) {
