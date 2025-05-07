@@ -66,7 +66,7 @@ export default async function RootLayout({
                         >
                             <NextTopLoader />
                             <ReactQueryProviders>
-                                {process.env.NODE_ENV === 'development' ? (
+                                {process.env.NODE_ENV === 'development' && env.NEXT_PUBLIC_DEVTOOLS ? (
                                     <NextDevtoolsProvider>
                                         <Suspense
                                             fallback={

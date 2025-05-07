@@ -44,3 +44,5 @@ openapi-docs.yml
 redoc-static.html
 src/routes/openapi.ts
 src/routes/index.ts
+
+.next-devtools
