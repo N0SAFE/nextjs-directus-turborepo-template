@@ -1,0 +1,6 @@
+{
+  "whitelist": [
+    "lodash",
+    "axios"
+  ]
+}
