@@ -153,7 +153,7 @@ export type TupleIndices<A extends any[]> = A extends [any, ...infer T]
     ? TupleIndices<T> | T['length']
     : never
 
-export type Pretify<T> = {
+export type prettify<T> = {
     // @ts-ignore
     [K in keyof T]: T[K]
 } & {}

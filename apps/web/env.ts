@@ -7,6 +7,11 @@ const publicEnv = {
     NEXT_PUBLIC_API_URL: zod.string().url(),
     NEXT_PUBLIC_APP_URL: zod.string().url(),
     NEXT_PUBLIC_SIGNIN_PATH: zod.string().optional(),
+    NEXT_PUBLIC_DEVTOOLS: zod
+        .enum(['true', 'false'])
+        .transform((value) => value === 'true')
+        .optional()
+        .default('false'),
 }
 
 const env = {

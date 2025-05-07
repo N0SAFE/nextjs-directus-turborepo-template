@@ -1,4 +1,5 @@
 import { Monitoring } from 'react-scan/monitoring/next'
+import { NextDevtoolsProvider } from '@next-devtools/core'
 import '@repo/ui/styles/globals.css' // ! load the local stylesheets first to allow for overrides of the ui package components
 import './globals.css'
 import type { Metadata } from 'next'
@@ -42,7 +43,7 @@ export default async function RootLayout({
             <body
                 className={cn(
                     fontSans.variable,
-                    'h-screen w-screen overflow-auto bg-background font-sans antialiased'
+                    'bg-background h-screen w-screen overflow-auto font-sans antialiased'
                 )}
             >
                 {process.env.NODE_ENV === 'development' &&
@@ -65,15 +66,29 @@ export default async function RootLayout({
                         >
                             <NextTopLoader />
                             <ReactQueryProviders>
-                                <Suspense
-                                    fallback={
-                                        <div className="flex h-screen w-screen items-center justify-center">
-                                            <Loader />
-                                        </div>
-                                    }
-                                >
-                                    {children}
-                                </Suspense>
+                                {process.env.NODE_ENV === 'development' && env.NEXT_PUBLIC_DEVTOOLS ? (
+                                    <NextDevtoolsProvider>
+                                        <Suspense
+                                            fallback={
+                                                <div className="flex h-screen w-screen items-center justify-center">
+                                                    <Loader />
+                                                </div>
+                                            }
+                                        >
+                                            {children}
+                                        </Suspense>
+                                    </NextDevtoolsProvider>
+                                ) : (
+                                    <Suspense
+                                        fallback={
+                                            <div className="flex h-screen w-screen items-center justify-center">
+                                                <Loader />
+                                            </div>
+                                        }
+                                    >
+                                        {children}
+                                    </Suspense>
+                                )}
                             </ReactQueryProviders>
                         </ThemeProvider>
                     </Validate>

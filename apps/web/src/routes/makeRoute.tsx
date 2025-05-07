@@ -4,7 +4,6 @@ Derived from: https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full
 import { z } from 'zod'
 import queryString from 'query-string'
 import Link from 'next/link'
-import { NextRouter } from 'next/router'
 import NProgress from 'nprogress';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 

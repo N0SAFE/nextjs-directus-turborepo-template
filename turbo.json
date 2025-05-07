@@ -32,7 +32,7 @@
         "lint": {
             "cache": false
         },
-        "pretify": {
+        "prettify": {
             "dependsOn": ["^lint"],
             "cache": false
         },

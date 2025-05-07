@@ -1,5 +1,6 @@
 const MillionLint = require('@million/lint')
 const withBundleAnalyzer = require('@next/bundle-analyzer')
+const { withNextDevtools } = require('@next-devtools/core/plugin')
 
 const url = new URL(process.env.NEXT_PUBLIC_API_URL)
 
@@ -9,6 +10,7 @@ const noCheck = process.env.CHECK_ON_BUILD !== 'true'
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
+    
     eslint: {
         ignoreDuringBuilds: noCheck,
     },
@@ -52,6 +54,11 @@ if (
         dev: 'debug',
     }
     exp = MillionLint.next(millionLintConfig)(exp)
+}
+
+
+if (process.env.NODE_ENV === 'development') {
+    exp = withNextDevtools(exp)
 }
 
 module.exports = exp
