@@ -21,6 +21,7 @@
         "build:clean:force": "npm run clean && npm run build:zero:force",
         "dev": "dotenv -v FORCE_COLOR=1 -- turbo run dev",
         "start": "dotenv -v FORCE_COLOR=1 -- turbo start",
+        "generate": "rununtil \"dotenv -e .env -- npm run start -w api\" \"dotenv -v FORCE_COLOR=1 -- turbo run generate\" && npm run kill:api",
         "test": "rununtil \"dotenv -e .env -- npm run start -w api\" \"envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && dotenv -v FORCE_COLOR=1 -- turbo test\" && npm run kill:api",
         "start:local": "dotenv -v FORCE_COLOR=1 -- turbo start:local",
         "lint": "dotenv -v FORCE_COLOR=1 -- turbo lint",

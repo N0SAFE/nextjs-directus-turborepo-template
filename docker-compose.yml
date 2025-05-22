@@ -37,23 +37,26 @@ services:
       api:
         condition: service_healthy
     container_name: web
+    volumes:
+      - ./apps/web:/app
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile-dev
     command: "npm run dev"
     restart: always
     ports:
-      - 3000:3000
+      - ${NEXT_PUBLIC_APP_PORT:-3003}:${NEXT_PUBLIC_APP_PORT:-3003}
     networks:
       - app_network
     environment:
       API_PING_PATH: /server/ping
       NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: /api/_directus
-      NEXT_PUBLIC_API_URL: http://api:8055
-      NEXT_PUBLIC_API_PORT: 8055
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_APP_PORT: 3000
+      NEXT_PUBLIC_API_URL: http://api:${NEXT_PUBLIC_API_PORT:-8055}/
+      NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055}
+      NEXT_PUBLIC_APP_URL: http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
+      NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3003}
       API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+      AUTH_SECRET: ${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
   # api:
   #   container_name: api
   #   build:

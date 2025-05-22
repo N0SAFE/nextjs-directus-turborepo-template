@@ -20,7 +20,7 @@ WORKDIR /app
 
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN npm install
+RUN npm ci
 
 # Build the project
 COPY --from=builder /app/out/full/ .

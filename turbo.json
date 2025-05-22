@@ -43,6 +43,10 @@
             "dependsOn": ["^build"]
         },
         "check-types": {},
+        "generate": {
+            "dependsOn": ["^generate"],
+            "cache": false
+        },
         "dev": {
             "cache": false,
             "persistent": true
