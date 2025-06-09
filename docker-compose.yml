@@ -38,11 +38,13 @@ services:
         condition: service_healthy
     container_name: web
     volumes:
-      - ./apps/web:/app
+      - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile-dev
-    command: "npm run dev"
+    command: "tree -I 'node_modules'"
     restart: always
     ports:
       - ${NEXT_PUBLIC_APP_PORT:-3003}:${NEXT_PUBLIC_APP_PORT:-3003}

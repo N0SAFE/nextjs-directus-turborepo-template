@@ -5,58 +5,53 @@
     "globalPassThroughEnv": [".env.local"],
     "globalEnv": ["NEXT_PUBLIC_API_URL", "API_PING_PATH", "API_ADMIN_TOKEN", "TEMP_APP_NEXTAUTH_URL", "NEXT_AUTH"],
     "tasks": {
+        "dev": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["^dev"]
+        },
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+            "inputs": ["src/**", "public/**", "*.config.*", "package.json"]
+        },
+        "start": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["build"]
+        },
+        "docker:build": {
+            "cache": false,
+            "dependsOn": ["build"]
+        },
+        "docker:dev": {
+            "cache": false,
+            "persistent": true
+        },
         "init": {
             "dependsOn": ["^init", "clean"],
             "outputs": ["dist/**"],
             "cache": false
         },
-        "build:force": {
-            "dependsOn": ["^build:force"],
-            "cache": false
-        },
         "generate:directus:types": {
+            "cache": false,
+            "dependsOn": ["^generate:directus:types"]
+        },
+        "generate": {
+            "dependsOn": ["^generate", "generate:directus:types"],
             "cache": false
         },
-        "analyze": {
-            "dependsOn": ["^analyze"],
-            "cache": false
-        },
-        "build": {
-            "dependsOn": ["^build", "build:force"],
-            "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
-        },
-        "build:no:check": {
-            "dependsOn": ["^build:no:check"],
-            "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+        "test": {
+            "dependsOn": ["^build"],
+            "inputs": ["src/**", "test/**", "*.config.*"]
         },
         "lint": {
-            "cache": false
+            "cache": false,
+            "inputs": ["src/**", "*.config.*", "package.json"]
         },
         "pretify": {
             "dependsOn": ["^lint"],
             "cache": false
-        },
-        "web#test": {
-            "dependsOn": ["web#build"]
-        },
-        "test": {
-            "dependsOn": ["^build"]
-        },
-        "check-types": {},
-        "generate": {
-            "dependsOn": ["^generate"],
-            "cache": false
-        },
-        "dev": {
-            "cache": false,
-            "persistent": true
-        },
-        "start": {
-            "cache": false,
-            "persistent": true
-        },
-        "start:local": {
-            "persistent": true
         },
         "clean": {
             "cache": false
