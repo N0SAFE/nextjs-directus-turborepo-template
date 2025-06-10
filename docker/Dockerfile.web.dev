@@ -22,7 +22,7 @@ RUN npm install
 
 # Development runner
 FROM base AS runner
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat su-exec
 WORKDIR /app
 
 # Install Turbo globally
@@ -43,6 +43,8 @@ ARG NEXT_PUBLIC_APP_PORT
 ARG API_PING_PATH
 ARG API_ADMIN_TOKEN
 ARG AUTH_SECRET
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_PORT=$NEXT_PUBLIC_API_PORT
@@ -52,15 +54,18 @@ ENV API_PING_PATH=$API_PING_PATH
 ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
 ENV AUTH_SECRET=$AUTH_SECRET
 
-# Create a non-root user with host user's UID/GID for proper file permissions
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN addgroup --system --gid ${GROUP_ID} nodejs
-RUN adduser --system --uid ${USER_ID} --ingroup nodejs nextjs
+# Create nextjs user for development
+# Use higher UID/GID to avoid conflicts with system users
+RUN addgroup -g 10001 -S nodejs && \
+    adduser -S nextjs -u 10001 -G nodejs
 
-# Change ownership of the app directory to the nextjs user
-RUN chown -R nextjs:nodejs /app
-USER nextjs
+# For development, we'll run as root to avoid permission issues with mounted volumes
+# In production, we use the nextjs user for security
+# Change ownership of the app directory
+RUN chown -R nextjs:nodejs ./
+
+# Don't switch to nextjs user in development to avoid volume permission issues
+# USER nextjs
 
 # Expose port
 EXPOSE 3003
@@ -69,5 +74,16 @@ EXPOSE 3003
 ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Start the development server with hot reloading
+# Create an entrypoint script to fix permissions and run as the correct user
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'set -e' >> /entrypoint.sh && \
+    echo '# Fix ownership of mounted volumes' >> /entrypoint.sh && \
+    echo 'chown -R nextjs:nodejs /app/apps/web/src/routes 2>/dev/null || mkdir -p /app/apps/web/src/routes && chown -R nextjs:nodejs /app/apps/web/src/routes' >> /entrypoint.sh && \
+    echo 'chown -R nextjs:nodejs /app/apps/web/.next 2>/dev/null || true' >> /entrypoint.sh && \
+    echo '# Execute command as nextjs user' >> /entrypoint.sh && \
+    echo 'exec su-exec nextjs "$@"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+# Start the development server using the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["npm", "run", "dev:docker", "--workspace=web"]

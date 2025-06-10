@@ -16,11 +16,21 @@ export const createDefaultDirectusInstance = (
         .with(graphql({ credentials: 'include' }))
 }
 
-const NEXT_PUBLIC_APP_URL_WIHTOUT_SLASH_TAIL = (
-    process.env as any
-).NEXT_PUBLIC_APP_URL!.replace(/\/$/, '')
-const NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH_WITH_MANDATORY_SLASH = `/${process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH?.replace(/^\//, '') || ''}`
+/**
+ * Get the appropriate Directus URL based on the environment (server-side vs client-side)
+ * - Server-side: Uses API_URL (internal Docker network URL)
+ * - Client-side: Uses NEXT_PUBLIC_API_URL (localhost URL accessible from browser)
+ */
+export const getDirectusUrl = (): string => {
+    // Check if we're on the server-side
+    if (typeof window === 'undefined') {
+        // Server-side: use internal Docker network URL
+        return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL!
+    } else {
+        // Client-side: use localhost URL
+        return process.env.NEXT_PUBLIC_API_URL!
+    }
+}
 
-export const directusUrl = process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH
-    ? `${NEXT_PUBLIC_APP_URL_WIHTOUT_SLASH_TAIL}${NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH_WITH_MANDATORY_SLASH}`
-    : process.env.NEXT_PUBLIC_API_URL // if a directus proxy is not used, use the API URL (this is done for the development environment when using docker because of private network)
+// Export the URL for backward compatibility
+export const directusUrl = getDirectusUrl()

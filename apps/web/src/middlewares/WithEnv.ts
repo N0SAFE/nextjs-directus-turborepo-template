@@ -12,7 +12,7 @@ import { matcherHandler } from './utils/utils'
 const errorPageRenderingPath = '/middleware/error/env'
 
 const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
-    return async (request: NextRequest, _next: NextFetchEvent) => {
+    return async (request, _next) => {
         const isValid = envIsValid(process.env as any)
         const matcher = matcherHandler(request.nextUrl.pathname, [
             [

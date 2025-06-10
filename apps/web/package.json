@@ -9,7 +9,7 @@
         "dev": "npm run wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"cross-env NODE_OPTIONS='--inspect' next dev -p 3003 --turbopack\" \"npm run dr:build:watch\"",
         "dev:docker": "concurrently --kill-others-on-fail -n next,routing -c green,magenta \"cross-env NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p 3003 --turbopack\" \"npm run dr:build:watch\"",
         "dev:open": "npm run wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"(envcli open $:{NEXT_PUBLIC_APP_URL} || envcli cmd.exe /c start $:{NEXT_PUBLIC_APP_URL}) && cross-env NODE_OPTIONS='--inspect' next dev -p 3003 --turbopack\" \"npm run dr:build:watch\"",
-        "wait-api": "envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} || wait-port api:8055",
+        "wait-api": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} || wait-port api:8055",
         "analyze": "cross-env ANALYZE=true npm run build",
         "build": "npm run generate && npm run wait-api && next build && next-sitemap",
         "build:docker": "npm run generate && next build && next-sitemap",

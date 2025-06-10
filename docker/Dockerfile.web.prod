@@ -13,7 +13,7 @@ RUN npm install -g turbo@^2
 COPY . .
 RUN turbo prune web --docker
 
-# Install dependencies with dev dependencies for runtime building
+# Install dependencies with dev dependencies for building
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -21,12 +21,40 @@ WORKDIR /app
 # Install Turbo globally
 RUN npm install -g turbo@^2
 
-# Install ALL dependencies (including dev dependencies for runtime building)
+# First install ALL dependencies (including dev dependencies for building)
 COPY --from=builder /app/out/json/ .
 RUN npm ci
 
-# Copy all source files (no build here)
+# Copy all source files
 COPY --from=builder /app/out/full/ .
+
+# Set build-time environment variables for Next.js
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_PORT
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_APP_PORT
+ARG API_PING_PATH
+ARG API_ADMIN_TOKEN
+ARG AUTH_SECRET
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_PORT=$NEXT_PUBLIC_API_PORT
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_PORT=$NEXT_PUBLIC_APP_PORT
+ENV API_PING_PATH=$API_PING_PATH
+ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
+ENV AUTH_SECRET=$AUTH_SECRET
+
+# Build step moved to CMD for runtime execution
+
+# Production dependencies only
+FROM base AS production-deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install only production dependencies
+COPY --from=builder /app/out/json/ .
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Production runner
 FROM base AS runner
@@ -35,37 +63,33 @@ WORKDIR /app
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
-# Install Turbo globally for runtime building
-RUN npm install -g turbo@^2
-
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy dependencies (including dev dependencies for runtime building)
+# Copy all dependencies (including dev dependencies for build process)
 COPY --from=installer /app/node_modules ./node_modules
 
-# Copy all source files for runtime building
-COPY --from=installer /app .
+# Create directory structure
+RUN mkdir -p apps/web/.next
+RUN chown -R nextjs:nodejs .
 
-# Set the correct permission for build directories and all writable paths
-RUN mkdir -p .next apps/web/.next apps/web/src/routes
-RUN chown -R nextjs:nodejs /app
+# Copy source files instead of build artifacts since we'll build at runtime
+COPY --from=installer --chown=nextjs:nodejs /app/apps/web ./apps/web
+COPY --from=installer --chown=nextjs:nodejs /app/packages ./packages
+COPY --from=installer --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=installer --chown=nextjs:nodejs /app/turbo.json ./turbo.json
 
 USER nextjs
 
 # Expose port
 EXPOSE 3000
 
-# Set environment variables (runtime environment variables for build and execution)
+# Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
-
-# Note: Build-time environment variables will be provided via docker-compose environment section
-# They are needed for the runtime build process and will be available when the container starts
-
-# Start the application with runtime build
+# Start the application with dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "npm run build:docker --workspace=web && node apps/web/server.js"]
+CMD npm run build:docker --workspace web && npm run start:docker --workspace web

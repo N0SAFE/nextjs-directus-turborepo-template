@@ -1,0 +1,26 @@
+services:
+  # Next.js web app (standalone)
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web.standalone.prod
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_APP_PORT:-3003}:3003"
+    environment:
+      - NODE_ENV=production
+      - API_PING_PATH=/server/ping
+      # External API URL (should point to where your API is hosted)
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://host.docker.internal:8055/}
+      - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3003}
+      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+      - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+      - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+      # Production deployment configuration (direct API connection, no proxy)
+      - USE_LOCALHOST_CLIENT=false
+      - NEXT_PUBLIC_USE_PROXY=false
+      # Server-side API URL - should point to your API server (can be a different host)
+      - DIRECTUS_SERVER_URL=${DIRECTUS_SERVER_URL:-http://host.docker.internal:8055/}
+    # Remove networks section to use default bridge network for external connectivity
+    # This allows the container to connect to any external API server

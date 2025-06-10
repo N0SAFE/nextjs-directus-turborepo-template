@@ -7,7 +7,7 @@ import {
 import { Matcher, MiddlewareFactory } from './utils/types'
 import { serverHealth, withToken } from '@repo/directus-sdk'
 import { validateEnvSafe } from '#/env'
-import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
+import { directusProxy, nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
 import { createDirectusEdgeWithDefaultUrl } from '@/lib/directus/directus-edge'
 
 const env = validateEnvSafe(process.env).data
@@ -15,15 +15,21 @@ const errorPageRenderingPath = '/middleware/error/healthCheck'
 
 const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request: NextRequest, _next: NextFetchEvent) => {
+        console.log(
+            `Health Check Middleware: Checking server health for ${request.nextUrl.pathname}`,
+            request.nextUrl.pathname
+        )
         if (env?.NODE_ENV === 'development') {
             try {
                 const directus = createDirectusEdgeWithDefaultUrl()
+                console.log('Directus instance created with url:', directus.url.href)
                 try {
                     const data = await (env.API_ADMIN_TOKEN
                         ? directus.request(
                               withToken(env.API_ADMIN_TOKEN, serverHealth())
                           )
                         : directus.serverHealth())
+                        console.log('Health Check Response:', data)
                     if (!(data.status === 'ok')) {
                         if (
                             request.nextUrl.pathname === errorPageRenderingPath
@@ -38,6 +44,7 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                         }
                     }
                 } catch (e: any) {
+                    console.log('Health Check Error:', e)
                     if (e.response.status === 401) {
                         const data = await directus.request(serverHealth())
                         if (!(data.status === 'ok')) {
@@ -81,5 +88,5 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
 export default withHealthCheck
 
 export const matcher: Matcher = [{ and: [nextjsRegexpPageOnly, nextauthNoApi, {
-    not: process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH
+    not: process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH || directusProxy
 }] }]

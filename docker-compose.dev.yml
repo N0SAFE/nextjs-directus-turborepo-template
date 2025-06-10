@@ -75,6 +75,7 @@ services:
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
       PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      CORS_ENABLED: "false"
       # Enable hot reloading for extensions
       EXTENSIONS_AUTO_RELOAD: "true"
     healthcheck:
@@ -95,7 +96,7 @@ services:
         - USER_ID=${USER_ID:-1000}
         - GROUP_ID=${GROUP_ID:-1000}
         - NODE_ENV=development
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://api:8055/}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
         - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
         - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3003}
         - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
@@ -117,8 +118,10 @@ services:
     environment:
       - NODE_ENV=development
       - API_PING_PATH=/server/ping
-      - NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH=/api/_directus
-      - NEXT_PUBLIC_API_URL=http://api:8055/
+      # Server-side API URL (internal Docker network)
+      - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}/
+      # Client-side API URL (localhost for browser)
+      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}/
       - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
       - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
@@ -133,6 +136,8 @@ services:
 networks:
   app_network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
 
 volumes:
   api_db_data:

@@ -18,6 +18,10 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
         throw new Error('env is not valid')
     }
     return async (request: NextRequest, _next: NextFetchEvent) => {
+        console.log(
+            `Auth Middleware: Checking authentication for ${request.nextUrl.pathname}`,
+            request.nextUrl.pathname
+        )
         const res = await auth(async function middleware(req) {
             const toNext = async () => (await next(req as any, _next))!
             const isAuth = !!req.auth

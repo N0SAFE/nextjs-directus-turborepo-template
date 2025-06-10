@@ -4,7 +4,6 @@ const publicEnv = {
     REACT_SCAN_GIT_COMMIT_HASH: zod.string().optional(),
     REACT_SCAN_GIT_BRANCH: zod.string().optional(),
     REACT_SCAN_TOKEN: zod.string().optional(),
-    NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: zod.string().optional(),
     NEXT_PUBLIC_API_URL: zod.string().url(),
     NEXT_PUBLIC_APP_URL: zod.string().url(),
     NEXT_PUBLIC_SIGNIN_PATH: zod.string().optional(),
@@ -12,6 +11,7 @@ const publicEnv = {
 
 const env = {
     ...publicEnv,
+    API_URL: zod.string().url().optional(),
     API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
     AUTH_SECRET: zod.string(),

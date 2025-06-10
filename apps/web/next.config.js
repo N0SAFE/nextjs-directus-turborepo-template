@@ -9,14 +9,6 @@ const noCheck = process.env.CHECK_ON_BUILD !== 'true'
  * @type {import('next').NextConfig}
  */
 const nextConfig = {
-    async rewrites() {
-        return [
-            {
-                source: `${process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH || '/api/_directus'}/:path*`,
-                destination: process.env.NEXT_PUBLIC_API_URL + '/:path*',
-            },
-        ]
-    },
     eslint: {
         ignoreDuringBuilds: noCheck,
     },
@@ -43,7 +35,7 @@ const nextConfig = {
             },
         ],
     },
-    output: 'standalone'
+    output: 'standalone',
 }
 
 let exp = nextConfig
