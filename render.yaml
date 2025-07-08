@@ -1,0 +1,93 @@
+services:
+  # Directus API Service
+  - type: web
+    name: directus-api
+    env: docker
+    dockerfilePath: ./docker/Dockerfile.api.prod
+    plan: free
+    healthCheckPath: /server/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SECRET
+        generateValue: true
+      - key: DB_CLIENT
+        value: pg
+      - key: DB_HOST
+        fromDatabase:
+          name: directus-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: directus-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: directus-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: directus-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: directus-db
+          property: password
+      - key: PUBLIC_URL
+        value: https://directus-api-yourname.onrender.com
+      - key: CORS_ENABLED
+        value: "true"
+      - key: CORS_ORIGIN
+        value: https://nextjs-web-yourname.onrender.com
+      - key: CORS_METHODS
+        value: "GET,POST,PATCH,DELETE,OPTIONS"
+      - key: CORS_ALLOWED_HEADERS
+        value: "Content-Type,Authorization,X-Requested-With"
+      - key: CORS_CREDENTIALS
+        value: "true"
+      - key: ADMIN_EMAIL
+        value: admin@admin.com
+      - key: ADMIN_PASSWORD
+        value: secure-admin-password-123
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: LOG_LEVEL
+        value: warn
+      - key: RATE_LIMITER_ENABLED
+        value: "true"
+      - key: RATE_LIMITER_POINTS
+        value: "25"
+      - key: RATE_LIMITER_DURATION
+        value: "1"
+
+  # Next.js Web Service
+  - type: web
+    name: nextjs-web
+    env: docker
+    dockerfilePath: ./docker/Dockerfile.web.prod
+    plan: free
+    healthCheckPath: /
+    buildCommand: echo "Building with Docker"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://directus-api-yourname.onrender.com
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://nextjs-web-yourname.onrender.com
+      - key: API_URL
+        value: https://directus-api-yourname.onrender.com
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: API_ADMIN_TOKEN
+        sync: false  # Will be set manually to match API service
+      - key: API_PING_PATH
+        value: /server/health
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+
+databases:
+  - name: directus-db
+    databaseName: directus
+    user: directus_user
+    plan: free

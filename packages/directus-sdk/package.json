@@ -64,7 +64,7 @@
         "init": "bun run generate:directus:types",
         "build": "bun run generate:directus:types",
         "clean": "rimraf indirectus",
-        "generate:directus:types": "npx envcli \"echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && DEBUG=wait-port wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
+        "generate:directus:types": "npx envcli \"echo $API_URL$:{API_PING_PATH} && DEBUG=wait-port wait-port $API_URL$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $API_URL --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
     },
     "keywords": [],
     "author": "",

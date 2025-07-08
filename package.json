@@ -6,7 +6,7 @@
         "packages/*"
     ],
     "scripts": {
-        "dev": "docker compose -f docker-compose.dev.yml down && docker compose -f docker-compose.dev.yml up --build",
+        "dev": "docker compose down && docker compose up",
         "dev:local": "turbo dev",
         "build": "turbo build",
         "start": "docker compose -f docker-compose.prod.yml down && docker compose -f docker-compose.prod.yml up --build",
@@ -15,11 +15,12 @@
         "lint": "turbo lint",
         "format": "turbo pretify",
         "clean": "turbo clean",
-        "init": "npm i && node init.js && npm run bootstrap",
-        "bootstrap": "dotenv -e .env -- npm run bootstrap -w apps/api",
+        "init": "bun i && node init.js && bun run bootstrap",
+        "bootstrap": "dotenv -e .env -- bun run bootstrap -w apps/api",
         "generate": "turbo generate",
-        "docker:dev": "npm run dev",
-        "docker:prod": "npm run start",
+        "generate:directus:types": "turbo run generate:directus:types",
+        "docker:dev": "bun run dev",
+        "docker:prod": "bun run start",
         "docker:build": "docker compose -f docker-compose.prod.yml build",
         "docker:build:web": "docker build -f docker/Dockerfile.web.prod . -t nextjs-directus-web:latest",
         "docker:build:api": "docker build -f docker/Dockerfile.api.prod . -t directus-api:latest",
@@ -32,15 +33,15 @@
         "prod:logs:api": "docker compose -f docker-compose.api.prod.yml logs -f",
         "prod:logs:web": "docker compose -f docker-compose.web.prod.yml logs -f",
         "kill:api": "trycli-options --command \"envcli kill-port $:{NEXT_PUBLIC_API_PORT} && envcli wait-on $:{NEXT_PUBLIC_API_URL} -r\" --silent",
-        "api": "dotenv -e .env -- npm run --workspace=api --",
-        "web": "dotenv -e .env -- npm run --workspace=web --",
-        "@repo/ui": "dotenv -e .env -- npm run --workspace=@repo/ui --",
-        "@repo/types": "dotenv -e .env -- npm run --workspace=@repo/types --",
-        "@repo/tsconfig": "dotenv -e .env -- npm run --workspace=@repo/tsconfig --",
-        "@repo/tailwind-config": "dotenv -e .env -- npm run --workspace=@repo/tailwind-config --",
-        "@repo/eslint-config": "dotenv -e .env -- npm run --workspace=@repo/eslint-config --",
-        "@repo/directus-sdk": "dotenv -e .env -- npm run --workspace=@repo/directus-sdk --",
-        ".": "dotenv -e .env -- npm run --"
+        "api": "dotenv -e .env -- bun --bun --cwd=./apps/api run --",
+        "web": "dotenv -e .env -- bun --bun --cwd=./apps/web run --",
+        "@repo/ui": "dotenv -e .env -- bun --bun --cwd=./packages/ui run --",
+        "@repo/types": "dotenv -e .env -- bun --bun --cwd=./packages/types run --",
+        "@repo/tsconfig": "dotenv -e .env -- bun --bun --cwd=./packages/tsconfig run --",
+        "@repo/tailwind-config": "dotenv -e .env -- bun --bun --cwd=./packages/tailwind-config run --",
+        "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
+        "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
+        ".": "dotenv -e .env -- bun --bun --cwd=./ run --"
     },
     "devDependencies": {
         "@n0safe/envcli": "^1.0.2",
@@ -52,7 +53,7 @@
     "engines": {
         "node": ">=22"
     },
-    "packageManager": "npm@10.8.1",
+    "packageManager": "bun@1.2.14",
     "dependencies": {
         "dotenv": "^16.4.5",
         "dotenv-cli": "^7.4.2",

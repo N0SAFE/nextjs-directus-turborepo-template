@@ -35,7 +35,7 @@ Run the initialization script to set up the project:
 
 ```bash
 # Install dependencies and initialize the project
-npm run init
+bun run init
 ```
 
 This script:
@@ -50,7 +50,7 @@ Once initialization is complete, start the development environment:
 
 ```bash
 # Start the development server
-npm run dev
+bun run dev
 ```
 
 This command:
@@ -111,7 +111,7 @@ For a more detailed understanding of the project structure, refer to [Architectu
 The default development setup runs everything in Docker containers:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ### 2. Local Development
@@ -119,7 +119,7 @@ npm run dev
 Run components directly on your local machine (not in Docker):
 
 ```bash
-npm run dev:local
+bun run dev:local
 ```
 
 ### 3. Partial Local Development
@@ -128,10 +128,10 @@ Run only specific components locally:
 
 ```bash
 # Start just the API
-npm run api -- dev
+bun run api -- dev
 
 # Start just the web app
-npm run web -- dev
+bun run web -- dev
 ```
 
 ## Initial Customization Steps

@@ -3,30 +3,42 @@ FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl bash
+RUN corepack enable
 WORKDIR /app
 
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun
+
 # Install Turbo globally
-RUN npm install -g turbo@^2
+RUN bun install -g turbo@^2
 
 # Copy root package files
 COPY package*.json ./
 COPY turbo.json ./
 
-# Copy workspace package files
+# Copy workspace package files - only copy specific directories to avoid duplicates
 COPY apps/web/package*.json ./apps/web/
-COPY packages/*/package*.json ./packages/*/
+COPY packages/ ./packages/
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Development runner
 FROM base AS runner
-RUN apk add --no-cache libc6-compat su-exec
+RUN apk add --no-cache libc6-compat curl bash
+RUN corepack enable
+
+RUN curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun
+
 WORKDIR /app
 
 # Install Turbo globally
-RUN npm install -g turbo@^2
+RUN bun install -g turbo@^2
 
 # Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
@@ -43,8 +55,6 @@ ARG NEXT_PUBLIC_APP_PORT
 ARG API_PING_PATH
 ARG API_ADMIN_TOKEN
 ARG AUTH_SECRET
-ARG USER_ID=1000
-ARG GROUP_ID=1000
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_PORT=$NEXT_PUBLIC_API_PORT
@@ -54,36 +64,14 @@ ENV API_PING_PATH=$API_PING_PATH
 ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
 ENV AUTH_SECRET=$AUTH_SECRET
 
-# Create nextjs user for development
-# Use higher UID/GID to avoid conflicts with system users
-RUN addgroup -g 10001 -S nodejs && \
-    adduser -S nextjs -u 10001 -G nodejs
-
-# For development, we'll run as root to avoid permission issues with mounted volumes
-# In production, we use the nextjs user for security
-# Change ownership of the app directory
-RUN chown -R nextjs:nodejs ./
-
-# Don't switch to nextjs user in development to avoid volume permission issues
-# USER nextjs
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TURBOPACK_TRACING=1
 
 # Expose port
 EXPOSE 3003
 
-# Set environment variables for development
-ENV NODE_ENV=development
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Create an entrypoint script to fix permissions and run as the correct user
-RUN echo '#!/bin/sh' > /entrypoint.sh && \
-    echo 'set -e' >> /entrypoint.sh && \
-    echo '# Fix ownership of mounted volumes' >> /entrypoint.sh && \
-    echo 'chown -R nextjs:nodejs /app/apps/web/src/routes 2>/dev/null || mkdir -p /app/apps/web/src/routes && chown -R nextjs:nodejs /app/apps/web/src/routes' >> /entrypoint.sh && \
-    echo 'chown -R nextjs:nodejs /app/apps/web/.next 2>/dev/null || true' >> /entrypoint.sh && \
-    echo '# Execute command as nextjs user' >> /entrypoint.sh && \
-    echo 'exec su-exec nextjs "$@"' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
-
-# Start the development server using the entrypoint script
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["npm", "run", "dev:docker", "--workspace=web"]
+# Start the development server from the web app's directory
+WORKDIR /app/apps/web
+CMD ["bun", "run", "dev:docker"]

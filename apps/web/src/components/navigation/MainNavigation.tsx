@@ -1,0 +1,136 @@
+'use client'
+
+import React from 'react'
+import { usePathname } from 'next/navigation'
+import { Button } from '@repo/ui/components/shadcn/button'
+import { 
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@repo/ui/components/shadcn/dropdown-menu'
+import { 
+    Home, 
+    Authlogin, 
+    Authme, 
+    Appshowcase,
+    AppshowcaseClient,
+    AppshowcaseServer 
+} from '@/routes'
+import { useSession } from 'next-auth/react'
+import { LogOut, User, Home as HomeIcon, Database, Server, Monitor, ChevronDown } from 'lucide-react'
+import { signOut } from '@/lib/auth/actions'
+
+const MainNavigation: React.FC = () => {
+    const pathname = usePathname()
+    const { data: session, status } = useSession()
+
+    const isActive = (path: string) => pathname === path
+
+    return (
+        <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 items-center justify-between">
+                <div className="flex items-center space-x-4">
+                    <Home.Link className="flex items-center space-x-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                            <HomeIcon className="h-4 w-4" />
+                        </div>
+                        <span className="font-bold">Directus App</span>
+                    </Home.Link>
+                </div>
+
+                <div className="flex items-center space-x-4">
+                    <Home.Link>
+                        <Button 
+                            variant={isActive('/') ? 'default' : 'ghost'} 
+                            size="sm"
+                            className="flex items-center space-x-2"
+                        >
+                            <HomeIcon className="h-4 w-4" />
+                            <span>Home</span>
+                        </Button>
+                    </Home.Link>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant={pathname.startsWith('/showcase') ? 'default' : 'ghost'} 
+                                size="sm"
+                                className="flex items-center space-x-2"
+                            >
+                                <Database className="h-4 w-4" />
+                                <span>Showcase</span>
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Data Examples</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Appshowcase.Link className="flex items-center space-x-2 w-full">
+                                    <Database className="h-4 w-4" />
+                                    <div>
+                                        <div className="font-medium">Overview</div>
+                                        <div className="text-sm text-muted-foreground">All examples</div>
+                                    </div>
+                                </Appshowcase.Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <AppshowcaseClient.Link className="flex items-center space-x-2 w-full">
+                                    <Monitor className="h-4 w-4" />
+                                    <div>
+                                        <div className="font-medium">Client Side</div>
+                                        <div className="text-sm text-muted-foreground">React Query examples</div>
+                                    </div>
+                                </AppshowcaseClient.Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <AppshowcaseServer.Link className="flex items-center space-x-2 w-full">
+                                    <Server className="h-4 w-4" />
+                                    <div>
+                                        <div className="font-medium">Server Side</div>
+                                        <div className="text-sm text-muted-foreground">SSR examples</div>
+                                    </div>
+                                </AppshowcaseServer.Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    {status === 'loading' ? (
+                        <div className="h-8 w-8 animate-pulse rounded-md bg-muted" />
+                    ) : session ? (
+                        <div className="flex items-center space-x-2">
+                            <Authme.Link>
+                                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                                    <User className="h-4 w-4" />
+                                    <span>Profile</span>
+                                </Button>
+                            </Authme.Link>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => signOut()}
+                                className="flex items-center space-x-2"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span>Sign Out</span>
+                            </Button>
+                        </div>
+                    ) : (
+                        <Authlogin.Link>
+                            <Button variant="default" size="sm">
+                                Sign In
+                            </Button>
+                        </Authlogin.Link>
+                    )}
+                </div>
+            </div>
+        </nav>
+    )
+}
+
+export default MainNavigation

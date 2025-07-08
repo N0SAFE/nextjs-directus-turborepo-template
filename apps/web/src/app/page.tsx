@@ -1,157 +1,189 @@
-import Image from 'next/image'
-import { Card } from '@repo/ui/components/atomics/molecules/Card'
-import ModeToggle from '@repo/ui/components/shadcn/mode-toggle'
+import React from 'react'
 import { Button } from '@repo/ui/components/shadcn/button'
-import { Authlogin } from '@/routes/index'
-import directus from '@/lib/directus/index'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
+import { Authlogin, Appshowcase, AppshowcaseClient, AppshowcaseServer } from '@/routes'
+import { 
+    ArrowRight, 
+    Database, 
+    Monitor, 
+    Server, 
+    Zap, 
+    Shield, 
+    Palette,
+    Code,
+    GitBranch,
+    Layers
+} from 'lucide-react'
 
 import type { JSX } from 'react'
 
-function Gradient({
-    conic,
-    className,
-    small,
+function FeatureCard({
+    icon: Icon,
+    title,
+    description,
+    gradient
 }: {
-    small?: boolean
-    conic?: boolean
-    className?: string
-}): JSX.Element {
+    icon: React.ComponentType<{ className?: string }>
+    title: string
+    description: string
+    gradient: string
+}) {
     return (
-        <span
-            className={`absolute rounded-[100%] mix-blend-normal will-change-[filter] ${small ? 'blur-[32px]' : 'blur-[75px]'} ${conic ? 'bg-glow-conic' : ''} ${className}`}
-        />
+        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/20">
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`} />
+            <CardHeader className="relative">
+                <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${gradient}`}>
+                        <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <CardTitle className="text-lg">{title}</CardTitle>
+                </div>
+            </CardHeader>
+            <CardContent className="relative">
+                <CardDescription className="text-sm leading-relaxed">
+                    {description}
+                </CardDescription>
+            </CardContent>
+        </Card>
     )
 }
 
-const LINKS = [
-    {
-        title: 'Docs',
-        href: 'https://turbo.build/repo/docs',
-        description:
-            'Find in-depth information about Turborepo features and API.',
-    },
-    {
-        title: 'Learn',
-        href: 'https://turbo.build/repo/docs/handbook',
-        description: 'Learn more about monorepos with our handbook.',
-    },
-    {
-        title: 'Templates',
-        href: 'https://turbo.build/repo/docs/getting-started/from-example',
-        description:
-            'Choose from over 15 examples and deploy with a single click.',
-    },
-    {
-        title: 'Deploy',
-        href: 'https://vercel.com/new',
-        description:
-            'Instantly deploy your Turborepo to a shareable URL with Vercel.',
-    },
-]
-
 export default function Page(): JSX.Element {
     return (
-        <>
-            <Authlogin.Link
-                search={{
-                    callbackUrl: '/auth/me',
-                }}
-            >
-                <Button className="fixed right-4 top-4 z-20">Login</Button>
-            </Authlogin.Link>
-            <main className="flex min-h-screen flex-col items-center justify-between p-24">
-                <div className="relative z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-                    <p className="left-0 top-0 z-10 flex w-full justify-center border-b border-neutral-800 bg-zinc-800/30 bg-linear-to-b from-inherit px-4 pb-6 pt-8 backdrop-blur-2xl md:fixed lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:bg-zinc-800/30 lg:p-4">
-                        examples/with-directus -&nbsp;
-                        <code className="font-mono font-bold">web</code>
+        <div className="container mx-auto px-4 py-12 space-y-12">
+            {/* Hero Section */}
+            <section className="text-center space-y-6">
+                <div className="space-y-4">
+                    <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                        Next.js Directus Template
+                    </h1>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                        A modern, full-stack monorepo template featuring Next.js, Directus CMS, 
+                        Shadcn UI, and TypeScript with authentication and declarative routing.
                     </p>
-                    <div className="absolute flex w-full items-center justify-center">
-                        <ModeToggle />
-                    </div>
-
-                    <div className="bottom-0 left-0 flex h-48 w-full items-end justify-center bg-linear-to-t from-black via-black md:fixed lg:static lg:h-auto lg:w-auto lg:bg-none">
-                        <a
-                            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-                            href="https://vercel.com?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                        >
-                            By{' '}
-                            <Image
-                                alt="Vercel Logo"
-                                className="invert"
-                                height={24}
-                                priority
-                                src="/public/vercel.svg"
-                                width={100}
-                            />
-                        </a>
-                    </div>
                 </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Appshowcase.Link>
+                        <Button size="lg" className="flex items-center space-x-2">
+                            <Database className="h-5 w-5" />
+                            <span>Explore Showcase</span>
+                            <ArrowRight className="h-4 w-4" />
+                        </Button>
+                    </Appshowcase.Link>
+                    <Authlogin.Link search={{ callbackUrl: '/showcase' }}>
+                        <Button variant="outline" size="lg" className="flex items-center space-x-2">
+                            <Shield className="h-5 w-5" />
+                            <span>Get Started</span>
+                        </Button>
+                    </Authlogin.Link>
+                </div>
+            </section>
 
-                <div className="relative flex place-items-center">
-                    <div className="relative z-0 flex w-auto flex-col items-center justify-between gap-8 pb-16 pt-[48px] font-sans md:pb-24 md:pt-16 lg:pb-32 lg:pt-20">
-                        <div className="z-50 flex w-full items-center justify-center">
-                            <div className="absolute min-h-[614px] min-w-[614px]">
-                                <Image
-                                    alt="Turborepo"
-                                    height={614}
-                                    src="/public/circles.svg"
-                                    width={614}
-                                />
-                            </div>
-                            <div className="absolute z-50 flex h-64 w-64 items-center justify-center">
-                                <Gradient
-                                    className="h-[120px] w-[120px] opacity-90"
-                                    conic
-                                    small
-                                />
-                            </div>
+            {/* Features Grid */}
+            <section className="space-y-8">
+                <div className="text-center space-y-2">
+                    <h2 className="text-3xl font-bold">Features</h2>
+                    <p className="text-muted-foreground">
+                        Everything you need to build modern web applications
+                    </p>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <FeatureCard
+                        icon={Zap}
+                        title="Full-Stack Setup"
+                        description="Complete Next.js frontend with Directus headless CMS backend, ready for production deployment."
+                        gradient="from-yellow-400 to-orange-500"
+                    />
+                    <FeatureCard
+                        icon={Layers}
+                        title="Monorepo Structure"
+                        description="Organized with Turborepo for efficient development, shared packages, and optimized builds."
+                        gradient="from-blue-500 to-purple-600"
+                    />
+                    <FeatureCard
+                        icon={Palette}
+                        title="Modern UI"
+                        description="Beautiful Shadcn UI components with Tailwind CSS, dark mode support, and responsive design."
+                        gradient="from-pink-500 to-rose-500"
+                    />
+                    <FeatureCard
+                        icon={Shield}
+                        title="Authentication"
+                        description="Integrated NextAuth.js with Directus authentication, secure session management, and role-based access."
+                        gradient="from-green-500 to-teal-600"
+                    />
+                    <FeatureCard
+                        icon={GitBranch}
+                        title="Declarative Routing"
+                        description="Type-safe routing system with automatic route generation and link validation."
+                        gradient="from-indigo-500 to-blue-600"
+                    />
+                    <FeatureCard
+                        icon={Code}
+                        title="Type Safety"
+                        description="Full TypeScript support across all packages with shared configurations and strict type checking."
+                        gradient="from-purple-500 to-violet-600"
+                    />
+                </div>
+            </section>
 
-                            <div className="z-50 h-[120px] w-[120px]">
-                                <Image
-                                    alt=""
-                                    height={120}
-                                    priority
-                                    src="/public/turborepo.svg"
-                                    width={120}
-                                />
+            {/* Quick Start Section */}
+            <section className="space-y-8">
+                <div className="text-center space-y-2">
+                    <h2 className="text-3xl font-bold">Quick Start</h2>
+                    <p className="text-muted-foreground">
+                        Explore different aspects of the application
+                    </p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-3">
+                                <Monitor className="h-8 w-8 text-blue-500" />
+                                <div>
+                                    <h3 className="text-xl font-semibold">Client-Side Examples</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        React Query, client-side data fetching
+                                    </p>
+                                </div>
                             </div>
+                            <p className="text-muted-foreground">
+                                Explore how to fetch data on the client side using React Query, 
+                                handle loading states, and manage real-time updates.
+                            </p>
+                            <AppshowcaseClient.Link>
+                                <Button className="w-full">
+                                    View Client Examples
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </AppshowcaseClient.Link>
                         </div>
-                        <Gradient
-                            className="top-[-500px] h-[1000px] w-[1000px] opacity-[0.15]"
-                            conic
-                        />
-                        <div className="z-50 flex flex-col items-center justify-center gap-5 px-6 text-center lg:gap-6">
-                            <svg
-                                className="w-[160px] fill-white md:w-[200px]"
-                                viewBox="0 0 506 50"
-                                width={200}
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <title>Turborepo logo</title>
-                                <path d="M53.7187 12.0038V1.05332H0.945312V12.0038H20.8673V48.4175H33.7968V12.0038H53.7187Z" />
-                                <path d="M83.5362 49.1431C99.764 49.1431 108.67 40.8972 108.67 27.3081V1.05332H95.7401V26.0547C95.7401 33.6409 91.7821 37.9287 83.5362 37.9287C75.2904 37.9287 71.3324 33.6409 71.3324 26.0547V1.05332H58.4029V27.3081C58.4029 40.8972 67.3084 49.1431 83.5362 49.1431Z" />
-                                <path d="M128.462 32.7174H141.325L151.484 48.4175H166.327L154.848 31.3321C161.313 29.0232 165.271 23.8778 165.271 16.8853C165.271 6.72646 157.685 1.05332 146.141 1.05332H115.532V48.4175H128.462V32.7174ZM128.462 22.4925V11.8719H145.481C150.033 11.8719 152.54 13.8509 152.54 17.2152C152.54 20.3816 150.033 22.4925 145.481 22.4925H128.462Z" />
-                                <path d="M171.287 48.4175H205.128C215.683 48.4175 221.752 43.404 221.752 35.0262C221.752 29.419 218.189 25.593 213.967 23.8778C216.87 22.4925 220.432 19.1942 220.432 13.9828C220.432 5.60502 214.495 1.05332 204.006 1.05332H171.287V48.4175ZM183.689 19.59V11.542H202.687C206.249 11.542 208.228 12.9273 208.228 15.566C208.228 18.2047 206.249 19.59 202.687 19.59H183.689ZM183.689 29.2871H203.875C207.371 29.2871 209.284 31.0022 209.284 33.5749C209.284 36.1476 207.371 37.8628 203.875 37.8628H183.689V29.2871Z" />
-                                <path d="M253.364 0.261719C236.806 0.261719 224.866 10.6185 224.866 24.7354C224.866 38.8523 236.806 49.2091 253.364 49.2091C269.922 49.2091 281.796 38.8523 281.796 24.7354C281.796 10.6185 269.922 0.261719 253.364 0.261719ZM253.364 11.4761C262.072 11.4761 268.602 16.6215 268.602 24.7354C268.602 32.8493 262.072 37.9947 253.364 37.9947C244.656 37.9947 238.126 32.8493 238.126 24.7354C238.126 16.6215 244.656 11.4761 253.364 11.4761Z" />
-                                <path d="M300.429 32.7174H313.292L323.451 48.4175H338.294L326.815 31.3321C333.28 29.0232 337.238 23.8778 337.238 16.8853C337.238 6.72646 329.652 1.05332 318.108 1.05332H287.499V48.4175H300.429V32.7174ZM300.429 22.4925V11.8719H317.448C322 11.8719 324.507 13.8509 324.507 17.2152C324.507 20.3816 322 22.4925 317.448 22.4925H300.429Z" />
-                                <path d="M343.254 1.05332V48.4175H389.299V37.467H355.92V29.7489H385.539V19.0622H355.92V12.0038H389.299V1.05332H343.254Z" />
-                                <path d="M408.46 33.3111H425.677C437.221 33.3111 444.807 27.7699 444.807 17.2152C444.807 6.59453 437.221 1.05332 425.677 1.05332H395.53V48.4175H408.46V33.3111ZM408.46 22.5585V11.8719H424.951C429.569 11.8719 432.076 13.8509 432.076 17.2152C432.076 20.5135 429.569 22.5585 424.951 22.5585H408.46Z" />
-                                <path d="M476.899 0.261719C460.341 0.261719 448.401 10.6185 448.401 24.7354C448.401 38.8523 460.341 49.2091 476.899 49.2091C493.456 49.2091 505.33 38.8523 505.33 24.7354C505.33 10.6185 493.456 0.261719 476.899 0.261719ZM476.899 11.4761C485.606 11.4761 492.137 16.6215 492.137 24.7354C492.137 32.8493 485.606 37.9947 476.899 37.9947C468.191 37.9947 461.66 32.8493 461.66 24.7354C461.66 16.6215 468.191 11.4761 476.899 11.4761Z" />
-                            </svg>
+                    </Card>
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-3">
+                                <Server className="h-8 w-8 text-green-500" />
+                                <div>
+                                    <h3 className="text-xl font-semibold">Server-Side Examples</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        SSR, server components, API routes
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="text-muted-foreground">
+                                Learn server-side rendering techniques, React Server Components, 
+                                and API route implementations with Directus integration.
+                            </p>
+                            <AppshowcaseServer.Link>
+                                <Button className="w-full">
+                                    View Server Examples
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </AppshowcaseServer.Link>
                         </div>
-                    </div>
+                    </Card>
                 </div>
-
-                <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-                    {LINKS.map(({ title, href, description }) => (
-                        <Card href={href} key={title} title={title}>
-                            {description}
-                        </Card>
-                    ))}
-                </div>
-            </main>
-        </>
+            </section>
+        </div>
     )
 }

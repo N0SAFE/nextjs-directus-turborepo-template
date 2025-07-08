@@ -67,19 +67,10 @@ RUN apk add --no-cache dumb-init
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy all dependencies (including dev dependencies for build process)
-COPY --from=installer /app/node_modules ./node_modules
+# Copy built application from installer stage
+COPY --from=installer --chown=nextjs:nodejs /app ./
 
-# Create directory structure
-RUN mkdir -p apps/web/.next
-RUN chown -R nextjs:nodejs .
-
-# Copy source files instead of build artifacts since we'll build at runtime
-COPY --from=installer --chown=nextjs:nodejs /app/apps/web ./apps/web
-COPY --from=installer --chown=nextjs:nodejs /app/packages ./packages
-COPY --from=installer --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=installer --chown=nextjs:nodejs /app/turbo.json ./turbo.json
-
+# Switch to nextjs user
 USER nextjs
 
 # Expose port
@@ -90,6 +81,11 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
-# Start the application with dumb-init for proper signal handling
+# Health check for Render
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+# Build and start the application
+WORKDIR /app/apps/web
 ENTRYPOINT ["dumb-init", "--"]
-CMD npm run build:docker --workspace web && npm run start:docker --workspace web
+CMD ["sh", "-c", "bun run build:docker && bun run start:docker"]

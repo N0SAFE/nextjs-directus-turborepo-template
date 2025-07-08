@@ -13,7 +13,7 @@ Before you start development, ensure you have set up the project according to th
 The easiest way to start development is using the Docker-based development setup:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 This command:
@@ -27,7 +27,7 @@ This command:
 If you prefer to run services directly on your machine:
 
 ```bash
-npm run dev:local
+bun run dev:local
 ```
 
 This requires you to have all dependencies installed locally and properly configured.
@@ -38,13 +38,13 @@ You can also run services individually:
 
 ```bash
 # Run just the API service
-npm run api -- dev
+bun run api -- dev
 
 # Run just the web service
-npm run web -- dev
+bun run web -- dev
 
 # Run with browser auto-opening
-npm run web -- dev:open
+bun run web -- dev:open
 ```
 
 ## Daily Development Tasks
@@ -64,11 +64,11 @@ npm run web -- dev:open
 2. Use the package manager to install dependencies:
    ```bash
    cd apps/api
-   npm install your-dependency
+   bun install your-dependency
    ```
 3. Restart the API service to apply changes:
    ```bash
-   npm run api -- dev
+   bun run api -- dev
    ```
 
 #### Working with Database Seeds
@@ -77,7 +77,7 @@ Manage test data with the seeder extension:
 
 ```bash
 # Dump current database state to seed file
-npm run api -- node ./bin/seed.ts
+bun run api -- node ./bin/seed.ts
 
 # Seed data will be saved to seed.json
 ```
@@ -130,11 +130,11 @@ if (!session) {
 
 ```bash
 # Run all tests
-npm run test
+bun run test
 
 # Run specific workspace tests
-npm run web -- test
-npm run api -- test
+bun run web -- test
+bun run api -- test
 ```
 
 ### 5. Building for Production
@@ -143,10 +143,10 @@ Create production builds for testing:
 
 ```bash
 # Build all workspaces
-npm run build
+bun run build
 
 # Build specific workspace
-npm run web -- build
+bun run web -- build
 ```
 
 ## Code Quality and Standards
@@ -156,13 +156,13 @@ npm run web -- build
 Run linting across the entire monorepo:
 
 ```bash
-npm run lint
+bun run lint
 ```
 
 Fix automatically fixable issues:
 
 ```bash
-npm run lint -- --fix
+bun run lint -- --fix
 ```
 
 ### Formatting
@@ -170,7 +170,7 @@ npm run lint -- --fix
 Format code across the entire monorepo:
 
 ```bash
-npm run format
+bun run format
 ```
 
 ## Working with Packages
@@ -188,13 +188,13 @@ Run commands in specific workspaces:
 
 ```bash
 # Run a command in the web workspace
-npm run web -- your-command
+bun run web -- your-command
 
 # Run a command in the API workspace
-npm run api -- your-command
+bun run api -- your-command
 
 # Run a command in the UI package
-npm run @repo/ui -- your-command
+bun run @repo/ui -- your-command
 ```
 
 ## Git Workflow
@@ -241,11 +241,11 @@ Example: `feat(auth): Add password reset functionality`
 
 ```bash
 # Add to root
-npm install -D dependency-name
+bun install -D dependency-name
 
 # Add to specific workspace
-npm run web -- install dependency-name
-npm run api -- install dependency-name
+bun run web -- install dependency-name
+bun run api -- install dependency-name
 ```
 
 ### Updating Dependencies
@@ -263,8 +263,8 @@ npm update package-name
 If you encounter issues during development:
 
 - Check Docker logs: `docker-compose logs -f [service-name]`
-- Restart the development environment: `npm run dev`
-- Clear caches: `npm run clean`
+- Restart the development environment: `bun run dev`
+- Clear caches: `bun run clean`
 - See more in [Troubleshooting](./TROUBLESHOOTING.md)
 
 ## Advanced Development Features

@@ -7,7 +7,7 @@ import { UserSession, UserParams } from '@/types/auth'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
 import { memoize } from '@/lib/better-unstable-cache'
 import { validateEnv } from '#/env'
-import { Session, NextAuthResult } from 'next-auth'
+import { Session } from 'next-auth'
 
 export const pages = {
     signIn: '/auth/login',

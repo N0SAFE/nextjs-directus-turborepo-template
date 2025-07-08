@@ -1,79 +1,149 @@
-version: "3"
-
 services:
+  # Database for development
   api-db:
-    extends:
-      file: ./apps/api/docker-compose.yml
-      service: api-db
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-directus}
     volumes:
       - api_db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
 
+  # Redis cache for development
   api-cache:
-    extends:
-      file: ./apps/api/docker-compose.yml
-      service: api-cache
+    image: redis:8
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
     networks:
       - app_network
 
+  # Directus API for development
   api:
-    extends:
-      file: ./apps/api/docker-compose.yml
-      service: api
+    # extends:
+    #   file: ./apps/api/docker-compose.yml
+    #   service: api
+    image: directus/directus:11.8.0
     depends_on:
       api-db:
         condition: service_healthy
       api-cache:
         condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_API_PORT:-8055}:8055"
+    volumes:
+      # Mount source code for hot reloading
+      - ./apps/api:/app/apps/api
+      - ./apps/api/uploads:/directus/uploads
+      - ./apps/api/extensions:/directus/extensions
+      - ./apps/api/database:/directus/database
     environment:
+      SECRET: "replace-with-secure-random-value"
+      DB_CLIENT: mysql
+      DB_HOST: api-db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-directus}
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      CACHE_ENABLED: "true"
+      CACHE_AUTO_PURGE: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://api-cache:6379"
+      ADMIN_EMAIL: "admin@admin.com"
+      ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
-
+      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
+      # Enable hot reloading for extensions
+      EXTENSIONS_AUTO_RELOAD: "true"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:8055/server/health || exit 1
+      start_period: 15s
+      interval: 15s
+      timeout: 15s
+      retries: 5
     networks:
       - app_network
 
+  # Next.js web app for development with HMR
   web:
-    depends_on:
-      api:
-        condition: service_healthy
-    container_name: web
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web.dev
+      args:
+        - USER_ID=${USER_ID:-1000}
+        - GROUP_ID=${GROUP_ID:-1000}
+        - NODE_ENV=development
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+        - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3003}
+        - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+        - API_PING_PATH=${API_PING_PATH:-/server/health}
+        - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+        - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_APP_PORT:-3003}:3003"
     volumes:
+      # Mount source code for hot reloading
       - .:/app
       - /app/node_modules
       - /app/apps/web/node_modules
-    build:
-      context: .
-      dockerfile: ./apps/web/Dockerfile-dev
-    command: "tree -I 'node_modules'"
-    restart: always
-    ports:
-      - ${NEXT_PUBLIC_APP_PORT:-3003}:${NEXT_PUBLIC_APP_PORT:-3003}
+      - /app/apps/web/.next
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      - API_PING_PATH=/server/health
+      # Server-side API URL (internal Docker network)
+      - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}
+      # Client-side API URL (localhost for browser)
+      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}/
+      - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
+      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
+      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+      - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+      - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+      # Enable hot reloading
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
     networks:
       - app_network
-    environment:
-      API_PING_PATH: /server/ping
-      NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH: /api/_directus
-      NEXT_PUBLIC_API_URL: http://api:${NEXT_PUBLIC_API_PORT:-8055}/
-      NEXT_PUBLIC_API_PORT: ${NEXT_PUBLIC_API_PORT:-8055}
-      NEXT_PUBLIC_APP_URL: http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
-      NEXT_PUBLIC_APP_PORT: ${NEXT_PUBLIC_APP_PORT:-3003}
-      API_ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
-      AUTH_SECRET: ${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
-  # api:
-  #   container_name: api
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/api/Dockerfile
-  #   restart: always
-  #   ports:
-  #     - 3001:3001
-  #   networks:
-  #     - app_network
 
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
 networks:
   app_network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
 
 volumes:
   api_db_data:
