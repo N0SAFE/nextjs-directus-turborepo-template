@@ -6,23 +6,16 @@ import ListItemShowcase from '../ListItem'
 import { Loader2 } from 'lucide-react'
 import { toUseQuery } from '@/utils/tanstack-query'
 import { readItem, readItems, withOptions } from '@repo/directus-sdk'
+import { useQuery } from '@tanstack/react-query'
 
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const [timeTaken, setTimeTaken] = React.useState<number | null>(null)
     const startTime = React.useMemo(() => Date.now(), [])
-    const useDirectusUsersQuery = toUseQuery(() =>
-        directus.request(
-            withOptions(readItems('directus_users'), {
-                headers: {
-                    test: 'test',
-                },
-            })
-        )
-    ).addQueryKey([1]) // or toUseQuery(() => directus.DirectusUsers.query())
-    const { data: users, isFetched } = useDirectusUsersQuery({
-        queryKey: ['example1'],
+    const {data: users, isFetched} = useQuery({
+        queryKey: ['users'],
+        queryFn: () =>
+            directus.DirectusUsers.query()
     })
-
     console.log('users', users)
 
     React.useEffect(() => {

@@ -42,9 +42,10 @@ services:
 
   # Directus API for development
   api:
-    extends:
-      file: ./apps/api/docker-compose.yml
-      service: api
+    # extends:
+    #   file: ./apps/api/docker-compose.yml
+    #   service: api
+    image: directus/directus:11.8.0
     depends_on:
       api-db:
         condition: service_healthy
@@ -75,7 +76,12 @@ services:
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
       PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
-      CORS_ENABLED: "false"
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
       # Enable hot reloading for extensions
       EXTENSIONS_AUTO_RELOAD: "true"
     healthcheck:

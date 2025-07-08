@@ -56,7 +56,7 @@ services:
       DB_USER: root
       DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
 
-      CACHE_ENABLED: "true"
+      CACHE_ENABLED: "false"
       CACHE_AUTO_PURGE: "true"
       CACHE_STORE: "redis"
       REDIS: "redis://api-cache:6379"

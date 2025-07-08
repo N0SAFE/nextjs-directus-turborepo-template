@@ -24,7 +24,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - api_network
+      - app_network
 
   # Redis cache for production
   api-cache:
@@ -38,7 +38,7 @@ services:
       start_interval: 5s
       start_period: 30s
     networks:
-      - api_network
+      - app_network
 
   # Directus API for production
   api:
@@ -72,6 +72,12 @@ services:
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
       PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
       # Production optimizations
       LOG_LEVEL: "warn"
       RATE_LIMITER_ENABLED: "true"
@@ -84,7 +90,7 @@ services:
       timeout: 15s
       retries: 5
     networks:
-      - api_network
+      - app_network
 
   # Next.js web app for production
   web:

@@ -61,7 +61,6 @@ function convertURLSearchParamsToObject(
     }
 
     const obj: Record<string, string | string[]> = {}
-    // @ts-ignore
     for (const [key, value] of params.entries()) {
         if (params.getAll(key).length > 1) {
             obj[key] = params.getAll(key)
