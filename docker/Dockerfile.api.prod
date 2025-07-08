@@ -1,15 +1,13 @@
 # Production Dockerfile for Directus API
 FROM directus/directus:11.8.0
 
-# Create uploads and extensions directories
-RUN mkdir -p /directus/uploads /directus/extensions
+# Create uploads and extensions directories with proper permissions
+RUN mkdir -p /directus/uploads /directus/extensions && \
+    chown -R node:node /directus/uploads /directus/extensions
 
-# Copy custom extensions and uploads if they exist
-COPY apps/api/extensions /directus/extensions
-COPY apps/api/uploads /directus/uploads
-
-# Set proper permissions
-RUN chown -R node:node /directus/uploads /directus/extensions
+# Copy custom extensions and uploads if they exist (as node user)
+COPY --chown=node:node apps/api/extensions /directus/extensions
+COPY --chown=node:node apps/api/uploads /directus/uploads
 
 # Switch to non-root user
 USER node

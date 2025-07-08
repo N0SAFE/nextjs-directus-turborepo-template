@@ -1,5 +1,5 @@
 # Production Dockerfile for Web App using Turborepo prune
-FROM node:22-alpine AS base
+FROM oven/bun:1-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS builder
@@ -7,7 +7,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install Turbo globally
-RUN npm install -g turbo@^2
+RUN bun install -g turbo@^2
 
 # Copy everything and prune
 COPY . .
@@ -19,11 +19,12 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install Turbo globally
-RUN npm install -g turbo@^2
+RUN bun install -g turbo@^2
 
 # First install ALL dependencies (including dev dependencies for building)
 COPY --from=builder /app/out/json/ .
-RUN npm ci
+COPY --from=builder /app/out/full/bun.lock* ./
+RUN bun install --frozen-lockfile
 
 # Copy all source files
 COPY --from=builder /app/out/full/ .
@@ -44,17 +45,6 @@ ENV NEXT_PUBLIC_APP_PORT=$NEXT_PUBLIC_APP_PORT
 ENV API_PING_PATH=$API_PING_PATH
 ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
 ENV AUTH_SECRET=$AUTH_SECRET
-
-# Build step moved to CMD for runtime execution
-
-# Production dependencies only
-FROM base AS production-deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Install only production dependencies
-COPY --from=builder /app/out/json/ .
-RUN npm ci --omit=dev && npm cache clean --force
 
 # Production runner
 FROM base AS runner
@@ -86,6 +76,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Build and start the application
-WORKDIR /app/apps/web
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "bun run build:docker && bun run start:docker"]
+CMD ["sh", "-c", "bun run build:docker --workspace web && bun run start:docker --workspace web"]
