@@ -23,7 +23,7 @@
         "dr:build": "npx --yes declarative-routing build",
         "dr:build:watch": "npx --yes declarative-routing build --watch",
         "openapi": "npm run dr:build && npm run openapi:yaml && npm run openapi:html",
-        "openapi:yaml": "tsx ./src/routes/openapi.ts",
+        "openapi:yaml": "bun run ./src/routes/openapi.ts",
         "openapi:html": "npx --yes @redocly/cli build-docs openapi-docs.yml"
     },
     "dependencies": {

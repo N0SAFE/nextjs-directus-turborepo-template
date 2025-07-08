@@ -48,7 +48,7 @@ services:
       - key: ADMIN_EMAIL
         value: admin@admin.com
       - key: ADMIN_PASSWORD
-        value: secure-admin-password-123
+        value: adminadmin
       - key: ADMIN_TOKEN
         generateValue: true
       - key: LOG_LEVEL
