@@ -66,5 +66,6 @@ ENV PORT=3000
 # They are needed for the runtime build process and will be available when the container starts
 
 # Start the application with runtime build including wait-api
+WORKDIR /app/apps/web
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "npm run build --workspace=web && npm run start:docker --workspace=web"]
+CMD ["sh", "-c", "bun --bun build && bun --bun start:docker"]

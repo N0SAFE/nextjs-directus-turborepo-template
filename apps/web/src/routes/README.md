@@ -89,7 +89,7 @@ You can edit `declarative-routing.config.json` in the root of your project. The 
 
 # When your routes change
 
-You'll need to run `npm run dr:build` to update the generated files. This will update the types and the `@/routes` module to reflect the changes.
+You'll need to run `bun --bun dr:build` to update the generated files. This will update the types and the `@/routes` module to reflect the changes.
 
 The way the system works the `.info.ts` files are link to the `@/routes/index.ts` file. So changing the Zod schemas for the routes does **NOT** require a rebuild. You need to run the build command when:
 
@@ -99,7 +99,7 @@ The way the system works the `.info.ts` files are link to the `@/routes/index.ts
 - You add or remove routes
 - You add or remove verbs from API routes (e.g. adding `POST` to an existing route)
 
-You can also run the build command in watch mode using `npm run dr:build:watch` but we don't recommend using that unless you are changing routes a lot. It's a neat party trick to change a route directory name and to watch the links automagically change with hot module reloading, but routes really don't change that much.
+You can also run the build command in watch mode using `bun --bun dr:build:watch` but we don't recommend using that unless you are changing routes a lot. It's a neat party trick to change a route directory name and to watch the links automagically change with hot module reloading, but routes really don't change that much.
 
 # Finishing your setup
 

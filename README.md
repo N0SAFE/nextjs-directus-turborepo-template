@@ -27,13 +27,13 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 
 2. **Initialize the Project**
    ```bash
-   npm run init 
+   bun --bun init 
    ```
    this will install dependencies and question you about your installation preference
 
 3. **Start Development Servers**
    ```bash
-   npm run dev
+   bun --bun dev
    ```
    This will start:
    - Next.js frontend at http://localhost:3000
@@ -67,30 +67,30 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 
 1. **Running the Development Environment**
    ```bash
-   npm run dev # Starts all services
+   bun --bun dev # Starts all services
    ```
 
 2. **Building for Production**
    ```bash
-   npm run build # Builds all apps and packages
+   bun --bun build # Builds all apps and packages
    ```
 
 3. **Running Tests**
    ```bash
-   npm run test # Runs tests across all packages
+   bun --bun test # Runs tests across all packages
    ```
 
 4. **Linting and Formatting**
    ```bash
-   npm run lint # Run ESLint
-   npm run format # Run Prettier
+   bun --bun lint # Run ESLint
+   bun --bun format # Run Prettier
    ```
 
 ## Adding New Components
 
 1. Use Shadcn UI CLI to add new components:
    ```bash
-   npm run ui:add [component-name]
+   bun --bun ui:add [component-name]
    ```
 
 2. Components will be available in `packages/ui/components/`
@@ -144,12 +144,12 @@ Deploy both API and web app together:
 
 ```bash
 # Development
-npm run docker:dev
+bun --bun docker:dev
 # or
 docker-compose -f docker-compose.dev.yml up
 
 # Production
-npm run docker:prod
+bun --bun docker:prod
 # or
 docker-compose -f docker-compose.prod.yml up --build
 ```
@@ -166,7 +166,7 @@ cp .env.api.prod.example .env
 # Update variables for your production environment
 
 # Start API services
-npm run prod:api:build
+bun --bun prod:api:build
 # or
 docker-compose -f docker-compose.api.prod.yml up --build
 ```
@@ -179,7 +179,7 @@ cp .env.web.prod.example .env
 # Update NEXT_PUBLIC_API_URL to point to your production API server
 
 # Start web app
-npm run prod:web:build
+bun --bun prod:web:build
 # or
 docker-compose -f docker-compose.web.prod.yml up --build
 ```
@@ -188,22 +188,22 @@ docker-compose -f docker-compose.web.prod.yml up --build
 
 ```bash
 # Combined Development
-npm run docker:dev          # Start combined development environment
+bun --bun docker:dev          # Start combined development environment
 
 # Combined Production
-npm run docker:prod         # Start combined production environment
+bun --bun docker:prod         # Start combined production environment
 
 # Production API Only
-npm run prod:api            # Start API services
-npm run prod:api:build      # Build and start API services
-npm run prod:api:down       # Stop API services
-npm run prod:logs:api       # View API logs
+bun --bun prod:api            # Start API services
+bun --bun prod:api:build      # Build and start API services
+bun --bun prod:api:down       # Stop API services
+bun --bun prod:logs:api       # View API logs
 
 # Production Web Only
-npm run prod:web            # Start web app
-npm run prod:web:build      # Build and start web app
-npm run prod:web:down       # Stop web app
-npm run prod:logs:web       # View web app logs
+bun --bun prod:web            # Start web app
+bun --bun prod:web:build      # Build and start web app
+bun --bun prod:web:down       # Stop web app
+bun --bun prod:logs:web       # View web app logs
 ```
 
 ### 4. Production Deployment Guide
