@@ -22,15 +22,25 @@
    - **nextjs-web**: Your Next.js frontend
    - **directus-db**: PostgreSQL database (free tier)
 
-#### 3. Update Service URLs
-Before deploying, you need to update the URLs in `render.yaml`:
+#### 3. Update Service Names (Optional)
+The `render.yaml` uses dynamic service references, so URLs are automatically generated based on your service names:
 
-1. Replace `directus-api-yourname` with your chosen service name
-2. Replace `nextjs-web-yourname` with your chosen service name
+```yaml
+# URLs are automatically generated from service names
+- key: NEXT_PUBLIC_API_URL
+  fromService:
+    type: web
+    name: directus-api  # Change this if you rename the service
+    property: host
+```
 
-The URLs will be:
-- API: `https://your-api-service-name.onrender.com`
-- Web: `https://your-web-service-name.onrender.com`
+If you change the service names in `render.yaml`, make sure the `fromService.name` properties match:
+- `directus-api` service → all `name: directus-api` references
+- `nextjs-web` service → all `name: nextjs-web` references
+
+The actual URLs will be automatically:
+- API: `https://your-actual-service-name.onrender.com`
+- Web: `https://your-actual-web-service-name.onrender.com`
 
 #### 4. Deploy and Configure
 1. Click **"Apply"** to start deployment
@@ -99,6 +109,12 @@ If you prefer manual setup:
 - Better performance
 
 ### Troubleshooting
+
+**Next.js config URL parsing errors:**
+- The next.config.ts automatically handles hostname-only values from Render's `fromService` references
+- If you see "cannot be parsed as a URL" errors, the automatic https:// prefix should resolve it
+- Ensure service names in `fromService.name` match your actual service names in render.yaml
+- The system automatically converts hostnames like "directus-api-c8pu" to "https://directus-api-c8pu.onrender.com"
 
 **Port scan timeout during deployment:**
 - This issue occurs when the build process takes too long

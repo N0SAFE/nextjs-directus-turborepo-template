@@ -5,7 +5,21 @@ import { NextConfig } from "next";
 if (!process.env.NEXT_PUBLIC_API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
-const url = new URL(process.env.NEXT_PUBLIC_API_URL);
+
+console.log('Using API URL:', process.env.NEXT_PUBLIC_API_URL);
+
+// Handle both full URLs and hostname-only values (for Render deployment)
+let apiUrl: string;
+try {
+  // Try to parse as full URL first
+  new URL(process.env.NEXT_PUBLIC_API_URL);
+  apiUrl = process.env.NEXT_PUBLIC_API_URL;
+} catch {
+  // If it fails, assume it's a hostname and add https protocol
+  apiUrl = `https://${process.env.NEXT_PUBLIC_API_URL}`;
+}
+
+const url = new URL(apiUrl);
 
 const noCheck = process.env.CHECK_ON_BUILD !== "true";
 

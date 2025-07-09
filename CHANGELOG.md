@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
   - `docs/DOCKER-BUILD-STRATEGIES.md`: Comprehensive documentation explaining both strategies
 
 ### Fixed
+- **Render Deployment URL Parsing**: Fixed "cannot be parsed as a URL" error during Render deployment
+  - Updated `next.config.ts` to handle both full URLs and hostname-only values from Render
+  - Updated `render.yaml` to provide explicit full URLs with https:// protocol
+  - Prevents URL parsing errors when Render provides hostname-only values via `fromService` properties
 - **Render Deployment Timeout**: Fixed port scanning timeout during Render deployment
   - Modified `docker/Dockerfile.web.prod` to build the Next.js application during Docker build phase instead of at startup
   - Added separate build stage (`web-builder`) to compile the application
@@ -21,6 +25,10 @@ All notable changes to this project will be documented in this file.
   - This prevents Render from timing out while scanning for open HTTP ports during the build process
 
 ### Changed
+- **Render Dynamic Service References**: Updated `render.yaml` to use dynamic service name references
+  - All URL environment variables now use `fromService` instead of hardcoded values
+  - URLs automatically adapt to actual service names assigned by Render
+  - Eliminates need to manually update URLs when service names change
 - **Default Build Strategy**: Updated configuration files for optimal deployment strategies
   - `docker-compose.prod.yml` now uses `Dockerfile.web.runtime.prod` for fresh builds in self-hosted environments
   - `render.yaml` uses `Dockerfile.web.build-time.prod` for platform compatibility

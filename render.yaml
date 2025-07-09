@@ -33,7 +33,7 @@ services:
         fromDatabase:
           name: directus-db
           property: password
-      # Auto-complétion de l'URL du service API
+      # Auto-complétion de l'URL du service API dynamique
       - key: PUBLIC_URL
         fromService:
           type: web
@@ -41,7 +41,7 @@ services:
           property: host
       - key: CORS_ENABLED
         value: "true"
-      # Référence automatique au service Next.js
+      # Référence automatique au service Next.js avec protocole
       - key: CORS_ORIGIN
         fromService:
           type: web
@@ -78,13 +78,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # Auto-complétion de l'URL de l'API
+      # Auto-complétion de l'URL de l'API avec service dynamique
       - key: NEXT_PUBLIC_API_URL
         fromService:
           type: web
           name: directus-api
           property: host
-      # Auto-complétion de l'URL de l'app
+      # Auto-complétion de l'URL de l'app avec service dynamique
       - key: NEXT_PUBLIC_APP_URL
         fromService:
           type: web
@@ -98,7 +98,7 @@ services:
       - key: AUTH_SECRET
         generateValue: true
       - key: API_ADMIN_TOKEN
-        sync: false  # Will be set manually to match API service
+        sync: false # Will be set manually to match API service
       - key: API_PING_PATH
         value: /server/health
       - key: NEXT_TELEMETRY_DISABLED
