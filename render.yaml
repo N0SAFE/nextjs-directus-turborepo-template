@@ -33,12 +33,20 @@ services:
         fromDatabase:
           name: directus-db
           property: password
+      # Auto-complétion de l'URL du service API
       - key: PUBLIC_URL
-        value: https://directus-api-yourname.onrender.com
+        fromService:
+          type: web
+          name: directus-api
+          property: host
       - key: CORS_ENABLED
         value: "true"
+      # Référence automatique au service Next.js
       - key: CORS_ORIGIN
-        value: https://nextjs-web-yourname.onrender.com
+        fromService:
+          type: web
+          name: nextjs-web
+          property: host
       - key: CORS_METHODS
         value: "GET,POST,PATCH,DELETE,OPTIONS"
       - key: CORS_ALLOWED_HEADERS
@@ -70,12 +78,23 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Auto-complétion de l'URL de l'API
       - key: NEXT_PUBLIC_API_URL
-        value: https://directus-api-yourname.onrender.com
+        fromService:
+          type: web
+          name: directus-api
+          property: host
+      # Auto-complétion de l'URL de l'app
       - key: NEXT_PUBLIC_APP_URL
-        value: https://nextjs-web-yourname.onrender.com
+        fromService:
+          type: web
+          name: nextjs-web
+          property: host
       - key: API_URL
-        value: https://directus-api-yourname.onrender.com
+        fromService:
+          type: web
+          name: directus-api
+          property: host
       - key: AUTH_SECRET
         generateValue: true
       - key: API_ADMIN_TOKEN
