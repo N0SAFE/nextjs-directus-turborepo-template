@@ -38,7 +38,7 @@ services:
         fromService:
           type: web
           name: directus-api
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: CORS_ENABLED
         value: "true"
       # Référence automatique au service Next.js avec protocole
@@ -46,7 +46,7 @@ services:
         fromService:
           type: web
           name: nextjs-web
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: CORS_METHODS
         value: "GET,POST,PATCH,DELETE,OPTIONS"
       - key: CORS_ALLOWED_HEADERS
@@ -83,18 +83,18 @@ services:
         fromService:
           type: web
           name: directus-api
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       # Auto-complétion de l'URL de l'app avec service dynamique
       - key: NEXT_PUBLIC_APP_URL
         fromService:
           type: web
           name: nextjs-web
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: API_URL
         fromService:
           type: web
           name: directus-api
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: AUTH_SECRET
         generateValue: true
       - key: API_ADMIN_TOKEN
