@@ -1,4 +1,6 @@
-# Production Dockerfile for Web App using Turborepo prune
+# Production Dockerfile for Web App - RUNTIME COMPILATION
+# This version builds the Next.js app during container startup
+# Recommended for: Docker Compose, self-hosted deployments where build time is flexible
 FROM oven/bun:1-alpine AS base
 
 # Install dependencies only when needed
@@ -29,23 +31,6 @@ RUN bun install --frozen-lockfile
 # Copy all source files
 COPY --from=builder /app/out/full/ .
 
-# Set build-time environment variables for Next.js
-ARG NEXT_PUBLIC_API_URL
-ARG NEXT_PUBLIC_API_PORT
-ARG NEXT_PUBLIC_APP_URL
-ARG NEXT_PUBLIC_APP_PORT
-ARG API_PING_PATH
-ARG API_ADMIN_TOKEN
-ARG AUTH_SECRET
-
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_PORT=$NEXT_PUBLIC_API_PORT
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-ENV NEXT_PUBLIC_APP_PORT=$NEXT_PUBLIC_APP_PORT
-ENV API_PING_PATH=$API_PING_PATH
-ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
-ENV AUTH_SECRET=$AUTH_SECRET
-
 # Production runner
 FROM base AS runner
 WORKDIR /app
@@ -60,7 +45,7 @@ RUN ln -sf $(which bun) /usr/local/bin/npm
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built application from installer stage
+# Copy application from installer stage (with source code)
 COPY --from=installer --chown=nextjs:nodejs /app ./
 
 # Switch to nextjs user
@@ -74,12 +59,12 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
-# Health check for Render
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+# Health check - longer start period since build happens at startup
+HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Build and start the application
+# Build and start the application at runtime
 WORKDIR /app/apps/web
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "bun run build:docker && bun --bun start:docker"]
+CMD ["sh", "-c", "bun run build:docker && bun --bun start:production"]

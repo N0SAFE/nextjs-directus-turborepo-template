@@ -64,10 +64,9 @@ services:
   - type: web
     name: nextjs-web
     env: docker
-    dockerfilePath: ./docker/Dockerfile.web.prod
+    dockerfilePath: ./docker/Dockerfile.web.build-time.prod
     plan: free
     healthCheckPath: /
-    buildCommand: echo "Building with Docker"
     envVars:
       - key: NODE_ENV
         value: production

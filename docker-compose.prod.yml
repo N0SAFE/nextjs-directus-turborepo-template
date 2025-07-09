@@ -90,19 +90,11 @@ services:
     networks:
       - app_network
 
-  # Web service (defined directly to avoid network_mode conflicts)
+  # Web service (using runtime compilation for fresh builds)
   web:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.web.prod
-      args:
-        - NODE_ENV=production
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8055}
-        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
-        - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
-        - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
-        - API_PING_PATH=${API_PING_PATH:-/server/health}
-        - SKIP_STATIC_GENERATION=true
+      dockerfile: ./docker/Dockerfile.web.runtime.prod
     restart: unless-stopped
     ports:
       - "${NEXT_PUBLIC_APP_PORT:-3000}:3000"

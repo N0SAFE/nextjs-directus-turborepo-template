@@ -43,6 +43,19 @@ The URLs will be:
 2. Complete Directus admin setup
 3. Create content and collections as needed
 
+### Deployment Optimizations
+
+**Build Performance:**
+- The web service Dockerfile builds the Next.js app during the Docker build phase
+- This prevents Render from timing out while scanning for open ports
+- Uses `SKIP_STATIC_GENERATION=true` to speed up the build process
+- Static generation happens after the service starts to avoid build timeouts
+
+**Health Checks:**
+- Extended health check start period (120s) to allow for proper service initialization
+- Health check endpoint configured at root path (`/`)
+- Automatic retry mechanism for service stability
+
 ### Environment Variables
 
 The blueprint automatically configures:
@@ -87,10 +100,17 @@ If you prefer manual setup:
 
 ### Troubleshooting
 
+**Port scan timeout during deployment:**
+- This issue occurs when the build process takes too long
+- Our Dockerfile now builds the app during Docker build phase (not startup)
+- Uses `SKIP_STATIC_GENERATION=true` to speed up builds
+- If you still see timeouts, consider upgrading to a paid plan for faster builds
+
 **Service won't start:**
 - Check build logs in Render dashboard
 - Verify Dockerfile paths in render.yaml
 - Ensure all environment variables are set
+- Wait for the health check start period (120s for web service)
 
 **Database connection issues:**
 - Verify PostgreSQL service is running
@@ -100,6 +120,11 @@ If you prefer manual setup:
 **CORS errors:**
 - Update CORS_ORIGIN in API service
 - Ensure URLs match your actual service URLs
+
+**Build takes too long:**
+- The web service is configured with `SKIP_STATIC_GENERATION=true`
+- Build happens during Docker build phase, not at startup
+- Consider using a paid plan for faster build resources
 
 ### Custom Domains
 
