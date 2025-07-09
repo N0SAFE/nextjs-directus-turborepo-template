@@ -26,10 +26,12 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
             const toNext = async () => (await next(req as any, _next))!
             const isAuth = !!req.auth
 
+            console.log(`Auth Middleware: isAuth: ${isAuth}`, req.nextUrl.pathname)
+
             if (isAuth) {
                 const matcher = matcherHandler(req.nextUrl.pathname, [
                     {
-                        and: ['/showcase', '/me/customer'],
+                        and: ['/showcase/*', '/me/customer'],
                     },
                     () => {
                         // in this route we can check if the user is authenticated with the customer role
@@ -89,7 +91,7 @@ export const matcher: Matcher = [
         and: [
             nextauthNoApi,
             nextjsRegexpPageOnly,
-            { or: ['/showcase', '/dashboard', '/settings', '/profile'] },
+            { or: ['/showcase/*', '/dashboard', '/settings', '/profile'] },
         ],
     },
 ]
