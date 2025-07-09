@@ -1,5 +1,5 @@
 services:
-  # Database for production
+  # API services (defined directly to override networks)
   api-db:
     image: mysql:8.0
     restart: unless-stopped
@@ -26,7 +26,6 @@ services:
     networks:
       - app_network
 
-  # Redis cache for production
   api-cache:
     image: redis:8
     restart: unless-stopped
@@ -40,7 +39,6 @@ services:
     networks:
       - app_network
 
-  # Directus API for production
   api:
     extends:
       file: ./apps/api/docker-compose.yml
@@ -71,10 +69,10 @@ services:
       ADMIN_EMAIL: "admin@admin.com"
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
-      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
       # CORS Configuration for cross-origin requests from web app
       CORS_ENABLED: "true"
-      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}"
+      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3000}"
       CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
       CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
       CORS_CREDENTIALS: "true"
@@ -92,36 +90,35 @@ services:
     networks:
       - app_network
 
-  # Next.js web app for production
+  # Web service (defined directly to avoid network_mode conflicts)
   web:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.prod
       args:
         - NODE_ENV=production
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://api:8055/}
-        - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
-        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3003}
-        - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
-        - API_PING_PATH=${API_PING_PATH:-/server/ping}
-        - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
         - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+        - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+        - API_PING_PATH=${API_PING_PATH:-/server/health}
+        - SKIP_STATIC_GENERATION=true
     restart: unless-stopped
     ports:
-      - "${NEXT_PUBLIC_APP_PORT:-3003}:3000"
+      - "${NEXT_PUBLIC_APP_PORT:-3000}:3000"
     depends_on:
       api:
         condition: service_healthy
     environment:
       - NODE_ENV=production
-      - API_PING_PATH=/server/ping
+      - API_PING_PATH=/server/health
       # Server-side API URL (internal Docker network)
-      - API_URL=http://api:8055/
+      - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}
       # Client-side API URL (localhost for browser)
-      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}/
+      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
-      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
-      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3000}
+      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3000}
       - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
       - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
     networks:
@@ -129,6 +126,7 @@ services:
 
 networks:
   app_network:
+    driver: bridge
 
 volumes:
   api_db_data:

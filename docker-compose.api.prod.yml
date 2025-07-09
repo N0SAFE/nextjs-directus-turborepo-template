@@ -71,7 +71,7 @@ services:
       ADMIN_EMAIL: "admin@admin.com"
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
-      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      PUBLIC_URL: http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
       # Production optimizations
       LOG_LEVEL: "warn"
       RATE_LIMITER_ENABLED: "true"

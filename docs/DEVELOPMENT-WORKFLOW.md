@@ -274,8 +274,8 @@ If you encounter issues during development:
 For team development, set up Turborepo remote caching:
 
 ```bash
-npx turbo login
-npx turbo link
+bun x --bun turbo login
+bun x --bun turbo link
 ```
 
 ### Custom Docker Configuration

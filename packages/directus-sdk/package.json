@@ -56,7 +56,7 @@
         }
     },
     "scripts": {
-        "pretify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
+        "pretify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
@@ -64,7 +64,7 @@
         "init": "bun run generate:directus:types",
         "build": "bun run generate:directus:types",
         "clean": "rimraf indirectus",
-        "generate:directus:types": "npx envcli \"echo $API_URL$:{API_PING_PATH} && DEBUG=wait-port wait-port $API_URL$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $API_URL --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
+        "generate:directus:types": "bun x --bun envcli \"echo $API_URL$:{API_PING_PATH} && DEBUG=wait-port wait-port $API_URL$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $API_URL --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
     },
     "keywords": [],
     "author": "",

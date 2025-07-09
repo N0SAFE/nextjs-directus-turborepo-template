@@ -78,7 +78,7 @@ they were used by React Server Components (RSCs).
 
 # Configure declarative-routing
 
-After running `npx declarative-routing init`, you don't need to configure anything to use it.
+After running `bun x --bun declarative-routing init`, you don't need to configure anything to use it.
 However, you may want to customize some options to change the behavior of route generation.
 
 You can edit `declarative-routing.config.json` in the root of your project. The following options are available:

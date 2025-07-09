@@ -53,6 +53,9 @@ WORKDIR /app
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
+# Create npm symlink to avoid "npm not found" warnings during Next.js build
+RUN ln -sf $(which bun) /usr/local/bin/npm
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -77,5 +80,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Build and start the application
 WORKDIR /app/apps/web
+
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "bun run build:docker && bun run start:docker"]
+CMD ["sh", "-c", "bun run build:docker && bun --bun start:docker"]

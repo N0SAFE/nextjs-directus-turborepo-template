@@ -127,7 +127,7 @@ services:
       # Server-side API URL (internal Docker network)
       - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}
       # Client-side API URL (localhost for browser)
-      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}/
+      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
       - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}

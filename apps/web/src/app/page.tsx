@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
-import { Authlogin, Appshowcase, AppshowcaseClient, AppshowcaseServer } from '@/routes'
+import { Authlogin, Appshowcase, AppshowcaseClient, AppshowcaseServer, BuildInfo } from '@/routes'
 import { 
     ArrowRight, 
     Database, 
@@ -12,7 +12,8 @@ import {
     Palette,
     Code,
     GitBranch,
-    Layers
+    Layers,
+    Clock
 } from 'lucide-react'
 
 import type { JSX } from 'react'
@@ -135,7 +136,7 @@ export default function Page(): JSX.Element {
                         Explore different aspects of the application
                     </p>
                 </div>
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <Card className="p-6">
                         <div className="space-y-4">
                             <div className="flex items-center space-x-3">
@@ -180,6 +181,29 @@ export default function Page(): JSX.Element {
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </AppshowcaseServer.Link>
+                        </div>
+                    </Card>
+                    <Card className="p-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center space-x-3">
+                                <Clock className="h-8 w-8 text-purple-500" />
+                                <div>
+                                    <h3 className="text-xl font-semibold">Build Information</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Static build time information
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="text-muted-foreground">
+                                View the exact time when the application was built. This page is 
+                                generated statically at build time and shows deployment information.
+                            </p>
+                            <BuildInfo.Link>
+                                <Button className="w-full">
+                                    View Build Info
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </BuildInfo.Link>
                         </div>
                     </Card>
                 </div>

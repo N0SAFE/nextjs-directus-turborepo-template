@@ -1,5 +1,6 @@
 import MillionLint from "@million/lint";
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { NextConfig } from "next";
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
@@ -8,19 +9,16 @@ const url = new URL(process.env.NEXT_PUBLIC_API_URL);
 
 const noCheck = process.env.CHECK_ON_BUILD !== "true";
 
-/**
- * @type {import('next').NextConfig}
- */
-const nextConfig = {
+const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: noCheck,
   },
   typescript: {
     ignoreBuildErrors: noCheck,
-    compilerOptions: {
-      experimentalDecorators: true,
-      useDefineForClassFields: true,
-    },
+    // compilerOptions: {
+    //   experimentalDecorators: true,
+    //   useDefineForClassFields: true,
+    // },
   },
   reactStrictMode: true,
   transpilePackages: ["@repo/ui"],
