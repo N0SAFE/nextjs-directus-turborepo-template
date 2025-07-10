@@ -1,0 +1,96 @@
+services:
+  # Database for API
+  api-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-directus}
+    volumes:
+      - api_db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api_network
+
+  # Redis cache for API
+  api-cache:
+    image: redis:8
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+    networks:
+      - api_network
+
+  # Directus API service
+  api:
+    extends:
+      file: ./apps/api/docker-compose.yml
+      service: api
+    depends_on:
+      api-db:
+        condition: service_healthy
+      api-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_API_PORT:-8055}:8055"
+    volumes:
+      - ./apps/api/uploads:/directus/uploads
+      - ./apps/api/extensions:/directus/extensions
+    environment:
+      SECRET: "replace-with-secure-random-value"
+      DB_CLIENT: mysql
+      DB_HOST: api-db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-directus}
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      CACHE_ENABLED: "true"
+      CACHE_AUTO_PURGE: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://api-cache:6379"
+      ADMIN_EMAIL: "admin@admin.com"
+      ADMIN_PASSWORD: "adminadmin"
+      ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+      PUBLIC_URL: http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
+      # Production optimizations
+      LOG_LEVEL: "warn"
+      RATE_LIMITER_ENABLED: "true"
+      RATE_LIMITER_POINTS: 25
+      RATE_LIMITER_DURATION: 1
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:8055/server/health || exit 1
+      start_period: 15s
+      interval: 15s
+      timeout: 15s
+      retries: 5
+    networks:
+      - api_network
+
+networks:
+  api_network:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_network
+    driver: bridge
+
+volumes:
+  api_db_data:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data

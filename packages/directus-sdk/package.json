@@ -56,14 +56,15 @@
         }
     },
     "scripts": {
-        "pretify": "npx prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
+        "pretify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "echo 'all packages:ui tests passed!'",
-        "init": "npm run generate:directus:types",
-        "build": "npm run generate:directus:types",
+        "generate": "bun run generate:directus:types",
+        "init": "bun run generate:directus:types",
+        "build": "bun run generate:directus:types",
         "clean": "rimraf indirectus",
-        "generate:directus:types": "envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $:{NEXT_PUBLIC_API_URL} --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
+        "generate:directus:types": "bun x --bun envcli \"echo $API_URL$:{API_PING_PATH} && DEBUG=wait-port wait-port $API_URL$:{API_PING_PATH} && n0safe-indirectus sdk generate --url $API_URL --token $:{API_ADMIN_TOKEN} --dir ./indirectus --outputDir ./indirectus -- safe\""
     },
     "keywords": [],
     "author": "",
@@ -72,7 +73,6 @@
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.8.0",
-        "@n0safe/envcli": "^1.0.2",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
@@ -80,7 +80,9 @@
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
-        "@n0safe/indirectus": "^1.5.5",
+        "@n0safe/envcli": "^1.0.2",
+        "@n0safe/indirectus": "^1.0.2",
+        "next": "15.3.2",
         "rimraf": "^6.0.1",
         "wait-port": "^1.1.0"
     }

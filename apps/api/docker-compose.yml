@@ -1,0 +1,85 @@
+version: "3"
+services:
+  api-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-directus}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-cache:
+    image: redis:8
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+
+  api:
+    image: directus/directus:11.8.0
+    ports:
+      - 8055:8055
+    volumes:
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+    depends_on:
+      api-db:
+        condition: service_healthy
+      api-cache:
+        condition: service_healthy
+    environment:
+      SECRET: "replace-with-secure-random-value"
+
+      DB_CLIENT: mysql
+      DB_HOST: api-db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-directus}
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+
+      CACHE_ENABLED: "false"
+      CACHE_AUTO_PURGE: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://api-cache:6379"
+
+      ADMIN_EMAIL: "admin@admin.com"
+      ADMIN_PASSWORD: "adminadmin"
+
+      PUBLIC_URL: http://127.0.0.1:8055/
+
+      # Make sure to set this in production
+      # (see https://docs.directus.io/self-hosted/config-options#general)
+      # PUBLIC_URL: "https://directus.example.com"
+
+    # Environment variables can also be defined in a file (for example `.env`):
+    # env_file:
+    #	  - .env
+
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:8055/server/health || exit 1
+      start_period: 15s
+      interval: 15s
+      timeout: 15s
+      retries: 5
+
+volumes:
+  mysql_data:

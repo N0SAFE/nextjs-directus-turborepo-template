@@ -1,0 +1,86 @@
+# Development Dockerfile for Web App with HMR
+FROM node:22-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat curl bash
+RUN corepack enable
+WORKDIR /app
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun
+
+# Install Turbo globally
+RUN bun install -g turbo@^2
+
+# Copy root package files
+COPY package*.json ./
+COPY turbo.json ./
+
+# Copy workspace package files - only copy specific directories to avoid duplicates
+COPY apps/web/package*.json ./apps/web/
+COPY packages/ ./packages/
+
+# Install dependencies
+RUN bun install --frozen-lockfile
+
+# Development runner
+FROM base AS runner
+RUN apk add --no-cache libc6-compat curl bash
+RUN corepack enable
+
+RUN curl -fsSL https://bun.sh/install | bash && \
+    mv /root/.bun/bin/bun /usr/local/bin/bun && \
+    chmod +x /usr/local/bin/bun
+
+WORKDIR /app
+
+# Install Turbo globally
+RUN bun install -g turbo@^2
+
+# Copy dependencies and fix their permissions
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --from=deps --chown=node:node /app/apps/web/node_modules ./apps/web/node_modules
+
+# Copy all source files with proper ownership
+COPY --chown=node:node . .
+
+# Ensure all files have proper write permissions for the node user
+RUN chmod -R u+w /app/apps/web
+
+# Set build-time environment variables for Next.js
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_PORT
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_APP_PORT
+ARG API_PING_PATH
+ARG API_ADMIN_TOKEN
+ARG AUTH_SECRET
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_PORT=$NEXT_PUBLIC_API_PORT
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_APP_PORT=$NEXT_PUBLIC_APP_PORT
+ENV API_PING_PATH=$API_PING_PATH
+ENV API_ADMIN_TOKEN=$API_ADMIN_TOKEN
+ENV AUTH_SECRET=$AUTH_SECRET
+
+# Set environment variables for development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TURBOPACK_TRACING=1
+
+# Switch to node user for security
+USER node
+
+# Ensure working directory has proper permissions for the user
+# The WORKDIR command will create the directory if it doesn't exist
+WORKDIR /app/apps/web
+
+# Expose port
+EXPOSE 3003
+
+# Start the development server from the web app's directory
+CMD ["bun", "run", "dev:docker"]

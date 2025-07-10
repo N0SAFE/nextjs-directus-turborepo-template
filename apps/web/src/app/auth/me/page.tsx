@@ -1,18 +1,19 @@
 import directus from '@/lib/directus'
-import { Authlogin } from '@/routes/index'
+import { Authlogin, Home, Appshowcase } from '@/routes/index'
 import { readMe } from '@repo/directus-sdk'
 import { Button } from '@repo/ui/components/shadcn/button'
 import {
     Card,
     CardContent,
-    CardFooter,
+    CardDescription,
     CardHeader,
     CardTitle,
 } from '@repo/ui/components/shadcn/card'
 import { headers } from 'next/headers'
 import React from 'react'
-import SignOutButton from './SignOutButton'
 import { auth } from '@/lib/auth/index'
+import { signOut } from '@/lib/auth/actions'
+import { ArrowLeft, User, Database, LogOut, Mail, Calendar, Shield } from 'lucide-react'
 
 export default async function MePage() {
     const nextauthSession = await auth()
@@ -24,64 +25,187 @@ export default async function MePage() {
         throw new Error('No x-pathname header found')
     }
 
+    const SignOutButton = () => {
+        return (
+            <form action={async () => {
+                'use server'
+                await signOut()
+            }}>
+                <Button type="submit" variant="outline" className="flex items-center space-x-2">
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                </Button>
+            </form>
+        )
+    }
+
     return (
-        <div className="flex h-full w-full items-center justify-center">
-            <Card className="w-fit min-w-[450px]">
+        <div className="container mx-auto px-4 py-8 space-y-6">
+            {/* Back Navigation */}
+            <Home.Link className="inline-flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Home</span>
+            </Home.Link>
+
+            {/* Header */}
+            <div className="space-y-2">
+                <h1 className="text-3xl font-bold">Profile Dashboard</h1>
+                <p className="text-muted-foreground">
+                    Manage your account settings and view your profile information
+                </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+                {/* NextAuth Session Card */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
+                                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                                <CardTitle>NextAuth Session</CardTitle>
+                                <CardDescription>Authentication session details</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {nextauthSession ? (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">Status</span>
+                                    <span className="px-2 py-1 text-xs rounded-md bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        Authenticated
+                                    </span>
+                                </div>
+                                {nextauthSession.user?.email && (
+                                    <div className="flex items-center space-x-2">
+                                        <Mail className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">{nextauthSession.user.email}</span>
+                                    </div>
+                                )}
+                                {nextauthSession.user?.name && (
+                                    <div className="flex items-center space-x-2">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">{nextauthSession.user.name}</span>
+                                    </div>
+                                )}
+                                {nextauthSession.expires && (
+                                    <div className="flex items-center space-x-2">
+                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">
+                                            Expires: {new Date(nextauthSession.expires).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="pt-2 border-t">
+                                    <details className="text-xs">
+                                        <summary className="cursor-pointer text-muted-foreground">
+                                            View raw session data
+                                        </summary>
+                                        <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto">
+                                            {JSON.stringify(nextauthSession, null, 2)}
+                                        </pre>
+                                    </details>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-4">
+                                <p className="text-muted-foreground">No active session</p>
+                                <span className="inline-block px-2 py-1 text-xs rounded-md bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mt-2">
+                                    Not Authenticated
+                                </span>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Directus Profile Card */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">
+                                <Database className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div>
+                                <CardTitle>Directus Profile</CardTitle>
+                                <CardDescription>CMS user information</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {directusMe ? (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">Status</span>
+                                    <span className="px-2 py-1 text-xs rounded-md bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                        Connected
+                                    </span>
+                                </div>
+                                {directusMe.id && (
+                                    <div className="flex items-center space-x-2">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">ID: {directusMe.id}</span>
+                                    </div>
+                                )}
+                                {directusMe.email && (
+                                    <div className="flex items-center space-x-2">
+                                        <Mail className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">{directusMe.email}</span>
+                                    </div>
+                                )}
+                                {directusMe.first_name && directusMe.last_name && (
+                                    <div className="flex items-center space-x-2">
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">{directusMe.first_name} {directusMe.last_name}</span>
+                                    </div>
+                                )}
+                                <div className="pt-2 border-t">
+                                    <details className="text-xs">
+                                        <summary className="cursor-pointer text-muted-foreground">
+                                            View raw Directus data
+                                        </summary>
+                                        <pre className="mt-2 p-2 bg-muted rounded text-xs overflow-auto">
+                                            {JSON.stringify(directusMe, null, 2)}
+                                        </pre>
+                                    </details>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-4">
+                                <p className="text-muted-foreground">Unable to load Directus profile</p>
+                                <span className="inline-block px-2 py-1 text-xs rounded-md bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mt-2">
+                                    Not Connected
+                                </span>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Actions */}
+            <Card>
                 <CardHeader>
-                    <CardTitle>Profiles</CardTitle>
+                    <CardTitle>Quick Actions</CardTitle>
+                    <CardDescription>Navigate to different parts of the application</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-4 lg:flex-row">
-                    <Card className="w-full min-w-[380px]">
-                        <CardHeader>
-                            <CardTitle>My nextauth Profile</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>
-                                <strong>Status:</strong>{' '}
-                                {nextauthSession
-                                    ? 'authenticated'
-                                    : 'unauthenticated'}
-                            </p>
-                            <p>
-                                <strong>Name:</strong>{' '}
-                                {nextauthSession?.user?.name || 'Unknown'}
-                            </p>
-                            <p>
-                                <strong>Email:</strong>{' '}
-                                {nextauthSession?.user?.email || 'Unknown'}
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card className="w-full min-w-[380px]">
-                        <CardHeader>
-                            <CardTitle>My directus Profile</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p>
-                                <strong>Status:</strong>{' '}
-                                {directusMe
-                                    ? 'authenticated'
-                                    : 'unauthenticated'}
-                            </p>
-                            <p>
-                                <strong>Name:</strong>{' '}
-                                {directusMe?.first_name && directusMe?.last_name
-                                    ? `${directusMe?.first_name} ${directusMe?.last_name}`
-                                    : 'Unknown'}
-                            </p>
-                            <p>
-                                <strong>Email:</strong>{' '}
-                                {directusMe?.email || 'Unknown'}
-                            </p>
-                        </CardContent>
-                    </Card>
+                <CardContent>
+                    <div className="flex flex-wrap gap-3">
+                        <Appshowcase.Link>
+                            <Button variant="default" className="flex items-center space-x-2">
+                                <Database className="h-4 w-4" />
+                                <span>View Showcase</span>
+                            </Button>
+                        </Appshowcase.Link>
+                        <Authlogin.Link search={{ callbackUrl: url }}>
+                            <Button variant="outline" className="flex items-center space-x-2">
+                                <Shield className="h-4 w-4" />
+                                <span>Re-authenticate</span>
+                            </Button>
+                        </Authlogin.Link>
+                        <SignOutButton />
+                    </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                    <SignOutButton />
-                    <Authlogin.Link search={{ callbackUrl: url }}>
-                        <Button>Go to login</Button>{' '}
-                    </Authlogin.Link>
-                </CardFooter>
             </Card>
         </div>
     )

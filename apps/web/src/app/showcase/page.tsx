@@ -1,22 +1,195 @@
 import React from 'react'
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
+import { Button } from '@repo/ui/components/shadcn/button'
 import { Separator } from '@repo/ui/components/shadcn/separator'
+import { AppshowcaseClient, AppshowcaseServer, Home } from '@/routes'
+import { 
+    ArrowLeft, 
+    Monitor, 
+    Server, 
+    Clock, 
+    Zap, 
+    ArrowRight,
+    Database
+} from 'lucide-react'
 import ServerSideShowcase from './server/ServerSide'
 import ClientSideShowcase from './client/ClientSide'
 
 const ShowcasePage: React.FC = async function ShowcasePage() {
-    // console.log(await directus.getToken());
     return (
-        <div className="flex h-full w-full">
-            <div className="h-full w-full">
-                <h1>server side</h1>
-                <ServerSideShowcase />
+        <div className="container mx-auto px-4 py-8 space-y-8">
+            {/* Back Navigation */}
+            <Home.Link className="inline-flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Home</span>
+            </Home.Link>
+
+            {/* Header */}
+            <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                    <div className="p-3 rounded-full bg-primary/10">
+                        <Database className="h-8 w-8 text-primary" />
+                    </div>
+                </div>
+                <div>
+                    <h1 className="text-4xl font-bold">Data Fetching Showcase</h1>
+                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                        Compare server-side and client-side data fetching approaches with real Directus data
+                    </p>
+                </div>
             </div>
-            <Separator orientation="vertical" />
-            <div className="h-full w-full">
-                <h1>client side</h1>
-                <ClientSideShowcase />
+
+            {/* Quick Navigation */}
+            <div className="grid md:grid-cols-2 gap-4">
+                <AppshowcaseServer.Link>
+                    <Card className="cursor-pointer hover:shadow-md transition-shadow border-2 border-transparent hover:border-primary/20">
+                        <CardHeader>
+                            <div className="flex items-center space-x-3">
+                                <Server className="h-6 w-6 text-green-600" />
+                                <CardTitle>Server-Side Rendering</CardTitle>
+                            </div>
+                            <CardDescription>
+                                Fast initial load with pre-rendered data
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">View isolated example</span>
+                                <ArrowRight className="h-4 w-4" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </AppshowcaseServer.Link>
+
+                <AppshowcaseClient.Link>
+                    <Card className="cursor-pointer hover:shadow-md transition-shadow border-2 border-transparent hover:border-primary/20">
+                        <CardHeader>
+                            <div className="flex items-center space-x-3">
+                                <Monitor className="h-6 w-6 text-blue-600" />
+                                <CardTitle>Client-Side Fetching</CardTitle>
+                            </div>
+                            <CardDescription>
+                                Interactive updates with React Query
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">View isolated example</span>
+                                <ArrowRight className="h-4 w-4" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </AppshowcaseClient.Link>
             </div>
+
+            {/* Comparison Section */}
+            <div className="grid lg:grid-cols-2 gap-8">
+                {/* Server Side */}
+                <Card>
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900">
+                                    <Server className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg">Server-Side</CardTitle>
+                                    <CardDescription>Rendered on the server</CardDescription>
+                                </div>
+                            </div>
+                            <AppshowcaseServer.Link>
+                                <Button variant="outline" size="sm">
+                                    View Isolated
+                                </Button>
+                            </AppshowcaseServer.Link>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Zap className="h-4 w-4" />
+                            <span>Fast initial render</span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>No loading states needed</span>
+                        </div>
+                        <Separator />
+                        <ServerSideShowcase />
+                    </CardContent>
+                </Card>
+
+                {/* Client Side */}
+                <Card>
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
+                                    <Monitor className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg">Client-Side</CardTitle>
+                                    <CardDescription>Fetched in the browser</CardDescription>
+                                </div>
+                            </div>
+                            <AppshowcaseClient.Link>
+                                <Button variant="outline" size="sm">
+                                    View Isolated
+                                </Button>
+                            </AppshowcaseClient.Link>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Zap className="h-4 w-4" />
+                            <span>Interactive updates</span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>Real-time capabilities</span>
+                        </div>
+                        <Separator />
+                        <ClientSideShowcase />
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Technical Details */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Technical Implementation</CardTitle>
+                    <CardDescription>
+                        Understanding the differences between server and client-side data fetching
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <h3 className="font-semibold flex items-center space-x-2">
+                            <Server className="h-4 w-4" />
+                            <span>Server-Side Rendering (SSR)</span>
+                        </h3>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Data fetched during page generation</li>
+                            <li>• Immediate content display</li>
+                            <li>• Better SEO and performance</li>
+                            <li>• Uses React Server Components</li>
+                            <li>• Direct Directus SDK calls</li>
+                        </ul>
+                    </div>
+                    <div className="space-y-3">
+                        <h3 className="font-semibold flex items-center space-x-2">
+                            <Monitor className="h-4 w-4" />
+                            <span>Client-Side Rendering (CSR)</span>
+                        </h3>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                            <li>• Data fetched after page load</li>
+                            <li>• Loading states and error handling</li>
+                            <li>• Real-time updates and caching</li>
+                            <li>• Uses React Query for state management</li>
+                            <li>• API calls through custom endpoints</li>
+                        </ul>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

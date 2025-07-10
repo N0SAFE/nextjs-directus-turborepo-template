@@ -12,8 +12,6 @@ export default function Validate({ children }: React.PropsWithChildren<{}>) {
     const { data: session, update } = useSession()
     const isRefreshing = useRef(false)
 
-    console.log('ui')
-
     // Handle zustand session updates
     useEffect(() => {
         const unsubscribe = subscribeToZustandUserSession((state) => {

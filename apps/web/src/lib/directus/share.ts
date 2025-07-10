@@ -16,4 +16,21 @@ export const createDefaultDirectusInstance = (
         .with(graphql({ credentials: 'include' }))
 }
 
-export const directusUrl = (process.env as any).NEXT_PUBLIC_API_URL!
+/**
+ * Get the appropriate Directus URL based on the environment (server-side vs client-side)
+ * - Server-side: Uses API_URL (internal Docker network URL)
+ * - Client-side: Uses NEXT_PUBLIC_API_URL (localhost URL accessible from browser)
+ */
+export const getDirectusUrl = (): string => {
+    // Check if we're on the server-side
+    if (typeof window === 'undefined') {
+        // Server-side: use internal Docker network URL
+        return process.env.API_URL || process.env.NEXT_PUBLIC_API_URL!
+    } else {
+        // Client-side: use localhost URL
+        return process.env.NEXT_PUBLIC_API_URL!
+    }
+}
+
+// Export the URL for backward compatibility
+export const directusUrl = getDirectusUrl()

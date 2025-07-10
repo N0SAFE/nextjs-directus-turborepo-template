@@ -13,19 +13,27 @@ import { toAbsoluteUrl } from '@/lib/utils'
 
 const env = validateEnvSafe(process.env).data
 
+const showcaseRegexpAndChildren = /^\/showcase(\/.*)?$/
+
 const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
     if (!env) {
         throw new Error('env is not valid')
     }
     return async (request: NextRequest, _next: NextFetchEvent) => {
+        console.log(
+            `Auth Middleware: Checking authentication for ${request.nextUrl.pathname}`,
+            request.nextUrl.pathname
+        )
         const res = await auth(async function middleware(req) {
             const toNext = async () => (await next(req as any, _next))!
             const isAuth = !!req.auth
 
+            console.log(`Auth Middleware: isAuth: ${isAuth}`, req.nextUrl.pathname)
+
             if (isAuth) {
                 const matcher = matcherHandler(req.nextUrl.pathname, [
                     {
-                        and: ['/showcase', '/me/customer'],
+                        and: [showcaseRegexpAndChildren, '/me/customer'],
                     },
                     () => {
                         // in this route we can check if the user is authenticated with the customer role
@@ -85,7 +93,7 @@ export const matcher: Matcher = [
         and: [
             nextauthNoApi,
             nextjsRegexpPageOnly,
-            { or: ['/showcase', '/dashboard', '/settings', '/profile'] },
+            { or: [showcaseRegexpAndChildren, '/dashboard', '/settings', '/profile'] },
         ],
     },
 ]

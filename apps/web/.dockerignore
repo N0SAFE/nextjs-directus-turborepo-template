@@ -1,0 +1,7 @@
+node_modules
+dist
+analyze
+.next
+.million
+openapi-docs.yml
+redoc-static.html

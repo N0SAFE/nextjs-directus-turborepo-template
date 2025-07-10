@@ -1,0 +1,124 @@
+services:
+  # API services (defined directly to override networks)
+  api-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-directus}
+    volumes:
+      - api_db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  api-cache:
+    image: redis:8
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+    networks:
+      - app_network
+
+  api:
+    extends:
+      file: ./apps/api/docker-compose.yml
+      service: api
+    depends_on:
+      api-db:
+        condition: service_healthy
+      api-cache:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_API_PORT:-8055}:8055"
+    volumes:
+      - ./apps/api/uploads:/directus/uploads
+      - ./apps/api/extensions:/directus/extensions
+    environment:
+      SECRET: "replace-with-secure-random-value"
+      DB_CLIENT: mysql
+      DB_HOST: api-db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-directus}
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      CACHE_ENABLED: "true"
+      CACHE_AUTO_PURGE: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://api-cache:6379"
+      ADMIN_EMAIL: "admin@admin.com"
+      ADMIN_PASSWORD: "adminadmin"
+      ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055}
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3000}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
+      # Production optimizations
+      LOG_LEVEL: "warn"
+      RATE_LIMITER_ENABLED: "true"
+      RATE_LIMITER_POINTS: 25
+      RATE_LIMITER_DURATION: 1
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:8055/server/health || exit 1
+      start_period: 15s
+      interval: 15s
+      timeout: 15s
+      retries: 5
+    networks:
+      - app_network
+
+  # Web service (using runtime compilation for fresh builds)
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web.runtime.prod
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_APP_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - API_PING_PATH=/server/health
+      # Server-side API URL (internal Docker network)
+      - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}
+      # Client-side API URL (localhost for browser)
+      - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
+      - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
+      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3000}
+      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3000}
+      - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
+      - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  api_db_data:

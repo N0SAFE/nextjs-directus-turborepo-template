@@ -1,0 +1,70 @@
+# Production Dockerfile for Web App - RUNTIME COMPILATION
+# This version builds the Next.js app during container startup
+# Recommended for: Docker Compose, self-hosted deployments where build time is flexible
+FROM oven/bun:1-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install Turbo globally
+RUN bun install -g turbo@^2
+
+# Copy everything and prune
+COPY . .
+RUN turbo prune web --docker
+
+# Install dependencies with dev dependencies for building
+FROM base AS installer
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install Turbo globally
+RUN bun install -g turbo@^2
+
+# First install ALL dependencies (including dev dependencies for building)
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/full/bun.lock* ./
+RUN bun install --frozen-lockfile
+
+# Copy all source files
+COPY --from=builder /app/out/full/ .
+
+# Production runner
+FROM base AS runner
+WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create npm symlink to avoid "npm not found" warnings during Next.js build
+RUN ln -sf $(which bun) /usr/local/bin/npm
+
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy application from installer stage (with source code)
+COPY --from=installer --chown=nextjs:nodejs /app ./
+
+# Switch to nextjs user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Health check - longer start period since build happens at startup
+HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+# Build and start the application at runtime
+WORKDIR /app/apps/web
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["sh", "-c", "bun run build:docker && bun --bun start:production"]

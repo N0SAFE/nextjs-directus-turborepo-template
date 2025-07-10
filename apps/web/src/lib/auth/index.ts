@@ -1,4 +1,4 @@
-import NextAuth, { User } from 'next-auth'
+import NextAuth, { NextAuthResult, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
 import { AuthenticationData, readMe, withToken } from '@repo/directus-sdk'
@@ -7,7 +7,7 @@ import { UserSession, UserParams } from '@/types/auth'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
 import { memoize } from '@/lib/better-unstable-cache'
 import { validateEnv } from '#/env'
-import { Session, NextAuthResult } from 'next-auth'
+import { Session } from 'next-auth'
 
 export const pages = {
     signIn: '/auth/login',
@@ -24,6 +24,8 @@ const userParams = (user: UserSession): UserParams => {
         name: `${user.first_name} ${user.last_name}`,
     }
 }
+
+process.env.SHOW_AUTH_LOGS = 'true'
 
 const getCachedRefreshToken = memoize(
     (
@@ -122,6 +124,9 @@ const result = NextAuth({
                     }
                     return user
                 } catch (error: any) {
+                    if (env.SHOW_AUTH_LOGS) {
+                        console.error('authorize error:', error)
+                    }
                     return null
                 }
             },
