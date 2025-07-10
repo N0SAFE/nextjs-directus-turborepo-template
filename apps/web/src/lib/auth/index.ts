@@ -1,4 +1,4 @@
-import NextAuth, { User } from 'next-auth'
+import NextAuth, { NextAuthResult, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
 import { AuthenticationData, readMe, withToken } from '@repo/directus-sdk'
