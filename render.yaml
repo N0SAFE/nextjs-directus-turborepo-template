@@ -1,8 +1,10 @@
+previews:
+  generation: automatic
 services:
   # Directus API Service
   - type: web
     name: directus-api
-    env: docker
+    runtime: docker
     dockerfilePath: ./docker/Dockerfile.api.prod
     plan: free
     healthCheckPath: /server/health
@@ -71,7 +73,7 @@ services:
   # Next.js Web Service
   - type: web
     name: nextjs-web
-    env: docker
+    runtime: docker
     dockerfilePath: ./docker/Dockerfile.web.build-time.prod
     plan: free
     healthCheckPath: /api/server/health
