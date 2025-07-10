@@ -74,7 +74,7 @@ services:
     env: docker
     dockerfilePath: ./docker/Dockerfile.web.build-time.prod
     plan: free
-    healthCheckPath: /
+    healthCheckPath: /api/server/health
     envVars:
       - key: NODE_ENV
         value: production

@@ -5,7 +5,7 @@ import {
     NextResponse,
 } from 'next/server'
 import { ConfigFactory, Matcher, MiddlewareFactory } from './utils/types'
-import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
+import { nextjsRegexpPageOnly, nextNoApi } from './utils/static'
 import { auth, pages } from '@/lib/auth/index'
 import { matcherHandler } from './utils/utils'
 import { validateEnvSafe } from '#/env'
@@ -91,7 +91,7 @@ export default withAuth
 export const matcher: Matcher = [
     {
         and: [
-            nextauthNoApi,
+            nextNoApi,
             nextjsRegexpPageOnly,
             { or: [showcaseRegexpAndChildren, '/dashboard', '/settings', '/profile'] },
         ],
