@@ -11,12 +11,10 @@ import { useQuery } from '@tanstack/react-query'
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const [timeTaken, setTimeTaken] = React.useState<number | null>(null)
     const startTime = React.useMemo(() => Date.now(), [])
-    const {data: users, isFetched} = useQuery({
+    const { data: users, isFetched } = useQuery({
         queryKey: ['users'],
-        queryFn: () =>
-            directus.DirectusUsers.query()
+        queryFn: () => directus.DirectusUsers.query(),
     })
-    console.log('users', users)
 
     React.useEffect(() => {
         if (isFetched && !timeTaken) {
@@ -33,8 +31,11 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
                 </div>
             }
         >
-            <p>first load</p>
-            <div>Time taken: {timeTaken}ms</div>
+            <div className="flex justify-between items-center mb-4">
+                <p>first load</p>
+                <div>Time taken: {timeTaken}ms</div>
+            </div>  
+
             {!isFetched && (
                 <div className="flex h-full w-full items-center justify-center">
                     {' '}

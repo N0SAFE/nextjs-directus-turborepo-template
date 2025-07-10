@@ -8,8 +8,6 @@ import * as EnvMiddleware from './middlewares/WithEnv'
 // import * as WithRedirect from "./middlewares/WithRedirect";
 import { Middleware } from './middlewares/utils/types'
 
-console.log('Loading middlewares...')
-
 const middlewares = [
     EnvMiddleware,
     HealthCheckMiddleware,

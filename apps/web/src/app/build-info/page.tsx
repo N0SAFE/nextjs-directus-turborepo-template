@@ -1,7 +1,5 @@
 // This function runs at build time and makes the page static
 export default function BuildInfoPage() {
-  console.log('BuildInfoPage rendered at:', new Date().toISOString())
-
   // This timestamp is captured at build time
   const buildTime = new Date().toISOString()
   const buildTimeFormatted = new Date().toLocaleString('en-US', {
