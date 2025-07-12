@@ -50,7 +50,7 @@
         "next-sitemap": "^4.2.3",
         "nextjs-toploader": "^3.8.16",
         "query-string": "^9.2.2",
-        "react": "^19.0.0",
+        "react": "^19.1.0",
         "react-dom": "^19.0.0",
         "zod": "^3.25.76",
         "zustand": "^5.0.6",
