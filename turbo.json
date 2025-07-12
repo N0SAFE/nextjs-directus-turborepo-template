@@ -43,7 +43,22 @@
         },
         "test": {
             "dependsOn": ["^build"],
-            "inputs": ["src/**", "test/**", "*.config.*"]
+            "inputs": ["src/**", "test/**", "**/*.test.*", "**/*.spec.*", "*.config.*", "vitest.config.*", "vitest.setup.*"]
+        },
+        "test:watch": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["^build"]
+        },
+        "test:ui": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["^build"]
+        },
+        "test:coverage": {
+            "dependsOn": ["^build"],
+            "outputs": ["coverage/**"],
+            "inputs": ["src/**", "test/**", "**/*.test.*", "**/*.spec.*", "*.config.*", "vitest.config.*", "vitest.setup.*"]
         },
         "lint": {
             "cache": false,
