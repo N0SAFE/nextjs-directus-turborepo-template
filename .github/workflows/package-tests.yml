@@ -55,27 +55,42 @@ jobs:
           
           # Check each changed file
           while IFS= read -r file; do
-            if [[ $file == packages/* ]]; then
-              # Extract package name
-              PACKAGE=$(echo "$file" | cut -d'/' -f2)
-              if [[ ! " ${PACKAGES[@]} " =~ " ${PACKAGE} " ]]; then
-                PACKAGES+=("$PACKAGE")
+            if [[ -n "$file" ]]; then  # Only process non-empty lines
+              if [[ $file == packages/* ]]; then
+                # Extract package name
+                PACKAGE=$(echo "$file" | cut -d'/' -f2)
+                if [[ -n "$PACKAGE" && ! " ${PACKAGES[@]} " =~ " ${PACKAGE} " ]]; then
+                  PACKAGES+=("$PACKAGE")
+                fi
+              elif [[ $file == apps/* ]]; then
+                # Extract app name
+                APP=$(echo "$file" | cut -d'/' -f2)
+                if [[ -n "$APP" && ! " ${PACKAGES[@]} " =~ " ${APP} " ]]; then
+                  PACKAGES+=("$APP")
+                fi
+              elif [[ $file == "package.json" || $file == "bun.lock" || $file == "turbo.json" ]]; then
+                # Root changes affect all packages
+                PACKAGES=("root" "web" "api" "eslint-config" "prettier-config" "tailwind-config" "tsconfig" "types" "ui" "vitest-config" "directus-sdk" "bin")
+                break
               fi
-            elif [[ $file == apps/* ]]; then
-              # Extract app name
-              APP=$(echo "$file" | cut -d'/' -f2)
-              if [[ ! " ${PACKAGES[@]} " =~ " ${APP} " ]]; then
-                PACKAGES+=("$APP")
-              fi
-            elif [[ $file == "package.json" || $file == "bun.lock" || $file == "turbo.json" ]]; then
-              # Root changes affect all packages
-              PACKAGES=("root" "web" "api" "eslint-config" "prettier-config" "tailwind-config" "tsconfig" "types" "ui" "vitest-config" "directus-sdk" "bin")
-              break
             fi
           done <<< "$CHANGED_FILES"
           
-          # Convert to JSON array
-          PACKAGES_JSON=$(printf '%s\n' "${PACKAGES[@]}" | jq -R . | jq -s .)
+          # Filter out empty strings and duplicates
+          FILTERED_PACKAGES=()
+          for package in "${PACKAGES[@]}"; do
+            if [[ -n "$package" && ! " ${FILTERED_PACKAGES[@]} " =~ " ${package} " ]]; then
+              FILTERED_PACKAGES+=("$package")
+            fi
+          done
+          
+          # Convert to JSON array safely
+          if [ ${#FILTERED_PACKAGES[@]} -eq 0 ]; then
+            PACKAGES_JSON="[]"
+          else
+            # Use jq to safely create JSON array from filtered packages
+            PACKAGES_JSON=$(printf '%s\n' "${FILTERED_PACKAGES[@]}" | jq -R . | jq -s .)
+          fi
           
           echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
           echo "matrix={\"package\": $PACKAGES_JSON}" >> $GITHUB_OUTPUT
