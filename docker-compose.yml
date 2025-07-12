@@ -1,13 +1,14 @@
 services:
   # Database for development
-  api-db:
+  api-db-dev:
+    container_name: nextjs-directus-api-db-dev
     image: mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${DB_DATABASE:-directus}
     volumes:
-      - api_db_data:/var/lib/mysql
+      - api_db_data_dev:/var/lib/mysql
     healthcheck:
       test:
         [
@@ -24,10 +25,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app_network
+      - app_network_dev
 
   # Redis cache for development
-  api-cache:
+  api-cache-dev:
+    container_name: nextjs-directus-api-cache-dev
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -38,18 +40,16 @@ services:
       start_interval: 5s
       start_period: 30s
     networks:
-      - app_network
+      - app_network_dev
 
   # Directus API for development
-  api:
-    # extends:
-    #   file: ./apps/api/docker-compose.yml
-    #   service: api
+  api-dev:
+    container_name: nextjs-directus-api-dev
     image: directus/directus:11.8.0
     depends_on:
-      api-db:
+      api-db-dev:
         condition: service_healthy
-      api-cache:
+      api-cache-dev:
         condition: service_healthy
     restart: unless-stopped
     ports:
@@ -63,7 +63,7 @@ services:
     environment:
       SECRET: "replace-with-secure-random-value"
       DB_CLIENT: mysql
-      DB_HOST: api-db
+      DB_HOST: api-db-dev
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-directus}
       DB_USER: root
@@ -71,7 +71,7 @@ services:
       CACHE_ENABLED: "true"
       CACHE_AUTO_PURGE: "true"
       CACHE_STORE: "redis"
-      REDIS: "redis://api-cache:6379"
+      REDIS: "redis://api-cache-dev:6379"
       ADMIN_EMAIL: "admin@admin.com"
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
@@ -91,10 +91,11 @@ services:
       timeout: 15s
       retries: 5
     networks:
-      - app_network
+      - app_network_dev
 
   # Next.js web app for development with HMR
-  web:
+  web-dev:
+    container_name: nextjs-directus-web-dev
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.dev
@@ -119,13 +120,13 @@ services:
       - /app/apps/web/node_modules
       - /app/apps/web/.next
     depends_on:
-      api:
+      api-dev:
         condition: service_healthy
     environment:
       - NODE_ENV=development
       - API_PING_PATH=/server/health
       # Server-side API URL (internal Docker network)
-      - API_URL=http://api:${NEXT_PUBLIC_API_PORT:-8055}
+      - API_URL=http://api-dev:${NEXT_PUBLIC_API_PORT:-8055}
       # Client-side API URL (localhost for browser)
       - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
@@ -137,13 +138,13 @@ services:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
     networks:
-      - app_network
+      - app_network_dev
 
 networks:
-  app_network:
+  app_network_dev:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
 
 volumes:
-  api_db_data:
+  api_db_data_dev:

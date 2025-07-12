@@ -1,13 +1,14 @@
 services:
   # Database for API
-  api-db:
+  api-db-prod:
+    container_name: nextjs-directus-api-db-prod
     image: mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${DB_DATABASE:-directus}
     volumes:
-      - api_db_data:/var/lib/mysql
+      - api_db_data_prod:/var/lib/mysql
     healthcheck:
       test:
         [
@@ -24,10 +25,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - api_network
+      - api_network_prod
 
   # Redis cache for API
-  api-cache:
+  api-cache-prod:
+    container_name: nextjs-directus-api-cache-prod
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -38,17 +40,18 @@ services:
       start_interval: 5s
       start_period: 30s
     networks:
-      - api_network
+      - api_network_prod
 
   # Directus API service
-  api:
+  api-prod:
+    container_name: nextjs-directus-api-prod
     extends:
       file: ./apps/api/docker-compose.yml
       service: api
     depends_on:
-      api-db:
+      api-db-prod:
         condition: service_healthy
-      api-cache:
+      api-cache-prod:
         condition: service_healthy
     restart: unless-stopped
     ports:
@@ -59,7 +62,7 @@ services:
     environment:
       SECRET: "replace-with-secure-random-value"
       DB_CLIENT: mysql
-      DB_HOST: api-db
+      DB_HOST: api-db-prod
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE:-directus}
       DB_USER: root
@@ -67,7 +70,7 @@ services:
       CACHE_ENABLED: "true"
       CACHE_AUTO_PURGE: "true"
       CACHE_STORE: "redis"
-      REDIS: "redis://api-cache:6379"
+      REDIS: "redis://api-cache-prod:6379"
       ADMIN_EMAIL: "admin@admin.com"
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
@@ -84,13 +87,13 @@ services:
       timeout: 15s
       retries: 5
     networks:
-      - api_network
+      - api_network_prod
 
 networks:
-  api_network:
-    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_network
+  api_network_prod:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_network_prod
     driver: bridge
 
 volumes:
-  api_db_data:
-    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data
+  api_db_data_prod:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_prod
