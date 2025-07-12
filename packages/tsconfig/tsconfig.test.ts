@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync, existsSync } from 'fs'
-import path from 'path'
+import * as path from 'path'
 
 describe('TypeScript Config', () => {
   const configs = [
@@ -186,7 +186,8 @@ describe('TypeScript Config', () => {
           // Should not have unknown top-level properties
           const validTopLevelKeys = [
             'compilerOptions', 'extends', 'include', 'exclude', 
-            'files', 'references', 'typeAcquisition', 'ts-node'
+            'files', 'references', 'typeAcquisition', 'ts-node',
+            '$schema', 'display'
           ]
           
           Object.keys(config).forEach(key => {
