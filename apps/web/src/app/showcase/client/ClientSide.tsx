@@ -31,10 +31,10 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
                 </div>
             }
         >
-            <div className="flex justify-between items-center mb-4">
+            <div className="mb-4 flex items-center justify-between">
                 <p>first load</p>
                 <div>Time taken: {timeTaken}ms</div>
-            </div>  
+            </div>
 
             {!isFetched && (
                 <div className="flex h-full w-full items-center justify-center">

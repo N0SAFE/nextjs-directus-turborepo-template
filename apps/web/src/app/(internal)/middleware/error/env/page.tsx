@@ -1,4 +1,4 @@
-import { ZodInvalidTypeIssue, ZodIssue } from 'zod'
+import { $ZodIssue, $ZodIssueInvalidType } from 'zod/v4/core'
 import {
     Card,
     CardContent,
@@ -9,13 +9,13 @@ import {
 import { validateEnvSafe } from '#/env'
 import RedirectAfterDelay from './RedirectAfterDelay'
 
-function renderInvalidType(issue: ZodInvalidTypeIssue) {
+function renderInvalidType(issue: $ZodIssueInvalidType) {
     return (
         <div className="m-4 flex gap-4">
             <div className="flex justify-between gap-2">
                 <div className="text-sm text-gray-500">Received: </div>
                 <div className="text-sm text-red-500">
-                    {issue.received.toString()}
+                    {JSON.stringify(issue.input)}
                 </div>
             </div>
             <div className="flex justify-between gap-2">
@@ -28,7 +28,7 @@ function renderInvalidType(issue: ZodInvalidTypeIssue) {
     )
 }
 
-function renderByCode(issue: ZodIssue) {
+function renderByCode(issue: $ZodIssue) {
     switch (issue.code) {
         case 'invalid_type':
             return renderInvalidType(issue)
@@ -76,9 +76,6 @@ export default async function EnvPage(props: {
                         <div className="flex items-center justify-between pt-8">
                             <div className="text-sm text-gray-500">
                                 Code: {issue.code}
-                            </div>
-                            <div className="text-sm text-yellow-500">
-                                {issue.fatal || 'warning'}
                             </div>
                         </div>
                     </CardContent>

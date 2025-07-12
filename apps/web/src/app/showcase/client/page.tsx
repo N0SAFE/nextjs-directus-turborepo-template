@@ -1,5 +1,11 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@repo/ui/components/shadcn/card'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Appshowcase, AppshowcaseServer } from '@/routes'
 import { ArrowLeft, Monitor, Zap, RefreshCw, Database } from 'lucide-react'
@@ -7,54 +13,60 @@ import ClientSideShowcase from './ClientSide'
 
 const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
     return (
-        <div className="container mx-auto px-4 py-8 space-y-8">
+        <div className="container mx-auto space-y-8 px-4 py-8">
             {/* Back Navigation */}
-            <Appshowcase.Link className="inline-flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground">
+            <Appshowcase.Link className="text-muted-foreground hover:text-foreground inline-flex items-center space-x-2 text-sm">
                 <ArrowLeft className="h-4 w-4" />
                 <span>Back to Showcase</span>
             </Appshowcase.Link>
 
             {/* Header */}
-            <div className="text-center space-y-4">
+            <div className="space-y-4 text-center">
                 <div className="flex justify-center">
-                    <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                    <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
                         <Monitor className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                     </div>
                 </div>
                 <div>
-                    <h1 className="text-4xl font-bold">Client-Side Data Fetching</h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Interactive data fetching with React Query, loading states, and real-time updates
+                    <h1 className="text-4xl font-bold">
+                        Client-Side Data Fetching
+                    </h1>
+                    <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
+                        Interactive data fetching with React Query, loading
+                        states, and real-time updates
                     </p>
                 </div>
             </div>
 
             {/* Features */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid gap-4 md:grid-cols-3">
                 <Card className="text-center">
                     <CardContent className="pt-6">
-                        <Zap className="h-8 w-8 mx-auto text-yellow-500 mb-3" />
-                        <h3 className="font-semibold mb-2">React Query</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Powerful data synchronization with caching and background updates
+                        <Zap className="mx-auto mb-3 h-8 w-8 text-yellow-500" />
+                        <h3 className="mb-2 font-semibold">React Query</h3>
+                        <p className="text-muted-foreground text-sm">
+                            Powerful data synchronization with caching and
+                            background updates
                         </p>
                     </CardContent>
                 </Card>
                 <Card className="text-center">
                     <CardContent className="pt-6">
-                        <RefreshCw className="h-8 w-8 mx-auto text-green-500 mb-3" />
-                        <h3 className="font-semibold mb-2">Loading States</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Smooth user experience with loading indicators and error handling
+                        <RefreshCw className="mx-auto mb-3 h-8 w-8 text-green-500" />
+                        <h3 className="mb-2 font-semibold">Loading States</h3>
+                        <p className="text-muted-foreground text-sm">
+                            Smooth user experience with loading indicators and
+                            error handling
                         </p>
                     </CardContent>
                 </Card>
                 <Card className="text-center">
                     <CardContent className="pt-6">
-                        <Database className="h-8 w-8 mx-auto text-blue-500 mb-3" />
-                        <h3 className="font-semibold mb-2">Real-time Data</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Live updates and optimistic UI patterns for better interactivity
+                        <Database className="mx-auto mb-3 h-8 w-8 text-blue-500" />
+                        <h3 className="mb-2 font-semibold">Real-time Data</h3>
+                        <p className="text-muted-foreground text-sm">
+                            Live updates and optimistic UI patterns for better
+                            interactivity
                         </p>
                     </CardContent>
                 </Card>
@@ -70,13 +82,12 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                                 <span>Live Demo</span>
                             </CardTitle>
                             <CardDescription>
-                                Watch the data load dynamically with performance metrics
+                                Watch the data load dynamically with performance
+                                metrics
                             </CardDescription>
                         </div>
                         <AppshowcaseServer.Link>
-                            <Button variant="outline">
-                                Compare with SSR
-                            </Button>
+                            <Button variant="outline">Compare with SSR</Button>
                         </AppshowcaseServer.Link>
                     </div>
                 </CardHeader>
@@ -94,10 +105,10 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid gap-6 md:grid-cols-2">
                         <div className="space-y-3">
                             <h3 className="font-semibold">Key Technologies</h3>
-                            <ul className="text-sm text-muted-foreground space-y-1">
+                            <ul className="text-muted-foreground space-y-1 text-sm">
                                 <li>• React Query for data fetching</li>
                                 <li>• Custom Directus SDK wrapper</li>
                                 <li>• TypeScript for type safety</li>
@@ -107,7 +118,7 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                         </div>
                         <div className="space-y-3">
                             <h3 className="font-semibold">Benefits</h3>
-                            <ul className="text-sm text-muted-foreground space-y-1">
+                            <ul className="text-muted-foreground space-y-1 text-sm">
                                 <li>• Faster subsequent navigation</li>
                                 <li>• Real-time data updates</li>
                                 <li>• Optimistic UI updates</li>
@@ -116,10 +127,10 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                             </ul>
                         </div>
                     </div>
-                    <div className="pt-4 border-t">
-                        <h3 className="font-semibold mb-2">Code Example</h3>
-                        <pre className="text-xs bg-muted p-4 rounded-lg overflow-x-auto">
-{`const { data: users, isFetched } = useQuery({
+                    <div className="border-t pt-4">
+                        <h3 className="mb-2 font-semibold">Code Example</h3>
+                        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
+                            {`const { data: users, isFetched } = useQuery({
     queryKey: ['users'],
     queryFn: () => directus.DirectusUsers.query()
 })`}

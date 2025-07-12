@@ -1,19 +1,31 @@
 import React from 'react'
 import { Button } from '@repo/ui/components/shadcn/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
-import { Authlogin, Appshowcase, AppshowcaseClient, AppshowcaseServer, BuildInfo } from '@/routes'
-import { 
-    ArrowRight, 
-    Database, 
-    Monitor, 
-    Server, 
-    Zap, 
-    Shield, 
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@repo/ui/components/shadcn/card'
+import {
+    Authlogin,
+    Appshowcase,
+    AppshowcaseClient,
+    AppshowcaseServer,
+    BuildInfo,
+} from '@/routes'
+import {
+    ArrowRight,
+    Database,
+    Monitor,
+    Server,
+    Zap,
+    Shield,
     Palette,
     Code,
     GitBranch,
     Layers,
-    Clock
+    Clock,
 } from 'lucide-react'
 
 import type { JSX } from 'react'
@@ -22,7 +34,7 @@ function FeatureCard({
     icon: Icon,
     title,
     description,
-    gradient
+    gradient,
 }: {
     icon: React.ComponentType<{ className?: string }>
     title: string
@@ -30,11 +42,15 @@ function FeatureCard({
     gradient: string
 }) {
     return (
-        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/20">
-            <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`} />
+        <Card className="from-background to-muted/20 relative overflow-hidden border-0 bg-gradient-to-br">
+            <div
+                className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`}
+            />
             <CardHeader className="relative">
                 <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-br ${gradient}`}>
+                    <div
+                        className={`rounded-lg bg-gradient-to-br p-2 ${gradient}`}
+                    >
                         <Icon className="h-5 w-5 text-white" />
                     </div>
                     <CardTitle className="text-lg">{title}</CardTitle>
@@ -51,28 +67,36 @@ function FeatureCard({
 
 export default function Page(): JSX.Element {
     return (
-        <div className="container mx-auto px-4 py-12 space-y-12">
+        <div className="container mx-auto space-y-12 px-4 py-12">
             {/* Hero Section */}
-            <section className="text-center space-y-6">
+            <section className="space-y-6 text-center">
                 <div className="space-y-4">
-                    <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    <h1 className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
                         Next.js Directus Template
                     </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        A modern, full-stack monorepo template featuring Next.js, Directus CMS, 
-                        Shadcn UI, and TypeScript with authentication and declarative routing.
+                    <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
+                        A modern, full-stack monorepo template featuring
+                        Next.js, Directus CMS, Shadcn UI, and TypeScript with
+                        authentication and declarative routing.
                     </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col justify-center gap-4 sm:flex-row">
                     <Appshowcase.Link>
-                        <Button size="lg" className="flex items-center space-x-2">
+                        <Button
+                            size="lg"
+                            className="flex items-center space-x-2"
+                        >
                             <Database className="h-5 w-5" />
                             <span>Explore Showcase</span>
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Appshowcase.Link>
                     <Authlogin.Link search={{ callbackUrl: '/showcase' }}>
-                        <Button variant="outline" size="lg" className="flex items-center space-x-2">
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="flex items-center space-x-2"
+                        >
                             <Shield className="h-5 w-5" />
                             <span>Get Started</span>
                         </Button>
@@ -82,13 +106,13 @@ export default function Page(): JSX.Element {
 
             {/* Features Grid */}
             <section className="space-y-8">
-                <div className="text-center space-y-2">
+                <div className="space-y-2 text-center">
                     <h2 className="text-3xl font-bold">Features</h2>
                     <p className="text-muted-foreground">
                         Everything you need to build modern web applications
                     </p>
                 </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <FeatureCard
                         icon={Zap}
                         title="Full-Stack Setup"
@@ -130,27 +154,30 @@ export default function Page(): JSX.Element {
 
             {/* Quick Start Section */}
             <section className="space-y-8">
-                <div className="text-center space-y-2">
+                <div className="space-y-2 text-center">
                     <h2 className="text-3xl font-bold">Quick Start</h2>
                     <p className="text-muted-foreground">
                         Explore different aspects of the application
                     </p>
                 </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <Card className="p-6">
                         <div className="space-y-4">
                             <div className="flex items-center space-x-3">
                                 <Monitor className="h-8 w-8 text-blue-500" />
                                 <div>
-                                    <h3 className="text-xl font-semibold">Client-Side Examples</h3>
-                                    <p className="text-sm text-muted-foreground">
+                                    <h3 className="text-xl font-semibold">
+                                        Client-Side Examples
+                                    </h3>
+                                    <p className="text-muted-foreground text-sm">
                                         React Query, client-side data fetching
                                     </p>
                                 </div>
                             </div>
                             <p className="text-muted-foreground">
-                                Explore how to fetch data on the client side using React Query, 
-                                handle loading states, and manage real-time updates.
+                                Explore how to fetch data on the client side
+                                using React Query, handle loading states, and
+                                manage real-time updates.
                             </p>
                             <AppshowcaseClient.Link>
                                 <Button className="w-full">
@@ -165,15 +192,18 @@ export default function Page(): JSX.Element {
                             <div className="flex items-center space-x-3">
                                 <Server className="h-8 w-8 text-green-500" />
                                 <div>
-                                    <h3 className="text-xl font-semibold">Server-Side Examples</h3>
-                                    <p className="text-sm text-muted-foreground">
+                                    <h3 className="text-xl font-semibold">
+                                        Server-Side Examples
+                                    </h3>
+                                    <p className="text-muted-foreground text-sm">
                                         SSR, server components, API routes
                                     </p>
                                 </div>
                             </div>
                             <p className="text-muted-foreground">
-                                Learn server-side rendering techniques, React Server Components, 
-                                and API route implementations with Directus integration.
+                                Learn server-side rendering techniques, React
+                                Server Components, and API route implementations
+                                with Directus integration.
                             </p>
                             <AppshowcaseServer.Link>
                                 <Button className="w-full">
@@ -188,15 +218,18 @@ export default function Page(): JSX.Element {
                             <div className="flex items-center space-x-3">
                                 <Clock className="h-8 w-8 text-purple-500" />
                                 <div>
-                                    <h3 className="text-xl font-semibold">Build Information</h3>
-                                    <p className="text-sm text-muted-foreground">
+                                    <h3 className="text-xl font-semibold">
+                                        Build Information
+                                    </h3>
+                                    <p className="text-muted-foreground text-sm">
                                         Static build time information
                                     </p>
                                 </div>
                             </div>
                             <p className="text-muted-foreground">
-                                View the exact time when the application was built. This page is 
-                                generated statically at build time and shows deployment information.
+                                View the exact time when the application was
+                                built. This page is generated statically at
+                                build time and shows deployment information.
                             </p>
                             <BuildInfo.Link>
                                 <Button className="w-full">

@@ -28,7 +28,10 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
             const toNext = async () => (await next(req as any, _next))!
             const isAuth = !!req.auth
 
-            console.log(`Auth Middleware: isAuth: ${isAuth}`, req.nextUrl.pathname)
+            console.log(
+                `Auth Middleware: isAuth: ${isAuth}`,
+                req.nextUrl.pathname
+            )
 
             if (isAuth) {
                 const matcher = matcherHandler(req.nextUrl.pathname, [
@@ -93,7 +96,14 @@ export const matcher: Matcher = [
         and: [
             nextNoApi,
             nextjsRegexpPageOnly,
-            { or: [showcaseRegexpAndChildren, '/dashboard', '/settings', '/profile'] },
+            {
+                or: [
+                    showcaseRegexpAndChildren,
+                    '/dashboard',
+                    '/settings',
+                    '/profile',
+                ],
+            },
         ],
     },
 ]

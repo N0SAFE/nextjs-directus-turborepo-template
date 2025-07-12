@@ -608,7 +608,6 @@ export function toAdvancedUseInfiniteQuery<
                   TQueryFnData,
                   TError,
                   TData,
-                  TQueryFnData,
                   TQueryKey,
                   TPageParam
               > & // this check if the params can be optional because it require no arguments
@@ -624,7 +623,6 @@ export function toAdvancedUseInfiniteQuery<
                 TQueryFnData,
                 TError,
                 TData,
-                TQueryFnData,
                 TQueryKey,
                 TPageParam
             > & // this check if the params can be optional because it require no arguments

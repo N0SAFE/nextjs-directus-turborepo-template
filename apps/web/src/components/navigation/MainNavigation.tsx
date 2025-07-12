@@ -3,7 +3,7 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import { Button } from '@repo/ui/components/shadcn/button'
-import { 
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -11,16 +11,24 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@repo/ui/components/shadcn/dropdown-menu'
-import { 
-    Home, 
-    Authlogin, 
-    Authme, 
+import {
+    Home,
+    Authlogin,
+    Authme,
     Appshowcase,
     AppshowcaseClient,
-    AppshowcaseServer 
+    AppshowcaseServer,
 } from '@/routes'
 import { useSession } from 'next-auth/react'
-import { LogOut, User, Home as HomeIcon, Database, Server, Monitor, ChevronDown } from 'lucide-react'
+import {
+    LogOut,
+    User,
+    Home as HomeIcon,
+    Database,
+    Server,
+    Monitor,
+    ChevronDown,
+} from 'lucide-react'
 import { signOut } from '@/lib/auth/actions'
 
 const MainNavigation: React.FC = () => {
@@ -30,11 +38,11 @@ const MainNavigation: React.FC = () => {
     const isActive = (path: string) => pathname === path
 
     return (
-        <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
             <div className="container flex h-14 items-center justify-between">
                 <div className="flex items-center space-x-4">
                     <Home.Link className="flex items-center space-x-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                        <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-md">
                             <HomeIcon className="h-4 w-4" />
                         </div>
                         <span className="font-bold">Directus App</span>
@@ -43,8 +51,8 @@ const MainNavigation: React.FC = () => {
 
                 <div className="flex items-center space-x-4">
                     <Home.Link>
-                        <Button 
-                            variant={isActive('/') ? 'default' : 'ghost'} 
+                        <Button
+                            variant={isActive('/') ? 'default' : 'ghost'}
                             size="sm"
                             className="flex items-center space-x-2"
                         >
@@ -55,8 +63,12 @@ const MainNavigation: React.FC = () => {
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant={pathname.startsWith('/showcase') ? 'default' : 'ghost'} 
+                            <Button
+                                variant={
+                                    pathname.startsWith('/showcase')
+                                        ? 'default'
+                                        : 'ghost'
+                                }
                                 size="sm"
                                 className="flex items-center space-x-2"
                             >
@@ -69,29 +81,41 @@ const MainNavigation: React.FC = () => {
                             <DropdownMenuLabel>Data Examples</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                                <Appshowcase.Link className="flex items-center space-x-2 w-full">
+                                <Appshowcase.Link className="flex w-full items-center space-x-2">
                                     <Database className="h-4 w-4" />
                                     <div>
-                                        <div className="font-medium">Overview</div>
-                                        <div className="text-sm text-muted-foreground">All examples</div>
+                                        <div className="font-medium">
+                                            Overview
+                                        </div>
+                                        <div className="text-muted-foreground text-sm">
+                                            All examples
+                                        </div>
                                     </div>
                                 </Appshowcase.Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <AppshowcaseClient.Link className="flex items-center space-x-2 w-full">
+                                <AppshowcaseClient.Link className="flex w-full items-center space-x-2">
                                     <Monitor className="h-4 w-4" />
                                     <div>
-                                        <div className="font-medium">Client Side</div>
-                                        <div className="text-sm text-muted-foreground">React Query examples</div>
+                                        <div className="font-medium">
+                                            Client Side
+                                        </div>
+                                        <div className="text-muted-foreground text-sm">
+                                            React Query examples
+                                        </div>
                                     </div>
                                 </AppshowcaseClient.Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <AppshowcaseServer.Link className="flex items-center space-x-2 w-full">
+                                <AppshowcaseServer.Link className="flex w-full items-center space-x-2">
                                     <Server className="h-4 w-4" />
                                     <div>
-                                        <div className="font-medium">Server Side</div>
-                                        <div className="text-sm text-muted-foreground">SSR examples</div>
+                                        <div className="font-medium">
+                                            Server Side
+                                        </div>
+                                        <div className="text-muted-foreground text-sm">
+                                            SSR examples
+                                        </div>
                                     </div>
                                 </AppshowcaseServer.Link>
                             </DropdownMenuItem>
@@ -101,18 +125,22 @@ const MainNavigation: React.FC = () => {
 
                 <div className="flex items-center space-x-2">
                     {status === 'loading' ? (
-                        <div className="h-8 w-8 animate-pulse rounded-md bg-muted" />
+                        <div className="bg-muted h-8 w-8 animate-pulse rounded-md" />
                     ) : session ? (
                         <div className="flex items-center space-x-2">
                             <Authme.Link>
-                                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2"
+                                >
                                     <User className="h-4 w-4" />
                                     <span>Profile</span>
                                 </Button>
                             </Authme.Link>
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => signOut()}
                                 className="flex items-center space-x-2"
                             >
