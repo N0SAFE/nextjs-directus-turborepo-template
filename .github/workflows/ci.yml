@@ -47,7 +47,10 @@ jobs:
             - name: 📦 Install dependencies
               run: bun install --frozen-lockfile
 
-            - name: 🔍 Run ESLint
+            - name: � Generate declarative routes
+              run: cd apps/web && bun run dr:build && cd ../..
+
+            - name: �🔍 Run ESLint
               run: bun run lint
 
             - name: 🎨 Check formatting with Prettier
@@ -91,6 +94,9 @@ jobs:
             REACT_SCAN: false
             SHOW_AUTH_LOGS: false
             NEXT_PUBLIC_SHOW_AUTH_LOGS: false
+            
+            # Build optimization
+            SKIP_STATIC_GENERATION: true
 
         steps:
             - name: 📚 Checkout repository
@@ -106,6 +112,8 @@ jobs:
 
             - name: 🏗️ Build packages
               run: |
+                  # Generate declarative routes for web app before building
+                  bun run --cwd apps/web dr:build
                   # Build shared packages first
                   bun x turbo run build --filter="!web"
                   # Build web app without static generation to avoid API calls
@@ -167,6 +175,9 @@ jobs:
             REACT_SCAN: false
             SHOW_AUTH_LOGS: false
             NEXT_PUBLIC_SHOW_AUTH_LOGS: false
+            
+            # Build optimization
+            SKIP_STATIC_GENERATION: true
 
         steps:
             - name: 📚 Checkout repository
@@ -182,10 +193,12 @@ jobs:
 
             - name: 🏗️ Build all packages
               run: |
+                  # Generate declarative routes for web app before building
+                  bun run --cwd apps/web dr:build
                   # Build shared packages first
                   bun x turbo run build --filter="!web"
                   # Build web app without static generation to avoid API calls
-                  cd apps/web && bun x next build --experimental-build-mode=compile
+                  bun run --cwd apps/web compile
 
             - name: 🧪 Run all tests with coverage
               run: bun run test:coverage

@@ -1,5 +1,5 @@
 import { Config } from 'tailwindcss'
-import sharedConfig from '@repo/tailwind-config/tailwind.config'
+import sharedConfig from '@repo/tailwind-config'
 
 const config: Config = {
     content: [
