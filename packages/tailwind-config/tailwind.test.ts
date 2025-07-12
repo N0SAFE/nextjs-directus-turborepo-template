@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'fs'
-import path from 'path'
+import * as path from 'path'
 
 describe('Tailwind Config', () => {
   describe('Configuration Export', () => {
