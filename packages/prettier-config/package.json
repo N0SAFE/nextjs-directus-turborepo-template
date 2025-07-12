@@ -6,14 +6,18 @@
     "./tailwind": "./prettierrc.tailwind.js"
   },
   "scripts": {
-    "test": "echo 'all packages:bin tests passed!'"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@repo/vitest-config": "*",
     "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.5"
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "vitest": "^3.2.4"
   }
 }

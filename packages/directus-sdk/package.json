@@ -59,7 +59,9 @@
         "pretify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
-        "test": "echo 'all packages:ui tests passed!'",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
         "generate": "bun run generate:directus:types",
         "init": "bun run generate:directus:types",
         "build": "bun run generate:directus:types",
@@ -76,7 +78,11 @@
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
-        "typescript": "^5.5.3"
+        "@repo/vitest-config": "*",
+        "@testing-library/jest-dom": "^6.6.3",
+        "jsdom": "^25.0.1",
+        "typescript": "^5.5.3",
+        "vitest": "^3.2.4"
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",

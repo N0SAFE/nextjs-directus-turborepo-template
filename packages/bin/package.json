@@ -4,10 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "devDependencies": {
+    "@repo/vitest-config": "*",
+    "vitest": "^3.2.4",
+    "@types/node": "^20.9.0"
+  },
   "type": "commonjs"
 }

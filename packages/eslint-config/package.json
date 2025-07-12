@@ -8,9 +8,13 @@
         "react-internal.js"
     ],
     "scripts": {
-        "test": "echo 'all packages:bin tests passed!'"
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
     },
     "devDependencies": {
+        "@repo/vitest-config": "*",
+        "vitest": "^3.2.4",
         "@eslint/compat": "^1.0.3",
         "@eslint/js": "^9.4.0",
         "@tanstack/eslint-plugin-query": "^5.43.1",

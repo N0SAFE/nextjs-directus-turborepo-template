@@ -12,6 +12,11 @@
         "start": "docker compose -f docker-compose.prod.yml down && docker compose -f docker-compose.prod.yml up --build",
         "start:local": "turbo start",
         "test": "turbo test",
+        "test:watch": "turbo test:watch",
+        "test:ui": "vitest --ui",
+        "test:coverage": "turbo test:coverage && bun run coverage:merge && bun run coverage:report",
+        "coverage:merge": "rimraf coverage && node scripts/collect-coverage.js && nyc merge coverage/raw coverage/coverage-final.json",
+        "coverage:report": "mkdir -p coverage && nyc report --temp-dir coverage --report-dir coverage/report --reporter=html --reporter=text --reporter=lcov && echo \"\\n📊 Merged coverage report generated at: coverage/report/index.html\"",
         "lint": "turbo lint",
         "format": "turbo pretify",
         "clean": "turbo clean",
@@ -47,11 +52,15 @@
         ".": "dotenv -e .env -- bun --bun --cwd=./ run --"
     },
     "devDependencies": {
+        "@happy-dom/global-registrator": "^18.0.1",
         "@n0safe/envcli": "^1.0.2",
         "@n0safe/rununtil": "^1.0.5",
         "@n0safe/trycli": "^1.0.4",
+        "nyc": "^15.1.0",
         "prompts": "^2.4.2",
-        "turbo": "^2.1.2"
+        "rimraf": "^6.0.1",
+        "turbo": "^2.1.2",
+        "vitest": "^3.2.4"
     },
     "engines": {
         "node": ">=22"
