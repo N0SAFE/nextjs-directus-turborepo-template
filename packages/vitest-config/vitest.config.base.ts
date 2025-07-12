@@ -20,6 +20,8 @@ export const createBaseConfig = (overrides = {}) => {
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json', 'html'],
+        reportsDirectory: './coverage',
+        clean: true,
         exclude: [
           'coverage/**',
           'dist/**',

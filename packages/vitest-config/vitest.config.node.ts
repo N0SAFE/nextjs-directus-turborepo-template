@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config'
-import path from 'path'
+import * as path from 'path'
 import { createBaseConfig } from './vitest.config.base'
 
 /**

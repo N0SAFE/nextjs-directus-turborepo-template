@@ -5,27 +5,31 @@
   "description": "Shared Vitest configuration for the monorepo",
   "main": "index.js",
   "exports": {
+    ".": "./index.js",
     "./base": "./vitest.config.base.ts",
     "./react": "./vitest.config.react.ts",
-    "./node": "./vitest.config.node.ts"
+    "./node": "./vitest.config.node.ts",
+    "./nextjs": "./vitest.config.nextjs.ts"
   },
   "scripts": {
-    "test": "echo 'vitest-config package ready'"
+    "test": "echo 'vitest-config package ready'",
+    "type-check": "tsc --noEmit"
   },
   "keywords": ["vitest", "testing", "config"],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.1.4",
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/user-event": "^14.5.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^20.9.0",
-    "@vitejs/plugin-react": "^4.1.1",
-    "jsdom": "^23.0.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
     "typescript": "^5.2.2",
-    "vitest": "^1.0.4"
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "vite": "^5.0.0"
-  }
+    "vite": "^5.4.11"
+  },
+  "type": "module"
 }

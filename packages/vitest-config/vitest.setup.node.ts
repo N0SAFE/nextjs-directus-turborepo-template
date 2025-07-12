@@ -1,3 +1,4 @@
+import { beforeAll, beforeEach, vi } from 'vitest';
 // Global test setup for Node.js packages
 
 beforeEach(() => {
