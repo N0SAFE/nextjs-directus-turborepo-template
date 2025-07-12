@@ -56,7 +56,7 @@ export function memoize<P extends unknown[], R>(
     const logVerbose = log.includes('verbose')
     const logID = opts?.logid ? `${opts.logid} ` : ''
 
-    let oldData: any
+    let oldData: unknown
     let renderCacheHit: boolean
     renderCacheHit = false
 
@@ -105,14 +105,14 @@ export function memoize<P extends unknown[], R>(
                         `${chalk.hex('A0AFBF')(time.toPrecision(3) + 's')} ` +
                         `${chalk.hex('AA7ADB').bold(dataCacheMiss ? (isSame ? 'background-revalidation' : 'on-demand revalidation') : '')} `
                 )
-                if (logVerbose)
+                if (logVerbose){
                     console.log(
                         `${chalk.hex('6A7C8E').bold(` └ ${cb.name ?? 'Anon Func'} ${CircularJson.stringify(args)}`)}`
-                    )
+                    )}
                 oldData = data
                 return data
             } else {
-                const data = await unstable_cache(
+                return await unstable_cache(
                     async () => {
                         return cb(...args)
                     },
@@ -126,7 +126,6 @@ export function memoize<P extends unknown[], R>(
                         tags: ['all', ...revalidateTags],
                     }
                 )()
-                return data
             }
         } else {
             // return callback directly
@@ -136,9 +135,9 @@ export function memoize<P extends unknown[], R>(
 
     return async (...args: P) => {
         if (logDedupe) {
-            let audit2 = new Audit()
-            let data = await cachedFn(...args)
-            let time = audit2.getSec()
+            const audit2 = new Audit()
+            const data = await cachedFn(...args)
+            const time = audit2.getSec()
             console.log(
                 `${chalk.hex('#FFB713').bold('Memoization')} - ` +
                     `${chalk.hex('A0AFBF')(`${logID}${cb.name}`)} ${chalk.hex('#FFC94E').bold(renderCacheHit ? 'HIT' : 'MISS')} ` +

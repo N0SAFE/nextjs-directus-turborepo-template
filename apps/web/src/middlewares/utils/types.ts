@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-explicit-any: 0 */
 // middleware/types.ts
 
 import { NextMiddleware } from 'next/server'

@@ -10,7 +10,7 @@ export async function GET() {
             timestamp: new Date().toISOString(),
         }
 
-        let apiHealth = {
+        const apiHealth = {
             status: 'unavailable',
             timestamp: new Date().toISOString(),
             details: 'API could not be reached',
@@ -33,8 +33,11 @@ export async function GET() {
                     { status: 503 }
                 )
             }
-        } catch (error: any) {
-            apiHealth.details = `Error fetching API health: ${error.message}`
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                apiHealth.details = `Error fetching API health: ${error.message}`
+            }
+            apiHealth.status = 'unavailable'
         }
 
         const healthStatus = {
@@ -47,12 +50,12 @@ export async function GET() {
         return NextResponse.json(healthStatus, {
             status: isHealthy ? 200 : 503,
         })
-    } catch (error: any) {
+    } catch (error: unknown) {
         return NextResponse.json(
             {
                 status: 'error',
                 message: 'An unexpected error occurred during health check.',
-                error: error.message,
+                error: (error as Error).message,
             },
             { status: 500 }
         )

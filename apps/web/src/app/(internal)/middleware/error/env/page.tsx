@@ -41,7 +41,7 @@ export default async function EnvPage(props: {
     searchParams: Promise<{ redirect?: string }>
 }) {
     const searchParams = await props.searchParams
-    const parsedEnv = validateEnvSafe(process.env as any)
+    const parsedEnv = validateEnvSafe(process.env)
     if (parsedEnv.success) {
         return (
             <div className="mt-12 flex flex-col items-center justify-center">

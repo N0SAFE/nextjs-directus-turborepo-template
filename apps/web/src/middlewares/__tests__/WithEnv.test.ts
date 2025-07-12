@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server'
 import withEnv from '../WithEnv'
 
 // Mock the environment validation functions
@@ -29,7 +29,7 @@ describe('WithEnv Middleware', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        // @ts-ignore
+        // @ts-expect-error set NODE_ENV for tests
         process.env.NODE_ENV = 'development'
     })
 
@@ -60,7 +60,7 @@ describe('WithEnv Middleware', () => {
             })
 
             const middleware = withEnv(mockNext)
-            const result = await middleware(request, {} as any)
+            const result = await middleware(request, {} as NextFetchEvent)
 
             expect(result).toBeInstanceOf(NextResponse)
             expect(vi.mocked(matcherHandler)).toHaveBeenCalledWith(
@@ -81,7 +81,7 @@ describe('WithEnv Middleware', () => {
             })
 
             const middleware = withEnv(mockNext)
-            const result = await middleware(request, {} as any)
+            const result = await middleware(request, {} as NextFetchEvent)
 
             expect(result).toBeInstanceOf(NextResponse)
         })
@@ -90,11 +90,11 @@ describe('WithEnv Middleware', () => {
             const request = createMockRequest('http://localhost:3003/dashboard')
             vi.mocked(matcherHandler).mockReturnValue({
                 hit: true,
-                data: mockNext(request, {} as any),
+                data: mockNext(request, {} as NextFetchEvent),
             })
 
             const middleware = withEnv(mockNext)
-            await middleware(request, {} as any)
+            await middleware(request, {} as NextFetchEvent)
 
             expect(mockNext).toHaveBeenCalledWith(request, {})
         })
@@ -105,13 +105,13 @@ describe('WithEnv Middleware', () => {
             vi.mocked(envIsValid).mockReturnValue(false)
 
             vi.mocked(validateEnvSafe).mockReturnValue({
-                // @ts-ignore
+                // @ts-expect-error set NODE_ENV for tests
                 error: { message: 'Invalid environment variables' },
             })
         })
 
         it('should redirect to error page in development mode', async () => {
-            // @ts-ignore
+            // @ts-expect-error set NODE_ENV for tests
             process.env.NODE_ENV = 'development'
             const request = createMockRequest('http://localhost:3003/dashboard')
 
@@ -123,13 +123,13 @@ describe('WithEnv Middleware', () => {
             })
 
             const middleware = withEnv(mockNext)
-            const result = await middleware(request, {} as any)
+            const result = await middleware(request, {} as NextFetchEvent)
 
             expect(result).toBeInstanceOf(NextResponse)
         })
 
         it('should throw error in production mode', async () => {
-            // @ts-ignore
+            // @ts-expect-error set NODE_ENV for tests
             process.env.NODE_ENV = 'production'
             const request = createMockRequest('http://localhost:3003/dashboard')
 
@@ -142,7 +142,7 @@ describe('WithEnv Middleware', () => {
                 )
             })
 
-            await expect(middleware(request, {} as any)).rejects.toThrow(
+            await expect(middleware(request, {} as NextFetchEvent)).rejects.toThrow(
                 'Invalid environment variables'
             )
         })
@@ -160,7 +160,7 @@ describe('WithEnv Middleware', () => {
             mockNext.mockReturnValue(mockResponse)
 
             const middleware = withEnv(mockNext)
-            const result = await middleware(request, {} as any)
+            const result = await middleware(request, {} as NextFetchEvent)
 
             expect(mockNext).toHaveBeenCalledWith(request, {})
             expect(result).toBe(mockResponse)

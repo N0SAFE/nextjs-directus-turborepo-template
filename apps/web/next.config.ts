@@ -2,8 +2,23 @@ import MillionLint from '@million/lint'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { NextConfig } from 'next'
 
+// Check if we're running in a lint context or other non-build contexts
+const commandLine = process.argv.join(' ')
+const isLintContext = process.argv.includes('lint') || 
+                     process.argv.some(arg => arg.includes('eslint')) ||
+                     process.env.npm_lifecycle_event === 'lint' ||
+                     process.env.npm_lifecycle_script?.includes('lint') ||
+                     process.argv.some(arg => arg.includes('next-lint')) ||
+                     commandLine.endsWith('lint')
+
 if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error('NEXT_PUBLIC_API_URL is not defined')
+    if (isLintContext) {
+        // Provide a default URL for linting context to avoid breaking the lint process
+        process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8055'
+        console.warn('NEXT_PUBLIC_API_URL not defined, using default for lint context:', process.env.NEXT_PUBLIC_API_URL)
+    } else {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined')
+    }
 }
 
 console.log('Using API URL:', process.env.NEXT_PUBLIC_API_URL)

@@ -17,7 +17,9 @@ export const POST = async (req: Request) => {
     try {
         const authData = await directus.request(refresh('json', refresh_token))
         return Response.json(authData)
-    } catch (error: any) {
-        return Response.json(error, { status: error.response.status })
+    } catch (error: unknown) {
+        return Response.json(error, {
+            status: (error as { response: { status: number } }).response.status,
+        })
     }
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { ZodType } from 'zod/v4'
 
 type ParsedData<T> = { error?: string; data?: T }
 
@@ -13,26 +14,26 @@ export function safeParseSearchParams<T extends z.ZodTypeAny>(
 function processSchema(
     schema: z.ZodTypeAny,
     paramsArray: Record<string, string[]>
-): Record<string, any> {
+): Record<string, unknown> {
     if (schema instanceof z.ZodOptional) {
         schema = schema._def.innerType
     }
     switch (schema.constructor) {
         case z.ZodObject: {
-            const shape = (schema as z.ZodObject<z.ZodRawShape>).shape
+            const { shape } = schema as z.ZodObject<z.ZodRawShape>
             return parseShape(shape, paramsArray)
         }
         case z.ZodUnion: {
-            const options = (
+            const { options } = (
                 schema as z.ZodUnion<
                     [
                         z.ZodObject<z.ZodRawShape>,
                         ...z.ZodObject<z.ZodRawShape>[],
                     ]
                 >
-            )._def.options
+            )._def
             for (const option of options) {
-                const shape = option.shape
+                const { shape } = option
                 const requireds = getRequireds(shape)
 
                 const result = parseShape(shape, paramsArray, true)
@@ -56,8 +57,9 @@ function getRequireds(shape: z.ZodRawShape) {
         if (
             !(fieldShape instanceof z.ZodDefault) &&
             !(fieldShape instanceof z.ZodOptional)
-        )
+        ) {
             keys.push(key)
+        }
     }
     return keys
 }
@@ -66,8 +68,8 @@ function parseShape(
     shape: z.ZodRawShape,
     paramsArray: Record<string, string[]>,
     isPartOfUnion = false
-): Record<string, any> {
-    const parsed: Record<string, any> = {}
+): Record<string, unknown> {
+    const parsed: Record<string, unknown> = {}
 
     for (const key in shape) {
         if (Object.hasOwn(shape, key)) {
@@ -79,14 +81,20 @@ function parseShape(
                 )
 
                 if (fieldData.error) {
-                    if (isPartOfUnion) return {}
+                    if (isPartOfUnion) {
+                        return {}
+                    }
                     continue
                 }
                 const result = fieldSchema.safeParse(fieldData.data!)
-                if (result.success) parsed[key] = result.data
+                if (result.success) {
+                    parsed[key] = result.data
+                }
             } else if (fieldSchema instanceof z.ZodDefault) {
                 const result = fieldSchema.safeParse(undefined)
-                if (result.success) parsed[key] = result.data
+                if (result.success) {
+                    parsed[key] = result.data
+                }
             }
         }
     }
@@ -112,10 +120,11 @@ function getAllParamsAsArrays(
 function convertToRequiredType(
     values: string[],
     schema: z.ZodTypeAny
-): ParsedData<any> {
+): ParsedData<unknown> {
     const usedSchema = getInnerType(schema)
-    if (values.length > 1 && !(usedSchema instanceof z.ZodArray))
+    if (values.length > 1 && !(usedSchema instanceof z.ZodArray)) {
         return { error: 'Multiple values for non-array field' }
+    }
     const value = parseValues(usedSchema, values)
     if (value.error && schema.constructor === z.ZodDefault) {
         return { data: undefined }
@@ -123,7 +132,7 @@ function convertToRequiredType(
     return value
 }
 
-function parseValues(schema: any, values: string[]): ParsedData<any> {
+function parseValues(schema: ZodType, values: string[]): ParsedData<unknown> {
     switch (schema.constructor) {
         case z.ZodNumber:
             return parseNumber(values[0])
@@ -185,6 +194,8 @@ function parseArray<T>(
 ): ParsedData<T[]> {
     const numbers = values.map(parseFunction)
     const error = numbers.find((n) => n.error)?.error
-    if (error) return { error }
+    if (error) {
+        return { error }
+    }
     return { data: numbers.map((n) => n.data!) }
 }

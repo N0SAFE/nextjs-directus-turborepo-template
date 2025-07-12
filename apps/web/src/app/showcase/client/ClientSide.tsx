@@ -4,8 +4,6 @@ import directus from '@/lib/directus'
 import React, { Suspense } from 'react'
 import ListItemShowcase from '../ListItem'
 import { Loader2 } from 'lucide-react'
-import { toUseQuery } from '@/utils/tanstack-query'
-import { readItem, readItems, withOptions } from '@repo/directus-sdk'
 import { useQuery } from '@tanstack/react-query'
 
 const ClientSideShowcase: React.FC = function ClientSideShowcase() {

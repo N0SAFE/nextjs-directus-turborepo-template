@@ -1,7 +1,5 @@
 import {
-    NextFetchEvent,
     NextMiddleware,
-    NextRequest,
     NextResponse,
 } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
@@ -13,7 +11,7 @@ const errorPageRenderingPath = '/middleware/error/env'
 
 const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request, _next) => {
-        const isValid = envIsValid(process.env as any)
+        const isValid = envIsValid(process.env)
         const matcher = matcherHandler(request.nextUrl.pathname, [
             [
                 errorPageRenderingPath,
@@ -31,21 +29,20 @@ const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
                 () => {
                     if (isValid) {
                         return next(request, _next)
+                    }
+                    if (process.env?.NODE_ENV === 'development') {
+                        return NextResponse.redirect(
+                            request.nextUrl.origin +
+                                errorPageRenderingPath +
+                                `?from=${encodeURIComponent(request.url)}`
+                        )
                     } else {
-                        if (process.env?.NODE_ENV === 'development') {
-                            return NextResponse.redirect(
-                                request.nextUrl.origin +
-                                    errorPageRenderingPath +
-                                    `?from=${encodeURIComponent(request.url)}`
-                            )
-                        } else {
-                            throw new Error(
-                                'Invalid environment variables:' +
-                                    JSON.stringify(
-                                        validateEnvSafe(process.env).error
-                                    )
-                            )
-                        }
+                        throw new Error(
+                            'Invalid environment variables:' +
+                                JSON.stringify(
+                                    validateEnvSafe(process.env).error
+                                )
+                        )
                     }
                 },
             ],

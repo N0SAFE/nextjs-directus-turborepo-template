@@ -8,7 +8,9 @@ import {
 import { getSession, signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
 
-export default function Validate({ children }: React.PropsWithChildren<{}>) {
+export default function Validate({
+    children,
+}: React.PropsWithChildren<object>) {
     const { data: session, update } = useSession()
     const isRefreshing = useRef(false)
 
@@ -34,7 +36,9 @@ export default function Validate({ children }: React.PropsWithChildren<{}>) {
 
     // Handle session updates and errors
     useEffect(() => {
-        if (!session) return
+        if (!session) {
+            return
+        }
         if (session.error === 'RefreshAccessTokenError') {
             if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                 console.log('Validate: signOut due to refresh error')
@@ -60,7 +64,9 @@ export default function Validate({ children }: React.PropsWithChildren<{}>) {
                 isRefreshing: isRefreshing.current,
             })
         }
-        if (!session?.expires_at || isRefreshing.current) return
+        if (!session?.expires_at || isRefreshing.current) {
+            return
+        }
 
         const expiryTime = new Date(session.expires_at).getTime()
         const currentTime = Date.now()

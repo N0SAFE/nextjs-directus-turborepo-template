@@ -84,7 +84,11 @@ export function matcherHandler<
 
     const status = {
         hit: false,
-    } as any
+    } as {
+        hit: boolean
+        data?: ReturnType<Callback> | ReturnType<Callback>[]
+        number?: number
+    }
     for (const item of switcher) {
         if (!Array.isArray(item)) {
             const [matcher, callback] = switcher as [
@@ -109,7 +113,10 @@ export function matcherHandler<
             status.hit = true
             const data = callback()
             if (options?.multiple) {
-                status.data = [...(status.data || []), data]
+                status.data = [
+                    ...((status.data || []) as ReturnType<Callback>[]),
+                    data,
+                ]
             } else {
                 status.data = data
                 break

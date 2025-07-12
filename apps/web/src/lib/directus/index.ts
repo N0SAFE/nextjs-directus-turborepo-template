@@ -13,7 +13,7 @@ import {
 import { Schema } from '@repo/directus-sdk/client'
 import { auth } from '../auth/index'
 
-if ((process.env as any).NEXT_RUNTIME! === 'edge') {
+if (process.env.NEXT_RUNTIME! === 'edge') {
     throw new Error('The module is not compatible with the runtime')
 }
 

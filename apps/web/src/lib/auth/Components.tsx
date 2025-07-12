@@ -7,10 +7,7 @@ import { Authlogin } from '@/routes/index'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { signOut } from './actions'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { validatePublicEnvSafe } from '#/env'
 import { toAbsoluteUrl } from '../utils'
-
-const env = validatePublicEnvSafe(process.env)
 
 export async function IsSignedIn({
     children,
@@ -25,7 +22,7 @@ export async function IsSignedIn({
     return null
 }
 
-export async function IsSignedOut({ children }: React.PropsWithChildren<{}>) {
+export async function IsSignedOut({ children }: React.PropsWithChildren<object>) {
     const session = await auth()
     if (!session) {
         return <>{children}</>

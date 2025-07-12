@@ -25,7 +25,11 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
             request.nextUrl.pathname
         )
         const res = await auth(async function middleware(req) {
-            const toNext = async () => (await next(req as any, _next))!
+            const toNext = async () =>
+                (await next(
+                    req as unknown as Parameters<typeof next>[0],
+                    _next
+                ))!
             const isAuth = !!req.auth
 
             console.log(
@@ -76,7 +80,12 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
                     )
                 ) // not authenticated, redirect to login
             }
-        })(request as unknown as any, _next as any)
+        })(
+            request as unknown as Parameters<ReturnType<typeof auth>>[0],
+            _next as unknown as {
+                params: Promise<unknown>
+            }
+        )
         if (res) {
             return new NextResponse(res.body, {
                 url: res.url,

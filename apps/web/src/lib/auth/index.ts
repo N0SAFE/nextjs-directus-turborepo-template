@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthResult, User } from 'next-auth'
+import NextAuth, { NextAuthResult, User, Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { handleError } from '../utils'
 import { AuthenticationData, readMe, withToken } from '@repo/directus-sdk'
@@ -7,7 +7,6 @@ import { UserSession, UserParams } from '@/types/auth'
 import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
 import { memoize } from '@/lib/better-unstable-cache'
 import { validateEnv } from '#/env'
-import { Session } from 'next-auth'
 
 export const pages = {
     signIn: '/auth/login',
@@ -123,8 +122,8 @@ const result = NextAuth({
                         refresh_token: auth.refresh_token ?? '',
                     }
                     return user
-                } catch (error: any) {
-                    if (env.SHOW_AUTH_LOGS) {
+                } catch (error: unknown) {
+                    if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                         console.error('authorize error:', error)
                     }
                     return null
@@ -165,7 +164,7 @@ const result = NextAuth({
                         access_token: user.access_token,
                         expires_at: user.expires,
                         refresh_token: user.refresh_token,
-                        user: userParams(user as any),
+                        user: userParams(user),
                         error: null,
                     }
                 } else if (Date.now() < (token.expires_at ?? 0)) {
@@ -195,7 +194,7 @@ const result = NextAuth({
                         if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                             console.log('refreshToken: result', result)
                         }
-                        const resultToken = {
+                        return {
                             ...token,
                             access_token: result.access_token ?? '',
                             expires_at: Math.floor(
@@ -205,8 +204,7 @@ const result = NextAuth({
                             error: null,
                             tokenIsRefreshed: true,
                         }
-                        return resultToken
-                    } catch (error: any) {
+                    } catch (error: unknown) {
                         return handleError(
                             typeof error === 'string'
                                 ? error
@@ -215,7 +213,7 @@ const result = NextAuth({
                         )
                     }
                 }
-            } catch (error: any) {
+            } catch (error: unknown) {
                 if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                     console.error('jwt error:', error)
                 }

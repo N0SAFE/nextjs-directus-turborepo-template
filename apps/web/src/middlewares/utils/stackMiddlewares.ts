@@ -5,7 +5,7 @@ import { matcherHandler } from './utils'
 
 export function stackMiddlewares(
     functions: Middleware[] = [],
-    config?: any,
+    config?: unknown,
     index = 0
 ): CustomNextMiddleware {
     const current = functions[index]
@@ -32,14 +32,14 @@ export function stackMiddlewares(
                 if (matched.hit) {
                     return middleware(next)(req, _next, {
                         key: matched.data,
-                        ctx: (ctx as any)[matched.data],
+                        ctx: ctx[matched.data],
                     })
                 }
             } else if (typeof matcher === 'object') {
                 const ctx = Object.keys(matcher).reduce(
                     (acc, key) => ({ ...acc, [key]: {} }),
                     {}
-                )
+                ) as typeof matcher
                 const matched = matcherHandler(
                     req.nextUrl.pathname,
                     Object.keys(matcher).map((m) => [matcher[m], () => m]) as [
@@ -50,7 +50,7 @@ export function stackMiddlewares(
                 if (matched.hit) {
                     return middleware(next)(req, _next, {
                         key: matched.data,
-                        ctx: (ctx as any)[matched.data],
+                        ctx: ctx[matched.data],
                     })
                 }
             }

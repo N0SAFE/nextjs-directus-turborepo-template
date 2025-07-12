@@ -50,9 +50,12 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                             )
                         }
                     }
-                } catch (e: any) {
+                } catch (e: unknown) {
                     console.log('Health Check Error:', e)
-                    if (e.response.status === 401) {
+                    if (
+                        (e as { response: { status: number } }).response
+                            .status === 401
+                    ) {
                         const data = await directus.request(serverHealth())
                         if (!(data.status === 'ok')) {
                             if (
