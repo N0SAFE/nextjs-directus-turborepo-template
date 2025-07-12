@@ -16,6 +16,24 @@ jobs:
         name: 🔍 Lint & Type Check
         runs-on: ubuntu-latest
         timeout-minutes: 10
+        env:
+            # Essential environment variables for linting/type checking
+            NEXT_PUBLIC_API_URL: http://localhost:8055/
+            NEXT_PUBLIC_API_PORT: 8055
+            API_PING_PATH: /server/health
+            API_ADMIN_TOKEN: ci-test-admin-token
+            NEXT_PUBLIC_APP_URL: http://localhost:3003/
+            NEXT_PUBLIC_APP_PORT: 3003
+            AUTH_SECRET: ci-test-auth-secret
+            DIRECTUS_SECRET: ci-test-directus-secret
+            DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
+            DIRECTUS_ADMIN_PASSWORD: ci-test-password
+            NEXT_TELEMETRY_DISABLED: 1
+            NODE_ENV: test
+            MILLION_LINT: false
+            REACT_SCAN: false
+            SHOW_AUTH_LOGS: false
+            NEXT_PUBLIC_SHOW_AUTH_LOGS: false
 
         steps:
             - name: 📚 Checkout repository
@@ -41,6 +59,38 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 20
         needs: lint-and-typecheck
+        env:
+            # API Configuration
+            NEXT_PUBLIC_API_URL: http://localhost:8055/
+            NEXT_PUBLIC_API_PORT: 8055
+            API_PING_PATH: /server/health
+            API_ADMIN_TOKEN: ci-test-admin-token
+            
+            # App Configuration
+            NEXT_PUBLIC_APP_URL: http://localhost:3003/
+            NEXT_PUBLIC_APP_PORT: 3003
+            
+            # Database Configuration (for testing)
+            DB_DATABASE: directus_test
+            DB_ROOT_PASSWORD: test-password
+            
+            # Authentication
+            AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
+            
+            # Directus Configuration
+            DIRECTUS_SECRET: ci-test-directus-secret-value
+            DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
+            DIRECTUS_ADMIN_PASSWORD: ci-test-password
+            
+            # Next.js Configuration
+            NEXT_TELEMETRY_DISABLED: 1
+            NODE_ENV: test
+            
+            # Development tools (disabled for CI)
+            MILLION_LINT: false
+            REACT_SCAN: false
+            SHOW_AUTH_LOGS: false
+            NEXT_PUBLIC_SHOW_AUTH_LOGS: false
 
         steps:
             - name: 📚 Checkout repository
@@ -137,6 +187,38 @@ jobs:
         timeout-minutes: 10
         needs: build-and-test
         if: always() && needs.build-and-test.result == 'success'
+        env:
+            # API Configuration
+            NEXT_PUBLIC_API_URL: http://localhost:8055/
+            NEXT_PUBLIC_API_PORT: 8055
+            API_PING_PATH: /server/health
+            API_ADMIN_TOKEN: ci-test-admin-token
+            
+            # App Configuration
+            NEXT_PUBLIC_APP_URL: http://localhost:3003/
+            NEXT_PUBLIC_APP_PORT: 3003
+            
+            # Database Configuration (for testing)
+            DB_DATABASE: directus_test
+            DB_ROOT_PASSWORD: test-password
+            
+            # Authentication
+            AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
+            
+            # Directus Configuration
+            DIRECTUS_SECRET: ci-test-directus-secret-value
+            DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
+            DIRECTUS_ADMIN_PASSWORD: ci-test-password
+            
+            # Next.js Configuration
+            NEXT_TELEMETRY_DISABLED: 1
+            NODE_ENV: test
+            
+            # Development tools (disabled for CI)
+            MILLION_LINT: false
+            REACT_SCAN: false
+            SHOW_AUTH_LOGS: false
+            NEXT_PUBLIC_SHOW_AUTH_LOGS: false
 
         steps:
             - name: 📚 Checkout repository
