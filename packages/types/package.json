@@ -13,7 +13,9 @@
     },
     "scripts": {
         "lint": "eslint \"**/*.ts*\"",
-        "test": "echo 'all packages:bin tests passed!'"
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.1.0",
@@ -21,7 +23,9 @@
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
-        "typescript": "^5.5.3"
+        "@repo/vitest-config": "*",
+        "typescript": "^5.5.3",
+        "vitest": "^3.2.4"
     },
     "keywords": [],
     "author": "",

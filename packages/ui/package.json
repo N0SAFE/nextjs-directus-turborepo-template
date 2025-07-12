@@ -8,7 +8,9 @@
   "scripts": {
     "pretify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "echo 'all packages:ui tests passed!'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "ui:add": "bun x --bun shadcn add --"
   },
   "peerDependencies": {
@@ -22,19 +24,26 @@
     "@repo/tailwind-config": "*",
     "@repo/tsconfig": "*",
     "@repo/types": "*",
+    "@repo/vitest-config": "*",
     "@tailwindcss/postcss": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^20.9.0",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "delete-cli": "^0.1.3",
+    "jsdom": "^25.0.1",
     "next": "^15.3.2",
     "postcss": "^8.4.31",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "tailwind-variants": "^0.1.18",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.2.2"
+    "tailwindcss": "^4",
+    "typescript": "^5.2.2",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

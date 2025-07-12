@@ -2,8 +2,7 @@ import type { Config } from "tailwindcss";
 import sharedConfig from "@repo/tailwind-config/tailwind.config";
 
 /** @type {import('tailwindcss').Config} */
-const config: Pick<Config, "theme" | "plugins" | 'safelist'> = {
-  safelist: ['dark'],
+const config: Pick<Config, "theme" | "plugins"> = {
   theme: {
     container: {
       center: true,

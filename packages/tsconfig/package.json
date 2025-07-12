@@ -3,8 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "devDependencies": {
+    "@repo/vitest-config": "*",
+    "vitest": "^3.2.4"
+  },
   "scripts": {
-    "test": "echo 'all package:tsconfig tests passed!'"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "publishConfig": {
     "access": "public"
