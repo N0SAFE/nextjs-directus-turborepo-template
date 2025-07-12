@@ -1,279 +1,250 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
 
 env:
-  BUN_VERSION: "1.2.14"
-  NODE_VERSION: "22"
+    BUN_VERSION: "1.2.14"
+    NODE_VERSION: "22"
 
 jobs:
-  # Job 1: Lint and Type Check
-  lint-and-typecheck:
-    name: 🔍 Lint & Type Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Job 1: Lint and Type Check
+    lint-and-typecheck:
+        name: 🔍 Lint & Type Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
 
-    steps:
-      - name: 📚 Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
 
-      - name: 🐰 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
+            - name: 🐰 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
 
-      - name: 📦 Install dependencies
-        run: bun install --frozen-lockfile
+            - name: 📦 Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: 🔍 Run ESLint
-        run: bun run lint
+            - name: 🔍 Run ESLint
+              run: bun run lint
 
-      - name: 🎨 Check formatting with Prettier
-        run: bun run format
+            - name: 🎨 Check formatting with Prettier
+              run: bun run format
 
-  # Job 2: Build and Test
-  build-and-test:
-    name: 🏗️ Build & Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: lint-and-typecheck
+    # Job 2: Build and Test
+    build-and-test:
+        name: 🏗️ Build & Test
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        needs: lint-and-typecheck
 
-    strategy:
-      matrix:
-        package: 
-          - "root"
-          - "web"
-          - "api"
-          - "eslint-config"
-          - "prettier-config"
-          - "tailwind-config"
-          - "tsconfig"
-          - "types"
-          - "ui"
-          - "vitest-config"
-          - "directus-sdk"
-          - "bin"
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
 
-    steps:
-      - name: 📚 Checkout repository
-        uses: actions/checkout@v4
+            - name: 🐰 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
 
-      - name: 🐰 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
+            - name: 📦 Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: 📦 Install dependencies
-        run: bun install --frozen-lockfile
+            - name: 🏗️ Build packages
+              run: bun run build
 
-      - name: 🏗️ Build packages
-        run: bun run build
-        if: matrix.package == 'root'
+            - name: 🧪 Run tests for all packages
+              run: bun run test
 
-      - name: 🧪 Run tests with coverage
-        run: bun run test:coverage
-        if: matrix.package == 'root'
+            - name: 📊 Upload coverage reports
+              uses: codecov/codecov-action@v4
+              with:
+                  files: |
+                      ./coverage/coverage-final.json
+                      ./apps/web/coverage/coverage-final.json
+                      ./apps/api/coverage/coverage-final.json
+                      ./packages/*/coverage/coverage-final.json
+                  flags: all-packages
+                  name: all-packages-coverage
+                  fail_ci_if_error: false
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: 🧪 Run individual package tests
-        run: |
-          if [ "${{ matrix.package }}" = "web" ]; then
-            cd apps/web && bun run test:coverage
-          elif [ "${{ matrix.package }}" = "api" ]; then
-            cd apps/api && bun run test:coverage
-          elif [ "${{ matrix.package }}" != "root" ]; then
-            cd packages/${{ matrix.package }} && bun run test:coverage
-          fi
-        if: matrix.package != 'root'
+    # Job 3: Docker Build Test
+    docker-build-test:
+        name: 🐳 Docker Build Test
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        needs: build-and-test
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: 📊 Upload coverage reports
-        uses: codecov/codecov-action@v4
-        with:
-          files: |
-            ./coverage/coverage-final.json
-            ./apps/web/coverage/coverage-final.json
-            ./apps/api/coverage/coverage-final.json
-            ./packages/*/coverage/coverage-final.json
-          flags: ${{ matrix.package }}
-          name: ${{ matrix.package }}-coverage
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        strategy:
+            matrix:
+                service: [web, api]
 
-  # Job 3: Docker Build Test
-  docker-build-test:
-    name: 🐳 Docker Build Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
 
-    strategy:
-      matrix:
-        service: [web, api]
+            - name: 🐳 Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
 
-    steps:
-      - name: 📚 Checkout repository
-        uses: actions/checkout@v4
+            - name: 🔧 Create test environment file
+              run: |
+                  cat > .env << EOF
+                  # Test environment variables
+                  NEXT_PUBLIC_API_URL=http://localhost:8055
+                  API_PING_PATH=/server/ping
+                  API_ADMIN_TOKEN=test-token
+                  TEMP_APP_NEXTAUTH_URL=http://localhost:3000
+                  NEXT_AUTH=test-secret
+                  EOF
 
-      - name: 🐳 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: 🏗️ Build Docker image for ${{ matrix.service }}
+              run: |
+                  if [ "${{ matrix.service }}" = "web" ]; then
+                    docker build -f docker/Dockerfile.web.prod -t test-web:latest .
+                  else
+                    docker build -f docker/Dockerfile.api.prod -t test-api:latest .
+                  fi
 
-      - name: 🔧 Create test environment file
-        run: |
-          cat > .env << EOF
-          # Test environment variables
-          NEXT_PUBLIC_API_URL=http://localhost:8055
-          API_PING_PATH=/server/ping
-          API_ADMIN_TOKEN=test-token
-          TEMP_APP_NEXTAUTH_URL=http://localhost:3000
-          NEXT_AUTH=test-secret
-          EOF
+            - name: 🧪 Test Docker container
+              run: |
+                  if [ "${{ matrix.service }}" = "web" ]; then
+                    # Test web container starts properly
+                    docker run --rm -d --name test-web -p 3000:3000 test-web:latest
+                    sleep 10
+                    # Check if container is running
+                    docker ps | grep test-web
+                    docker stop test-web
+                  else
+                    # Test API container starts properly
+                    docker run --rm -d --name test-api -p 8055:8055 test-api:latest
+                    sleep 15
+                    # Check if container is running
+                    docker ps | grep test-api
+                    docker stop test-api
+                  fi
 
-      - name: 🏗️ Build Docker image for ${{ matrix.service }}
-        run: |
-          if [ "${{ matrix.service }}" = "web" ]; then
-            docker build -f docker/Dockerfile.web.prod -t test-web:latest .
-          else
-            docker build -f docker/Dockerfile.api.prod -t test-api:latest .
-          fi
+    # Job 4: Merge Coverage Reports
+    merge-coverage:
+        name: 📊 Merge Coverage Reports
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        needs: build-and-test
+        if: always() && needs.build-and-test.result == 'success'
 
-      - name: 🧪 Test Docker container
-        run: |
-          if [ "${{ matrix.service }}" = "web" ]; then
-            # Test web container starts properly
-            docker run --rm -d --name test-web -p 3000:3000 test-web:latest
-            sleep 10
-            # Check if container is running
-            docker ps | grep test-web
-            docker stop test-web
-          else
-            # Test API container starts properly
-            docker run --rm -d --name test-api -p 8055:8055 test-api:latest
-            sleep 15
-            # Check if container is running
-            docker ps | grep test-api
-            docker stop test-api
-          fi
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
 
-  # Job 4: Merge Coverage Reports
-  merge-coverage:
-    name: 📊 Merge Coverage Reports
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: build-and-test
-    if: always() && needs.build-and-test.result == 'success'
+            - name: 🐰 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
 
-    steps:
-      - name: 📚 Checkout repository
-        uses: actions/checkout@v4
+            - name: 📦 Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: 🐰 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
+            - name: 🏗️ Build all packages
+              run: bun run build
 
-      - name: 📦 Install dependencies
-        run: bun install --frozen-lockfile
+            - name: 🧪 Run all tests with coverage
+              run: bun run test:coverage
 
-      - name: 🏗️ Build all packages
-        run: bun run build
+            - name: 📊 Generate merged coverage report
+              run: |
+                  mkdir -p coverage/report
+                  echo "📋 Coverage Summary:" > coverage/report/summary.txt
+                  if [ -f "coverage/report/index.html" ]; then
+                    echo "✅ Merged coverage report generated successfully" >> coverage/report/summary.txt
+                  else
+                    echo "⚠️ No coverage data found" >> coverage/report/summary.txt
+                  fi
 
-      - name: 🧪 Run all tests with coverage
-        run: bun run test:coverage
+            - name: 📤 Upload merged coverage artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-report
+                  path: |
+                      coverage/report/
+                      coverage/coverage-final.json
+                  retention-days: 30
 
-      - name: 📊 Generate merged coverage report
-        run: |
-          mkdir -p coverage/report
-          echo "📋 Coverage Summary:" > coverage/report/summary.txt
-          if [ -f "coverage/report/index.html" ]; then
-            echo "✅ Merged coverage report generated successfully" >> coverage/report/summary.txt
-          else
-            echo "⚠️ No coverage data found" >> coverage/report/summary.txt
-          fi
+            - name: 📊 Upload to Codecov
+              uses: codecov/codecov-action@v4
+              with:
+                  files: ./coverage/coverage-final.json
+                  flags: merged
+                  name: merged-coverage
+                  fail_ci_if_error: false
+              env:
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: 📤 Upload merged coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: |
-            coverage/report/
-            coverage/coverage-final.json
-          retention-days: 30
+    # Job 5: Deployment Ready Check
+    deployment-ready:
+        name: 🚀 Deployment Ready
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        needs: [lint-and-typecheck, build-and-test, docker-build-test, merge-coverage]
+        if: always()
 
-      - name: 📊 Upload to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage/coverage-final.json
-          flags: merged
-          name: merged-coverage
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
 
-  # Job 5: Deployment Ready Check
-  deployment-ready:
-    name: 🚀 Deployment Ready
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [lint-and-typecheck, build-and-test, docker-build-test, merge-coverage]
-    if: always()
+            - name: ✅ Check deployment readiness
+              run: |
+                  echo "🔍 Checking CI/CD pipeline results..."
 
-    steps:
-      - name: 📚 Checkout repository
-        uses: actions/checkout@v4
+                  LINT_STATUS="${{ needs.lint-and-typecheck.result }}"
+                  BUILD_STATUS="${{ needs.build-and-test.result }}"
+                  DOCKER_STATUS="${{ needs.docker-build-test.result }}"
+                  COVERAGE_STATUS="${{ needs.merge-coverage.result }}"
 
-      - name: ✅ Check deployment readiness
-        run: |
-          echo "🔍 Checking CI/CD pipeline results..."
-          
-          LINT_STATUS="${{ needs.lint-and-typecheck.result }}"
-          BUILD_STATUS="${{ needs.build-and-test.result }}"
-          DOCKER_STATUS="${{ needs.docker-build-test.result }}"
-          COVERAGE_STATUS="${{ needs.merge-coverage.result }}"
-          
-          echo "📋 Pipeline Results:"
-          echo "  - Lint & Type Check: $LINT_STATUS"
-          echo "  - Build & Test: $BUILD_STATUS"
-          echo "  - Docker Build: $DOCKER_STATUS"
-          echo "  - Coverage Merge: $COVERAGE_STATUS"
-          
-          if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ]; then
-            if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-              if [ "$DOCKER_STATUS" = "success" ]; then
-                echo "🚀 ✅ Ready for production deployment!"
-                echo "deployment_ready=true" >> $GITHUB_OUTPUT
-              else
-                echo "🚀 ⚠️ Code is ready but Docker build failed"
-                echo "deployment_ready=false" >> $GITHUB_OUTPUT
-              fi
-            else
-              echo "🚀 ✅ Ready for staging deployment!"
-              echo "deployment_ready=true" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "🚀 ❌ Not ready for deployment"
-            echo "deployment_ready=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
+                  echo "📋 Pipeline Results:"
+                  echo "  - Lint & Type Check: $LINT_STATUS"
+                  echo "  - Build & Test: $BUILD_STATUS"
+                  echo "  - Docker Build: $DOCKER_STATUS"
+                  echo "  - Coverage Merge: $COVERAGE_STATUS"
 
-      - name: 📋 Generate deployment summary
-        run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build & Test | ${{ needs.build-and-test.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Docker Build | ${{ needs.docker-build-test.result == 'success' && '✅ Pass' || needs.docker-build-test.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Coverage Reports | ${{ needs.merge-coverage.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "🎯 **Branch**: Production (main)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "🎯 **Branch**: Development" >> $GITHUB_STEP_SUMMARY
-          fi
+                  if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ]; then
+                    if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                      if [ "$DOCKER_STATUS" = "success" ]; then
+                        echo "🚀 ✅ Ready for production deployment!"
+                        echo "deployment_ready=true" >> $GITHUB_OUTPUT
+                      else
+                        echo "🚀 ⚠️ Code is ready but Docker build failed"
+                        echo "deployment_ready=false" >> $GITHUB_OUTPUT
+                      fi
+                    else
+                      echo "🚀 ✅ Ready for staging deployment!"
+                      echo "deployment_ready=true" >> $GITHUB_OUTPUT
+                    fi
+                  else
+                    echo "🚀 ❌ Not ready for deployment"
+                    echo "deployment_ready=false" >> $GITHUB_OUTPUT
+                    exit 1
+                  fi
+
+            - name: 📋 Generate deployment summary
+              run: |
+                  echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+                  echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+                  echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Build & Test | ${{ needs.build-and-test.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Docker Build | ${{ needs.docker-build-test.result == 'success' && '✅ Pass' || needs.docker-build-test.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Coverage Reports | ${{ needs.merge-coverage.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+
+                  if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                    echo "🎯 **Branch**: Production (main)" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "🎯 **Branch**: Development" >> $GITHUB_STEP_SUMMARY
+                  fi
