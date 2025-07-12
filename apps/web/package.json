@@ -15,6 +15,7 @@
         "build:docker": "cross-env SKIP_STATIC_GENERATION=true bun --bun generate && next build",
         "build:static-only": "bun --bun wait-api && next-sitemap",
         "build:no:check": "bun --bun generate && bun --bun wait-api && cross-env NO_CHECK=true next build && next-sitemap",
+        "compile": "next build --experimental-build-mode=compile && next-sitemap",
         "generate": "bun --bun openapi",
         "start": "bun --bun wait-api && next start -p 3003",
         "start:docker": "bun --bun build:static-only && next start -p 3000",

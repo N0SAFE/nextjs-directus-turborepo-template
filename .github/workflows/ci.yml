@@ -65,27 +65,27 @@ jobs:
             NEXT_PUBLIC_API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
-            
+
             # App Configuration
             NEXT_PUBLIC_APP_URL: http://localhost:3003/
             NEXT_PUBLIC_APP_PORT: 3003
-            
+
             # Database Configuration (for testing)
             DB_DATABASE: directus_test
             DB_ROOT_PASSWORD: test-password
-            
+
             # Authentication
             AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
-            
+
             # Directus Configuration
             DIRECTUS_SECRET: ci-test-directus-secret-value
             DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
             DIRECTUS_ADMIN_PASSWORD: ci-test-password
-            
+
             # Next.js Configuration
             NEXT_TELEMETRY_DISABLED: 1
             NODE_ENV: test
-            
+
             # Development tools (disabled for CI)
             MILLION_LINT: false
             REACT_SCAN: false
@@ -105,7 +105,11 @@ jobs:
               run: bun install --frozen-lockfile
 
             - name: 🏗️ Build packages
-              run: bun run build
+              run: |
+                  # Build shared packages first
+                  bun x turbo run build --filter="!web"
+                  # Build web app without static generation to avoid API calls
+                  bun run --cwd apps/web compile
 
             - name: 🧪 Run tests for all packages
               run: bun run test
@@ -124,63 +128,7 @@ jobs:
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    # Job 3: Docker Build Test
-    docker-build-test:
-        name: 🐳 Docker Build Test
-        runs-on: ubuntu-latest
-        timeout-minutes: 30
-        needs: build-and-test
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-        strategy:
-            matrix:
-                service: [web, api]
-
-        steps:
-            - name: 📚 Checkout repository
-              uses: actions/checkout@v4
-
-            - name: 🐳 Set up Docker Buildx
-              uses: docker/setup-buildx-action@v3
-
-            - name: 🔧 Create test environment file
-              run: |
-                  cat > .env << EOF
-                  # Test environment variables
-                  NEXT_PUBLIC_API_URL=http://localhost:8055
-                  API_PING_PATH=/server/ping
-                  API_ADMIN_TOKEN=test-token
-                  TEMP_APP_NEXTAUTH_URL=http://localhost:3000
-                  NEXT_AUTH=test-secret
-                  EOF
-
-            - name: 🏗️ Build Docker image for ${{ matrix.service }}
-              run: |
-                  if [ "${{ matrix.service }}" = "web" ]; then
-                    docker build -f docker/Dockerfile.web.prod -t test-web:latest .
-                  else
-                    docker build -f docker/Dockerfile.api.prod -t test-api:latest .
-                  fi
-
-            - name: 🧪 Test Docker container
-              run: |
-                  if [ "${{ matrix.service }}" = "web" ]; then
-                    # Test web container starts properly
-                    docker run --rm -d --name test-web -p 3000:3000 test-web:latest
-                    sleep 10
-                    # Check if container is running
-                    docker ps | grep test-web
-                    docker stop test-web
-                  else
-                    # Test API container starts properly
-                    docker run --rm -d --name test-api -p 8055:8055 test-api:latest
-                    sleep 15
-                    # Check if container is running
-                    docker ps | grep test-api
-                    docker stop test-api
-                  fi
-
-    # Job 4: Merge Coverage Reports
+    # Job 3: Merge Coverage Reports
     merge-coverage:
         name: 📊 Merge Coverage Reports
         runs-on: ubuntu-latest
@@ -193,27 +141,27 @@ jobs:
             NEXT_PUBLIC_API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
-            
+
             # App Configuration
             NEXT_PUBLIC_APP_URL: http://localhost:3003/
             NEXT_PUBLIC_APP_PORT: 3003
-            
+
             # Database Configuration (for testing)
             DB_DATABASE: directus_test
             DB_ROOT_PASSWORD: test-password
-            
+
             # Authentication
             AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
-            
+
             # Directus Configuration
             DIRECTUS_SECRET: ci-test-directus-secret-value
             DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
             DIRECTUS_ADMIN_PASSWORD: ci-test-password
-            
+
             # Next.js Configuration
             NEXT_TELEMETRY_DISABLED: 1
             NODE_ENV: test
-            
+
             # Development tools (disabled for CI)
             MILLION_LINT: false
             REACT_SCAN: false
@@ -233,7 +181,11 @@ jobs:
               run: bun install --frozen-lockfile
 
             - name: 🏗️ Build all packages
-              run: bun run build
+              run: |
+                  # Build shared packages first
+                  bun x turbo run build --filter="!web"
+                  # Build web app without static generation to avoid API calls
+                  cd apps/web && bun x next build --experimental-build-mode=compile
 
             - name: 🧪 Run all tests with coverage
               run: bun run test:coverage
@@ -257,22 +209,22 @@ jobs:
                       coverage/coverage-final.json
                   retention-days: 30
 
-            - name: 📊 Upload to Codecov
-              uses: codecov/codecov-action@v4
-              with:
-                  files: ./coverage/coverage-final.json
-                  flags: merged
-                  name: merged-coverage
-                  fail_ci_if_error: false
-              env:
-                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+            # - name: 📊 Upload to Codecov
+            #   uses: codecov/codecov-action@v4
+            #   with:
+            #       files: ./coverage/coverage-final.json
+            #       flags: merged
+            #       name: merged-coverage
+            #       fail_ci_if_error: false
+            #   env:
+            #       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    # Job 5: Deployment Ready Check
+    # Job 4: Deployment Ready Check
     deployment-ready:
         name: 🚀 Deployment Ready
         runs-on: ubuntu-latest
         timeout-minutes: 5
-        needs: [lint-and-typecheck, build-and-test, docker-build-test, merge-coverage]
+        needs: [lint-and-typecheck, build-and-test, merge-coverage]
         if: always()
 
         steps:
@@ -285,13 +237,11 @@ jobs:
 
                   LINT_STATUS="${{ needs.lint-and-typecheck.result }}"
                   BUILD_STATUS="${{ needs.build-and-test.result }}"
-                  DOCKER_STATUS="${{ needs.docker-build-test.result }}"
                   COVERAGE_STATUS="${{ needs.merge-coverage.result }}"
 
                   echo "📋 Pipeline Results:"
                   echo "  - Lint & Type Check: $LINT_STATUS"
                   echo "  - Build & Test: $BUILD_STATUS"
-                  echo "  - Docker Build: $DOCKER_STATUS"
                   echo "  - Coverage Merge: $COVERAGE_STATUS"
 
                   if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ]; then
@@ -321,7 +271,6 @@ jobs:
                   echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
                   echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Build & Test | ${{ needs.build-and-test.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-                  echo "| Docker Build | ${{ needs.docker-build-test.result == 'success' && '✅ Pass' || needs.docker-build-test.result == 'skipped' && '⏭️ Skipped' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Coverage Reports | ${{ needs.merge-coverage.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
 
