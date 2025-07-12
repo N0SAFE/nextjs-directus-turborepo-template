@@ -37,7 +37,7 @@
   "description": "",
   "dependencies": {
     "@repo/directus-sdk": "*",
-    "commander": "^12.1.0",
+    "commander": "^14.0.0",
     "directus": "^11.0.1",
     "directus-extension-seed": "^2.0.4",
     "mysql2": "^3.11.0"
