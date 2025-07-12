@@ -1,2 +1,3 @@
 i want you to add some unit testing for all the things like the middleware etc and also components testing use vitest and also test all the packages
 create a shared package for the vitest setup and config called @repo/vitestconfig and use it inside the other npm package , i dont want a global vitest config i want it to be containerized into each individual package
+the test should be run using bun run test that should start a package.json script that use turborepo under the hood. i dont want you to use the build in bun test command
