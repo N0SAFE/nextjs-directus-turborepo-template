@@ -1,0 +1,105 @@
+version: 2
+updates:
+  # Enable version updates for Bun dependencies (using npm ecosystem for compatibility)
+  # Note: Dependabot will respect bun.lock and work with Bun's package management
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    target-branch: "main"
+    reviewers:
+      - "@repo-maintainers"
+    assignees:
+      - "@repo-maintainers"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "bun"
+    # Ignore npm-specific files since we use Bun
+    ignore:
+      - dependency-name: "npm"
+      - dependency-name: "package-lock.json"
+
+  # Web app dependencies (Bun managed)
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    commit-message:
+      prefix: "chore(deps-web)"
+    labels:
+      - "dependencies"
+      - "web-app"
+      - "bun"
+
+  # API dependencies (Bun managed)
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    commit-message:
+      prefix: "chore(deps-api)"
+    labels:
+      - "dependencies"
+      - "api"
+      - "bun"
+
+  # Package dependencies (Bun managed)
+  - package-ecosystem: "npm"
+    directory: "/packages"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:30"
+    open-pull-requests-limit: 5
+    target-branch: "main"
+    commit-message:
+      prefix: "chore(deps-packages)"
+    labels:
+      - "dependencies"
+      - "packages"
+      - "bun"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    target-branch: "main"
+    commit-message:
+      prefix: "chore(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "10:00"
+    open-pull-requests-limit: 3
+    target-branch: "main"
+    commit-message:
+      prefix: "chore(actions)"
+    labels:
+      - "dependencies"
+      - "github-actions"
