@@ -17,7 +17,9 @@
     "dev": "dotenv -v CONFIG_PATH=config.js -- directus start",
     "dev:open": "(envcli open $:{NEXT_PUBLIC_API_URL} || envcli cmd.exe /c start $:{NEXT_PUBLIC_API_URL}) && dotenv -v CONFIG_PATH=config.js -- directus start",
     "start": "dotenv -v CONFIG_PATH=config.js -- directus start",
-    "test": "echo 'all app:api tests passed!'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "init": "bun --bun run generate:directus:types",
     "generate:directus:types": "bun --bun run export",
     "import": "bun --bun run schema:import && bun --bun run data:import",
@@ -41,6 +43,10 @@
     "mysql2": "^3.11.0"
   },
   "devDependencies": {
-    "@n0safe/runwhileerror": "^1.0.0"
+    "@n0safe/runwhileerror": "^1.0.0",
+    "@repo/vitest-config": "*",
+    "tsx": "^4.0.0",
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4"
   }
 }

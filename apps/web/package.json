@@ -20,7 +20,10 @@
         "start:docker": "bun --bun build:static-only && next start -p 3000",
         "start:production": "next start -p 3000",
         "lint": "next lint",
-        "test": "echo 'all app:web tests passed!'",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage",
         "clean": "rimraf .next",
         "dr:build": "bun x --yes declarative-routing build",
         "dr:build:watch": "bun x --yes declarative-routing build --watch",
@@ -50,7 +53,8 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "zod": "^3.25.76",
-        "zustand": "^5.0.6"
+        "zustand": "^5.0.6",
+        "lodash.snakecase": "^4.1.1"
     },
     "devDependencies": {
         "@asteasolutions/zod-to-openapi": "^7.3.4",
@@ -61,6 +65,7 @@
         "@repo/tsconfig": "*",
         "@tailwindcss/postcss": "^4",
         "@tanstack/eslint-plugin-query": "^5.81.2",
+        "@types/lodash.snakecase": "^4.1.1",
         "@types/node": "^20",
         "@types/nprogress": "^0.2.3",
         "@types/react": "^19",
@@ -72,6 +77,14 @@
         "tailwindcss": "^4",
         "typescript": "^5",
         "wait-port": "^1.1.0",
-        "yaml": "^2.8.0"
+        "yaml": "^2.8.0",
+        "@repo/vitest-config": "*",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/react": "^16.1.0",
+        "@testing-library/user-event": "^14.5.2",
+        "jsdom": "^25.0.1",
+        "vitest": "^3.2.4",
+        "@vitest/ui": "^3.2.4",
+        "@vitest/coverage-v8": "^3.2.4"
     }
 }
