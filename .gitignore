@@ -11,6 +11,9 @@ node_modules
 # testing
 coverage
 
+# merged coverage reports
+/coverage/
+
 # next.js
 .next/
 out/
