@@ -1,7 +1,7 @@
 services:
   # Database for API
   api-db-prod:
-    container_name: nextjs-directus-api-db-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-prod
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -29,7 +29,7 @@ services:
 
   # Redis cache for API
   api-cache-prod:
-    container_name: nextjs-directus-api-cache-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-prod
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -44,7 +44,7 @@ services:
 
   # Directus API service
   api-prod:
-    container_name: nextjs-directus-api-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-prod
     extends:
       file: ./apps/api/docker-compose.yml
       service: api

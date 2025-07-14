@@ -44,4 +44,5 @@ dist/
 _experiment
 
 /.env
-/.initiated
+!/.env.template
+!/.env.example

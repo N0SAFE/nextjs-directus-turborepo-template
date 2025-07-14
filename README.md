@@ -28,11 +28,18 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 
 2. **Initialize the Project**
    ```bash
-   bun --bun init 
+   bun run init 
    ```
-   this will install dependencies and question you about your installation preference
+   This will guide you through an interactive setup to configure your environment
 
-3. **Start Development Servers**
+3. **Configure Project Name (Optional)**
+   To avoid conflicts when running multiple projects, set a unique project name in your `.env` file:
+   ```bash
+   COMPOSE_PROJECT_NAME=my-unique-project-name
+   ```
+   See [Project Isolation Guide](./docs/PROJECT-ISOLATION.md) for details.
+
+4. **Start Development Servers**
    ```bash
    bun --bun dev
    ```

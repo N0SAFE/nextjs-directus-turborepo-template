@@ -4,7 +4,6 @@
     "private": true,
     "scripts": {
         "echo": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH}",
-        "init": "node init.js",
         "pretify": "bun x prettier . --write --no-error-on-unmatched-pattern",
         "dev": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"cross-env NODE_OPTIONS='--inspect' next dev -p 3003 --turbopack\" \"bun --bun dr:build:watch\"",
         "dev:docker": "concurrently --kill-others-on-fail -n next,routing -c green,magenta \"cross-env NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p 3003 --turbopack\" \"bun --bun dr:build:watch\"",

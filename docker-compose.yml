@@ -1,7 +1,7 @@
 services:
   # Database for development
   api-db-dev:
-    container_name: nextjs-directus-api-db-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-dev
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -29,7 +29,7 @@ services:
 
   # Redis cache for development
   api-cache-dev:
-    container_name: nextjs-directus-api-cache-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-dev
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -44,7 +44,7 @@ services:
 
   # Directus API for development
   api-dev:
-    container_name: nextjs-directus-api-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-dev
     image: directus/directus:11.8.0
     depends_on:
       api-db-dev:
@@ -95,7 +95,7 @@ services:
 
   # Next.js web app for development with HMR
   web-dev:
-    container_name: nextjs-directus-web-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-dev
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.dev
@@ -142,9 +142,11 @@ services:
 
 networks:
   app_network_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_app_network_dev
     driver: bridge
     driver_opts:
       com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
 
 volumes:
   api_db_data_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_dev

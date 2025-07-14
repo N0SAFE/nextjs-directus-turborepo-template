@@ -6,7 +6,7 @@
     "update": "bun --bun update && directus database migrate:latest",
     "directus:bootstrap": "directus bootstrap",
     "directus:bootstrap:config.js": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap",
-    "bootstrap": "runwhileerror \"node init.js && bun --bun run directus:bootstrap:config.js\"",
+    "bootstrap": "runwhileerror \"bun --bun run directus:bootstrap:config.js\"",
     "post-bootstrap": "bun --bun run import",
     "migrate:up": "bun x --bun directus database migrate:up",
     "migrate:down": "bun x --bun directus database migrate:down",
