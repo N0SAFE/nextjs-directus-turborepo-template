@@ -11,6 +11,7 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 - 🛣️ **Routing**: Declarative routing system for better organization
 - 📱 **Type Safety**: Full TypeScript support across all packages
 - 🔧 **Development Tools**: ESLint, Prettier, and TypeScript configurations
+- 🤖 **AI-Ready**: Pre-configured development environment for GitHub Copilot coding agent
 
 ## Prerequisites
 
@@ -225,6 +226,8 @@ For comprehensive documentation on this monorepo template, please refer to the `
 - [Technology Stack](./docs/TECH-STACK.md) - Detailed explanation of technology choices
 - [Getting Started](./docs/GETTING-STARTED.md) - Quick start guide
 - [Development Workflow](./docs/DEVELOPMENT-WORKFLOW.md) - Day-to-day development practices
+- [Project Isolation](./docs/PROJECT-ISOLATION.md) - Setting up multiple projects without conflicts
+- [GitHub Copilot Setup](./docs/COPILOT-SETUP.md) - AI-powered development environment configuration
 
 Additional documentation will be added to the `/docs` directory as the project evolves.
 

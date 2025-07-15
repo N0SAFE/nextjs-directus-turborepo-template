@@ -1,0 +1,250 @@
+name: "Copilot Setup Steps"
+
+# Automatically run the setup steps when they are changed to allow for easy validation, and
+# allow manual testing through the repository's "Actions" tab
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job MUST be called `copilot-setup-steps` or it will not be picked up by Copilot.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Set the permissions to the lowest permissions possible needed for your steps.
+    # Copilot will be given its own token for its operations.
+    permissions:
+      # If you want to clone the repository as part of your setup steps, for example to install dependencies, you'll need the `contents: read` permission. If you don't clone the repository in your setup steps, Copilot will do this for you automatically after the steps complete.
+      contents: read
+
+    # Environment variables needed for the project
+    env:
+      # Essential environment variables for the monorepo
+      NEXT_PUBLIC_API_URL: http://localhost:8055/
+      NEXT_PUBLIC_API_PORT: 8055
+      API_PING_PATH: /server/health
+      API_ADMIN_TOKEN: copilot-test-admin-token
+      NEXT_PUBLIC_APP_URL: http://localhost:3003/
+      NEXT_PUBLIC_APP_PORT: 3003
+      AUTH_SECRET: copilot-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
+      
+      # Database Configuration (for testing)
+      DB_DATABASE: directus_copilot
+      DB_ROOT_PASSWORD: copilot-test-password
+      
+      # Directus Configuration
+      DIRECTUS_SECRET: copilot-test-directus-secret-value
+      DIRECTUS_ADMIN_EMAIL: copilot-admin@test.com
+      DIRECTUS_ADMIN_PASSWORD: copilot-test-password
+      
+      # Next.js Configuration
+      NEXT_TELEMETRY_DISABLED: 1
+      NODE_ENV: development
+      
+      # Development tools (disabled for performance)
+      MILLION_LINT: false
+      REACT_SCAN: false
+      SHOW_AUTH_LOGS: false
+      NEXT_PUBLIC_SHOW_AUTH_LOGS: false
+      
+      # Build optimization
+      SKIP_STATIC_GENERATION: true
+      
+      # Package manager settings
+      BUN_VERSION: "1.2.14"
+
+    # Services for running Docker containers if needed
+    services:
+      # MySQL database for Directus
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: copilot-test-password
+          MYSQL_DATABASE: directus_copilot
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -pcopilot-test-password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      # Redis cache for Directus
+      redis:
+        image: redis:8
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js (required as fallback and for some tools)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Step 3: Setup Bun (primary package manager)
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      # Step 4: Setup Docker Buildx (for multi-platform builds if needed)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 5: Install global tools that might be needed
+      - name: Install global development tools
+        run: |
+          # Install tsx for TypeScript execution
+          bun install -g tsx
+          # Install turbo globally for monorepo management
+          bun install -g turbo@2.1.2
+          # Install directus CLI for database operations
+          bun install -g directus@11.0.1
+
+      # Step 6: Cache Bun dependencies
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      # Step 7: Install project dependencies
+      - name: Install dependencies
+        run: |
+          echo "📦 Installing dependencies with Bun..."
+          bun install --frozen-lockfile
+          echo "✅ Dependencies installed successfully"
+
+      # Step 8: Build shared packages first (required for apps)
+      - name: Build shared packages
+        run: |
+          echo "🏗️ Building shared packages..."
+          # Generate declarative routes for web app first
+          bun run --cwd apps/web dr:build
+          # Build all packages except the main apps
+          bunx turbo run build --filter="!web" --filter="!api"
+          echo "✅ Shared packages built successfully"
+
+      # Step 9: Prepare environment files (if needed)
+      - name: Setup environment configuration
+        run: |
+          echo "⚙️ Setting up environment configuration..."
+          # Create any missing .env files if needed by the project
+          if [ ! -f .env ]; then
+            echo "Creating basic .env file for development..."
+            cat > .env << EOF
+          # API Configuration
+          NEXT_PUBLIC_API_URL=http://localhost:8055/
+          NEXT_PUBLIC_API_PORT=8055
+          API_PING_PATH=/server/health
+          API_ADMIN_TOKEN=copilot-test-admin-token
+
+          # App Configuration  
+          NEXT_PUBLIC_APP_URL=http://localhost:3003/
+          NEXT_PUBLIC_APP_PORT=3003
+
+          # Database Configuration
+          DB_DATABASE=directus_copilot
+          DB_ROOT_PASSWORD=copilot-test-password
+
+          # Authentication
+          AUTH_SECRET=copilot-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
+
+          # Directus Configuration
+          DIRECTUS_SECRET=copilot-test-directus-secret-value
+          DIRECTUS_ADMIN_EMAIL=copilot-admin@test.com
+          DIRECTUS_ADMIN_PASSWORD=copilot-test-password
+
+          # Development Configuration
+          NEXT_TELEMETRY_DISABLED=1
+          NODE_ENV=development
+          MILLION_LINT=false
+          REACT_SCAN=false
+          SHOW_AUTH_LOGS=false
+          NEXT_PUBLIC_SHOW_AUTH_LOGS=false
+          SKIP_STATIC_GENERATION=true
+          EOF
+          fi
+          echo "✅ Environment configuration ready"
+
+      # Step 10: Verify the setup
+      - name: Verify setup
+        run: |
+          echo "🔍 Verifying development environment setup..."
+          
+          # Check tool versions
+          echo "📋 Tool versions:"
+          echo "- Node.js: $(node --version)"
+          echo "- Bun: $(bun --version)"
+          echo "- Turbo: $(bunx turbo --version)"
+          echo "- Docker: $(docker --version)"
+          
+          # Check if key files exist
+          echo "📁 Key files:"
+          echo "- package.json: $([ -f package.json ] && echo '✅ exists' || echo '❌ missing')"
+          echo "- turbo.json: $([ -f turbo.json ] && echo '✅ exists' || echo '❌ missing')"
+          echo "- docker-compose.yml: $([ -f docker-compose.yml ] && echo '✅ exists' || echo '❌ missing')"
+          
+          # Check workspace structure
+          echo "📦 Workspace structure:"
+          echo "- apps/web: $([ -d apps/web ] && echo '✅ exists' || echo '❌ missing')"
+          echo "- apps/api: $([ -d apps/api ] && echo '✅ exists' || echo '❌ missing')"
+          echo "- packages: $([ -d packages ] && echo '✅ exists' || echo '❌ missing')"
+          
+          # Check if services are accessible
+          echo "🔌 Services status:"
+          echo "- MySQL: $(timeout 5 mysqladmin ping -h 127.0.0.1 -P 3306 -u root -pcopilot-test-password 2>/dev/null && echo '✅ accessible' || echo '❌ not accessible')"
+          echo "- Redis: $(timeout 5 redis-cli -h 127.0.0.1 -p 6379 ping 2>/dev/null && echo '✅ accessible' || echo '❌ not accessible')"
+          
+          echo "✅ Setup verification completed"
+
+      # Step 11: Display helpful information
+      - name: Display setup summary
+        run: |
+          echo "🎉 GitHub Copilot development environment setup completed!"
+          echo ""
+          echo "📋 Available tools and commands:"
+          echo "- bun run dev          # Start development environment with Docker"
+          echo "- bun run dev:local    # Start development environment locally"
+          echo "- bun run build        # Build all packages"
+          echo "- bun run test         # Run all tests"
+          echo "- bun run lint         # Run linting"
+          echo "- bun run format       # Format code"
+          echo "- bun run clean        # Clean build artifacts"
+          echo ""
+          echo "🔧 Development environment features:"
+          echo "- ✅ Bun package manager"
+          echo "- ✅ Turbo monorepo management"
+          echo "- ✅ Docker & Docker Compose"
+          echo "- ✅ Next.js with Turbopack"
+          echo "- ✅ Directus CMS/API"
+          echo "- ✅ MySQL database"
+          echo "- ✅ Redis caching"
+          echo "- ✅ TypeScript support"
+          echo "- ✅ Testing with Vitest"
+          echo "- ✅ Linting with ESLint"
+          echo "- ✅ Code formatting with Prettier"
+          echo ""
+          echo "🚀 The environment is ready for GitHub Copilot coding agent!"
