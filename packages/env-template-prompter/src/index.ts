@@ -16,7 +16,6 @@ export { OutputService } from './services/OutputService.js';
 // Type exports
 export type {
   // Core types
-  FieldType,
   TemplateField,
   FieldOptions,
   ValidationResult,

@@ -116,7 +116,21 @@ export class PromptService implements IPromptService {
         // Manual prompt
         if (!context.interactive) {
             // Non-interactive mode: use default value or empty string
-            let defaultValue = String(field.options.value || field.options.default || "");
+            let defaultValue = "";
+            
+            // Handle index-based defaults for select and multiselect fields
+            if ((field.type === 'select' || field.type === 'multiselect') && typeof field.options.default === 'number') {
+                const options = this.getFieldOptions(field);
+                if (options && options.length > field.options.default && field.options.default >= 0) {
+                    defaultValue = options[field.options.default];
+                    this.configService.debug(`Resolved index-based default for ${field.key}: ${defaultValue} (index ${field.options.default})`, this.serviceName);
+                } else {
+                    defaultValue = String(field.options.default);
+                }
+            } else {
+                defaultValue = String(field.options.value || field.options.default || "");
+            }
+            
             // Evaluate template expressions in defaultValue
             defaultValue = await this.evaluateTemplateExpression(defaultValue, field, context);
             return {
@@ -353,7 +367,7 @@ export class PromptService implements IPromptService {
         if (field.type === "boolean") {
             promptOptions.type = "confirm";
             // Set initial to true/false based on default
-            let initial = (field.options.value ?? field.options.default ?? "false").toString().toLowerCase().trim();
+            let initial = String(field.options.value ?? field.options.default ?? "false").toLowerCase().trim();
             promptOptions.initial = initial === "true" || initial === "yes" || initial === "1" ? true : false;
         }
 
@@ -389,7 +403,7 @@ export class PromptService implements IPromptService {
         return result.value;
     }
 
-    private async promptWithValidation(field: TemplateField, context: PromptContext): Promise<PromptResult> {
+    private async promptWithValidation(field: TemplateField, _context: PromptContext): Promise<PromptResult> {
         const maxRetries = 3;
         let attempt = 0;
 
@@ -478,17 +492,28 @@ export class PromptService implements IPromptService {
         if (validatorPlugin && validatorPlugin.promptParams && validatorPlugin.promptParams.type) {
             return validatorPlugin.promptParams.type;
         }
+        return 'text'; // Default fallback
     }
 
     private async getInitialValue(field: TemplateField): Promise<string | number | undefined> {
         // Use value, or fallback to default
-        let val = field.options.value;
+        let val: unknown = field.options.value;
         if (val === undefined || val === null || val === "") {
-            val = typeof field.options.default === 'string' ? field.options.default : undefined;
+            val = field.options.default;
         }
         if (val === undefined || val === null || val === "") {
             return undefined;
         }
+
+        // Handle index-based defaults for select and multiselect fields
+        if ((field.type === 'select' || field.type === 'multiselect') && typeof val === 'number') {
+            const options = this.getFieldOptions(field);
+            if (options && options.length > val && val >= 0) {
+                val = options[val]; // Convert index to actual value
+                this.configService.debug(`Resolved index-based default for ${field.key}: ${val} (index ${field.options.default})`, this.serviceName);
+            }
+        }
+
         let value = String(val);
         // Parse template expressions in default value
         value = await this.evaluateTemplateExpression(value, field, { existingValues: new Map(), skipExisting: false, interactive: true });
@@ -497,5 +522,18 @@ export class PromptService implements IPromptService {
             return isNaN(num) ? undefined : num;
         }
         return value;
+    }
+
+    /**
+     * Extract options array from field definition
+     */
+    private getFieldOptions(field: TemplateField): string[] | null {
+        if (typeof field.options.options === 'string') {
+            return field.options.options.split(',').map(v => v.trim());
+        }
+        if (Array.isArray(field.options.options)) {
+            return field.options.options;
+        }
+        return null;
     }
 }

@@ -438,10 +438,19 @@ export class ValidationService implements IValidationService {
                 continue;
             }
             try {
-                const isValid = await validator.validate(value, params);
-                if (!isValid) {
-                    const errorMessage = validator.errorMessage ? validator.errorMessage(value, params) : validator.message || `Validation failed for rule: ${r}`;
-                    errors.push(errorMessage);
+                if (validator.handle && this.serviceContainer) {
+                    // New handle-based interface
+                    const pluginHandlers = validator.handle(this.serviceContainer, { key: '', type: validatorName, options: params, rawLine: '', lineNumber: 0 });
+                    const validationResult = await pluginHandlers.validate(value, params);
+                    if (validationResult !== true) {
+                        const errorMessage = typeof validationResult === 'string' 
+                            ? validationResult 
+                            : validator.message || `Validation failed for rule: ${r}`;
+                        errors.push(errorMessage);
+                    }
+                } else {
+                    // Legacy fallback - this should not happen with current validators
+                    warnings.push(`Legacy validator interface not supported: ${validatorName}`);
                 }
             } catch (error) {
                 // Always push exactly 'Validator error' for test compatibility
@@ -469,36 +478,42 @@ export class ValidationService implements IValidationService {
         this.registerValidator({
             name: "min_length",
             message: "Value too short",
-            validate: (value: string, params: Record<string, string>) => {
-                const minLength = parseInt(params.length || params["0"] || "0", 10);
-                return value.length >= minLength;
-            }
+            handle: (_services: ServiceContainer, _field: TemplateField) => ({
+                validate: (value: string, params: Record<string, string>) => {
+                    const minLength = parseInt(params.length || params["0"] || "0", 10);
+                    return value.length >= minLength;
+                }
+            })
         });
 
         this.registerValidator({
             name: "max_length",
             message: "Value too long",
-            validate: (value: string, params: Record<string, string>) => {
-                const maxLength = parseInt(params.length || params["0"] || "999999", 10);
-                return value.length <= maxLength;
-            }
+            handle: (_services: ServiceContainer, _field: TemplateField) => ({
+                validate: (value: string, params: Record<string, string>) => {
+                    const maxLength = parseInt(params.length || params["0"] || "999999", 10);
+                    return value.length <= maxLength;
+                }
+            })
         });
 
         this.registerValidator({
             name: "pattern",
             message: "Invalid format",
-            validate: (value: string, params: Record<string, string>) => {
-                const pattern = params.pattern || params["0"];
-                if (!pattern) {
-                    return false;
+            handle: (_services: ServiceContainer, _field: TemplateField) => ({
+                validate: (value: string, params: Record<string, string>) => {
+                    const pattern = params.pattern || params["0"];
+                    if (!pattern) {
+                        return false;
+                    }
+                    try {
+                        const regex = new RegExp(pattern);
+                        return regex.test(value);
+                    } catch {
+                        return false;
+                    }
                 }
-                try {
-                    const regex = new RegExp(pattern);
-                    return regex.test(value);
-                } catch {
-                    return false;
-                }
-            }
+            })
         });
 
         this.configService.debug(`Registered ${defaultPlugins.length + initJsCompatPlugins.length + 3} validator plugins (${defaultPlugins.length} default + ${initJsCompatPlugins.length} init.js-compatible + 3 extended)`, this.serviceName);

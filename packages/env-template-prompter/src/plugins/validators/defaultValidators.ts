@@ -18,7 +18,7 @@ export const urlValidator: ValidatorPlugin = {
     message: 'Enter a valid URL (e.g., https://example.com)',
     format: 'url',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
         return 'URL cannot be empty';
@@ -50,7 +50,7 @@ export const numberValidator: ValidatorPlugin = {
     message: 'Enter a number',
     format: 'number',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
         return 'Number cannot be empty';
@@ -100,7 +100,7 @@ export const stringValidator: ValidatorPlugin = {
     message: 'Enter a string value',
     format: 'string',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (params.required === 'false' && (!value || !value.trim())) {
         return true; // Allow empty for optional fields
@@ -162,7 +162,7 @@ export const booleanValidator: ValidatorPlugin = {
     ],
     format: 'boolean',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
         return 'Boolean value cannot be empty';
@@ -189,7 +189,7 @@ export const emailValidator: ValidatorPlugin = {
     message: 'Enter a valid email address',
     format: 'email',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
         return 'Email address cannot be empty';
@@ -216,7 +216,7 @@ export const portValidator: ValidatorPlugin = {
     message: 'Enter a port number (1-65535)',
     format: 'port',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
         return 'Port number cannot be empty';
@@ -255,7 +255,7 @@ export const jsonValidator: ValidatorPlugin = {
     message: 'Enter a valid JSON string',
     format: 'json',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
         return 'JSON value cannot be empty';
@@ -282,7 +282,7 @@ export const pathValidator: ValidatorPlugin = {
     message: 'Enter a valid file path',
     format: 'path',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
         return 'File path cannot be empty';
@@ -320,14 +320,19 @@ export const selectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'select',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string | string[]>): boolean | string => {
       if (!value || !value.trim()) {
         return 'Selection cannot be empty';
       }
       
+      // Get options from field.options.options first, then fall back to params.options
       let options: string[] = [];
-      if (Array.isArray(params.options)) {
+      if (typeof field.options.options === 'string') {
+        options = field.options.options.split(',').map(v => v.trim());
+      } else if (Array.isArray(field.options.options)) {
+        options = field.options.options;
+      } else if (Array.isArray(params.options)) {
         options = params.options;
       } else if (typeof params.options === 'string') {
         options = params.options.split(',').map(v => v.trim());
@@ -357,15 +362,20 @@ export const multiSelectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'multiselect',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string | string[], params: Record<string, string | string[]>): boolean | string => {
       const values = Array.isArray(value) ? value : value.split(',').map(v => v.trim());
       if (!values.length) {
         return 'At least one selection is required';
       }
       
+      // Get options from field.options.options first, then fall back to params.options
       let options: string[] = [];
-      if (Array.isArray(params.options)) {
+      if (typeof field.options.options === 'string') {
+        options = field.options.options.split(',').map(v => v.trim());
+      } else if (Array.isArray(field.options.options)) {
+        options = field.options.options;
+      } else if (Array.isArray(params.options)) {
         options = params.options;
       } else if (typeof params.options === 'string') {
         options = params.options.split(',').map(v => v.trim());
@@ -395,7 +405,7 @@ export const dateValidator: ValidatorPlugin = {
     message: 'Enter a valid date',
     format: 'date',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
         return 'Date cannot be empty';
