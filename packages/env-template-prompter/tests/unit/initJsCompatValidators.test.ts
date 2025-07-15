@@ -5,28 +5,70 @@ import {
   initJsStringValidator,
   initJsDateValidator
 } from '../../src/plugins/validators/initJsCompatValidators.js';
+import type { ServiceContainer, TemplateField, ValidatorPlugin } from '../../src/types/index.js';
+import { ConfigService } from '../../src/services/ConfigService.js';
+import { ValidationService } from '../../src/services/ValidationService.js';
+import { TransformerService } from '../../src/services/TransformerService.js';
+import { TemplateParserService } from '../../src/services/TemplateParserService.js';
+import { GroupingService } from '../../src/services/GroupingService.js';
+import { PromptService } from '../../src/services/PromptService.js';
+import { OutputService } from '../../src/services/OutputService.js';
+
+// Helper function to create validator function from new plugin interface
+function createValidatorFunction(plugin: ValidatorPlugin, fieldType: string = 'string') {
+  const mockConfigService = new ConfigService({ debugMode: false });
+  const mockValidationService = new ValidationService(mockConfigService);
+  const mockTransformerService = new TransformerService(mockConfigService);
+  const mockTemplateParserService = new TemplateParserService(mockConfigService, mockValidationService);
+  const mockGroupingService = new GroupingService(mockConfigService);
+  const mockPromptService = new PromptService(mockValidationService, mockTransformerService, mockConfigService);
+  const mockOutputService = new OutputService(mockConfigService);
+
+  const mockServices: ServiceContainer = {
+    configService: mockConfigService,
+    validationService: mockValidationService,
+    transformerService: mockTransformerService,
+    templateParserService: mockTemplateParserService,
+    groupingService: mockGroupingService,
+    promptService: mockPromptService,
+    outputService: mockOutputService
+  };
+
+  const mockField: TemplateField = {
+    key: 'TEST_FIELD',
+    type: fieldType,
+    options: {},
+    rawLine: 'TEST_FIELD={{type}}',
+    lineNumber: 1
+  };
+
+  const handlers = plugin.handle(mockServices, mockField);
+  return handlers.validate;
+}
 
 describe('Init.js Compatible Validators', () => {
   describe('initJsUrlValidator', () => {
+    const validate = createValidatorFunction(initJsUrlValidator, 'url');
+
     it('should validate basic URLs', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com')).toBe(true);
-      expect(await initJsUrlValidator.validate('http://localhost:3000')).toBe(true);
-      expect(await initJsUrlValidator.validate('ftp://ftp.example.com')).toBe(true);
+      expect(await validate('https://example.com')).toBe(true);
+      expect(await validate('http://localhost:3000')).toBe(true);
+      expect(await validate('ftp://ftp.example.com')).toBe(true);
     });
 
     it('should reject empty URLs', async () => {
-      expect(await initJsUrlValidator.validate('')).toBe(false);
+      expect(await validate('')).toBe('URL is required');
     });
 
     it('should reject malformed URLs', async () => {
-      expect(await initJsUrlValidator.validate('not-a-url')).toBe(false);
-      expect(await initJsUrlValidator.validate('http://')).toBe(false);
+      expect(await validate('not-a-url')).toBe('Invalid URL format');
+      expect(await validate('http://')).toBe('Invalid URL format');
     });
 
     it('should validate protocol constraints', async () => {
       const params = { protocol: 'https' };
-      expect(await initJsUrlValidator.validate('https://example.com', params)).toBe(true);
-      expect(await initJsUrlValidator.validate('http://example.com', params)).toBe(false);
+      expect(await validate('https://example.com', params)).toBe(true);
+      expect(await validate('http://example.com', params)).toBe('Protocol must be one of: https');
     });
 
     it('should validate hostname constraints', async () => {
