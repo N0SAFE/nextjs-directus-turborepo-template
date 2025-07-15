@@ -1,4 +1,4 @@
-import type { TemplateField, ValidationResult, ValidatorPlugin, ServiceContainer } from "../types/index.js";
+import type { TemplateField, ValidationResult, ValidatorPlugin, ServiceContainer, VariableValidationResult } from "../types/index.js";
 import type { IValidationService, IConfigService } from "../types/services.js";
 import { getDefaultValidatorPlugins } from "../plugins/validators/defaultValidators.js";
 import { getInitJsCompatValidatorPlugins } from "../plugins/validators/initJsCompatValidators.js";
@@ -349,6 +349,67 @@ export class ValidationService implements IValidationService {
 
     public getRegisteredValidators(): ValidatorPlugin[] {
         return Array.from(this.validators.values());
+    }
+
+    /**
+     * Validates a variable value and applies transformers if needed
+     * This method is used when resolving variable references
+     */
+    public async validateVariable(
+        variableName: string, 
+        value: string, 
+        sourceField: TemplateField,
+        context: any
+    ): Promise<VariableValidationResult> {
+        this.configService.debug(`Validating variable ${variableName}: "${value}"`, this.serviceName);
+        
+        const errors: string[] = [];
+        const warnings: string[] = [];
+        let finalValue = value;
+        let wasTransformed = false;
+
+        // First, validate the variable value using the source field's type
+        const validationResult = await this.validateField(value, sourceField);
+        if (!validationResult.valid) {
+            errors.push(...validationResult.errors.map(err => `Variable ${variableName}: ${err}`));
+        }
+        warnings.push(...validationResult.warnings.map(warn => `Variable ${variableName}: ${warn}`));
+
+        // If validation passed and there's a transformer, apply it
+        if (validationResult.valid && sourceField.options.transformer && this.serviceContainer) {
+            try {
+                const transformContext = {
+                    ...context,
+                    isVariableValue: true, // Mark this as a variable value
+                    sourceValue: value
+                };
+                
+                const transformedValue = await this.serviceContainer.transformerService.applyTransformers(
+                    sourceField, 
+                    transformContext
+                );
+                
+                if (transformedValue !== value) {
+                    finalValue = transformedValue;
+                    wasTransformed = true;
+                    this.configService.debug(
+                        `Variable ${variableName} transformed: "${value}" -> "${transformedValue}"`,
+                        this.serviceName
+                    );
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : 'Unknown transformation error';
+                errors.push(`Variable ${variableName} transformation failed: ${message}`);
+            }
+        }
+
+        return {
+            valid: errors.length === 0,
+            value: finalValue,
+            errors,
+            warnings,
+            wasTransformed
+        };
     }
 
     private async validateWithCustomRule(value: string, rule: string): Promise<ValidationResult> {

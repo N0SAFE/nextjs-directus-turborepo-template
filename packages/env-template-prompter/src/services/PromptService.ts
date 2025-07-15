@@ -7,7 +7,7 @@ export class PromptService implements IPromptService {
     /**
      * Evaluate template expressions like ${...} and $index in default values
      */
-    public evaluateTemplateExpression(expr: string, field: TemplateField, context: PromptContext): string {
+    public async evaluateTemplateExpression(expr: string, field: TemplateField, context: PromptContext): Promise<string> {
         // Support $index (field index in group or template)
         let index = 0;
         if (field && typeof field.lineNumber === 'number') {
@@ -15,7 +15,27 @@ export class PromptService implements IPromptService {
         }
         // Replace $index
         expr = expr.replace(/\$index/g, String(index));
-        // Replace ${...} with evaluated JS
+        
+        // Handle variable references using the transformer service
+        if (expr.includes('@{') || expr.includes('${')) {
+            const transformContext: TransformContext = {
+                sourceValue: "",
+                allValues: context.existingValues,
+                field,
+                templateFields: [],
+                isVariableValue: true // Mark as variable value
+            };
+            
+            try {
+                const resolved = await this.transformerService.resolvePlaceholders(expr, transformContext);
+                return resolved;
+            } catch (error) {
+                this.configService.debug(`Error resolving placeholders in default value: ${error}`, this.serviceName);
+                return expr; // Return original if resolution fails
+            }
+        }
+        
+        // Replace ${...} with evaluated JS (for backward compatibility)
         expr = expr.replace(/\$\{([^}]+)\}/g, (_match, code) => {
             try {
                 // Only allow numeric expressions for safety
@@ -56,19 +76,23 @@ export class PromptService implements IPromptService {
         // Always attempt auto-derive if transformer is set
         if (field.options.transformer) {
             try {
-                const transformContext: TransformContext = {
-                    sourceValue: field.options.source
-                        ? this.transformerService.resolveSourceValue(field, {
-                              sourceValue: "",
-                              allValues: context.existingValues,
-                              field,
-                              templateFields: []
-                          })
-                        : "",
+                const baseContext: TransformContext = {
+                    sourceValue: "",
                     allValues: context.existingValues,
                     field,
-                    templateFields: []
+                    templateFields: [],
+                    isVariableValue: true // Mark as variable value for transformation
                 };
+
+                const sourceValue = field.options.source
+                    ? await this.transformerService.resolveSourceValue(field, baseContext)
+                    : "";
+
+                const transformContext: TransformContext = {
+                    ...baseContext,
+                    sourceValue
+                };
+
                 const derivedValue = await this.transformerService.applyTransformers(field, transformContext);
                 this.configService.debug(`Auto-derived value for ${field.key}: ${derivedValue}`, this.serviceName);
                 if (field.options.source) {
@@ -94,7 +118,7 @@ export class PromptService implements IPromptService {
             // Non-interactive mode: use default value or empty string
             let defaultValue = String(field.options.value || field.options.default || "");
             // Evaluate template expressions in defaultValue
-            defaultValue = this.evaluateTemplateExpression(defaultValue, field, context);
+            defaultValue = await this.evaluateTemplateExpression(defaultValue, field, context);
             return {
                 value: defaultValue,
                 skipped: false,
@@ -295,7 +319,7 @@ export class PromptService implements IPromptService {
             type: this.getPromptType(field),
             name: "value",
             message: pc.white(message),
-            initial: this.getInitialValue(field)
+            initial: await this.getInitialValue(field)
         };
 
         // Get validator plugin for this field type
@@ -456,7 +480,7 @@ export class PromptService implements IPromptService {
         }
     }
 
-    private getInitialValue(field: TemplateField): string | number | undefined {
+    private async getInitialValue(field: TemplateField): Promise<string | number | undefined> {
         // Use value, or fallback to default
         let val = field.options.value;
         if (val === undefined || val === null || val === "") {
@@ -467,7 +491,7 @@ export class PromptService implements IPromptService {
         }
         let value = String(val);
         // Parse template expressions in default value
-        value = this.evaluateTemplateExpression(value, field, { existingValues: new Map(), skipExisting: false, interactive: true });
+        value = await this.evaluateTemplateExpression(value, field, { existingValues: new Map(), skipExisting: false, interactive: true });
         if (field.type === "number" || field.type === "port") {
             const num = parseFloat(value);
             return isNaN(num) ? undefined : num;

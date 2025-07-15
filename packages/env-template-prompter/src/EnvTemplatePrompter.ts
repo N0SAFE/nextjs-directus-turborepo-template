@@ -206,8 +206,9 @@ export class EnvTemplatePrompter {
             outputService
         };
 
-        // Set the service container on validation service for plugin access
+        // Set cross-service references for variable validation and transformation
         validationService.setServiceContainer(serviceContainer);
+        transformerService.setValidationService(validationService);
 
         return serviceContainer;
     }

@@ -2,6 +2,7 @@ import type {
   RuntimeConfig,
   TemplateField,
   ValidationResult,
+  VariableValidationResult,
   GroupedFields,
   GroupConfiguration,
   TransformContext,
@@ -55,6 +56,12 @@ export interface ITemplateParserService extends BaseService {
 // Validation service interface
 export interface IValidationService extends BaseService {
   validateField(value: string, field: TemplateField): Promise<ValidationResult>;
+  validateVariable(
+    variableName: string, 
+    value: string, 
+    sourceField: TemplateField,
+    context: any
+  ): Promise<VariableValidationResult>;
   validateUrl(url: string): boolean;
   validateNumber(value: string, min?: number, max?: number, allow?: number[]): boolean;
   validateString(value: string, minLength?: number, maxLength?: number): boolean;
@@ -80,8 +87,9 @@ export interface ITransformerService extends BaseService {
   unregisterTransformer(name: string): void;
   getRegisteredTransformers(): TransformerPlugin[];
   getBuiltInTransformers(): TransformerPlugin[];
-  resolveSourceValue(field: TemplateField, context: TransformContext): string;
-  resolvePlaceholders(value: string, context: TransformContext): string;
+  resolveSourceValue(field: TemplateField, context: TransformContext): Promise<string>;
+  resolvePlaceholders(value: string, context: TransformContext): Promise<string>;
+  setValidationService(validationService: IValidationService): void;
 }
 
 // Grouping service interface

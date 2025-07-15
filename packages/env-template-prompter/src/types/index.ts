@@ -34,6 +34,15 @@ export interface ValidationResult {
   value?: string;
 }
 
+// Variable validation result
+export interface VariableValidationResult {
+  valid: boolean;
+  value: string;
+  errors: string[];
+  warnings: string[];
+  wasTransformed: boolean;
+}
+
 // Grouped fields for presentation
 export interface GroupedFields {
   groups: Map<string, TemplateField[]>;
@@ -56,6 +65,7 @@ export interface TransformContext {
   allValues: Map<string, string>;
   field: TemplateField;
   templateFields: TemplateField[];
+  isVariableValue?: boolean; // Flag to indicate if the value comes from a variable reference
 }
 
 // Prompt context for user interaction
