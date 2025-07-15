@@ -196,7 +196,7 @@ export class EnvTemplatePrompter {
         const promptService = new PromptService(validationService, transformerService, configService);
         const outputService = new OutputService(configService);
 
-        return {
+        const serviceContainer = {
             configService,
             templateParserService,
             validationService,
@@ -205,6 +205,11 @@ export class EnvTemplatePrompter {
             promptService,
             outputService
         };
+
+        // Set the service container on validation service for plugin access
+        validationService.setServiceContainer(serviceContainer);
+
+        return serviceContainer;
     }
 
     private async processFields(fields: TemplateField[], options: ProcessOptions): Promise<Map<string, string>> {

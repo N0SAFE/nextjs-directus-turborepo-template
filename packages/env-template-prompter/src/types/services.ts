@@ -14,6 +14,17 @@ import type {
   ValidatorPlugin
 } from './index.js';
 
+// Forward declaration for ServiceContainer to avoid circular dependency
+export interface ServiceContainer {
+  configService: IConfigService;
+  templateParserService: ITemplateParserService;
+  validationService: IValidationService;
+  transformerService: ITransformerService;
+  groupingService: IGroupingService;
+  promptService: IPromptService;
+  outputService: IOutputService;
+}
+
 // Base service interface
 export interface BaseService {
   readonly serviceName: string;
@@ -53,6 +64,7 @@ export interface IValidationService extends BaseService {
   registerValidator(plugin: ValidatorPlugin): void;
   unregisterValidator(name: string): void;
   getRegisteredValidators(): ValidatorPlugin[];
+  setServiceContainer(serviceContainer: ServiceContainer): void;
 }
 
 // Transformer service interface
@@ -126,15 +138,4 @@ export interface IOutputService extends BaseService {
   generateYAMLConfig(values: Map<string, string>): string;
   ensureDirectoryExists(path: string): Promise<void>;
   checkWritePermissions(path: string): Promise<boolean>;
-}
-
-// Service container interface
-export interface ServiceContainer {
-  configService: IConfigService;
-  templateParserService: ITemplateParserService;
-  validationService: IValidationService;
-  transformerService: ITransformerService;
-  groupingService: IGroupingService;
-  promptService: IPromptService;
-  outputService: IOutputService;
 }

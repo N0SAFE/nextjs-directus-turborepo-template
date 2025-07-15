@@ -1,4 +1,4 @@
-import type { ValidatorPlugin } from '../../types/index.js';
+import type { ValidatorPlugin, ServiceContainer, TemplateField } from '../../types/index.js';
 
 /**
  * Default Validator Plugins
@@ -18,19 +18,25 @@ export const urlValidator: ValidatorPlugin = {
     message: 'Enter a valid URL (e.g., https://example.com)',
     format: 'url',
   },
-  validate: (value: string): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'URL cannot be empty';
+      }
 
-    try {
-      const url = new globalThis.URL(value);
-      // Ensure it has a valid protocol
-      return ['http:', 'https:', 'ftp:', 'ftps:', 'postgres:', 'postgresql:', 'mysql:', 'redis:'].includes(url.protocol);
-    } catch {
-      return false;
+      try {
+        const url = new globalThis.URL(value);
+        // Ensure it has a valid protocol
+        const validProtocols = ['http:', 'https:', 'ftp:', 'ftps:', 'postgres:', 'postgresql:', 'mysql:', 'redis:'];
+        if (!validProtocols.includes(url.protocol)) {
+          return `Invalid protocol. Must be one of: ${validProtocols.map(p => p.slice(0, -1)).join(', ')}`;
+        }
+        return true;
+      } catch {
+        return 'Invalid URL format';
+      }
     }
-  }
+  })
 };
 
 /**
@@ -44,41 +50,43 @@ export const numberValidator: ValidatorPlugin = {
     message: 'Enter a number',
     format: 'number',
   },
-  validate: (value: string, params: Record<string, string>): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
-
-    const num = parseFloat(value);
-    if (isNaN(num)) {
-      return false;
-    }
-
-    // Check allow list first (takes precedence)
-    if (params.allow) {
-      const allowedValues = params.allow.split(',').map(v => parseFloat(v.trim()));
-      if (allowedValues.includes(num)) {
-        return true;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string>): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Number cannot be empty';
       }
-    }
 
-    // Check min/max constraints
-    if (params.min !== undefined) {
-      const min = parseFloat(params.min);
-      if (!isNaN(min) && num < min) {
-        return false;
+      const num = parseFloat(value);
+      if (isNaN(num)) {
+        return 'Value must be a valid number';
       }
-    }
 
-    if (params.max !== undefined) {
-      const max = parseFloat(params.max);
-      if (!isNaN(max) && num > max) {
-        return false;
+      // Check allow list first (takes precedence)
+      if (params.allow) {
+        const allowedValues = params.allow.split(',').map(v => parseFloat(v.trim()));
+        if (allowedValues.includes(num)) {
+          return true;
+        }
       }
-    }
 
-    return true;
-  }
+      // Check min/max constraints
+      if (params.min !== undefined) {
+        const min = parseFloat(params.min);
+        if (!isNaN(min) && num < min) {
+          return `Number must be at least ${min}`;
+        }
+      }
+
+      if (params.max !== undefined) {
+        const max = parseFloat(params.max);
+        if (!isNaN(max) && num > max) {
+          return `Number must be at most ${max}`;
+        }
+      }
+
+      return true;
+    }
+  })
 };
 
 /**
@@ -92,43 +100,47 @@ export const stringValidator: ValidatorPlugin = {
     message: 'Enter a string value',
     format: 'string',
   },
-  validate: (value: string, params: Record<string, string>): boolean => {
-    if (params.required === 'false' && (!value || !value.trim())) {
-      return true; // Allow empty for optional fields
-    }
-
-    if (!value) {
-      return false;
-    }
-
-    // Check minimum length
-    if (params.min_length !== undefined) {
-      const minLength = parseInt(params.min_length, 10);
-      if (!isNaN(minLength) && value.length < minLength) {
-        return false;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string>): boolean | string => {
+      if (params.required === 'false' && (!value || !value.trim())) {
+        return true; // Allow empty for optional fields
       }
-    }
 
-    // Check maximum length
-    if (params.max_length !== undefined) {
-      const maxLength = parseInt(params.max_length, 10);
-      if (!isNaN(maxLength) && value.length > maxLength) {
-        return false;
+      if (!value) {
+        return 'String value is required';
       }
-    }
 
-    // Check pattern if provided
-    if (params.pattern) {
-      try {
-        const regex = new RegExp(params.pattern);
-        return regex.test(value);
-      } catch {
-        return false; // Invalid regex pattern
+      // Check minimum length
+      if (params.min_length !== undefined) {
+        const minLength = parseInt(params.min_length, 10);
+        if (!isNaN(minLength) && value.length < minLength) {
+          return `String must be at least ${minLength} characters long`;
+        }
       }
-    }
 
-    return true;
-  }
+      // Check maximum length
+      if (params.max_length !== undefined) {
+        const maxLength = parseInt(params.max_length, 10);
+        if (!isNaN(maxLength) && value.length > maxLength) {
+          return `String must be at most ${maxLength} characters long`;
+        }
+      }
+
+      // Check pattern if provided
+      if (params.pattern) {
+        try {
+          const regex = new RegExp(params.pattern);
+          if (!regex.test(value)) {
+            return `String must match pattern: ${params.pattern}`;
+          }
+        } catch {
+          return 'Invalid regex pattern provided';
+        }
+      }
+
+      return true;
+    }
+  })
 };
 
 /**
@@ -150,15 +162,20 @@ export const booleanValidator: ValidatorPlugin = {
     ],
     format: 'boolean',
   },
-  validate: (value: string): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Boolean value cannot be empty';
+      }
 
-    const normalized = value.toLowerCase().trim();
-    const validValues = ['true', 'false', 'yes', 'no', '1', '0', 'on', 'off', 'enabled', 'disabled'];
-    return validValues.includes(normalized);
-  }
+      const normalized = value.toLowerCase().trim();
+      const validValues = ['true', 'false', 'yes', 'no', '1', '0', 'on', 'off', 'enabled', 'disabled'];
+      if (!validValues.includes(normalized)) {
+        return `Invalid boolean value. Must be one of: ${validValues.join(', ')}`;
+      }
+      return true;
+    }
+  })
 };
 
 /**
@@ -172,15 +189,20 @@ export const emailValidator: ValidatorPlugin = {
     message: 'Enter a valid email address',
     format: 'email',
   },
-  validate: (value: string): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Email address cannot be empty';
+      }
 
-    // Basic email regex - not perfect but good enough for most cases
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value.trim());
-  }
+      // Basic email regex - not perfect but good enough for most cases
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value.trim())) {
+        return 'Invalid email address format';
+      }
+      return true;
+    }
+  })
 };
 
 /**
@@ -194,27 +216,32 @@ export const portValidator: ValidatorPlugin = {
     message: 'Enter a port number (1-65535)',
     format: 'port',
   },
-  validate: (value: string, params: Record<string, string>): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
-
-    const port = parseInt(value, 10);
-    if (isNaN(port)) {
-      return false;
-    }
-
-    // Check allow list first
-    if (params.allow) {
-      const allowedPorts = params.allow.split(',').map(p => parseInt(p.trim(), 10));
-      if (allowedPorts.includes(port)) {
-        return true;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string>): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Port number cannot be empty';
       }
-    }
 
-    // Standard port range
-    return port >= 1 && port <= 65535;
-  }
+      const port = parseInt(value, 10);
+      if (isNaN(port)) {
+        return 'Port must be a valid number';
+      }
+
+      // Check allow list first
+      if (params.allow) {
+        const allowedPorts = params.allow.split(',').map(p => parseInt(p.trim(), 10));
+        if (allowedPorts.includes(port)) {
+          return true;
+        }
+      }
+
+      // Standard port range
+      if (port < 1 || port > 65535) {
+        return 'Port number must be between 1 and 65535';
+      }
+      return true;
+    }
+  })
 };
 
 /**
@@ -228,18 +255,20 @@ export const jsonValidator: ValidatorPlugin = {
     message: 'Enter a valid JSON string',
     format: 'json',
   },
-  validate: (value: string): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'JSON value cannot be empty';
+      }
 
-    try {
-      JSON.parse(value);
-      return true;
-    } catch {
-      return false;
+      try {
+        JSON.parse(value);
+        return true;
+      } catch (error) {
+        return `Invalid JSON format: ${error instanceof Error ? error.message : 'Parse error'}`;
+      }
     }
-  }
+  })
 };
 
 /**
@@ -253,25 +282,29 @@ export const pathValidator: ValidatorPlugin = {
     message: 'Enter a valid file path',
     format: 'path',
   },
-  validate: (value: string, params: Record<string, string>): boolean => {
-    if (!value || !value.trim()) {
-      return false;
-    }
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string>): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'File path cannot be empty';
+      }
 
-    // Basic path validation - avoid dangerous characters
-    const dangerousChars = /[<>"|?*]/;
-    if (dangerousChars.test(value)) {
-      return false;
-    }
+      // Basic path validation - avoid dangerous characters
+      const dangerousChars = /[<>"|?*]/;
+      if (dangerousChars.test(value)) {
+        return 'File path contains invalid characters: < > " | ? *';
+      }
 
-    // Check if it should be absolute
-    if (params.absolute === 'true') {
-      // Very basic absolute path check (works for most cases)
-      return /^([a-zA-Z]:|\\\\|\/)/.test(value);
-    }
+      // Check if it should be absolute
+      if (params.absolute === 'true') {
+        // Very basic absolute path check (works for most cases)
+        if (!/^([a-zA-Z]:|\\\\|\/)/.test(value)) {
+          return 'Path must be absolute (start with drive letter, / or \\\\)';
+        }
+      }
 
-    return true;
-  }
+      return true;
+    }
+  })
 };
 
 
@@ -287,17 +320,29 @@ export const selectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'select',
   },
-  validate: (value: string, params: Record<string, string | string[]>): boolean => {
-    if (!value || !value.trim()) {
-      return false;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string | string[]>): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Selection cannot be empty';
+      }
+      
+      let options: string[] = [];
+      if (Array.isArray(params.options)) {
+        options = params.options;
+      } else if (typeof params.options === 'string') {
+        options = params.options.split(',').map(v => v.trim());
+      }
+      
+      if (options.length === 0) {
+        return true; // No options specified, allow any value
+      }
+      
+      if (!options.includes(value)) {
+        return `Value must be one of: ${options.join(', ')}`;
+      }
+      return true;
     }
-    if (Array.isArray(params.options)) {
-      return params.options.includes(value);
-    } else if (typeof params.options === 'string') {
-      return params.options.split(',').map(v => v.trim()).includes(value);
-    }
-    return true;
-  }
+  })
 };
 
 /**
@@ -312,19 +357,31 @@ export const multiSelectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'multiselect',
   },
-  validate: (value: string | string[], params: Record<string, string | string[]>): boolean => {
-    const values = Array.isArray(value) ? value : value.split(',').map(v => v.trim());
-    if (!values.length) {
-      return false;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string | string[], params: Record<string, string | string[]>): boolean | string => {
+      const values = Array.isArray(value) ? value : value.split(',').map(v => v.trim());
+      if (!values.length) {
+        return 'At least one selection is required';
+      }
+      
+      let options: string[] = [];
+      if (Array.isArray(params.options)) {
+        options = params.options;
+      } else if (typeof params.options === 'string') {
+        options = params.options.split(',').map(v => v.trim());
+      }
+      
+      if (options.length === 0) {
+        return true; // No options specified, allow any values
+      }
+      
+      const invalidValues = values.filter(v => !options.includes(v));
+      if (invalidValues.length > 0) {
+        return `Invalid values: ${invalidValues.join(', ')}. Must be one of: ${options.join(', ')}`;
+      }
+      return true;
     }
-    let options: string[] = [];
-    if (Array.isArray(params.options)) {
-      options = params.options;
-    } else if (typeof params.options === 'string') {
-      options = params.options.split(',').map(v => v.trim());
-    }
-    return values.every(v => options.includes(v));
-  }
+  })
 };
 
 /**
@@ -338,22 +395,34 @@ export const dateValidator: ValidatorPlugin = {
     message: 'Enter a valid date',
     format: 'date',
   },
-  validate: (value: string, params: Record<string, string>): boolean => {
-    if (!value || !value.trim()) {
-      return false;
+  handle: (services: ServiceContainer, field: TemplateField) => ({
+    validate: (value: string, params: Record<string, string>): boolean | string => {
+      if (!value || !value.trim()) {
+        return 'Date cannot be empty';
+      }
+      
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        return 'Invalid date format';
+      }
+      
+      if (params.minDate) {
+        const minDate = new Date(params.minDate);
+        if (date < minDate) {
+          return `Date must be on or after ${params.minDate}`;
+        }
+      }
+      
+      if (params.maxDate) {
+        const maxDate = new Date(params.maxDate);
+        if (date > maxDate) {
+          return `Date must be on or before ${params.maxDate}`;
+        }
+      }
+      
+      return true;
     }
-    const date = new Date(value);
-    if (isNaN(date.getTime())) {
-      return false;
-    }
-    if (params.minDate && date < new Date(params.minDate)) {
-      return false;
-    }
-    if (params.maxDate && date > new Date(params.maxDate)) {
-      return false;
-    }
-    return true;
-  }
+  })
 };
 
 /**

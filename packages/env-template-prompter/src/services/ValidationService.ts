@@ -1,4 +1,4 @@
-import type { TemplateField, ValidationResult, ValidatorPlugin } from "../types/index.js";
+import type { TemplateField, ValidationResult, ValidatorPlugin, ServiceContainer } from "../types/index.js";
 import type { IValidationService, IConfigService } from "../types/services.js";
 import { getDefaultValidatorPlugins } from "../plugins/validators/defaultValidators.js";
 import { getInitJsCompatValidatorPlugins } from "../plugins/validators/initJsCompatValidators.js";
@@ -7,9 +7,17 @@ export class ValidationService implements IValidationService {
     public readonly serviceName = "ValidationService";
 
     private validators = new Map<string, ValidatorPlugin>();
+    private serviceContainer?: ServiceContainer;
 
     constructor(private configService: IConfigService) {
         this.registerBuiltInValidators();
+    }
+
+    /**
+     * Set the service container for plugin access
+     */
+    public setServiceContainer(serviceContainer: ServiceContainer): void {
+        this.serviceContainer = serviceContainer;
     }
 
     public async validateField(value: string, field: TemplateField): Promise<ValidationResult> {
@@ -54,8 +62,8 @@ export class ValidationService implements IValidationService {
                 pluginValidator = this.validators.get(field.type);
         }
 
-        if (pluginValidator) {
-            // Use plugin validator
+        if (pluginValidator && this.serviceContainer) {
+            // Use plugin validator with new handle method
             try {
                 // Convert field options to plugin params
                 const params: Record<string, string> = {};
@@ -66,10 +74,13 @@ export class ValidationService implements IValidationService {
                     }
                 });
 
-                const isValid = await pluginValidator.validate(value, params);
-                if (!isValid) {
-                    const errorMessage = pluginValidator.errorMessage 
-                        ? pluginValidator.errorMessage(value, params)
+                const pluginHandlers = pluginValidator.handle(this.serviceContainer, field);
+                const validationResult = await pluginHandlers.validate(value, params);
+                
+                if (validationResult !== true) {
+                    // validationResult is a string (error message) or false
+                    const errorMessage = typeof validationResult === 'string' 
+                        ? validationResult 
                         : pluginValidator.message || `Invalid ${field.type} value for ${field.key}`;
                     errors.push(errorMessage);
                 }
