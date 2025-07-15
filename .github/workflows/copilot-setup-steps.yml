@@ -133,17 +133,7 @@ jobs:
           bun install --frozen-lockfile
           echo "✅ Dependencies installed successfully"
 
-      # Step 8: Build shared packages first (required for apps)
-      - name: Build shared packages
-        run: |
-          echo "🏗️ Building shared packages..."
-          # Generate declarative routes for web app first
-          bun run --cwd apps/web dr:build
-          # Build all packages except the main apps
-          bunx turbo run build --filter="!web" --filter="!api"
-          echo "✅ Shared packages built successfully"
-
-      # Step 9: Prepare environment files (if needed)
+      # Step 8: Prepare environment files (if needed)
       - name: Setup environment configuration
         run: |
           echo "⚙️ Setting up environment configuration..."
