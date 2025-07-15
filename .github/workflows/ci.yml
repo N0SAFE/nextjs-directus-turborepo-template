@@ -45,7 +45,13 @@ jobs:
                   bun-version: ${{ env.BUN_VERSION }}
 
             - name: 📦 Install dependencies
-              run: bun install --frozen-lockfile
+              run: |
+                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+                  bun install
+                else
+                  bun install --frozen-lockfile
+                fi
 
             - name: � Generate declarative routes
               run: cd apps/web && bun run dr:build && cd ../..
@@ -108,7 +114,13 @@ jobs:
                   bun-version: ${{ env.BUN_VERSION }}
 
             - name: 📦 Install dependencies
-              run: bun install --frozen-lockfile
+              run: |
+                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+                  bun install
+                else
+                  bun install --frozen-lockfile
+                fi
 
             - name: 🏗️ Build packages
               run: |
@@ -189,7 +201,13 @@ jobs:
                   bun-version: ${{ env.BUN_VERSION }}
 
             - name: 📦 Install dependencies
-              run: bun install --frozen-lockfile
+              run: |
+                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+                  bun install
+                else
+                  bun install --frozen-lockfile
+                fi
 
             - name: 🏗️ Build all packages
               run: |
