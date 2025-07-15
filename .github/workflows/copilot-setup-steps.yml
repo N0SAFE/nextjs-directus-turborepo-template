@@ -112,10 +112,6 @@ jobs:
         run: |
           # Install tsx for TypeScript execution
           bun install -g tsx
-          # Install turbo globally for monorepo management
-          bun install -g turbo@2.1.2
-          # Install directus CLI for database operations
-          bun install -g directus@11.0.1
 
       # Step 6: Cache Bun dependencies
       - name: Cache Bun dependencies
@@ -198,7 +194,7 @@ jobs:
           echo "📋 Tool versions:"
           echo "- Node.js: $(node --version)"
           echo "- Bun: $(bun --version)"
-          echo "- Turbo: $(bunx turbo --version)"
+          echo "- Turbo: $(bun x turbo --version)"
           echo "- Docker: $(docker --version)"
           
           # Check if key files exist
