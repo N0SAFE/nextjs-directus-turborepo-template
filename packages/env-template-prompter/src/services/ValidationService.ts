@@ -1,7 +1,7 @@
-import { URL } from "url";
 import type { TemplateField, ValidationResult, ValidatorPlugin } from "../types/index.js";
 import type { IValidationService, IConfigService } from "../types/services.js";
 import { getDefaultValidatorPlugins } from "../plugins/validators/defaultValidators.js";
+import { getInitJsCompatValidatorPlugins } from "../plugins/validators/initJsCompatValidators.js";
 
 export class ValidationService implements IValidationService {
     public readonly serviceName = "ValidationService";
@@ -17,63 +17,125 @@ export class ValidationService implements IValidationService {
         const errors: string[] = [];
         const warnings: string[] = [];
 
+        // Try to find a plugin validator for the field type
+        let pluginValidator: ValidatorPlugin | undefined;
+        
+        // First check for init.js compatible validators for backward compatibility
         switch (field.type) {
-            case "string": {
-                // Use min_length and max_length for test compatibility
-                const minLength = (field.options.min_length as number) ?? (field.options.minLength as number);
-                const maxLength = (field.options.max_length as number) ?? (field.options.maxLength as number);
-                const typeValid = this.validateString(value, minLength, maxLength, field.options.pattern as string, field.options.optional as boolean);
-                if (!typeValid) {
-                    errors.push(`Invalid string value for ${field.key}`);
-                }
+            case "url":
+                pluginValidator = this.validators.get('init_js_url');
                 break;
-            }
-            case "number": {
-                const typeValid = this.validateNumber(
-                    value,
-                    field.options.min as number,
-                    field.options.max as number,
-                    field.options.allow
-                        ? String(field.options.allow)
-                              .split(",")
-                              .map((n) => parseFloat(n.trim()))
-                        : undefined
-                );
-                if (!typeValid) {
-                    errors.push(`Invalid number value for ${field.key}`);
-                }
+            case "number":
+                pluginValidator = this.validators.get('init_js_number');
                 break;
-            }
-            case "boolean": {
-                const typeValid = this.validateBoolean(value);
-                if (!typeValid) {
-                    errors.push(`Invalid boolean value for ${field.key}. Use: true, false, yes, no, 1, 0`);
-                }
+            case "string":
+                pluginValidator = this.validators.get('init_js_string');
                 break;
-            }
-            case "url": {
-                const typeValid = this.validateUrl(value, field.options.protocol as string, field.options.hostname as string, field.options.port as string);
-                if (!typeValid) {
-                    errors.push(`Invalid URL format for ${field.key}`);
-                }
+            case "date":
+                pluginValidator = this.validators.get('init_js_date');
                 break;
-            }
-            case "email": {
-                const typeValid = this.validateEmail(value);
-                if (!typeValid) {
-                    errors.push(`Invalid email format for ${field.key}`);
-                }
+            case "boolean":
+                pluginValidator = this.validators.get('boolean');
                 break;
-            }
-            case "port": {
-                const typeValid = this.validatePort(value, field.options.allow?.toString().includes("80,443"));
-                if (!typeValid) {
-                    errors.push(`Invalid port number for ${field.key}`);
-                }
+            case "email":
+                pluginValidator = this.validators.get('email');
                 break;
+            case "port":
+                pluginValidator = this.validators.get('port');
+                break;
+            case "json":
+                pluginValidator = this.validators.get('json');
+                break;
+            case "path":
+                pluginValidator = this.validators.get('path');
+                break;
+            default:
+                // Try to find a plugin by the field type name
+                pluginValidator = this.validators.get(field.type);
+        }
+
+        if (pluginValidator) {
+            // Use plugin validator
+            try {
+                // Convert field options to plugin params
+                const params: Record<string, string> = {};
+                Object.keys(field.options).forEach(key => {
+                    const value = field.options[key];
+                    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                        params[key] = String(value);
+                    }
+                });
+
+                const isValid = await pluginValidator.validate(value, params);
+                if (!isValid) {
+                    const errorMessage = pluginValidator.errorMessage 
+                        ? pluginValidator.errorMessage(value, params)
+                        : pluginValidator.message || `Invalid ${field.type} value for ${field.key}`;
+                    errors.push(errorMessage);
+                }
+            } catch (error) {
+                errors.push("Validator error");
             }
-            default: {
-                warnings.push(`Unknown field type: ${field.type} for ${field.key}`);
+        } else {
+            // Fallback to hardcoded validation for backward compatibility
+            switch (field.type) {
+                case "string": {
+                    // Use min_length and max_length for test compatibility
+                    const minLength = (field.options.min_length as number) ?? (field.options.minLength as number);
+                    const maxLength = (field.options.max_length as number) ?? (field.options.maxLength as number);
+                    const typeValid = this.validateString(value, minLength, maxLength, field.options.pattern as string, field.options.optional as boolean);
+                    if (!typeValid) {
+                        errors.push(`Invalid string value for ${field.key}`);
+                    }
+                    break;
+                }
+                case "number": {
+                    const typeValid = this.validateNumber(
+                        value,
+                        field.options.min as number,
+                        field.options.max as number,
+                        field.options.allow
+                            ? String(field.options.allow)
+                                  .split(",")
+                                  .map((n) => parseFloat(n.trim()))
+                            : undefined
+                    );
+                    if (!typeValid) {
+                        errors.push(`Invalid number value for ${field.key}`);
+                    }
+                    break;
+                }
+                case "boolean": {
+                    const typeValid = this.validateBoolean(value);
+                    if (!typeValid) {
+                        errors.push(`Invalid boolean value for ${field.key}. Use: true, false, yes, no, 1, 0`);
+                    }
+                    break;
+                }
+                case "url": {
+                    const typeValid = this.validateUrl(value, field.options.protocol as string, field.options.hostname as string, field.options.port as string);
+                    if (!typeValid) {
+                        errors.push(`Invalid URL format for ${field.key}`);
+                    }
+                    break;
+                }
+                case "email": {
+                    const typeValid = this.validateEmail(value);
+                    if (!typeValid) {
+                        errors.push(`Invalid email format for ${field.key}`);
+                    }
+                    break;
+                }
+                case "port": {
+                    const typeValid = this.validatePort(value, field.options.allow?.toString().includes("80,443"));
+                    if (!typeValid) {
+                        errors.push(`Invalid port number for ${field.key}`);
+                    }
+                    break;
+                }
+                default: {
+                    warnings.push(`Unknown field type: ${field.type} for ${field.key}`);
+                }
             }
         }
 
@@ -115,7 +177,7 @@ export class ValidationService implements IValidationService {
             return false;
         }
         try {
-            const urlObj = new URL(url);
+            const urlObj = new globalThis.URL(url);
             // Only accept http and https protocols
             if (urlObj.protocol !== "http:" && urlObj.protocol !== "https:") {
                 return false;
@@ -319,8 +381,15 @@ export class ValidationService implements IValidationService {
 
     private registerBuiltInValidators(): void {
         const defaultPlugins = getDefaultValidatorPlugins();
+        const initJsCompatPlugins = getInitJsCompatValidatorPlugins();
 
+        // Register default plugins first
         for (const plugin of defaultPlugins) {
+            this.registerValidator(plugin);
+        }
+
+        // Register init.js compatible validators (these will override defaults if names match)
+        for (const plugin of initJsCompatPlugins) {
             this.registerValidator(plugin);
         }
 
@@ -360,6 +429,6 @@ export class ValidationService implements IValidationService {
             }
         });
 
-        this.configService.debug(`Registered ${defaultPlugins.length + 3} validator plugins (${defaultPlugins.length} default + 3 extended)`, this.serviceName);
+        this.configService.debug(`Registered ${defaultPlugins.length + initJsCompatPlugins.length + 3} validator plugins (${defaultPlugins.length} default + ${initJsCompatPlugins.length} init.js-compatible + 3 extended)`, this.serviceName);
     }
 }

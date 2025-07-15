@@ -94,5 +94,12 @@ export {
   pathValidator
 } from './plugins/validators/defaultValidators.js';
 
+export {
+  initJsUrlValidator,
+  initJsNumberValidator,
+  initJsStringValidator,
+  initJsDateValidator
+} from './plugins/validators/initJsCompatValidators.js';
+
 // Version information
 export const version = '1.0.0';

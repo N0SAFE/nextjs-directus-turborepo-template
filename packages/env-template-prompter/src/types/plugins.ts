@@ -16,26 +16,20 @@ export interface TransformerPlugin extends Plugin {
   requiresSource?: boolean;
 }
 
-// Validator plugin interface
+// Validator plugin interface  
 export interface ValidatorPlugin {
   name: string;
   description?: string;
-  handle: (services: {
-    configService: any;
-    validationService: any;
-    transformerService: any;
-    parserService: any;
-  }, field: import('./index.js').TemplateField) => {
-    promptParams?: {
-      type?: string;
-      choices?: Array<{ title: string; value: string }>;
-      format?: string;
-      message?: string;
-      [key: string]: any;
-    };
-    validate: (value: string, params: Record<string, string>) => boolean | Promise<boolean>;
-    transform?: (value: string, params: Record<string, string>) => string | Promise<string>;
+  message?: string;
+  promptParams?: {
+    type?: string;
+    message?: string;
+    format?: string;
+    choices?: Array<{ title: string; value: string }>;
+    [key: string]: any;
   };
+  validate: (value: string, params?: Record<string, string>) => boolean | Promise<boolean>;
+  errorMessage?: (value: string, params?: Record<string, string>) => string;
 }
 
 // Prompt plugin interface (for future extensibility)

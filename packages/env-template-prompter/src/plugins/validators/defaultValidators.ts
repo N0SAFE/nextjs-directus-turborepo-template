@@ -1,4 +1,3 @@
-import { URL } from 'url';
 import type { ValidatorPlugin } from '../../types/index.js';
 
 /**
@@ -25,7 +24,7 @@ export const urlValidator: ValidatorPlugin = {
     }
 
     try {
-      const url = new URL(value);
+      const url = new globalThis.URL(value);
       // Ensure it has a valid protocol
       return ['http:', 'https:', 'ftp:', 'ftps:', 'postgres:', 'postgresql:', 'mysql:', 'redis:'].includes(url.protocol);
     } catch {
