@@ -16,7 +16,7 @@ export const initJsUrlValidator: ValidatorPlugin = {
     message: 'Enter a valid URL',
     format: 'url',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value) {
         return 'URL is required'; // URL is required
@@ -64,7 +64,7 @@ export const initJsNumberValidator: ValidatorPlugin = {
     message: 'Enter a number',
     format: 'number',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       const num = Number(value);
       
@@ -107,7 +107,7 @@ export const initJsStringValidator: ValidatorPlugin = {
     message: 'Enter a string value',
     format: 'string',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional !== 'true') {
         return 'This field is required'; // Field is required
@@ -146,7 +146,7 @@ export const initJsDateValidator: ValidatorPlugin = {
     message: 'Enter a valid date',
     format: 'date',
   },
-  handle: (services: ServiceContainer, field: TemplateField) => ({
+  handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional === 'true') {
         return true;

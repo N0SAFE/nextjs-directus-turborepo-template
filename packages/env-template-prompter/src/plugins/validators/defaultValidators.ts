@@ -320,7 +320,7 @@ export const selectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'select',
   },
-  handle: (_services: ServiceContainer, _field: TemplateField) => ({
+  handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (value: string, params: Record<string, string | string[]>): boolean | string => {
       if (!value || !value.trim()) {
         return 'Selection cannot be empty';
@@ -329,13 +329,13 @@ export const selectValidator: ValidatorPlugin = {
       // Get options from field.options.options first, then fall back to params.options
       let options: string[] = [];
       if (typeof field.options.options === 'string') {
-        options = field.options.options.split(',').map(v => v.trim());
+        options = field.options.options.split(',').map((v: string) => v.trim());
       } else if (Array.isArray(field.options.options)) {
         options = field.options.options;
       } else if (Array.isArray(params.options)) {
         options = params.options;
       } else if (typeof params.options === 'string') {
-        options = params.options.split(',').map(v => v.trim());
+        options = params.options.split(',').map((v: string) => v.trim());
       }
       
       if (options.length === 0) {
@@ -362,9 +362,9 @@ export const multiSelectValidator: ValidatorPlugin = {
     choices: [], // Will be filled dynamically from params.options
     format: 'multiselect',
   },
-  handle: (_services: ServiceContainer, _field: TemplateField) => ({
+  handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (value: string | string[], params: Record<string, string | string[]>): boolean | string => {
-      const values = Array.isArray(value) ? value : value.split(',').map(v => v.trim());
+      const values = Array.isArray(value) ? value : value.split(',').map((v: string) => v.trim());
       if (!values.length) {
         return 'At least one selection is required';
       }
@@ -372,13 +372,13 @@ export const multiSelectValidator: ValidatorPlugin = {
       // Get options from field.options.options first, then fall back to params.options
       let options: string[] = [];
       if (typeof field.options.options === 'string') {
-        options = field.options.options.split(',').map(v => v.trim());
+        options = field.options.options.split(',').map((v: string) => v.trim());
       } else if (Array.isArray(field.options.options)) {
         options = field.options.options;
       } else if (Array.isArray(params.options)) {
         options = params.options;
       } else if (typeof params.options === 'string') {
-        options = params.options.split(',').map(v => v.trim());
+        options = params.options.split(',').map((v: string) => v.trim());
       }
       
       if (options.length === 0) {
