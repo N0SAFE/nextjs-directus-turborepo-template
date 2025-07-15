@@ -49,7 +49,8 @@
         "@repo/tailwind-config": "dotenv -e .env -- bun --bun --cwd=./packages/tailwind-config run --",
         "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
         "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
-        ".": "dotenv -e .env -- bun --bun --cwd=./ run --"
+        ".": "dotenv -e .env -- bun --bun --cwd=./ run --",
+        "job:hello": "npm run --workspace=api job:hello"
     },
     "devDependencies": {
         "@happy-dom/global-registrator": "^18.0.1",

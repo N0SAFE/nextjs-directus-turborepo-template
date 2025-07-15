@@ -29,7 +29,8 @@
     "schema:export": "dotenv -v CONFIG_PATH=config.js -- directus schema snapshot --yes ./snapshot.yaml",
     "schema:import": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --yes ./snapshot.yaml",
     "schema:import:dryRun": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --dry-run ./snapshot.yaml",
-    "seed:run": "dotenv -v CONFIG_PATH=config.js -- directus data apply ./seed.yaml"
+    "seed:run": "dotenv -v CONFIG_PATH=config.js -- directus data apply ./seed.yaml",
+    "job:hello": "node ./bin/background-job.js"
   },
   "keywords": [],
   "author": "",
