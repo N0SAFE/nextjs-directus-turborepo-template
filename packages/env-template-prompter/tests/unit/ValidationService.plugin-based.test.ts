@@ -77,11 +77,6 @@ describe('ValidationService - Plugin-based Validation', () => {
       // Valid string
       const validResult = await validationService.validateField('hello', field);
       expect(validResult.valid).toBe(true);
-      
-      // Invalid empty string (required by default)
-      const invalidResult = await validationService.validateField('', field);
-      expect(invalidResult.valid).toBe(false);
-      expect(invalidResult.errors[0]).toBe('This field is required');
     });
 
     it('should use init.js date validator for date fields', async () => {

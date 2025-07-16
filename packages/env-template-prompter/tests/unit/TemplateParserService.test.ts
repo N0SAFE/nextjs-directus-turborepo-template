@@ -1,14 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TemplateParserService } from '../../src/services/TemplateParserService.js';
 import { ConfigService } from '../../src/services/ConfigService.js';
+import { ValidationService, type IValidationService } from '../../src/index.js';
 
 describe('TemplateParserService', () => {
   let templateParserService: TemplateParserService;
+  let validationService: IValidationService;
   let configService: ConfigService;
 
   beforeEach(() => {
     configService = new ConfigService();
-    templateParserService = new TemplateParserService(configService);
+    validationService = new ValidationService(configService);
+    templateParserService = new TemplateParserService(configService, validationService);
   });
 
   it('should parse simple field', () => {

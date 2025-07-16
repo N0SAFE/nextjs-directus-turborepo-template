@@ -27,7 +27,7 @@ describe('ValidationService - Extended Tests', () => {
 
   const createTestField = (type: string, options: Record<string, unknown> = {}): TemplateField => ({
     key: 'TEST_FIELD',
-    type: type as any,
+    type,
     options,
     rawLine: '',
     lineNumber: 1

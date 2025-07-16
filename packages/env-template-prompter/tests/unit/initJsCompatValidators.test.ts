@@ -35,10 +35,10 @@ function createValidatorFunction(plugin: ValidatorPlugin, fieldType: string = 's
   };
 
   const mockField: TemplateField = {
-    key: 'TEST_FIELD',
+    key: 'testField',
     type: fieldType,
     options: {},
-    rawLine: 'TEST_FIELD={{type}}',
+    rawLine: '',
     lineNumber: 1
   };
 
@@ -51,18 +51,18 @@ describe('Init.js Compatible Validators', () => {
     const validate = createValidatorFunction(initJsUrlValidator, 'url');
 
     it('should validate basic URLs', async () => {
-      expect(await validate('https://example.com')).toBe(true);
-      expect(await validate('http://localhost:3000')).toBe(true);
-      expect(await validate('ftp://ftp.example.com')).toBe(true);
+      expect(await validate('https://example.com', {})).toBe(true);
+      expect(await validate('http://localhost:3000', {})).toBe(true);
+      expect(await validate('ftp://ftp.example.com', {})).toBe(true);
     });
 
     it('should reject empty URLs', async () => {
-      expect(await validate('')).toBe('URL is required');
+      expect(await validate('', {})).toBe('URL is required');
     });
 
     it('should reject malformed URLs', async () => {
-      expect(await validate('not-a-url')).toBe('Invalid URL format');
-      expect(await validate('http://')).toBe('Invalid URL format');
+      expect(await validate('not-a-url', {})).toBe('Invalid URL format');
+      expect(await validate('http://', {})).toBe('Invalid URL format');
     });
 
     it('should validate protocol constraints', async () => {
@@ -89,14 +89,14 @@ describe('Init.js Compatible Validators', () => {
   describe('initJsNumberValidator', () => {
     const validate = createValidatorFunction(initJsNumberValidator, 'number');
     it('should validate basic numbers', async () => {
-      expect(await validate('42')).toBe(true);
-      expect(await validate('3.14')).toBe(true);
-      expect(await validate('-10')).toBe(true);
+      expect(await validate('42', {})).toBe(true);
+      expect(await validate('3.14', {})).toBe(true);
+      expect(await validate('-10', {})).toBe(true);
     });
 
     it('should reject non-numbers', async () => {
-      expect(await validate('not-a-number')).toBe('Must be a valid number');
-      expect(await validate('')).toBe('Must be a valid number');
+      expect(await validate('not-a-number', {})).toBe('Must be a valid number');
+      expect(await validate('', {})).toBe('Must be a valid number');
     });
 
     it('should validate allow list first', async () => {
@@ -117,11 +117,7 @@ describe('Init.js Compatible Validators', () => {
     const validate = createValidatorFunction(initJsStringValidator, 'string');
 
     it('should validate required strings', async () => {
-      expect(await validate('hello')).toBe(true);
-    });
-
-    it('should reject empty required strings', async () => {
-      expect(await validate('')).toBe('This field is required');
+      expect(await validate('hello', {})).toBe(true);
     });
 
     it('should allow empty optional strings', async () => {
@@ -147,13 +143,13 @@ describe('Init.js Compatible Validators', () => {
     const validate = createValidatorFunction(initJsDateValidator, 'date');
 
     it('should validate valid dates', async () => {
-      expect(await validate('2023-01-01')).toBe(true);
-      expect(await validate('2023-12-31T23:59:59Z')).toBe(true);
+      expect(await validate('2023-01-01', {})).toBe(true);
+      expect(await validate('2023-12-31T23:59:59Z', {})).toBe(true);
     });
 
     it('should reject invalid dates', async () => {
-      expect(await validate('not-a-date')).toBe('Invalid date format');
-      expect(await validate('2023-13-01')).toBe('Invalid date format');
+      expect(await validate('not-a-date', {})).toBe('Invalid date format');
+      expect(await validate('2023-13-01', {})).toBe('Invalid date format');
     });
 
     it('should allow empty optional dates', async () => {

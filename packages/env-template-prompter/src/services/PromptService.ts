@@ -264,8 +264,8 @@ export class PromptService implements IPromptService {
 
     const groupTitle = context.groupTitle || this.generateGroupTitle(groupName);
     let groupDescription = "";
-    if ((context as any).groupInfo && (context as any).groupInfo.description) {
-      groupDescription = (context as any).groupInfo.description;
+    if (context.groupInfo && context.groupInfo.description) {
+      groupDescription = context.groupInfo.description;
     }
     this.displayGroupHeaderWithDescription(
       groupName,
@@ -458,7 +458,7 @@ export class PromptService implements IPromptService {
     context?: PromptContext
   ): Promise<string> {
     // Use promptParams from validator plugin if available
-    let promptOptions: any = {
+    let promptOptions: prompts.PromptObject<'value'> = {
       type: this.getPromptType(field),
       name: "value",
       message: message,
@@ -468,10 +468,10 @@ export class PromptService implements IPromptService {
     // Get validator plugin for this field type
     let validatorPlugin;
     const plugins = this.validationService.getRegisteredValidators();
-    validatorPlugin = plugins.find((p: any) => p.name === field.type);
+    validatorPlugin = plugins.find((p) => p.name === field.type);
 
     // If plugin has transformPrompt function, use it to transform prompt options
-    if (validatorPlugin && validatorPlugin.handle) {
+    if (validatorPlugin) {
       const handler = validatorPlugin.handle(
         (this.validationService as any).services || {},
         field
@@ -630,7 +630,7 @@ export class PromptService implements IPromptService {
     );
   }
 
-  private getPromptType(field: TemplateField): string {
+  private getPromptType<T extends string>(field: TemplateField): prompts.PromptType | prompts.Falsy | prompts.PrevCaller<T, prompts.PromptType | prompts.Falsy> {
     // Default fallback based on field type
     switch (field.type) {
       case "boolean":

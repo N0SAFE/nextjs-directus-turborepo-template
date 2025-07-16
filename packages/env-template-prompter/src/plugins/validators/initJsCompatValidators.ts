@@ -10,6 +10,7 @@ import type { ValidatorPlugin, ServiceContainer, TemplateField } from '../../typ
  */
 export const initJsUrlValidator: ValidatorPlugin = {
   name: 'init_js_url',
+  description: 'Validates URLs with protocol, hostname, and port constraints',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value) {
@@ -57,6 +58,7 @@ export const initJsUrlValidator: ValidatorPlugin = {
  */
 export const initJsNumberValidator: ValidatorPlugin = {
   name: 'init_js_number',
+  description: 'Validates numbers with min/max constraints and optional allowed values',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       // Empty string should be invalid for numbers
@@ -104,6 +106,7 @@ export const initJsNumberValidator: ValidatorPlugin = {
  */
 export const initJsStringValidator: ValidatorPlugin = {
   name: 'init_js_string',
+  description: 'Validates strings with optional constraints like min/max length, pattern, and required status',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional === 'false') {
@@ -145,6 +148,7 @@ export const initJsStringValidator: ValidatorPlugin = {
  */
 export const initJsDateValidator: ValidatorPlugin = {
   name: 'init_js_date',
+  description: 'Validates dates with optional min/max date constraints',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional === 'true') {

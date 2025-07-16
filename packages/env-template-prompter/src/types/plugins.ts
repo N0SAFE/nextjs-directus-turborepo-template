@@ -19,7 +19,7 @@ export interface TransformerPlugin extends Plugin {
 // Validator plugin interface  
 export interface ValidatorPlugin {
   name: string;
-  description?: string;
+  description: string;
   handle: (
     services: ServiceContainer,
     field: TemplateField

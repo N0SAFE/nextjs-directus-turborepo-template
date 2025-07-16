@@ -5,7 +5,9 @@ import {
   getDefaultValidatorPlugins,
   PluginRegistry,
   extractPortTransformer,
-  urlValidator
+  urlValidator,
+  type ServiceContainer,
+  type ValidatorPlugin
 } from '../src/index.js';
 
 describe('Plugin System', () => {
@@ -13,19 +15,20 @@ describe('Plugin System', () => {
     it('should provide all default transformer plugins', () => {
       const transformers = getDefaultTransformerPlugins();
       
-      expect(transformers).toHaveLength(6);
+      expect(transformers).toHaveLength(7);
       expect(transformers.map(t => t.name)).toContain('extract_port');
       expect(transformers.map(t => t.name)).toContain('extract_hostname');
       expect(transformers.map(t => t.name)).toContain('cors_origins');
       expect(transformers.map(t => t.name)).toContain('generate_secret');
       expect(transformers.map(t => t.name)).toContain('boolean_flag');
       expect(transformers.map(t => t.name)).toContain('array_from_csv');
+      expect(transformers.map(t => t.name)).toContain('extract_protocol');
     });
 
     it('should provide all default validator plugins', () => {
       const validators = getDefaultValidatorPlugins();
       
-      expect(validators).toHaveLength(8);
+      expect(validators).toHaveLength(11);
       expect(validators.map(v => v.name)).toContain('url');
       expect(validators.map(v => v.name)).toContain('number');
       expect(validators.map(v => v.name)).toContain('string');
@@ -34,13 +37,16 @@ describe('Plugin System', () => {
       expect(validators.map(v => v.name)).toContain('port');
       expect(validators.map(v => v.name)).toContain('json');
       expect(validators.map(v => v.name)).toContain('path');
+      expect(validators.map(v => v.name)).toContain('select');
+      expect(validators.map(v => v.name)).toContain('multiselect');
+      expect(validators.map(v => v.name)).toContain('date');
     });
 
     it('should provide complete plugin collection', () => {
       const allPlugins = getAllDefaultPlugins();
       
-      expect(allPlugins.transformers).toHaveLength(6);
-      expect(allPlugins.validators).toHaveLength(8);
+      expect(allPlugins.transformers).toHaveLength(7);
+      expect(allPlugins.validators).toHaveLength(11);
     });
   });
 
@@ -96,16 +102,17 @@ describe('Plugin System', () => {
     });
 
     describe('urlValidator', () => {
+      const urlValidatorHandle = urlValidator.handle({} as ServiceContainer, {} as any);
       it('should validate correct URLs', () => {
-        expect(urlValidator.validate('https://example.com', {})).toBe(true);
-        expect(urlValidator.validate('http://localhost:3000', {})).toBe(true);
-        expect(urlValidator.validate('postgres://user:pass@host:5432/db', {})).toBe(true);
+        expect(urlValidatorHandle.validate('https://example.com', {})).toBe(true);
+        expect(urlValidatorHandle.validate('http://localhost:3000', {})).toBe(true);
+        expect(urlValidatorHandle.validate('postgres://user:pass@host:5432/db', {})).toBe(true);
       });
 
       it('should reject invalid URLs', () => {
-        expect(urlValidator.validate('not-a-url', {})).toBe(false);
-        expect(urlValidator.validate('', {})).toBe(false);
-        expect(urlValidator.validate('invalid-protocol://test', {})).toBe(false);
+        expect(urlValidatorHandle.validate('not-a-url', {})).toBe('Invalid URL format');
+        expect(urlValidatorHandle.validate('', {})).toBe('URL cannot be empty');
+        expect(urlValidatorHandle.validate('invalid-protocol://test', {})).toBe('Invalid protocol. Must be one of: http, https, ftp, ftps, postgres, postgresql, mysql, redis');
       });
     });
   });
@@ -125,8 +132,8 @@ describe('Plugin System', () => {
     it('should load default plugins when requested', () => {
       registry.loadDefaultPlugins();
       
-      expect(registry.getAllTransformers()).toHaveLength(6);
-      expect(registry.getAllValidators()).toHaveLength(8);
+      expect(registry.getAllTransformers()).toHaveLength(7);
+      expect(registry.getAllValidators()).toHaveLength(11);
     });
 
     it('should register custom transformer', () => {
@@ -143,10 +150,13 @@ describe('Plugin System', () => {
     });
 
     it('should register custom validator', () => {
-      const customValidator = {
+      const customValidator: ValidatorPlugin = {
         name: 'custom',
-        message: 'Custom validation failed',
-        validate: (value: string) => value.length > 5
+        handle: (services: ServiceContainer, field: any) => ({
+          validate: (value: string) => value.length > 5,
+          transform: (value: string) => value.trim(),
+          transformPrompt: (promptOptions: any, field: any) => promptOptions
+        }),
       };
 
       registry.registerValidator(customValidator);
@@ -159,8 +169,8 @@ describe('Plugin System', () => {
       registry.loadDefaultPlugins();
       
       const stats = registry.getStats();
-      expect(stats.transformers).toBe(6);
-      expect(stats.validators).toBe(8);
+      expect(stats.transformers).toBe(7);
+      expect(stats.validators).toBe(11);
     });
 
     it('should allow unregistering plugins', () => {
@@ -185,9 +195,9 @@ describe('Plugin System', () => {
   describe('Plugin Auto-loading', () => {
     it('should auto-load defaults when registry created with loadDefaults=true', () => {
       const registry = new PluginRegistry(true);
-      
-      expect(registry.getAllTransformers()).toHaveLength(6);
-      expect(registry.getAllValidators()).toHaveLength(8);
+
+      expect(registry.getAllTransformers()).toHaveLength(7);
+      expect(registry.getAllValidators()).toHaveLength(11);
     });
   });
 });

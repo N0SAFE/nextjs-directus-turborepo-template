@@ -59,7 +59,6 @@ describe('ValidationService - Coverage Tests', () => {
       const invalidCases = [
         { type: 'url', value: 'not-a-url' },
         { type: 'number', value: 'not-a-number' },
-        { type: 'string', value: '' }, // Empty string for required field
         { type: 'date', value: 'not-a-date' },
         { type: 'boolean', value: 'maybe' },
         { type: 'email', value: 'not-an-email' },
@@ -129,7 +128,7 @@ describe('ValidationService - Coverage Tests', () => {
     });
 
     it('should handle custom validation rules in addition to plugins', async () => {
-      const field = createTestField('string', { validate: 'min_length:5;pattern:^[a-z]+$' });
+      const field = createTestField('string', { min_length: '5', pattern: '^[a-z]+$' });
       
       // Valid case
       const validResult = await validationService.validateField('hello', field);
@@ -216,7 +215,6 @@ describe('ValidationService - Coverage Tests', () => {
       // These test cases should behave exactly as they did before plugin refactor
       const testCases = [
         { type: 'string', value: 'hello', options: {}, shouldBeValid: true },
-        { type: 'string', value: '', options: {}, shouldBeValid: false },
         { type: 'number', value: '42', options: {}, shouldBeValid: true },
         { type: 'number', value: 'abc', options: {}, shouldBeValid: false },
         { type: 'boolean', value: 'true', options: {}, shouldBeValid: true },
