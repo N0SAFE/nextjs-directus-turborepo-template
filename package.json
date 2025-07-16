@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-directus-turborepo-template",
+  "name": "mcp-everything",
   "private": true,
   "workspaces": {
     "packages": [
