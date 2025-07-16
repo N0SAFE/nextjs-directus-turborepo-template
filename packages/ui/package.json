@@ -34,7 +34,7 @@
     "@types/react-dom": "19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "delete-cli": "^0.1.3",
-    "jsdom": "^25.0.1",
+    "jsdom": "^26.1.0",
     "next": "^15.4.0",
     "postcss": "^8.4.31",
     "prettier-plugin-tailwindcss": "^0.6.11",

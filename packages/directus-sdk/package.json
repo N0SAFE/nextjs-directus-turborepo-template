@@ -80,7 +80,7 @@
         "@repo/tsconfig": "*",
         "@repo/vitest-config": "*",
         "@testing-library/jest-dom": "^6.6.3",
-        "jsdom": "^25.0.1",
+        "jsdom": "^26.1.0",
         "typescript": "^5.5.3",
         "vitest": "^3.2.4"
     },
