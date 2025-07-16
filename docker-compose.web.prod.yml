@@ -1,7 +1,7 @@
 services:
   # Next.js web app (standalone)
   web-prod:
-    container_name: nextjs-directus-web-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-prod
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.build-time.prod

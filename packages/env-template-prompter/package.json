@@ -1,0 +1,82 @@
+{
+  "name": "@repo/env-template-prompter",
+  "version": "1.0.0",
+  "description": "Interactive environment configuration from .env.template files with service-based architecture",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "env-prompt": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "demo": "node demo.js"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "dotenv": "^16.4.5",
+    "dotenv-expand": "^11.0.6",
+    "picocolors": "^1.0.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@types/node": "^20.10.0",
+    "@types/prompts": "^2.4.9",
+    "@vitest/coverage-v8": "^1.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "environment",
+    "configuration",
+    "template",
+    "interactive",
+    "cli",
+    "env",
+    "dotenv",
+    "prompts",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/N0SAFE/nextjs-directus-turborepo-template.git",
+    "directory": "packages/env-template-prompter"
+  },
+  "bugs": {
+    "url": "https://github.com/N0SAFE/nextjs-directus-turborepo-template/issues"
+  },
+  "homepage": "https://github.com/N0SAFE/nextjs-directus-turborepo-template#readme",
+  "author": "N0SAFE",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

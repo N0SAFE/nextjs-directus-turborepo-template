@@ -1,7 +1,7 @@
 services:
   # API services (defined directly to override networks)
   api-db-prod:
-    container_name: nextjs-directus-api-db-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-prod
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -28,7 +28,7 @@ services:
       - app_network_prod
 
   api-cache-prod:
-    container_name: nextjs-directus-api-cache-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-prod
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -42,7 +42,7 @@ services:
       - app_network_prod
 
   api-prod:
-    container_name: nextjs-directus-api-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-prod
     image: directus/directus:11.8.0
     depends_on:
       api-db-prod:
@@ -93,7 +93,7 @@ services:
 
   # Web service (using runtime compilation for fresh builds)
   web-prod:
-    container_name: nextjs-directus-web-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-prod
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.runtime.prod
@@ -120,7 +120,9 @@ services:
 
 networks:
   app_network_prod:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_app_network_prod
     driver: bridge
 
 volumes:
   api_db_data_prod:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_prod

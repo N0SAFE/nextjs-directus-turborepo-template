@@ -56,7 +56,7 @@
         }
     },
     "scripts": {
-        "pretify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
+        "prettify": "bun x --bun prettier ./**/*.{ts,tsx,js,jsx,css} --write --no-error-on-unmatched-pattern",
         "type-check": "tsc --noEmit",
         "lint": "eslint \"**/*.ts*\"",
         "test": "vitest run",
@@ -88,7 +88,7 @@
         "@directus/sdk": "^17.0.0",
         "@n0safe/envcli": "^1.0.2",
         "@n0safe/indirectus": "^1.0.2",
-        "next": "15.3.2",
+        "next": "15.4.0",
         "rimraf": "^6.0.1",
         "wait-port": "^1.1.0"
     }

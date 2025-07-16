@@ -12,7 +12,7 @@ import type {
   ObjectFromPascalToCamel,
   UnionToArray,
   ArrayContains,
-  Pretify,
+  prettify,
   OmitNever,
   TupleIndices,
 } from './utils'
@@ -170,10 +170,10 @@ describe('Utility Types', () => {
     })
   })
 
-  describe('Pretify', () => {
+  describe('prettify', () => {
     it('should make complex types more readable', () => {
       type Complex = { a: string } & { b: number }
-      type Pretty = Pretify<Complex>
+      type Pretty = prettify<Complex>
       
       const pretty: Pretty = { a: 'test', b: 42 }
       

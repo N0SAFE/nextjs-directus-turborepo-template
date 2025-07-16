@@ -1,7 +1,7 @@
 services:
   # Database for API
   api-db-prod:
-    container_name: nextjs-directus-api-db-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-prod
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -29,7 +29,7 @@ services:
 
   # Redis cache for API
   api-cache-prod:
-    container_name: nextjs-directus-api-cache-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-prod
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -44,10 +44,8 @@ services:
 
   # Directus API service
   api-prod:
-    container_name: nextjs-directus-api-prod
-    extends:
-      file: ./apps/api/docker-compose.yml
-      service: api
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-prod
+    image: directus/directus:11.8.0
     depends_on:
       api-db-prod:
         condition: service_healthy
@@ -75,6 +73,12 @@ services:
       ADMIN_PASSWORD: "adminadmin"
       ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
       PUBLIC_URL: http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "${NEXT_PUBLIC_APP_URL:-http://localhost:3000}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
       # Production optimizations
       LOG_LEVEL: "warn"
       RATE_LIMITER_ENABLED: "true"

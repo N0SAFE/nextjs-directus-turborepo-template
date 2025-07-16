@@ -142,9 +142,9 @@ describe('WithEnv Middleware', () => {
                 )
             })
 
-            await expect(middleware(request, {} as NextFetchEvent)).rejects.toThrow(
-                'Invalid environment variables'
-            )
+            await expect(
+                middleware(request, {} as NextFetchEvent)
+            ).rejects.toThrow('Invalid environment variables')
         })
     })
 

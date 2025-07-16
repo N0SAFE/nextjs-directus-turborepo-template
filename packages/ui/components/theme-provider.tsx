@@ -1,6 +1,9 @@
 'use client'
 
-import { ThemeProvider as StaticNextThemesProvider, ThemeProviderProps } from 'next-themes'
+import {
+    ThemeProvider as StaticNextThemesProvider,
+    ThemeProviderProps,
+} from 'next-themes'
 
 import dynamic from 'next/dynamic'
 

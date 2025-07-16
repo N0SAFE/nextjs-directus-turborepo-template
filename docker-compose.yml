@@ -1,7 +1,7 @@
 services:
   # Database for development
   api-db-dev:
-    container_name: nextjs-directus-api-db-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-dev
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -29,7 +29,7 @@ services:
 
   # Redis cache for development
   api-cache-dev:
-    container_name: nextjs-directus-api-cache-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-dev
     image: redis:8
     restart: unless-stopped
     healthcheck:
@@ -44,7 +44,7 @@ services:
 
   # Directus API for development
   api-dev:
-    container_name: nextjs-directus-api-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-dev
     image: directus/directus:11.8.0
     depends_on:
       api-db-dev:
@@ -53,7 +53,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     ports:
-      - "${NEXT_PUBLIC_API_PORT:-8055}:8055"
+      - "${NEXT_PUBLIC_API_PORT:-8055}:${NEXT_PUBLIC_API_PORT:-8055}"
     volumes:
       # Mount source code for hot reloading
       - ./apps/api:/app/apps/api
@@ -78,7 +78,7 @@ services:
       PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
       # CORS Configuration for cross-origin requests from web app
       CORS_ENABLED: "true"
-      CORS_ORIGIN: "http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}"
+      CORS_ORIGIN: "${NEXT_PUBLIC_APP_URL:-http://localhost:3000}"
       CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
       CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
       CORS_CREDENTIALS: "true"
@@ -95,7 +95,7 @@ services:
 
   # Next.js web app for development with HMR
   web-dev:
-    container_name: nextjs-directus-web-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-dev
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.dev
@@ -105,14 +105,14 @@ services:
         - NODE_ENV=development
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
         - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
-        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3003}
-        - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+        - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+        - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3000}
         - API_PING_PATH=${API_PING_PATH:-/server/health}
         - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
         - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
     restart: unless-stopped
     ports:
-      - "${NEXT_PUBLIC_APP_PORT:-3003}:3003"
+      - "${NEXT_PUBLIC_APP_PORT:-3000}:${NEXT_PUBLIC_APP_PORT:-3000}"
     volumes:
       # Mount source code for hot reloading
       - .:/app
@@ -130,8 +130,8 @@ services:
       # Client-side API URL (localhost for browser)
       - NEXT_PUBLIC_API_URL=http://localhost:${NEXT_PUBLIC_API_PORT:-8055}
       - NEXT_PUBLIC_API_PORT=${NEXT_PUBLIC_API_PORT:-8055}
-      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3003}
-      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3003}
+      - NEXT_PUBLIC_APP_URL=http://localhost:${NEXT_PUBLIC_APP_PORT:-3000}
+      - NEXT_PUBLIC_APP_PORT=${NEXT_PUBLIC_APP_PORT:-3000}
       - API_ADMIN_TOKEN=${API_ADMIN_TOKEN:-secret-admin-token}
       - AUTH_SECRET=${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
       # Enable hot reloading
@@ -142,9 +142,11 @@ services:
 
 networks:
   app_network_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_app_network_dev
     driver: bridge
     driver_opts:
       com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
 
 volumes:
   api_db_data_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_dev

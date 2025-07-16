@@ -22,7 +22,9 @@ export async function IsSignedIn({
     return null
 }
 
-export async function IsSignedOut({ children }: React.PropsWithChildren<object>) {
+export async function IsSignedOut({
+    children,
+}: React.PropsWithChildren<object>) {
     const session = await auth()
     if (!session) {
         return <>{children}</>

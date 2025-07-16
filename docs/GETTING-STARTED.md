@@ -29,24 +29,44 @@ git clone https://github.com/original-author/nextjs-directus-turborepo-template.
 cd nextjs-directus-turborepo-template
 ```
 
-### 2. Initial Setup
+### 2. Project Initialization
 
-Run the initialization script to set up the project:
+Run the interactive initialization script to configure your project:
 
 ```bash
-# Install dependencies and initialize the project
+# Run the initialization wizard
 bun run init
 ```
 
-This script:
-- Installs all dependencies for the monorepo
-- Creates the necessary environment files from templates
-- Bootstraps the Directus API with initial configuration
-- Sets up the database and initial schema
+This interactive script will:
+- Guide you through configuring all environment variables
+- Validate your inputs based on the requirements
+- Generate a properly formatted `.env` file
+- Support different input types (strings, numbers, URLs, booleans, etc.)
+- Provide smart defaults and validation rules
 
-### 3. Start Development Environment
+The initialization wizard supports various field types:
+- **String fields**: Text input with optional validation
+- **Number fields**: Numeric input with min/max constraints  
+- **URL fields**: URL validation with protocol restrictions
+- **Boolean fields**: Yes/no choices with custom labels
+- **Select fields**: Single choice from predefined options
+- **Multi-select fields**: Multiple choices with custom separators
+- **Date fields**: Date input with format validation
+- **Secure fields**: Password-style input for sensitive data
 
-Once initialization is complete, start the development environment:
+### 3. Install Dependencies
+
+After initialization, install all project dependencies:
+
+```bash
+# Install dependencies
+bun install
+```
+
+### 4. Start Development Environment
+
+After initialization and dependency installation, start the development environment:
 
 ```bash
 # Start the development server
@@ -59,7 +79,7 @@ This command:
 - Sets up hot reloading for both applications
 - Runs database migrations and seeds initial data
 
-### 4. Access the Applications
+### 5. Access the Applications
 
 After the development servers are running:
 

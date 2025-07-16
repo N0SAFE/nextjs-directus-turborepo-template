@@ -64,12 +64,16 @@
             "cache": false,
             "inputs": ["src/**", "*.config.*", "package.json"]
         },
-        "pretify": {
+        "prettify": {
             "dependsOn": ["^lint"],
             "cache": false
         },
         "clean": {
             "cache": false
+        },
+        "type-check": {
+            "cache": false,
+            "inputs": ["src/**", "*.config.*", "package.json", "tsconfig.json"]
         }
     }
 }
