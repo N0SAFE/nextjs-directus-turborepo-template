@@ -149,114 +149,114 @@ jobs:
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    # Job 3: Merge Coverage Reports
-    merge-coverage:
-        name: 📊 Merge Coverage Reports
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
-        needs: build-and-test
-        if: always() && needs.build-and-test.result == 'success'
-        env:
-            # API Configuration
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
-            API_PING_PATH: /server/health
-            API_ADMIN_TOKEN: ci-test-admin-token
+    # # Job 3: Merge Coverage Reports
+    # merge-coverage:
+    #     name: 📊 Merge Coverage Reports
+    #     runs-on: ubuntu-latest
+    #     timeout-minutes: 10
+    #     needs: build-and-test
+    #     if: always() && needs.build-and-test.result == 'success'
+    #     env:
+    #         # API Configuration
+    #         NEXT_PUBLIC_API_URL: http://localhost:8055/
+    #         NEXT_PUBLIC_API_PORT: 8055
+    #         API_PING_PATH: /server/health
+    #         API_ADMIN_TOKEN: ci-test-admin-token
 
-            # App Configuration
-            NEXT_PUBLIC_APP_URL: http://localhost:3003/
-            NEXT_PUBLIC_APP_PORT: 3003
+    #         # App Configuration
+    #         NEXT_PUBLIC_APP_URL: http://localhost:3003/
+    #         NEXT_PUBLIC_APP_PORT: 3003
 
-            # Database Configuration (for testing)
-            DB_DATABASE: directus_test
-            DB_ROOT_PASSWORD: test-password
+    #         # Database Configuration (for testing)
+    #         DB_DATABASE: directus_test
+    #         DB_ROOT_PASSWORD: test-password
 
-            # Authentication
-            AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
+    #         # Authentication
+    #         AUTH_SECRET: ci-test-auth-secret-QgafJQw3O-k1gambz7YGKjtj5ZZe0dnL-WlSw4PtMDc
 
-            # Directus Configuration
-            DIRECTUS_SECRET: ci-test-directus-secret-value
-            DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
-            DIRECTUS_ADMIN_PASSWORD: ci-test-password
+    #         # Directus Configuration
+    #         DIRECTUS_SECRET: ci-test-directus-secret-value
+    #         DIRECTUS_ADMIN_EMAIL: ci-admin@test.com
+    #         DIRECTUS_ADMIN_PASSWORD: ci-test-password
 
-            # Next.js Configuration
-            NEXT_TELEMETRY_DISABLED: 1
-            NODE_ENV: test
+    #         # Next.js Configuration
+    #         NEXT_TELEMETRY_DISABLED: 1
+    #         NODE_ENV: test
 
-            # Development tools (disabled for CI)
-            MILLION_LINT: false
-            REACT_SCAN: false
-            SHOW_AUTH_LOGS: false
-            NEXT_PUBLIC_SHOW_AUTH_LOGS: false
+    #         # Development tools (disabled for CI)
+    #         MILLION_LINT: false
+    #         REACT_SCAN: false
+    #         SHOW_AUTH_LOGS: false
+    #         NEXT_PUBLIC_SHOW_AUTH_LOGS: false
             
-            # Build optimization
-            SKIP_STATIC_GENERATION: true
+    #         # Build optimization
+    #         SKIP_STATIC_GENERATION: true
 
-        steps:
-            - name: 📚 Checkout repository
-              uses: actions/checkout@v4
+    #     steps:
+    #         - name: 📚 Checkout repository
+    #           uses: actions/checkout@v4
 
-            - name: 🐰 Setup Bun
-              uses: oven-sh/setup-bun@v2
-              with:
-                  bun-version: ${{ env.BUN_VERSION }}
+    #         - name: 🐰 Setup Bun
+    #           uses: oven-sh/setup-bun@v2
+    #           with:
+    #               bun-version: ${{ env.BUN_VERSION }}
 
-            - name: 📦 Install dependencies
-              run: |
-                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
-                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
-                  bun install
-                else
-                  bun install --frozen-lockfile
-                fi
+    #         - name: 📦 Install dependencies
+    #           run: |
+    #             if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+    #               echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+    #               bun install
+    #             else
+    #               bun install --frozen-lockfile
+    #             fi
 
-            - name: 🏗️ Build all packages
-              run: |
-                  # Generate declarative routes for web app before building
-                  bun run --cwd apps/web dr:build
-                  # Build shared packages first
-                  bun x turbo run build --filter="!web"
-                  # Build web app without static generation to avoid API calls
-                  bun run --cwd apps/web compile
+    #         - name: 🏗️ Build all packages
+    #           run: |
+    #               # Generate declarative routes for web app before building
+    #               bun run --cwd apps/web dr:build
+    #               # Build shared packages first
+    #               bun x turbo run build --filter="!web"
+    #               # Build web app without static generation to avoid API calls
+    #               bun run --cwd apps/web compile
 
-            - name: 🧪 Run all tests with coverage
-              run: bun run test:coverage
+    #         - name: 🧪 Run all tests with coverage
+    #           run: bun run test:coverage
 
-            - name: 📊 Generate merged coverage report
-              run: |
-                  mkdir -p coverage/report
-                  echo "📋 Coverage Summary:" > coverage/report/summary.txt
-                  if [ -f "coverage/report/index.html" ]; then
-                    echo "✅ Merged coverage report generated successfully" >> coverage/report/summary.txt
-                  else
-                    echo "⚠️ No coverage data found" >> coverage/report/summary.txt
-                  fi
+    #         - name: 📊 Generate merged coverage report
+    #           run: |
+    #               mkdir -p coverage/report
+    #               echo "📋 Coverage Summary:" > coverage/report/summary.txt
+    #               if [ -f "coverage/report/index.html" ]; then
+    #                 echo "✅ Merged coverage report generated successfully" >> coverage/report/summary.txt
+    #               else
+    #                 echo "⚠️ No coverage data found" >> coverage/report/summary.txt
+    #               fi
 
-            - name: 📤 Upload merged coverage artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: coverage-report
-                  path: |
-                      coverage/report/
-                      coverage/coverage-final.json
-                  retention-days: 30
+    #         - name: 📤 Upload merged coverage artifact
+    #           uses: actions/upload-artifact@v4
+    #           with:
+    #               name: coverage-report
+    #               path: |
+    #                   coverage/report/
+    #                   coverage/coverage-final.json
+    #               retention-days: 30
 
-            # - name: 📊 Upload to Codecov
-            #   uses: codecov/codecov-action@v4
-            #   with:
-            #       files: ./coverage/coverage-final.json
-            #       flags: merged
-            #       name: merged-coverage
-            #       fail_ci_if_error: false
-            #   env:
-            #       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    #         - name: 📊 Upload to Codecov
+    #           uses: codecov/codecov-action@v4
+    #           with:
+    #               files: ./coverage/coverage-final.json
+    #               flags: merged
+    #               name: merged-coverage
+    #               fail_ci_if_error: false
+    #           env:
+    #               CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     # Job 4: Deployment Ready Check
     deployment-ready:
         name: 🚀 Deployment Ready
         runs-on: ubuntu-latest
         timeout-minutes: 5
-        needs: [lint-and-typecheck, build-and-test, merge-coverage]
+        needs: [lint-and-typecheck, build-and-test]
         if: always()
 
         steps:
