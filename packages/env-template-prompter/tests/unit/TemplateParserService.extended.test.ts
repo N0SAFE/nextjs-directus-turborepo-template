@@ -1,15 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TemplateParserService } from '../../src/services/TemplateParserService.js';
 import { ConfigService } from '../../src/services/ConfigService.js';
+import { ValidationService } from '../../src/services/ValidationService.js';
 import type { TemplateField } from '../../src/types/index.js';
 
 describe('TemplateParserService - Extended Tests', () => {
   let templateParserService: TemplateParserService;
   let configService: ConfigService;
+  let validationService: ValidationService;
 
   beforeEach(() => {
     configService = new ConfigService({ debugMode: false });
-    templateParserService = new TemplateParserService(configService);
+    validationService = new ValidationService(configService);
+    templateParserService = new TemplateParserService(configService, validationService);
   });
 
   describe('Template Parsing', () => {

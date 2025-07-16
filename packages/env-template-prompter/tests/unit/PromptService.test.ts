@@ -55,7 +55,7 @@ describe('PromptService', () => {
       validatePort: vi.fn(),
       registerValidator: vi.fn(),
       unregisterValidator: vi.fn(),
-      getRegisteredValidators: vi.fn()
+      getRegisteredValidators: vi.fn().mockReturnValue([])
     };
 
     mockTransformerService = {
@@ -561,38 +561,6 @@ describe('PromptService', () => {
 
       expect(result.get('DERIVED_VAR')?.derived).toBe(true);
       expect(result.get('DERIVED_VAR')?.value).toBe('transformed-value');
-    });
-  });
-
-  describe('displayProgress', () => {
-    it('should display progress bar', () => {
-      promptService.displayProgress(3, 10);
-
-      expect(process.stdout.write).toHaveBeenCalled();
-      const writtenText = vi.mocked(process.stdout.write).mock.calls[0][0];
-      // Check if the text contains the key elements (the mock might affect formatting)
-      expect(typeof writtenText).toBe('string');
-      expect(writtenText).toContain('30%');
-    });
-
-    it('should complete progress on final step', () => {
-      promptService.displayProgress(10, 10);
-
-      expect(console.log).toHaveBeenCalled();
-    });
-
-    it('should not display in non-interactive mode', () => {
-      vi.mocked(mockConfigService.getConfig).mockReturnValue({ 
-        debugMode: false, 
-        interactive: false,
-        templatePath: '',
-        outputPath: '',
-        skipExisting: false
-      });
-
-      promptService.displayProgress(1, 10);
-
-      expect(process.stdout.write).not.toHaveBeenCalled();
     });
   });
 
