@@ -81,7 +81,7 @@ describe('Init.js Compatible Validators', () => {
     it('should validate port constraints', async () => {
       const params = { port: '3000' };
       expect(await validate('https://example.com:3000', params)).toBe(true);
-      expect(await validate('https://example.com:8080', params)).toBe('Port must be 3000');
+      expect(await validate('https://example.com:8080', params)).toBe('Port must be one of: 3000');
     });
 
   });

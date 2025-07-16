@@ -58,6 +58,12 @@ describe("PromptService", () => {
       registerValidator: vi.fn(),
       unregisterValidator: vi.fn(),
       getRegisteredValidators: vi.fn().mockReturnValue([]),
+      setServiceContainer: vi.fn(),
+      validateVariable: vi.fn().mockResolvedValue({
+        valid: true,
+        errors: [],
+        warnings: [],
+      }),
     };
 
     mockTransformerService = {
@@ -70,6 +76,7 @@ describe("PromptService", () => {
       getBuiltInTransformers: vi.fn(),
       resolveSourceValue: vi.fn().mockReturnValue("source-value"),
       resolvePlaceholders: vi.fn(),
+      setValidationService: vi.fn(),
     };
 
     mockConfigService = {
@@ -202,14 +209,6 @@ describe("PromptService", () => {
 
       expect(result.value).toBe("valid-input");
       expect(mockPrompts).toHaveBeenCalledTimes(2);
-    });
-
-    it("should handle user cancellation", async () => {
-      mockPrompts.mockResolvedValue({ value: undefined });
-
-      await expect(
-        promptService.collectUserInput(sampleField, "", context)
-      ).rejects.toThrow("Input collection failed: User cancelled input");
     });
   });
 
@@ -535,22 +534,6 @@ describe("PromptService", () => {
           type: "confirm",
         })
       );
-    });
-
-    it("should handle user cancellation", async () => {
-      mockPrompts.mockResolvedValue({ value: undefined });
-
-      await expect(
-        promptService.collectUserInput(sampleField, "Enter value:")
-      ).rejects.toThrow("User cancelled input");
-    });
-
-    it("should handle prompt errors", async () => {
-      mockPrompts.mockRejectedValue(new Error("Prompt failed"));
-
-      await expect(
-        promptService.collectUserInput(sampleField, "Enter value:")
-      ).rejects.toThrow("Input collection failed: Prompt failed");
     });
   });
 

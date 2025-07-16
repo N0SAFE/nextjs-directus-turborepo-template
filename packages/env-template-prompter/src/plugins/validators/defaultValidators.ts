@@ -16,8 +16,9 @@ import type {
  */
 export const urlValidator: ValidatorPlugin = {
   name: "url",
+  description: "Validates URLs with protocol, hostname, and port constraints",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string): boolean | string => {
+    validate: (value: string) => {
       if (!value || !value.trim()) {
         return "URL cannot be empty";
       }
@@ -58,11 +59,12 @@ export const urlValidator: ValidatorPlugin = {
  */
 export const numberValidator: ValidatorPlugin = {
   name: "number",
+  description: "Validates numeric values with optional constraints",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string>
-    ): boolean | string => {
+    )=> {
       if (!value || !value.trim()) {
         return "Number cannot be empty";
       }
@@ -112,11 +114,12 @@ export const numberValidator: ValidatorPlugin = {
  */
 export const stringValidator: ValidatorPlugin = {
   name: "string",
+  description: "Validates string values with optional length and pattern constraints (default)",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string>
-    ): boolean | string => {
+    ) => {
       if (params.required === "false" && (!value || !value.trim())) {
         return true; // Allow empty for optional fields
       }
@@ -168,8 +171,9 @@ export const stringValidator: ValidatorPlugin = {
  */
 export const booleanValidator: ValidatorPlugin = {
   name: "boolean",
+  description: "Validates boolean values with common representations",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string): boolean | string => {
+    validate: (value: string) => {
       if (!value || !value.trim()) {
         return "Boolean value cannot be empty";
       }
@@ -209,8 +213,9 @@ export const booleanValidator: ValidatorPlugin = {
  */
 export const emailValidator: ValidatorPlugin = {
   name: "email",
+  description: "Validates email addresses with basic format checks",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string): boolean | string => {
+    validate: (value: string) => {
       if (!value || !value.trim()) {
         return "Email address cannot be empty";
       }
@@ -235,11 +240,12 @@ export const emailValidator: ValidatorPlugin = {
  */
 export const portValidator: ValidatorPlugin = {
   name: "port",
+  description: "Validates port numbers with optional allow list",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string>
-    ): boolean | string => {
+    ) => {
       if (!value || !value.trim()) {
         return "Port number cannot be empty";
       }
@@ -278,8 +284,9 @@ export const portValidator: ValidatorPlugin = {
  */
 export const jsonValidator: ValidatorPlugin = {
   name: "json",
+  description: "Validates JSON strings",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string): boolean | string => {
+    validate: (value: string) => {
       if (!value || !value.trim()) {
         return "JSON value cannot be empty";
       }
@@ -304,11 +311,12 @@ export const jsonValidator: ValidatorPlugin = {
  */
 export const pathValidator: ValidatorPlugin = {
   name: "path",
+  description: "Validates file paths with optional absolute path constraint",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string>
-    ): boolean | string => {
+    ) => {
       if (!value || !value.trim()) {
         return "File path cannot be empty";
       }
@@ -342,11 +350,12 @@ export const pathValidator: ValidatorPlugin = {
  */
 export const selectValidator: ValidatorPlugin = {
   name: "select",
+  description: "Validates single selection field values with options",
   handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string | string[]>
-    ): boolean | string => {
+    ) => {
       if (!value || !value.trim()) {
         return "Selection cannot be empty";
       }
@@ -418,11 +427,12 @@ export const selectValidator: ValidatorPlugin = {
  */
 export const multiSelectValidator: ValidatorPlugin = {
   name: "multiselect",
+  description: "Validates multi-selection field values with options",
   handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (
       value: string | string[],
       params: Record<string, string | string[]>
-    ): boolean | string => {
+    ) => {
       const values = Array.isArray(value)
         ? value
         : value.split(",").map((v: string) => v.trim());
@@ -499,11 +509,12 @@ export const multiSelectValidator: ValidatorPlugin = {
  */
 export const dateValidator: ValidatorPlugin = {
   name: "date",
+  description: "Validates date values with optional min/max constraints",
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (
       value: string,
       params: Record<string, string>
-    ): boolean | string => {
+    ) => {
       if (!value || !value.trim()) {
         return "Date cannot be empty";
       }

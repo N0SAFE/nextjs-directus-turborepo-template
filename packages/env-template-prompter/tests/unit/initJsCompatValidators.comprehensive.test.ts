@@ -134,7 +134,7 @@ describe("Init.js Validator Plugins - 100% Coverage", () => {
         true
       );
       expect(await validate("https://example.com:8080", { port: "3000" })).toBe(
-        "Port must be 3000"
+        "Port must be one of: 3000"
       );
       expect(await validate("https://example.com", { port: "3000" })).toBe(
         true
@@ -155,7 +155,7 @@ describe("Init.js Validator Plugins - 100% Coverage", () => {
         "Hostname must be one of: api.example.com"
       );
       expect(await validate("https://api.example.com:3000", params)).toBe(
-        "Port must be 8080"
+        "Port must be one of: 8080"
       );
     });
   });

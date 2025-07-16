@@ -12,7 +12,7 @@ export const initJsUrlValidator: ValidatorPlugin = {
   name: 'init_js_url',
   description: 'Validates URLs with protocol, hostname, and port constraints',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string, params: Record<string, string> = {}): boolean | string => {
+    validate: (value: string, params: Record<string, string> = {}) => {
       if (!value) {
         return 'URL is required'; // URL is required
       }
@@ -37,8 +37,11 @@ export const initJsUrlValidator: ValidatorPlugin = {
         }
         
         // Check port constraints
-        if (params.port && urlObj.port && params.port !== urlObj.port) {
-          return `Port must be ${params.port}`;
+        if (params.port && urlObj.port) {
+          const allowedPorts = params.port.split(',').map(p => p.trim());
+          if (!allowedPorts.includes(urlObj.port)) {
+            return `Port must be one of: ${params.port}`;
+          }
         }
         
         return true;
@@ -60,7 +63,7 @@ export const initJsNumberValidator: ValidatorPlugin = {
   name: 'init_js_number',
   description: 'Validates numbers with min/max constraints and optional allowed values',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string, params: Record<string, string> = {}): boolean | string => {
+    validate: (value: string, params: Record<string, string> = {}) => {
       // Empty string should be invalid for numbers
       if (!value || value.trim() === '') {
         return 'Must be a valid number';
@@ -108,7 +111,7 @@ export const initJsStringValidator: ValidatorPlugin = {
   name: 'init_js_string',
   description: 'Validates strings with optional constraints like min/max length, pattern, and required status',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string, params: Record<string, string> = {}): boolean | string => {
+    validate: (value: string, params: Record<string, string> = {}) => {
       if (!value && params.optional === 'false') {
         return 'This field is required'; // Field is required
       }
@@ -150,7 +153,7 @@ export const initJsDateValidator: ValidatorPlugin = {
   name: 'init_js_date',
   description: 'Validates dates with optional min/max date constraints',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
-    validate: (value: string, params: Record<string, string> = {}): boolean | string => {
+    validate: (value: string, params: Record<string, string> = {}) => {
       if (!value && params.optional === 'true') {
         return true;
       }

@@ -24,7 +24,7 @@ export interface ValidatorPlugin {
     services: ServiceContainer,
     field: TemplateField
   ) => {
-    validate: (value: string, params: Record<string, string>) => boolean | string | Promise<boolean | string>;
+    validate: (value: string, params: Record<string, string>) => true | string | Promise<true | string>;
     transform?: (value: string, params: Record<string, string>) => string | Promise<string>;
     transformPrompt?: (promptOptions: any, field: TemplateField) => any;
   };
