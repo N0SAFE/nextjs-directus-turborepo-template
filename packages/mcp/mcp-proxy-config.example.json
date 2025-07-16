@@ -1,0 +1,100 @@
+{
+  "_comment": "MCP Proxy Server Example Configuration - This shows how to configure backend MCP servers",
+  "servers": [
+    {
+      "id": "weather-server",
+      "name": "Weather MCP Server",
+      "description": "Provides weather information via external APIs",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-weather"],
+        "env": {
+          "WEATHER_API_KEY": "your-weather-api-key-here"
+        }
+      },
+      "security": {
+        "allowedTools": ["get_weather", "get_forecast"],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "file-server",
+      "name": "File System MCP Server", 
+      "description": "Provides file system access",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/directory"]
+      },
+      "security": {
+        "blockedTools": ["write_file", "delete_file"],
+        "requireAuth": true,
+        "allowedScopes": ["read"]
+      }
+    },
+    {
+      "id": "git-server",
+      "name": "Git MCP Server",
+      "description": "Provides Git repository operations",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-git", "/path/to/git/repo"]
+      },
+      "security": {
+        "allowedTools": ["git_log", "git_diff", "git_status"],
+        "blockedTools": ["git_push", "git_reset"],
+        "requireAuth": true
+      }
+    },
+    {
+      "id": "brave-search",
+      "name": "Brave Search MCP Server",
+      "description": "Provides web search capabilities via Brave Search API",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+        "env": {
+          "BRAVE_API_KEY": "your-brave-api-key-here"
+        }
+      },
+      "security": {
+        "allowedTools": ["brave_web_search"],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "remote-server",
+      "name": "Remote MCP Server",
+      "description": "Remote MCP server via SSE",
+      "transportType": "sse",
+      "enabled": false,
+      "sse": {
+        "url": "https://example.com/mcp-sse",
+        "headers": {
+          "Authorization": "Bearer your-token-here"
+        }
+      },
+      "security": {
+        "requireAuth": true,
+        "allowedScopes": ["mcp:read", "mcp:write"]
+      }
+    }
+  ],
+  "security": {
+    "globalBlockedTools": ["dangerous_operation", "system_shutdown"],
+    "allowServerDiscovery": true,
+    "defaultRequireAuth": false
+  },
+  "discovery": {
+    "enabled": true,
+    "allowRuntimeServerAddition": false,
+    "serverMetadataExposure": "basic"
+  }
+}

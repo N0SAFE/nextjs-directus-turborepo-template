@@ -1,0 +1,48 @@
+{
+  "name": "mcp-server-template",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./dist/index.js",
+    "./stdio": "./dist/sample/hello-world-server.js",
+    "./sse": "./dist/sample/hello-world-server.js",
+    "./proxy": "./dist/bin/proxy-stdio.js"
+  },
+  "scripts": {
+    "test": "npx vitest --run",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "sample": "tsx src/sample/hello-world-server.ts",
+    "proxy": "tsx src/bin/proxy-stdio.ts",
+    "proxy:dev": "tsx src/bin/proxy-stdio.ts",
+    "proxy:example": "tsx src/bin/proxy-stdio.ts --help",
+    "http-server": "tsx src/bin/http-server.ts",
+    "http-server:dev": "tsx src/bin/http-server.ts",
+    "enhanced-proxy": "tsx src/examples/enhanced-proxy-server.ts",
+    "inspect": "npx --yes @modelcontextprotocol/inspector npm run dev",
+    "inspect:sample": "npx --yes @modelcontextprotocol/inspector npm run sample",
+    "inspect:proxy": "npx --yes @modelcontextprotocol/inspector npm run proxy",
+    "inspect:enhanced": "npx --yes @modelcontextprotocol/inspector npm run enhanced-proxy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "commander": "^13.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "zod": "^3.24.3",
+    "zod-to-json-schema": "^3.24.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
+    "vitest": "^3.1.2"
+  }
+}

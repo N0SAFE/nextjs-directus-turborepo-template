@@ -1,0 +1,153 @@
+{
+  "servers": [
+    {
+      "id": "filesystem",
+      "name": "File System MCP Server",
+      "description": "Provides secure file system access with read/write capabilities",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/tmp/mcp-demo"
+        ]
+      },
+      "security": {
+        "allowedTools": [
+          "read_file",
+          "list_directory",
+          "write_file"
+        ],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "git",
+      "name": "Git Operations Server",
+      "description": "Provides Git repository operations and history access",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-git",
+          "/home/sebille/Bureau/projects/tests/mcp-everything"
+        ]
+      },
+      "security": {
+        "allowedTools": [
+          "git_log",
+          "git_diff",
+          "git_status",
+          "git_branch"
+        ],
+        "blockedTools": [
+          "git_reset",
+          "git_push"
+        ],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "brave-search",
+      "name": "Brave Search API",
+      "description": "Web search capabilities via Brave Search API",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-brave-search"
+        ],
+        "env": {
+          "BRAVE_API_KEY": "demo-api-key"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "brave_web_search"
+        ],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL Database Server",
+      "description": "Database query and schema inspection capabilities",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-postgres"
+        ],
+        "env": {
+          "POSTGRES_CONNECTION_STRING": "postgresql://localhost:5432/demo"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "query",
+          "list_tables",
+          "describe_table"
+        ],
+        "blockedTools": [
+          "execute",
+          "drop_table"
+        ],
+        "requireAuth": true,
+        "allowedScopes": [
+          "database:read"
+        ]
+      }
+    },
+    {
+      "id": "slack",
+      "name": "Slack Integration Server",
+      "description": "Slack messaging and channel management",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-slack"
+        ],
+        "env": {
+          "SLACK_BOT_TOKEN": ""
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "list_channels",
+          "send_message",
+          "get_channel_history"
+        ],
+        "requireAuth": true,
+        "allowedScopes": [
+          "slack:write",
+          "slack:read"
+        ]
+      }
+    }
+  ],
+  "security": {
+    "globalBlockedTools": [
+      "system_shutdown",
+      "rm_rf",
+      "format_disk"
+    ],
+    "allowServerDiscovery": true,
+    "defaultRequireAuth": false
+  },
+  "discovery": {
+    "enabled": true,
+    "allowRuntimeServerAddition": true,
+    "serverMetadataExposure": "full"
+  }
+}

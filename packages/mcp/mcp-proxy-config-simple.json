@@ -1,0 +1,37 @@
+{
+  "_comment": "Simple MCP Proxy Configuration - Basic demonstration",
+  "servers": [
+    {
+      "id": "filesystem",
+      "name": "File System Server",
+      "description": "Provides secure file system access",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp/mcp-demo"],
+        "env": {
+          "NODE_ENV": "production"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "read_file",
+          "write_file", 
+          "list_directory",
+          "create_directory",
+          "get_file_info"
+        ],
+        "requireAuth": false
+      }
+    }
+  ],
+  "security": {
+    "allowServerDiscovery": true,
+    "defaultRequireAuth": false
+  },
+  "discovery": {
+    "enabled": true,
+    "allowRuntimeServerAddition": true
+  }
+}

@@ -1,0 +1,321 @@
+{
+  "_comment": "Enhanced MCP Proxy Server Configuration - Demonstrates comprehensive server setup with security, discovery, and multiple transport types",
+  "servers": [
+    {
+      "id": "filesystem",
+      "name": "File System MCP Server",
+      "description": "Provides secure file system access with read/write capabilities in a sandboxed environment",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp/mcp-demo"],
+        "env": {
+          "NODE_ENV": "production",
+          "LOG_LEVEL": "info"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "read_file",
+          "write_file", 
+          "list_directory",
+          "create_directory",
+          "get_file_info"
+        ],
+        "blockedTools": ["delete_file", "move_file"],
+        "requireAuth": false,
+        "allowedScopes": ["filesystem:read", "filesystem:write"]
+      }
+    },
+    {
+      "id": "git-repo",
+      "name": "Git Repository Operations",
+      "description": "Provides Git repository operations and history access for the current project",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-git", "."],
+        "env": {
+          "GIT_CONFIG_GLOBAL": "/dev/null",
+          "GIT_CONFIG_SYSTEM": "/dev/null"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "git_log",
+          "git_diff", 
+          "git_status",
+          "git_branch",
+          "git_show",
+          "git_blame"
+        ],
+        "blockedTools": [
+          "git_reset",
+          "git_push", 
+          "git_pull",
+          "git_merge",
+          "git_rebase",
+          "git_commit"
+        ],
+        "requireAuth": false
+      }
+    },
+    {
+      "id": "brave-search",
+      "name": "Brave Search Web API",
+      "description": "Web search capabilities via Brave Search API for real-time information retrieval",
+      "transportType": "stdio",
+      "enabled": true,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+        "env": {
+          "BRAVE_API_KEY": "${BRAVE_API_KEY}",
+          "SEARCH_REGION": "US",
+          "SEARCH_LANGUAGE": "en"
+        }
+      },
+      "security": {
+        "allowedTools": ["brave_web_search"],
+        "requireAuth": false,
+        "allowedScopes": ["search:web"]
+      }
+    },
+    {
+      "id": "postgres-db",
+      "name": "PostgreSQL Database Server",
+      "description": "Database query and schema inspection capabilities with read-only access",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-postgres"],
+        "env": {
+          "POSTGRES_CONNECTION_STRING": "${POSTGRES_CONNECTION_STRING}",
+          "POSTGRES_SSL_MODE": "prefer",
+          "POSTGRES_QUERY_TIMEOUT": "30000"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "query",
+          "list_tables",
+          "describe_table",
+          "list_schemas",
+          "get_table_schema"
+        ],
+        "blockedTools": [
+          "execute",
+          "insert",
+          "update", 
+          "delete",
+          "drop_table",
+          "create_table",
+          "alter_table"
+        ],
+        "requireAuth": true,
+        "allowedScopes": ["database:read", "database:schema"]
+      }
+    },
+    {
+      "id": "slack-integration",
+      "name": "Slack Workspace Integration",
+      "description": "Slack messaging and channel management for team communications",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-slack"],
+        "env": {
+          "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
+          "SLACK_SIGNING_SECRET": "${SLACK_SIGNING_SECRET}",
+          "SLACK_WORKSPACE": "your-workspace"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "list_channels",
+          "send_message",
+          "get_channel_history",
+          "get_user_info",
+          "search_messages"
+        ],
+        "blockedTools": [
+          "delete_message",
+          "archive_channel",
+          "kick_user",
+          "delete_channel"
+        ],
+        "requireAuth": true,
+        "allowedScopes": ["slack:read", "slack:write", "slack:channels"]
+      }
+    },
+    {
+      "id": "weather-api",
+      "name": "Weather Information Service",
+      "description": "Weather data and forecasts from multiple weather APIs",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-weather"],
+        "env": {
+          "WEATHER_API_KEY": "${WEATHER_API_KEY}",
+          "WEATHER_PROVIDER": "openweathermap",
+          "UNITS": "metric"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "get_weather",
+          "get_forecast",
+          "get_historical_weather"
+        ],
+        "requireAuth": false,
+        "allowedScopes": ["weather:read"]
+      }
+    },
+    {
+      "id": "remote-sse-server",
+      "name": "Remote SSE MCP Server",
+      "description": "Example remote MCP server via Server-Sent Events transport",
+      "transportType": "sse",
+      "enabled": false,
+      "sse": {
+        "url": "https://api.example.com/mcp-sse",
+        "headers": {
+          "Authorization": "Bearer ${REMOTE_API_TOKEN}",
+          "User-Agent": "MCP-Proxy/1.0.0",
+          "Accept": "text/event-stream"
+        },
+        "timeout": 30000
+      },
+      "security": {
+        "allowedTools": ["remote_query", "remote_search"],
+        "requireAuth": true,
+        "allowedScopes": ["remote:read", "remote:query"]
+      }
+    },
+    {
+      "id": "http-api-server",
+      "name": "HTTP API MCP Server",
+      "description": "Example HTTP-based MCP server for RESTful integrations",
+      "transportType": "http",
+      "enabled": false,
+      "http": {
+        "url": "https://api.example.com/mcp",
+        "headers": {
+          "Authorization": "Bearer ${HTTP_API_TOKEN}",
+          "Content-Type": "application/json",
+          "User-Agent": "MCP-Proxy/1.0.0"
+        },
+        "timeout": 30000
+      },
+      "security": {
+        "allowedTools": ["http_get", "http_post", "http_query"],
+        "blockedTools": ["http_delete", "http_put"],
+        "requireAuth": true,
+        "allowedScopes": ["api:read", "api:write"]
+      }
+    },
+    {
+      "id": "development-tools",
+      "name": "Development Tools Server",
+      "description": "Development utilities including linting, formatting, and code analysis",
+      "transportType": "stdio",
+      "enabled": false,
+      "stdio": {
+        "command": "npx",
+        "args": ["-y", "@your-company/dev-tools-mcp-server"],
+        "env": {
+          "PROJECT_ROOT": ".",
+          "NODE_VERSION": "18",
+          "LINT_CONFIG": ".eslintrc.json"
+        }
+      },
+      "security": {
+        "allowedTools": [
+          "lint_code",
+          "format_code",
+          "analyze_dependencies",
+          "check_security",
+          "run_tests"
+        ],
+        "blockedTools": [
+          "install_packages",
+          "delete_files",
+          "modify_config"
+        ],
+        "requireAuth": false
+      }
+    }
+  ],
+  "security": {
+    "globalAllowedTools": [],
+    "globalBlockedTools": [
+      "system_shutdown",
+      "format_disk",
+      "rm_rf",
+      "delete_all",
+      "factory_reset",
+      "sudo",
+      "su",
+      "chmod_777",
+      "chown_root"
+    ],
+    "defaultRequireAuth": false,
+    "allowServerDiscovery": true,
+    "rateLimit": {
+      "enabled": true,
+      "requestsPerMinute": 100,
+      "burstLimit": 20
+    },
+    "auditLogging": {
+      "enabled": true,
+      "logLevel": "info",
+      "includeSensitiveData": false
+    }
+  },
+  "discovery": {
+    "enabled": true,
+    "allowRuntimeServerAddition": true,
+    "allowRuntimeServerRemoval": true,
+    "serverMetadataExposure": "full",
+    "cacheTTL": 300,
+    "autoRefreshCapabilities": true,
+    "healthCheckInterval": 60
+  },
+  "networking": {
+    "connectionTimeout": 30000,
+    "requestTimeout": 60000,
+    "reconnectAttempts": 3,
+    "reconnectDelay": 5000,
+    "keepAlive": true,
+    "enableCompression": true
+  },
+  "monitoring": {
+    "enabled": true,
+    "metricsEndpoint": "/metrics",
+    "healthEndpoint": "/health",
+    "statusEndpoint": "/status",
+    "logLevel": "info",
+    "enableTracing": false
+  },
+  "performance": {
+    "cacheEnabled": true,
+    "cacheTTL": 300,
+    "maxConcurrentConnections": 100,
+    "connectionPoolSize": 10,
+    "enableRequestCompression": true,
+    "enableResponseCompression": true
+  },
+  "development": {
+    "enableDebugMode": false,
+    "verboseLogging": false,
+    "enableCors": true,
+    "corsOrigins": ["http://localhost:3000", "https://yourdomain.com"],
+    "enableHotReload": false
+  }
+}
