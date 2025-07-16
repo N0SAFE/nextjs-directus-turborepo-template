@@ -445,7 +445,7 @@ export class ValidationService implements IValidationService {
                     if (validationResult !== true) {
                         const errorMessage = typeof validationResult === 'string' 
                             ? validationResult 
-                            : validator.message || `Validation failed for rule: ${r}`;
+                            : `Validation failed for rule: ${r}`;
                         errors.push(errorMessage);
                     }
                 } else {
