@@ -176,7 +176,7 @@ describe('ValidationService - Plugin-based Validation', () => {
     });
 
     it('should handle custom validation rules', async () => {
-      const field = createTestField('string', { validate: 'min_length:5' });
+      const field = createTestField('string', { minLength: '5' });
       
       // Valid - meets custom rule
       const validResult = await validationService.validateField('hello world', field);
@@ -185,7 +185,7 @@ describe('ValidationService - Plugin-based Validation', () => {
       // Invalid - fails custom rule
       const invalidResult = await validationService.validateField('hi', field);
       expect(invalidResult.valid).toBe(false);
-      expect(invalidResult.errors[0]).toBe('Value too short');
+      expect(invalidResult.errors[0]).toBe('Must be at least 5 characters');
     });
 
     it('should handle unknown field types with warnings', async () => {
@@ -200,12 +200,19 @@ describe('ValidationService - Plugin-based Validation', () => {
 
   describe('Plugin Registration', () => {
     it('should register and use custom validators', async () => {
-      // Register a custom validator
+      // Register a custom validator using new interface
       validationService.registerValidator({
         name: 'custom_test',
-        message: 'Custom validation failed',
-        validate: (value: string) => value === 'expected',
-        errorMessage: (value: string) => `Expected 'expected', got '${value}'`
+        handle: (services: ServiceContainer, field: TemplateField) => ({
+          validate: (value: string): boolean | string => {
+            return value === 'expected' ? true : `Expected 'expected', got '${value}'`;
+          },
+          transformPrompt: (promptOptions: any, field: TemplateField) => ({
+            ...promptOptions,
+            type: 'text',
+            message: 'Enter "expected"'
+          })
+        })
       });
 
       const field = createTestField('custom_test');

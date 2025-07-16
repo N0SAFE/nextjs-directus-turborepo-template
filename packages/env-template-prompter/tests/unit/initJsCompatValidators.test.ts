@@ -73,15 +73,15 @@ describe('Init.js Compatible Validators', () => {
 
     it('should validate hostname constraints', async () => {
       const params = { hostname: 'localhost,example.com' };
-      expect(await initJsUrlValidator.validate('https://localhost', params)).toBe(true);
-      expect(await initJsUrlValidator.validate('https://example.com', params)).toBe(true);
-      expect(await initJsUrlValidator.validate('https://other.com', params)).toBe(false);
+      expect(await validate('https://localhost', params)).toBe(true);
+      expect(await validate('https://example.com', params)).toBe(true);
+      expect(await validate('https://other.com', params)).toBe(false);
     });
 
     it('should validate port constraints', async () => {
       const params = { port: '3000' };
-      expect(await initJsUrlValidator.validate('https://example.com:3000', params)).toBe(true);
-      expect(await initJsUrlValidator.validate('https://example.com:8080', params)).toBe(false);
+      expect(await validate('https://example.com:3000', params)).toBe(true);
+      expect(await validate('https://example.com:8080', params)).toBe(false);
     });
 
     it('should provide correct error messages', () => {
@@ -95,27 +95,27 @@ describe('Init.js Compatible Validators', () => {
 
   describe('initJsNumberValidator', () => {
     it('should validate basic numbers', async () => {
-      expect(await initJsNumberValidator.validate('42')).toBe(true);
-      expect(await initJsNumberValidator.validate('3.14')).toBe(true);
-      expect(await initJsNumberValidator.validate('-10')).toBe(true);
+      expect(await validate('42')).toBe(true);
+      expect(await validate('3.14')).toBe(true);
+      expect(await validate('-10')).toBe(true);
     });
 
     it('should reject non-numbers', async () => {
-      expect(await initJsNumberValidator.validate('not-a-number')).toBe(false);
-      expect(await initJsNumberValidator.validate('')).toBe(false);
+      expect(await validate('not-a-number')).toBe(false);
+      expect(await validate('')).toBe(false);
     });
 
     it('should validate allow list first', async () => {
       const params = { allow: '80,443,8080', min: '1000' };
-      expect(await initJsNumberValidator.validate('80', params)).toBe(true); // In allow list
-      expect(await initJsNumberValidator.validate('500', params)).toBe(false); // Not in allow list and below min
+      expect(await validate('80', params)).toBe(true); // In allow list
+      expect(await validate('500', params)).toBe(false); // Not in allow list and below min
     });
 
     it('should validate min/max constraints', async () => {
       const params = { min: '10', max: '100' };
-      expect(await initJsNumberValidator.validate('50', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('5', params)).toBe(false);
-      expect(await initJsNumberValidator.validate('150', params)).toBe(false);
+      expect(await validate('50', params)).toBe(true);
+      expect(await validate('5', params)).toBe(false);
+      expect(await validate('150', params)).toBe(false);
     });
 
     it('should provide correct error messages', () => {
