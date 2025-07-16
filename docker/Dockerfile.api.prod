@@ -1,6 +1,15 @@
 # Production Dockerfile for Directus API
 FROM directus/directus:11.8.0
 
+ARG NEXT_PUBLIC_API_URL=http://localhost:8055
+ARG NEXT_PUBLIC_API_PORT=8055
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_APP_PORT=3000
+ARG API_PING_PATH=/server/health
+
+ENV CORS_ORIGIN=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Create uploads and extensions directories with proper permissions
 RUN mkdir -p /directus/uploads /directus/extensions && \
     chown -R node:node /directus/uploads /directus/extensions
@@ -13,8 +22,8 @@ COPY --chown=node:node apps/api/uploads /directus/uploads
 USER node
 
 # Expose port
-EXPOSE 8055
+EXPOSE ${NEXT_PUBLIC_API_PORT}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8055/server/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider ${NEXT_PUBLIC_API_URL}/server/health || exit 1
