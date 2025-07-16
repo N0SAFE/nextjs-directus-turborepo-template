@@ -105,10 +105,11 @@ export function memoize<P extends unknown[], R>(
                         `${chalk.hex('A0AFBF')(time.toPrecision(3) + 's')} ` +
                         `${chalk.hex('AA7ADB').bold(dataCacheMiss ? (isSame ? 'background-revalidation' : 'on-demand revalidation') : '')} `
                 )
-                if (logVerbose){
+                if (logVerbose) {
                     console.log(
                         `${chalk.hex('6A7C8E').bold(` └ ${cb.name ?? 'Anon Func'} ${CircularJson.stringify(args)}`)}`
-                    )}
+                    )
+                }
                 oldData = data
                 return data
             } else {
