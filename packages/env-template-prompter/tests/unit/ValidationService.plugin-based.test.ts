@@ -198,15 +198,17 @@ describe('ValidationService - Plugin-based Validation', () => {
       // Register a custom validator using new interface
       validationService.registerValidator({
         name: 'custom_test',
-        handle: (services: ServiceContainer, field: TemplateField) => ({
-          validate: (value: string): boolean | string => {
+        description: 'A custom test validator',
+        handle: (_services: ServiceContainer, field: TemplateField) => ({
+          validate: (value: string) => {
             return value === 'expected' ? true : `Expected 'expected', got '${value}'`;
           },
           transformPrompt: (promptOptions: any, field: TemplateField) => ({
             ...promptOptions,
             type: 'text',
             message: 'Enter "expected"'
-          })
+          }),
+          transform: (value: string): string => value.trim()
         })
       });
 

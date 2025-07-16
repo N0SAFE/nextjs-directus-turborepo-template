@@ -147,9 +147,14 @@ describe('ValidationService - Coverage Tests', () => {
       // Register a plugin that throws an error
       validationService.registerValidator({
         name: 'error_plugin',
-        validate: () => {
-          throw new Error('Plugin error');
-        }
+        description: 'A plugin that always fails',
+        handle: (_services, _field) => ({
+          validate: () => {
+            throw new Error('Plugin error');
+          },
+          transform: (value: string) => value,
+          transformPrompt: (promptOptions, _field) => promptOptions
+        }),
       });
 
       const field = createTestField('error_plugin');
@@ -192,7 +197,15 @@ describe('ValidationService - Coverage Tests', () => {
       // Register a custom plugin
       validationService.registerValidator({
         name: 'test_custom',
-        validate: (value: string) => value === 'test'
+        description: 'A test custom validator',
+        handle: (_services, _field) => ({
+          validate: (value: string) => value === 'test' ? true : 'Must be "test"',
+          transform: (value: string) => value.toUpperCase(),
+          transformPrompt: (promptOptions, _field) => ({
+            ...promptOptions,
+            message: promptOptions.message || 'Enter a test value'
+          })
+        }),
       });
       
       expect(validationService.getRegisteredValidators().length).toBe(initialCount + 1);
