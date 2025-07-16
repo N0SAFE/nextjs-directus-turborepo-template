@@ -6,6 +6,46 @@ import {
   initJsDateValidator,
   getInitJsCompatValidatorPlugins
 } from '../../src/plugins/validators/initJsCompatValidators.js';
+import type { ServiceContainer, TemplateField, ValidatorPlugin } from '../../src/types/index.js';
+import { ConfigService } from '../../src/services/ConfigService.js';
+import { ValidationService } from '../../src/services/ValidationService.js';
+import { TransformerService } from '../../src/services/TransformerService.js';
+import { TemplateParserService } from '../../src/services/TemplateParserService.js';
+import { GroupingService } from '../../src/services/GroupingService.js';
+import { PromptService } from '../../src/services/PromptService.js';
+import { OutputService } from '../../src/services/OutputService.js';
+
+// Helper function to create validator function from new plugin interface
+function createValidatorFunction(plugin: ValidatorPlugin, fieldType: string = 'string') {
+  const mockConfigService = new ConfigService({ debugMode: false });
+  const mockValidationService = new ValidationService(mockConfigService);
+  const mockTransformerService = new TransformerService(mockConfigService);
+  const mockTemplateParserService = new TemplateParserService(mockConfigService, mockValidationService);
+  const mockGroupingService = new GroupingService(mockConfigService);
+  const mockPromptService = new PromptService(mockValidationService, mockTransformerService, mockConfigService);
+  const mockOutputService = new OutputService(mockConfigService);
+
+  const mockServices: ServiceContainer = {
+    configService: mockConfigService,
+    validationService: mockValidationService,
+    transformerService: mockTransformerService,
+    templateParserService: mockTemplateParserService,
+    groupingService: mockGroupingService,
+    promptService: mockPromptService,
+    outputService: mockOutputService
+  };
+
+  const mockField: TemplateField = {
+    key: 'TEST_FIELD',
+    type: fieldType,
+    options: {},
+    rawLine: 'TEST_FIELD={{type}}',
+    lineNumber: 1
+  };
+
+  const handlers = plugin.handle(mockServices, mockField);
+  return handlers.validate;
+}
 
 describe('Init.js Validator Plugins - 100% Coverage', () => {
   describe('getInitJsCompatValidatorPlugins', () => {
@@ -22,267 +62,234 @@ describe('Init.js Validator Plugins - 100% Coverage', () => {
   });
 
   describe('initJsUrlValidator - Complete Coverage', () => {
+    const validate = createValidatorFunction(initJsUrlValidator, 'url');
+
     it('should have correct plugin metadata', () => {
       expect(initJsUrlValidator.name).toBe('init_js_url');
-      expect(initJsUrlValidator.message).toBe('Invalid URL format');
-      expect(initJsUrlValidator.promptParams).toBeDefined();
-      expect(initJsUrlValidator.promptParams!.type).toBe('text');
+      expect(initJsUrlValidator.description).toBeDefined();
     });
 
     it('should validate basic URLs', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com')).toBe(true);
-      expect(await initJsUrlValidator.validate('http://localhost')).toBe(true);
-      expect(await initJsUrlValidator.validate('ftp://ftp.example.com')).toBe(true);
-      expect(await initJsUrlValidator.validate('postgres://db.example.com')).toBe(true);
+      expect(await validate('https://example.com')).toBe(true);
+      expect(await validate('http://localhost')).toBe(true);
+      expect(await validate('ftp://ftp.example.com')).toBe(true);
+      expect(await validate('postgres://db.example.com')).toBe(true);
     });
 
     it('should reject empty and invalid URLs', async () => {
-      expect(await initJsUrlValidator.validate('')).toBe(false);
-      expect(await initJsUrlValidator.validate('not-a-url')).toBe(false);
-      expect(await initJsUrlValidator.validate('http://')).toBe(false);
-      expect(await initJsUrlValidator.validate('://example.com')).toBe(false);
+      expect(await validate('')).toBe('URL is required');
+      expect(await validate('not-a-url')).toBe('Invalid URL format');
+      expect(await validate('http://')).toBe('Invalid URL format');
+      expect(await validate('://example.com')).toBe('Invalid URL format');
     });
 
     it('should validate protocol constraints', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com', { protocol: 'https' })).toBe(true);
-      expect(await initJsUrlValidator.validate('https://example.com', { protocol: 'https,http' })).toBe(true);
-      expect(await initJsUrlValidator.validate('http://example.com', { protocol: 'https' })).toBe(false);
-      expect(await initJsUrlValidator.validate('ftp://example.com', { protocol: 'https,http' })).toBe(false);
+      expect(await validate('https://example.com', { protocol: 'https' })).toBe(true);
+      expect(await validate('https://example.com', { protocol: 'https,http' })).toBe(true);
+      expect(await validate('http://example.com', { protocol: 'https' })).toBe('Protocol must be one of: https');
+      expect(await validate('ftp://example.com', { protocol: 'https,http' })).toBe('Protocol must be one of: https,http');
     });
 
     it('should validate hostname constraints', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com', { hostname: 'example.com' })).toBe(true);
-      expect(await initJsUrlValidator.validate('https://localhost', { hostname: 'localhost,example.com' })).toBe(true);
-      expect(await initJsUrlValidator.validate('https://other.com', { hostname: 'example.com' })).toBe(false);
-      expect(await initJsUrlValidator.validate('https://sub.example.com', { hostname: 'example.com' })).toBe(false);
+      expect(await validate('https://example.com', { hostname: 'example.com' })).toBe(true);
+      expect(await validate('https://localhost', { hostname: 'localhost,example.com' })).toBe(true);
+      expect(await validate('https://other.com', { hostname: 'example.com' })).toBe('Hostname must be one of: example.com');
+      expect(await validate('https://sub.example.com', { hostname: 'example.com' })).toBe('Hostname must be one of: example.com');
     });
 
     it('should validate port constraints', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com:3000', { port: '3000' })).toBe(true);
-      expect(await initJsUrlValidator.validate('https://example.com:8080', { port: '3000' })).toBe(false);
-      expect(await initJsUrlValidator.validate('https://example.com', { port: '3000' })).toBe(true); // No port specified, passes
-    });
-
-    it('should provide correct error messages for all cases', () => {
-      expect(initJsUrlValidator.errorMessage!('')).toBe('URL is required');
-      expect(initJsUrlValidator.errorMessage!('not-a-url')).toBe('Invalid URL format');
-      expect(initJsUrlValidator.errorMessage!('http://example.com', { protocol: 'https' })).toBe('Protocol must be one of: https');
-      expect(initJsUrlValidator.errorMessage!('https://other.com', { hostname: 'example.com' })).toBe('Hostname must be one of: example.com');
-      expect(initJsUrlValidator.errorMessage!('https://example.com:8080', { port: '3000' })).toBe('Port must be: 3000');
-      expect(initJsUrlValidator.errorMessage!('https://example.com')).toBe('Invalid URL format'); // Valid URL returns fallback
+      expect(await validate('https://example.com:3000', { port: '3000' })).toBe(true);
+      expect(await validate('https://example.com:8080', { port: '3000' })).toBe('Port must be 3000');
+      expect(await validate('https://example.com', { port: '3000' })).toBe(true); // No port specified, passes
     });
 
     it('should handle complex URLs with multiple constraints', async () => {
       const params = { protocol: 'https', hostname: 'api.example.com', port: '8080' };
-      expect(await initJsUrlValidator.validate('https://api.example.com:8080', params)).toBe(true);
-      expect(await initJsUrlValidator.validate('http://api.example.com:8080', params)).toBe(false);
-      expect(await initJsUrlValidator.validate('https://other.example.com:8080', params)).toBe(false);
-      expect(await initJsUrlValidator.validate('https://api.example.com:3000', params)).toBe(false);
+      expect(await validate('https://api.example.com:8080', params)).toBe(true);
+      expect(await validate('http://api.example.com:8080', params)).toBe('Protocol must be one of: https');
+      expect(await validate('https://other.example.com:8080', params)).toBe('Hostname must be one of: api.example.com');
+      expect(await validate('https://api.example.com:3000', params)).toBe('Port must be 8080');
     });
   });
 
   describe('initJsNumberValidator - Complete Coverage', () => {
+    const validate = createValidatorFunction(initJsNumberValidator, 'number');
+
     it('should have correct plugin metadata', () => {
       expect(initJsNumberValidator.name).toBe('init_js_number');
-      expect(initJsNumberValidator.message).toBe('Must be a valid number');
-      expect(initJsNumberValidator.promptParams).toBeDefined();
+      expect(initJsNumberValidator.description).toBeDefined();
     });
 
     it('should validate various number formats', async () => {
-      expect(await initJsNumberValidator.validate('42')).toBe(true);
-      expect(await initJsNumberValidator.validate('0')).toBe(true);
-      expect(await initJsNumberValidator.validate('-123')).toBe(true);
-      expect(await initJsNumberValidator.validate('3.14159')).toBe(true);
-      expect(await initJsNumberValidator.validate('-2.718')).toBe(true);
-      expect(await initJsNumberValidator.validate('1e10')).toBe(true);
-      expect(await initJsNumberValidator.validate('1.5e-10')).toBe(true);
+      expect(await validate('42')).toBe(true);
+      expect(await validate('0')).toBe(true);
+      expect(await validate('-123')).toBe(true);
+      expect(await validate('3.14159')).toBe(true);
+      expect(await validate('-2.718')).toBe(true);
+      expect(await validate('1e10')).toBe(true);
+      expect(await validate('1.5e-10')).toBe(true);
     });
 
     it('should reject invalid numbers', async () => {
-      expect(await initJsNumberValidator.validate('not-a-number')).toBe(false);
-      expect(await initJsNumberValidator.validate('')).toBe(false);
-      expect(await initJsNumberValidator.validate('12abc')).toBe(false);
-      expect(await initJsNumberValidator.validate('12.34.56')).toBe(false);
-      expect(await initJsNumberValidator.validate('Infinity')).toBe(false);
-      expect(await initJsNumberValidator.validate('NaN')).toBe(false);
+      expect(await validate('not-a-number')).toBe('Must be a valid number');
+      expect(await validate('')).toBe('Must be a valid number');
+      expect(await validate('12abc')).toBe('Must be a valid number');
+      expect(await validate('12.34.56')).toBe('Must be a valid number');
+      expect(await validate('Infinity')).toBe('Must be a valid number');
+      expect(await validate('NaN')).toBe('Must be a valid number');
     });
 
     it('should validate allow list with precedence over min/max', async () => {
       const params = { allow: '80,443,8080', min: '1000', max: '9000' };
-      expect(await initJsNumberValidator.validate('80', params)).toBe(true);  // In allow list
-      expect(await initJsNumberValidator.validate('443', params)).toBe(true); // In allow list  
-      expect(await initJsNumberValidator.validate('8080', params)).toBe(true); // In allow list
-      expect(await initJsNumberValidator.validate('1500', params)).toBe(true); // In range
-      expect(await initJsNumberValidator.validate('500', params)).toBe(false); // Not in allow list and below min
-      expect(await initJsNumberValidator.validate('9500', params)).toBe(false); // Not in allow list and above max
+      expect(await validate('80', params)).toBe(true);  // In allow list
+      expect(await validate('443', params)).toBe(true); // In allow list  
+      expect(await validate('8080', params)).toBe(true); // In allow list
+      expect(await validate('1500', params)).toBe(true); // In range
+      expect(await validate('500', params)).toBe('Must be at least 1000 or one of: 80,443,8080'); // Not in allow list and below min
+      expect(await validate('9500', params)).toBe('Must be at most 9000 or one of: 80,443,8080'); // Not in allow list and above max
     });
 
     it('should validate min constraints', async () => {
-      expect(await initJsNumberValidator.validate('15', { min: '10' })).toBe(true);
-      expect(await initJsNumberValidator.validate('10', { min: '10' })).toBe(true);
-      expect(await initJsNumberValidator.validate('5', { min: '10' })).toBe(false);
-      expect(await initJsNumberValidator.validate('-5', { min: '0' })).toBe(false);
+      expect(await validate('15', { min: '10' })).toBe(true);
+      expect(await validate('10', { min: '10' })).toBe(true);
+      expect(await validate('5', { min: '10' })).toBe('Must be at least 10');
+      expect(await validate('-5', { min: '0' })).toBe('Must be at least 0');
     });
 
     it('should validate max constraints', async () => {
-      expect(await initJsNumberValidator.validate('50', { max: '100' })).toBe(true);
-      expect(await initJsNumberValidator.validate('100', { max: '100' })).toBe(true);
-      expect(await initJsNumberValidator.validate('150', { max: '100' })).toBe(false);
+      expect(await validate('50', { max: '100' })).toBe(true);
+      expect(await validate('100', { max: '100' })).toBe(true);
+      expect(await validate('150', { max: '100' })).toBe('Must be at most 100');
     });
 
     it('should validate both min and max constraints', async () => {
       const params = { min: '10', max: '100' };
-      expect(await initJsNumberValidator.validate('50', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('10', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('100', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('5', params)).toBe(false);
-      expect(await initJsNumberValidator.validate('150', params)).toBe(false);
-    });
-
-    it('should provide correct error messages for all cases', () => {
-      expect(initJsNumberValidator.errorMessage!('not-a-number')).toBe('Must be a valid number');
-      expect(initJsNumberValidator.errorMessage!('5', { min: '10' })).toBe('Must be at least 10');
-      expect(initJsNumberValidator.errorMessage!('150', { max: '100' })).toBe('Must be at most 100');
-      expect(initJsNumberValidator.errorMessage!('5', { min: '10', allow: '80,443' })).toBe('Must be at least 10 or one of: 80,443');
-      expect(initJsNumberValidator.errorMessage!('150', { max: '100', allow: '80,443' })).toBe('Must be at most 100 or one of: 80,443');
-      expect(initJsNumberValidator.errorMessage!('42')).toBe('Must be a valid number'); // Valid fallback
+      expect(await validate('50', params)).toBe(true);
+      expect(await validate('10', params)).toBe(true);
+      expect(await validate('100', params)).toBe(true);
+      expect(await validate('5', params)).toBe('Must be at least 10');
+      expect(await validate('150', params)).toBe('Must be at most 100');
     });
 
     it('should handle decimal values in allow list', async () => {
       const params = { allow: '3.14,2.718,1.414' };
-      expect(await initJsNumberValidator.validate('3.14', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('2.718', params)).toBe(true);
-      expect(await initJsNumberValidator.validate('1.5', params)).toBe(false);
+      expect(await validate('3.14', params)).toBe(true);
+      expect(await validate('2.718', params)).toBe(true);
+      expect(await validate('1.5', params)).toBe('Must be one of: 3.14,2.718,1.414');
     });
   });
 
   describe('initJsStringValidator - Complete Coverage', () => {
+    const validate = createValidatorFunction(initJsStringValidator, 'string');
+
     it('should have correct plugin metadata', () => {
       expect(initJsStringValidator.name).toBe('init_js_string');
-      expect(initJsStringValidator.message).toBe('This field is required');
-      expect(initJsStringValidator.promptParams).toBeDefined();
+      expect(initJsStringValidator.description).toBeDefined();
     });
 
     it('should validate required vs optional fields', async () => {
-      expect(await initJsStringValidator.validate('hello')).toBe(true);
-      expect(await initJsStringValidator.validate('')).toBe(false); // Required by default
-      expect(await initJsStringValidator.validate('', { optional: 'true' })).toBe(true);
-      expect(await initJsStringValidator.validate('', { optional: 'false' })).toBe(false);
-      expect(await initJsStringValidator.validate('hello', { optional: 'true' })).toBe(true);
+      expect(await validate('hello')).toBe(true);
+      expect(await validate('')).toBe('This field is required'); // Required by default
+      expect(await validate('', { optional: 'true' })).toBe(true);
+      expect(await validate('', { optional: 'false' })).toBe('This field is required');
+      expect(await validate('hello', { optional: 'true' })).toBe(true);
     });
 
     it('should validate minLength constraints', async () => {
-      expect(await initJsStringValidator.validate('hello', { minLength: '3' })).toBe(true);
-      expect(await initJsStringValidator.validate('hello', { minLength: '5' })).toBe(true);
-      expect(await initJsStringValidator.validate('hi', { minLength: '3' })).toBe(false);
-      expect(await initJsStringValidator.validate('', { minLength: '1' })).toBe(false);
-      expect(await initJsStringValidator.validate('a', { minLength: '1' })).toBe(true);
+      expect(await validate('hello', { minLength: '3' })).toBe(true);
+      expect(await validate('hello', { minLength: '5' })).toBe(true);
+      expect(await validate('hi', { minLength: '3' })).toBe('Must be at least 3 characters');
+      expect(await validate('', { minLength: '1' })).toBe('This field is required');
+      expect(await validate('a', { minLength: '1' })).toBe(true);
     });
 
     it('should validate maxLength constraints', async () => {
-      expect(await initJsStringValidator.validate('hello', { maxLength: '10' })).toBe(true);
-      expect(await initJsStringValidator.validate('hello', { maxLength: '5' })).toBe(true);
-      expect(await initJsStringValidator.validate('hello world', { maxLength: '5' })).toBe(false);
-      expect(await initJsStringValidator.validate('', { maxLength: '5' })).toBe(false); // Still required
+      expect(await validate('hello', { maxLength: '10' })).toBe(true);
+      expect(await validate('hello', { maxLength: '5' })).toBe(true);
+      expect(await validate('hello world', { maxLength: '5' })).toBe('Must be at most 5 characters');
+      expect(await validate('', { maxLength: '5' })).toBe('This field is required'); // Still required
     });
 
     it('should validate both min and max length', async () => {
       const params = { minLength: '3', maxLength: '10' };
-      expect(await initJsStringValidator.validate('hello', params)).toBe(true);
-      expect(await initJsStringValidator.validate('hi', params)).toBe(false);
-      expect(await initJsStringValidator.validate('this is too long', params)).toBe(false);
+      expect(await validate('hello', params)).toBe(true);
+      expect(await validate('hi', params)).toBe('Must be at least 3 characters');
+      expect(await validate('this is too long', params)).toBe('Must be at most 10 characters');
     });
 
     it('should validate pattern constraints', async () => {
-      expect(await initJsStringValidator.validate('hello', { pattern: '^[a-z]+$' })).toBe(true);
-      expect(await initJsStringValidator.validate('Hello', { pattern: '^[a-z]+$' })).toBe(false);
-      expect(await initJsStringValidator.validate('hello123', { pattern: '^[a-z]+$' })).toBe(false);
-      expect(await initJsStringValidator.validate('123', { pattern: '\\d+' })).toBe(true);
-      expect(await initJsStringValidator.validate('abc', { pattern: '\\d+' })).toBe(false);
+      expect(await validate('hello', { pattern: '^[a-z]+$' })).toBe(true);
+      expect(await validate('Hello', { pattern: '^[a-z]+$' })).toBe('Must match pattern: ^[a-z]+$');
+      expect(await validate('hello123', { pattern: '^[a-z]+$' })).toBe('Must match pattern: ^[a-z]+$');
+      expect(await validate('123', { pattern: '\\d+' })).toBe(true);
+      expect(await validate('abc', { pattern: '\\d+' })).toBe('Must match pattern: \\d+');
     });
 
     it('should validate complex combinations', async () => {
       const params = { minLength: '3', maxLength: '10', pattern: '^[a-z]+$', optional: 'false' };
-      expect(await initJsStringValidator.validate('hello', params)).toBe(true);
-      expect(await initJsStringValidator.validate('hi', params)).toBe(false); // Too short
-      expect(await initJsStringValidator.validate('Hello', params)).toBe(false); // Pattern fail
-      expect(await initJsStringValidator.validate('verylongstring', params)).toBe(false); // Too long
-      expect(await initJsStringValidator.validate('', params)).toBe(false); // Required
-    });
-
-    it('should provide correct error messages for all cases', () => {
-      expect(initJsStringValidator.errorMessage!('')).toBe('This field is required');
-      expect(initJsStringValidator.errorMessage!('', { optional: 'true' })).toBe('This field is required'); // Fallback
-      expect(initJsStringValidator.errorMessage!('hi', { minLength: '3' })).toBe('Must be at least 3 characters');
-      expect(initJsStringValidator.errorMessage!('toolongstring', { maxLength: '5' })).toBe('Must be at most 5 characters');
-      expect(initJsStringValidator.errorMessage!('Hello', { pattern: '^[a-z]+$' })).toBe('Must match pattern: ^[a-z]+$');
-      expect(initJsStringValidator.errorMessage!('hello')).toBe('This field is required'); // Valid fallback
+      expect(await validate('hello', params)).toBe(true);
+      expect(await validate('hi', params)).toBe('Must be at least 3 characters'); // Too short
+      expect(await validate('Hello', params)).toBe('Must match pattern: ^[a-z]+$'); // Pattern fail
+      expect(await validate('verylongstring', params)).toBe('Must be at most 10 characters'); // Too long
+      expect(await validate('', params)).toBe('This field is required'); // Required
     });
 
     it('should handle edge cases', async () => {
-      expect(await initJsStringValidator.validate(' ', { minLength: '1' })).toBe(true); // Space counts
-      expect(await initJsStringValidator.validate('  ', { minLength: '2' })).toBe(true); // Multiple spaces
-      expect(await initJsStringValidator.validate('hello', { minLength: '0' })).toBe(true); // Zero minLength
-    });
+      expect(await validate(' ', { minLength: '1' })).toBe(true); // Space counts
+      expect(await validate('  ', { minLength: '2' })).toBe(true); // Multiple spaces
+      expect(await validate('hello', { minLength: '0' })).toBe(true); // Zero minLength
   });
 
   describe('initJsDateValidator - Complete Coverage', () => {
+    const validate = createValidatorFunction(initJsDateValidator, 'date');
+
     it('should have correct plugin metadata', () => {
       expect(initJsDateValidator.name).toBe('init_js_date');
-      expect(initJsDateValidator.message).toBe('Invalid date format');
-      expect(initJsDateValidator.promptParams).toBeDefined();
+      expect(initJsDateValidator.description).toBeDefined();
     });
 
     it('should validate various date formats', async () => {
-      expect(await initJsDateValidator.validate('2023-01-01')).toBe(true);
-      expect(await initJsDateValidator.validate('2023-12-31')).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01T00:00:00Z')).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01T12:30:45')).toBe(true);
-      expect(await initJsDateValidator.validate('Jan 1, 2023')).toBe(true);
-      expect(await initJsDateValidator.validate('1/1/2023')).toBe(true);
+      expect(await validate('2023-01-01')).toBe(true);
+      expect(await validate('2023-12-31')).toBe(true);
+      expect(await validate('2023-01-01T00:00:00Z')).toBe(true);
+      expect(await validate('2023-01-01T12:30:45')).toBe(true);
+      expect(await validate('Jan 1, 2023')).toBe(true);
+      expect(await validate('1/1/2023')).toBe(true);
     });
 
     it('should reject invalid dates', async () => {
-      expect(await initJsDateValidator.validate('not-a-date')).toBe(false);
-      expect(await initJsDateValidator.validate('2023-13-01')).toBe(false); // Invalid month
-      expect(await initJsDateValidator.validate('2023-01-32')).toBe(false); // Invalid day
-      expect(await initJsDateValidator.validate('2023-02-30')).toBe(false); // Invalid day for February
-      expect(await initJsDateValidator.validate('')).toBe(false); // Empty (unless optional)
+      expect(await validate('not-a-date')).toBe('Invalid date format');
+      expect(await validate('2023-13-01')).toBe('Invalid date format'); // Invalid month
+      expect(await validate('2023-01-32')).toBe('Invalid date format'); // Invalid day
+      expect(await validate('2023-02-30')).toBe('Invalid date format'); // Invalid day for February
+      expect(await validate('')).toBe('Invalid date format'); // Empty (unless optional)
     });
 
     it('should handle optional dates', async () => {
-      expect(await initJsDateValidator.validate('', { optional: 'true' })).toBe(true);
-      expect(await initJsDateValidator.validate('', { optional: 'false' })).toBe(false);
-      expect(await initJsDateValidator.validate('2023-01-01', { optional: 'true' })).toBe(true);
+      expect(await validate('', { optional: 'true' })).toBe(true);
+      expect(await validate('', { optional: 'false' })).toBe('Invalid date format');
+      expect(await validate('2023-01-01', { optional: 'true' })).toBe(true);
     });
 
     it('should validate minDate constraints', async () => {
-      expect(await initJsDateValidator.validate('2023-06-15', { minDate: '2023-01-01' })).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01', { minDate: '2023-01-01' })).toBe(true); // Equal
-      expect(await initJsDateValidator.validate('2022-12-31', { minDate: '2023-01-01' })).toBe(false);
+      expect(await validate('2023-06-15', { minDate: '2023-01-01' })).toBe(true);
+      expect(await validate('2023-01-01', { minDate: '2023-01-01' })).toBe(true); // Equal
+      expect(await validate('2022-12-31', { minDate: '2023-01-01' })).toBe('Date must be after 2023-01-01');
     });
 
     it('should validate maxDate constraints', async () => {
-      expect(await initJsDateValidator.validate('2023-06-15', { maxDate: '2023-12-31' })).toBe(true);
-      expect(await initJsDateValidator.validate('2023-12-31', { maxDate: '2023-12-31' })).toBe(true); // Equal
-      expect(await initJsDateValidator.validate('2024-01-01', { maxDate: '2023-12-31' })).toBe(false);
+      expect(await validate('2023-06-15', { maxDate: '2023-12-31' })).toBe(true);
+      expect(await validate('2023-12-31', { maxDate: '2023-12-31' })).toBe(true); // Equal
+      expect(await validate('2024-01-01', { maxDate: '2023-12-31' })).toBe('Date must be before 2023-12-31');
     });
 
     it('should validate date range constraints', async () => {
       const params = { minDate: '2023-01-01', maxDate: '2023-12-31' };
-      expect(await initJsDateValidator.validate('2023-06-15', params)).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01', params)).toBe(true);
-      expect(await initJsDateValidator.validate('2023-12-31', params)).toBe(true);
-      expect(await initJsDateValidator.validate('2022-12-31', params)).toBe(false);
-      expect(await initJsDateValidator.validate('2024-01-01', params)).toBe(false);
-    });
-
-    it('should provide correct error messages for all cases', () => {
-      expect(initJsDateValidator.errorMessage!('not-a-date')).toBe('Invalid date format');
-      expect(initJsDateValidator.errorMessage!('2022-12-31', { minDate: '2023-01-01' })).toBe('Date must be after 2023-01-01');
-      expect(initJsDateValidator.errorMessage!('2024-01-01', { maxDate: '2023-12-31' })).toBe('Date must be before 2023-12-31');
-      expect(initJsDateValidator.errorMessage!('2023-01-01')).toBe('Invalid date format'); // Valid fallback
-      expect(initJsDateValidator.errorMessage!('', { optional: 'true' })).toBe('Invalid date format'); // Should not happen but fallback
+      expect(await validate('2023-06-15', params)).toBe(true);
+      expect(await validate('2023-01-01', params)).toBe(true);
+      expect(await validate('2023-12-31', params)).toBe(true);
+      expect(await validate('2022-12-31', params)).toBe('Date must be after 2023-01-01');
+      expect(await validate('2024-01-01', params)).toBe('Date must be before 2023-12-31');
     });
 
     it('should handle various date string formats', async () => {
@@ -297,32 +304,31 @@ describe('Init.js Validator Plugins - 100% Coverage', () => {
       ];
       
       for (const date of validDates) {
-        expect(await initJsDateValidator.validate(date)).toBe(true);
+        expect(await validate(date)).toBe(true);
       }
     });
   });
 
   describe('Integration and Edge Cases', () => {
     it('should handle all validators with empty params', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com', {})).toBe(true);
-      expect(await initJsNumberValidator.validate('42', {})).toBe(true);
-      expect(await initJsStringValidator.validate('hello', {})).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01', {})).toBe(true);
+      expect(await createValidatorFunction(initJsUrlValidator, 'url')('https://example.com', {})).toBe(true);
+      expect(await createValidatorFunction(initJsNumberValidator, 'number')('42', {})).toBe(true);
+      expect(await createValidatorFunction(initJsStringValidator, 'string')('hello', {})).toBe(true);
+      expect(await createValidatorFunction(initJsDateValidator, 'date')('2023-01-01', {})).toBe(true);
     });
 
     it('should handle all validators with undefined params', async () => {
-      expect(await initJsUrlValidator.validate('https://example.com')).toBe(true);
-      expect(await initJsNumberValidator.validate('42')).toBe(true);
-      expect(await initJsStringValidator.validate('hello')).toBe(true);
-      expect(await initJsDateValidator.validate('2023-01-01')).toBe(true);
+      expect(await createValidatorFunction(initJsUrlValidator, 'url')('https://example.com')).toBe(true);
+      expect(await createValidatorFunction(initJsNumberValidator, 'number')('42')).toBe(true);
+      expect(await createValidatorFunction(initJsStringValidator, 'string')('hello')).toBe(true);
+      expect(await createValidatorFunction(initJsDateValidator, 'date')('2023-01-01')).toBe(true);
     });
 
-    it('should provide errorMessage fallbacks for all validators', () => {
-      // All validators should provide error messages even for valid inputs (fallback behavior)
-      expect(initJsUrlValidator.errorMessage!('https://example.com')).toBeDefined();
-      expect(initJsNumberValidator.errorMessage!('42')).toBeDefined();
-      expect(initJsStringValidator.errorMessage!('hello')).toBeDefined();
-      expect(initJsDateValidator.errorMessage!('2023-01-01')).toBeDefined();
+    it('should provide proper error messages for all validators when validation fails', async () => {
+      expect(await createValidatorFunction(initJsUrlValidator, 'url')('invalid-url')).toBe('Invalid URL format');
+      expect(await createValidatorFunction(initJsNumberValidator, 'number')('not-a-number')).toBe('Must be a valid number');
+      expect(await createValidatorFunction(initJsStringValidator, 'string')('')).toBe('This field is required');
+      expect(await createValidatorFunction(initJsDateValidator, 'date')('invalid-date')).toBe('Invalid date format');
     });
   });
 });

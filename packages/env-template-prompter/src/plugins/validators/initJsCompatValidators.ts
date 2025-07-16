@@ -59,6 +59,11 @@ export const initJsNumberValidator: ValidatorPlugin = {
   name: 'init_js_number',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
+      // Empty string should be invalid for numbers
+      if (!value || value.trim() === '') {
+        return 'Must be a valid number';
+      }
+      
       const num = Number(value);
       
       if (isNaN(num)) {
