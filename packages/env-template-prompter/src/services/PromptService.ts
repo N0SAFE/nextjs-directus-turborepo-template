@@ -512,12 +512,7 @@ export class PromptService implements IPromptService {
     }
 
     try {
-      console.log(pc.cyan(`\n${message}`));
-      console.log(pc.cyan(`\nCurrent value: ${promptOptions.initial}`));
-      console.log(promptOptions);
       const response = await prompts.default(promptOptions);
-
-      console.log(pc.cyan(`\nYou entered: ${response.value}`));
 
       if (response.value === undefined) {
         // User cancelled (Ctrl+C)
