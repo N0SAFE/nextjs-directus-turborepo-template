@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ValidationService } from '../../src/services/ValidationService.js';
 import { ConfigService } from '../../src/services/ConfigService.js';
-import type { TemplateField } from '../../src/types/index.js';
+import type { TemplateField, ServiceContainer } from '../../src/types/index.js';
 
 describe('ValidationService - Coverage Tests', () => {
   let validationService: ValidationService;
@@ -10,6 +10,19 @@ describe('ValidationService - Coverage Tests', () => {
   beforeEach(() => {
     configService = new ConfigService({ debugMode: false });
     validationService = new ValidationService(configService);
+    
+    // Create a mock service container for plugin testing
+    const mockServiceContainer: ServiceContainer = {
+      configService,
+      templateParserService: null as any,
+      transformerService: null as any,
+      groupingService: null as any,
+      promptService: null as any,
+      outputService: null as any,
+      validationService
+    };
+    
+    validationService.setServiceContainer(mockServiceContainer);
   });
 
   const createTestField = (type: string, options: Record<string, unknown> = {}): TemplateField => ({

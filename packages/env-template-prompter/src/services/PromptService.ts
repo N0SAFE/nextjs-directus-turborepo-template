@@ -483,7 +483,7 @@ export class PromptService implements IPromptService {
 
     // Boolean labels support: labels param as "true=value,false=value"
     let booleanLabels: { trueLabel?: string; falseLabel?: string } = {};
-    if (field.type === "boolean" && typeof field.options.labels === "string") {
+    if (field.type === "boolean" && field.options && typeof field.options.labels === "string") {
       const labels = field.options.labels.split(",").map((l) => l.trim());
       for (const label of labels) {
         const [key, value] = label.split("=").map((s) => s.trim());
@@ -494,21 +494,6 @@ export class PromptService implements IPromptService {
           booleanLabels.falseLabel = value;
         }
       }
-    }
-
-    // Always use confirm for boolean
-    if (field.type === "boolean") {
-      promptOptions.type = "confirm";
-      // Set initial to true/false based on default
-      let initial = String(
-        field.options.value ?? field.options.default ?? "false"
-      )
-        .toLowerCase()
-        .trim();
-      promptOptions.initial =
-        initial === "true" || initial === "yes" || initial === "1"
-          ? true
-          : false;
     }
 
     try {
@@ -525,16 +510,12 @@ export class PromptService implements IPromptService {
         field.type === "boolean" &&
         (booleanLabels.trueLabel || booleanLabels.falseLabel)
       ) {
-        if (response.value === true && booleanLabels.trueLabel)
+        if (response.value === "true" && booleanLabels.trueLabel)
           return booleanLabels.trueLabel;
-        if (response.value === false && booleanLabels.falseLabel)
+        if (response.value === "false" && booleanLabels.falseLabel)
           return booleanLabels.falseLabel;
       }
-      return field.type === "boolean"
-        ? response.value
-          ? "true"
-          : "false"
-        : String(response.value);
+      return String(response.value);
     } catch (error) {
       const msg =
         error instanceof Error ? error.message : "Unknown input error";

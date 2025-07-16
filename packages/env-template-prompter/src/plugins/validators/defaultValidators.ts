@@ -194,7 +194,11 @@ export const booleanValidator: ValidatorPlugin = {
     },
     transformPrompt: (promptOptions: any, _field: TemplateField) => ({
       ...promptOptions,
-      type: "confirm",
+      type: "select",
+      choices: [
+        { title: 'Yes (true)', value: 'true' },
+        { title: 'No (false)', value: 'false' }
+      ],
       message: promptOptions.message || "Select true or false",
     }),
   }),

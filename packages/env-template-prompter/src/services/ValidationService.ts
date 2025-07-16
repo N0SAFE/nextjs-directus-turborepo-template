@@ -67,12 +67,14 @@ export class ValidationService implements IValidationService {
             try {
                 // Convert field options to plugin params
                 const params: Record<string, string> = {};
-                Object.keys(field.options).forEach(key => {
-                    const value = field.options[key];
-                    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-                        params[key] = String(value);
-                    }
-                });
+                if (field.options) {
+                    Object.keys(field.options).forEach(key => {
+                        const value = field.options[key];
+                        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                            params[key] = String(value);
+                        }
+                    });
+                }
 
                 const pluginHandlers = pluginValidator.handle(this.serviceContainer, field);
                 const validationResult = await pluginHandlers.validate(value, params);
@@ -89,12 +91,13 @@ export class ValidationService implements IValidationService {
             }
         } else {
             // Fallback to hardcoded validation for backward compatibility
+            const options = field.options || {};
             switch (field.type) {
                 case "string": {
                     // Use min_length and max_length for test compatibility
-                    const minLength = (field.options.min_length as number) ?? (field.options.minLength as number);
-                    const maxLength = (field.options.max_length as number) ?? (field.options.maxLength as number);
-                    const typeValid = this.validateString(value, minLength, maxLength, field.options.pattern as string, field.options.optional as boolean);
+                    const minLength = (options.min_length as number) ?? (options.minLength as number);
+                    const maxLength = (options.max_length as number) ?? (options.maxLength as number);
+                    const typeValid = this.validateString(value, minLength, maxLength, options.pattern as string, options.optional as boolean);
                     if (!typeValid) {
                         errors.push(`Invalid string value for ${field.key}`);
                     }
@@ -103,10 +106,10 @@ export class ValidationService implements IValidationService {
                 case "number": {
                     const typeValid = this.validateNumber(
                         value,
-                        field.options.min as number,
-                        field.options.max as number,
-                        field.options.allow
-                            ? String(field.options.allow)
+                        options.min as number,
+                        options.max as number,
+                        options.allow
+                            ? String(options.allow)
                                   .split(",")
                                   .map((n) => parseFloat(n.trim()))
                             : undefined
@@ -124,7 +127,7 @@ export class ValidationService implements IValidationService {
                     break;
                 }
                 case "url": {
-                    const typeValid = this.validateUrl(value, field.options.protocol as string, field.options.hostname as string, field.options.port as string);
+                    const typeValid = this.validateUrl(value, options.protocol as string, options.hostname as string, options.port as string);
                     if (!typeValid) {
                         errors.push(`Invalid URL format for ${field.key}`);
                     }
@@ -138,7 +141,7 @@ export class ValidationService implements IValidationService {
                     break;
                 }
                 case "port": {
-                    const typeValid = this.validatePort(value, field.options.allow?.toString().includes("80,443"));
+                    const typeValid = this.validatePort(value, options.allow?.toString().includes("80,443"));
                     if (!typeValid) {
                         errors.push(`Invalid port number for ${field.key}`);
                     }
@@ -151,7 +154,7 @@ export class ValidationService implements IValidationService {
         }
 
         // Custom validation rules
-        if (field.options.validate && typeof field.options.validate === "string") {
+        if (field.options && field.options.validate && typeof field.options.validate === "string") {
             const customValid = await this.validateWithCustomRule(value, field.options.validate);
             if (!customValid.valid) {
                 errors.push(...customValid.errors);

@@ -66,7 +66,7 @@ export const initJsNumberValidator: ValidatorPlugin = {
       
       const num = Number(value);
       
-      if (isNaN(num)) {
+      if (isNaN(num) || !isFinite(num)) {
         return 'Must be a valid number';
       }
       
@@ -106,17 +106,20 @@ export const initJsStringValidator: ValidatorPlugin = {
   name: 'init_js_string',
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
-      if (!value && params.optional !== 'true') {
+      if (!value && params.optional === 'false') {
         return 'This field is required'; // Field is required
       }
       
       if (value) {
-        if (params.minLength && value.length < Number(params.minLength)) {
-          return `Must be at least ${params.minLength} characters`;
+        const minLength = params.minLength || params.min_length;
+        const maxLength = params.maxLength || params.max_length;
+        
+        if (minLength && value.length < Number(minLength)) {
+          return `Must be at least ${minLength} characters`;
         }
         
-        if (params.maxLength && value.length > Number(params.maxLength)) {
-          return `Must be at most ${params.maxLength} characters`;
+        if (maxLength && value.length > Number(maxLength)) {
+          return `Must be at most ${maxLength} characters`;
         }
         
         if (params.pattern) {
