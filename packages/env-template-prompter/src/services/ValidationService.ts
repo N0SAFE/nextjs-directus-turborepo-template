@@ -81,7 +81,7 @@ export class ValidationService implements IValidationService {
                     // validationResult is a string (error message) or false
                     const errorMessage = typeof validationResult === 'string' 
                         ? validationResult 
-                        : pluginValidator.message || `Invalid ${field.type} value for ${field.key}`;
+                        : `Invalid ${field.type} value for ${field.key}`;
                     errors.push(errorMessage);
                 }
             } catch (error) {

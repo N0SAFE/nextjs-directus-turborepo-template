@@ -10,12 +10,6 @@ import type { ValidatorPlugin, ServiceContainer, TemplateField } from '../../typ
  */
 export const initJsUrlValidator: ValidatorPlugin = {
   name: 'init_js_url',
-  message: 'Invalid URL format',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a valid URL',
-    format: 'url',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value) {
@@ -50,7 +44,12 @@ export const initJsUrlValidator: ValidatorPlugin = {
       } catch (error) {
         return 'Invalid URL format'; // Invalid URL format
       }
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a valid URL'
+    })
   })
 };
 /**
@@ -58,12 +57,6 @@ export const initJsUrlValidator: ValidatorPlugin = {
  */
 export const initJsNumberValidator: ValidatorPlugin = {
   name: 'init_js_number',
-  message: 'Must be a valid number',
-  promptParams: {
-    type: 'number',
-    message: 'Enter a number',
-    format: 'number',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       const num = Number(value);
@@ -92,7 +85,12 @@ export const initJsNumberValidator: ValidatorPlugin = {
       }
       
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'number',
+      message: promptOptions.message || 'Enter a number'
+    })
   })
 };
 
@@ -101,12 +99,6 @@ export const initJsNumberValidator: ValidatorPlugin = {
  */
 export const initJsStringValidator: ValidatorPlugin = {
   name: 'init_js_string',
-  message: 'This field is required',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a string value',
-    format: 'string',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional !== 'true') {
@@ -131,7 +123,12 @@ export const initJsStringValidator: ValidatorPlugin = {
       }
       
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a string value'
+    })
   })
 };
 
@@ -140,12 +137,6 @@ export const initJsStringValidator: ValidatorPlugin = {
  */
 export const initJsDateValidator: ValidatorPlugin = {
   name: 'init_js_date',
-  message: 'Invalid date format',
-  promptParams: {
-    type: 'date',
-    message: 'Enter a valid date',
-    format: 'date',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string> = {}): boolean | string => {
       if (!value && params.optional === 'true') {
@@ -166,7 +157,12 @@ export const initJsDateValidator: ValidatorPlugin = {
       }
       
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'date',
+      message: promptOptions.message || 'Enter a valid date'
+    })
   })
 };
 

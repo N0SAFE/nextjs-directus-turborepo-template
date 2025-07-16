@@ -1,15 +1,39 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ValidationService } from '../../src/services/ValidationService.js';
 import { ConfigService } from '../../src/services/ConfigService.js';
-import type { TemplateField } from '../../src/types/index.js';
+import { TransformerService } from '../../src/services/TransformerService.js';
+import { TemplateParserService } from '../../src/services/TemplateParserService.js';
+import { GroupingService } from '../../src/services/GroupingService.js';
+import { PromptService } from '../../src/services/PromptService.js';
+import { OutputService } from '../../src/services/OutputService.js';
+import type { TemplateField, ServiceContainer } from '../../src/types/index.js';
 
 describe('ValidationService - Plugin-based Validation', () => {
   let validationService: ValidationService;
   let configService: ConfigService;
+  let serviceContainer: ServiceContainer;
 
   beforeEach(() => {
     configService = new ConfigService({ debugMode: false });
     validationService = new ValidationService(configService);
+    const transformerService = new TransformerService(configService);
+    const templateParserService = new TemplateParserService(configService, validationService);
+    const groupingService = new GroupingService(configService);
+    const promptService = new PromptService(validationService, transformerService, configService);
+    const outputService = new OutputService(configService);
+
+    serviceContainer = {
+      configService,
+      validationService,
+      transformerService,
+      templateParserService,
+      groupingService,
+      promptService,
+      outputService
+    };
+
+    // Set cross-service references
+    validationService.setServiceContainer(serviceContainer);
   });
 
   const createTestField = (type: string, options: Record<string, unknown> = {}): TemplateField => ({

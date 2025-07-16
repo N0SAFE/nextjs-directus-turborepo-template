@@ -20,20 +20,13 @@ export interface TransformerPlugin extends Plugin {
 export interface ValidatorPlugin {
   name: string;
   description?: string;
-  message?: string;
-  promptParams?: {
-    type?: string;
-    message?: string;
-    format?: string;
-    choices?: Array<{ title: string; value: string }>;
-    [key: string]: any;
-  };
   handle: (
     services: ServiceContainer,
     field: TemplateField
   ) => {
     validate: (value: string, params: Record<string, string>) => boolean | string | Promise<boolean | string>;
     transform?: (value: string, params: Record<string, string>) => string | Promise<string>;
+    transformPrompt?: (promptOptions: any, field: TemplateField) => any;
   };
 }
 

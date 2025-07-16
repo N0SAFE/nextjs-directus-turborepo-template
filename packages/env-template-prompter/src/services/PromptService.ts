@@ -327,12 +327,11 @@ export class PromptService implements IPromptService {
     }
 
     public async collectUserInput(field: TemplateField, message: string): Promise<string> {
-      console.log(field)
         // Use promptParams from validator plugin if available
-        let promptOptions: prompts.PromptObject = {
+        let promptOptions: any = {
             type: this.getPromptType(field),
             name: "value",
-            message: pc.white(message),
+            message: message,
             initial: await this.getInitialValue(field)
         };
 
@@ -343,13 +342,15 @@ export class PromptService implements IPromptService {
             validatorPlugin = plugins.find((p: any) => p.name === field.type);
         }
 
-        // If plugin has promptParams, override promptOptions
-        if (validatorPlugin && validatorPlugin.promptParams) {
-            const params = validatorPlugin.promptParams;
-            if (params.type) promptOptions.type = params.type;
-            if (params.message) promptOptions.message = pc.white(params.message);
-            if (params.choices) promptOptions.choices = params.choices;
-            if (params.format) promptOptions.format = params.format;
+        // If plugin has transformPrompt function, use it to transform prompt options
+        if (validatorPlugin && validatorPlugin.handle) {
+            const handler = validatorPlugin.handle(
+                (this.validationService as any).services || {},
+                field
+            );
+            if (handler.transformPrompt) {
+                promptOptions = handler.transformPrompt(promptOptions, field);
+            }
         }
 
         // Boolean labels support: labels param as "true=value,false=value"
@@ -482,17 +483,23 @@ export class PromptService implements IPromptService {
         );
     }
 
-    private getPromptType(field: TemplateField): prompts.PromptType {
-        // Use promptParams.type from validator plugin if available
-        let validatorPlugin;
-        if (typeof (this.validationService as any).getRegisteredValidators === "function") {
-            const plugins = (this.validationService as any).getRegisteredValidators();
-            validatorPlugin = plugins.find((p: any) => p.name === field.type);
+    private getPromptType(field: TemplateField): string {
+        // Default fallback based on field type
+        switch (field.type) {
+            case 'boolean':
+                return 'confirm';
+            case 'number':
+            case 'port':
+                return 'number';
+            case 'select':
+                return 'select';
+            case 'multiselect':
+                return 'multiselect';
+            case 'date':
+                return 'date';
+            default:
+                return 'text';
         }
-        if (validatorPlugin && validatorPlugin.promptParams && validatorPlugin.promptParams.type) {
-            return validatorPlugin.promptParams.type;
-        }
-        return 'text'; // Default fallback
     }
 
     private async getInitialValue(field: TemplateField): Promise<string | number | undefined> {

@@ -12,12 +12,6 @@ import type { ValidatorPlugin, ServiceContainer, TemplateField } from '../../typ
  */
 export const urlValidator: ValidatorPlugin = {
   name: 'url',
-  message: 'Invalid URL format',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a valid URL (e.g., https://example.com)',
-    format: 'url',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
@@ -35,7 +29,12 @@ export const urlValidator: ValidatorPlugin = {
       } catch {
         return 'Invalid URL format';
       }
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a valid URL (e.g., https://example.com)'
+    })
   })
 };
 
@@ -44,12 +43,6 @@ export const urlValidator: ValidatorPlugin = {
  */
 export const numberValidator: ValidatorPlugin = {
   name: 'number',
-  message: 'Invalid number',
-  promptParams: {
-    type: 'number',
-    message: 'Enter a number',
-    format: 'number',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
@@ -85,7 +78,12 @@ export const numberValidator: ValidatorPlugin = {
       }
 
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'number',
+      message: promptOptions.message || 'Enter a number'
+    })
   })
 };
 
@@ -94,12 +92,6 @@ export const numberValidator: ValidatorPlugin = {
  */
 export const stringValidator: ValidatorPlugin = {
   name: 'string',
-  message: 'Invalid string',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a string value',
-    format: 'string',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (params.required === 'false' && (!value || !value.trim())) {
@@ -139,7 +131,12 @@ export const stringValidator: ValidatorPlugin = {
       }
 
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a string value'
+    })
   })
 };
 
@@ -148,20 +145,6 @@ export const stringValidator: ValidatorPlugin = {
  */
 export const booleanValidator: ValidatorPlugin = {
   name: 'boolean',
-  message: 'Invalid boolean value',
-  promptParams: {
-    type: 'confirm',
-    message: 'Select true or false',
-    choices: [
-      { title: 'True', value: 'true' },
-      { title: 'False', value: 'false' },
-      { title: 'Yes', value: 'yes' },
-      { title: 'No', value: 'no' },
-      { title: 'Enabled', value: 'enabled' },
-      { title: 'Disabled', value: 'disabled' }
-    ],
-    format: 'boolean',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
@@ -174,7 +157,12 @@ export const booleanValidator: ValidatorPlugin = {
         return `Invalid boolean value. Must be one of: ${validValues.join(', ')}`;
       }
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'confirm',
+      message: promptOptions.message || 'Select true or false'
+    })
   })
 };
 
@@ -183,12 +171,6 @@ export const booleanValidator: ValidatorPlugin = {
  */
 export const emailValidator: ValidatorPlugin = {
   name: 'email',
-  message: 'Invalid email address',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a valid email address',
-    format: 'email',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
@@ -201,7 +183,12 @@ export const emailValidator: ValidatorPlugin = {
         return 'Invalid email address format';
       }
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a valid email address'
+    })
   })
 };
 
@@ -210,12 +197,6 @@ export const emailValidator: ValidatorPlugin = {
  */
 export const portValidator: ValidatorPlugin = {
   name: 'port',
-  message: 'Invalid port number (1-65535)',
-  promptParams: {
-    type: 'number',
-    message: 'Enter a port number (1-65535)',
-    format: 'port',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
@@ -240,7 +221,12 @@ export const portValidator: ValidatorPlugin = {
         return 'Port number must be between 1 and 65535';
       }
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'number',
+      message: promptOptions.message || 'Enter a port number (1-65535)'
+    })
   })
 };
 
@@ -249,12 +235,6 @@ export const portValidator: ValidatorPlugin = {
  */
 export const jsonValidator: ValidatorPlugin = {
   name: 'json',
-  message: 'Invalid JSON format',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a valid JSON string',
-    format: 'json',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string): boolean | string => {
       if (!value || !value.trim()) {
@@ -267,7 +247,12 @@ export const jsonValidator: ValidatorPlugin = {
       } catch (error) {
         return `Invalid JSON format: ${error instanceof Error ? error.message : 'Parse error'}`;
       }
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a valid JSON string'
+    })
   })
 };
 
@@ -276,12 +261,6 @@ export const jsonValidator: ValidatorPlugin = {
  */
 export const pathValidator: ValidatorPlugin = {
   name: 'path',
-  message: 'Invalid file path',
-  promptParams: {
-    type: 'text',
-    message: 'Enter a valid file path',
-    format: 'path',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
@@ -303,7 +282,12 @@ export const pathValidator: ValidatorPlugin = {
       }
 
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'text',
+      message: promptOptions.message || 'Enter a valid file path'
+    })
   })
 };
 
@@ -313,13 +297,6 @@ export const pathValidator: ValidatorPlugin = {
  */
 export const selectValidator: ValidatorPlugin = {
   name: 'select',
-  message: 'Invalid selection',
-  promptParams: {
-    type: 'select',
-    message: 'Select one option',
-    choices: [], // Will be filled dynamically from params.options
-    format: 'select',
-  },
   handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (value: string, params: Record<string, string | string[]>): boolean | string => {
       if (!value || !value.trim()) {
@@ -346,6 +323,28 @@ export const selectValidator: ValidatorPlugin = {
         return `Value must be one of: ${options.join(', ')}`;
       }
       return true;
+    },
+    transformPrompt: (promptOptions: any, field: TemplateField) => {
+      // Get options from field definition
+      let options: string[] = [];
+      if (typeof field.options.options === 'string') {
+        options = field.options.options.split(',').map((v: string) => v.trim());
+      } else if (Array.isArray(field.options.options)) {
+        options = field.options.options;
+      }
+      
+      // Transform options to choices format
+      const choices = options.map(option => ({
+        title: option,
+        value: option
+      }));
+      
+      return {
+        ...promptOptions,
+        type: 'select',
+        message: promptOptions.message || 'Select one option',
+        choices: choices
+      };
     }
   })
 };
@@ -355,13 +354,6 @@ export const selectValidator: ValidatorPlugin = {
  */
 export const multiSelectValidator: ValidatorPlugin = {
   name: 'multiselect',
-  message: 'Invalid multi-selection',
-  promptParams: {
-    type: 'multiselect',
-    message: 'Select one or more options',
-    choices: [], // Will be filled dynamically from params.options
-    format: 'multiselect',
-  },
   handle: (_services: ServiceContainer, field: TemplateField) => ({
     validate: (value: string | string[], params: Record<string, string | string[]>): boolean | string => {
       const values = Array.isArray(value) ? value : value.split(',').map((v: string) => v.trim());
@@ -390,6 +382,28 @@ export const multiSelectValidator: ValidatorPlugin = {
         return `Invalid values: ${invalidValues.join(', ')}. Must be one of: ${options.join(', ')}`;
       }
       return true;
+    },
+    transformPrompt: (promptOptions: any, field: TemplateField) => {
+      // Get options from field definition
+      let options: string[] = [];
+      if (typeof field.options.options === 'string') {
+        options = field.options.options.split(',').map((v: string) => v.trim());
+      } else if (Array.isArray(field.options.options)) {
+        options = field.options.options;
+      }
+      
+      // Transform options to choices format
+      const choices = options.map(option => ({
+        title: option,
+        value: option
+      }));
+      
+      return {
+        ...promptOptions,
+        type: 'multiselect',
+        message: promptOptions.message || 'Select one or more options',
+        choices: choices
+      };
     }
   })
 };
@@ -399,12 +413,6 @@ export const multiSelectValidator: ValidatorPlugin = {
  */
 export const dateValidator: ValidatorPlugin = {
   name: 'date',
-  message: 'Invalid date format',
-  promptParams: {
-    type: 'date',
-    message: 'Enter a valid date',
-    format: 'date',
-  },
   handle: (_services: ServiceContainer, _field: TemplateField) => ({
     validate: (value: string, params: Record<string, string>): boolean | string => {
       if (!value || !value.trim()) {
@@ -431,7 +439,12 @@ export const dateValidator: ValidatorPlugin = {
       }
       
       return true;
-    }
+    },
+    transformPrompt: (promptOptions: any, _field: TemplateField) => ({
+      ...promptOptions,
+      type: 'date',
+      message: promptOptions.message || 'Enter a valid date'
+    })
   })
 };
 
