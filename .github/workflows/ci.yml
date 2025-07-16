@@ -4,7 +4,8 @@ on:
     push:
         branches: [main, develop]
     pull_request:
-        branches: [main, develop]
+        # Run tests on all PRs regardless of target branch
+        branches: ["**"]
 
 env:
     BUN_VERSION: "1.2.14"
