@@ -1,5 +1,3 @@
-previews:
-  generation: automatic
 services:
   # Directus API Service
   - type: web
