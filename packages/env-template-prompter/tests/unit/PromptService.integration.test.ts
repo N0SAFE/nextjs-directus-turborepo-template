@@ -14,7 +14,7 @@ describe('Global Variables Integration Test', () => {
   let templateParserService: TemplateParserService;
 
   beforeEach(() => {
-    configService = new ConfigService({ debug: false, interactive: false });
+    configService = new ConfigService({ debugMode: false, interactive: false });
     validationService = new ValidationService(configService);
     transformerService = new TransformerService(configService);
     templateParserService = new TemplateParserService(configService, validationService);
@@ -26,6 +26,7 @@ describe('Global Variables Integration Test', () => {
     // NEXT_PUBLIC_API_URL={{url|group=api|protocol=http,https|label=API URL|description=URL where the Directus API will be accessible|default=http://localhost:${8055 + $index * 10}}}
     
     const field: TemplateField = {
+      rawLine: 'NEXT_PUBLIC_API_URL',
       key: 'NEXT_PUBLIC_API_URL',
       type: 'url',
       lineNumber: 8,
@@ -69,26 +70,34 @@ describe('Global Variables Integration Test', () => {
 
   it('should handle $iter.namespace usage correctly', async () => {
     // Test a realistic scenario with multiple API endpoints
-    const fields = [
+    const fields: TemplateField[] = [
       {
+        rawLine: 'API_URL_1',
         key: 'API_URL_1',
         type: 'url',
-        options: { default: 'http://api${$iter.service}.example.com:${8080 + $iter.service * 10}' }
+        options: { default: 'http://api${$iter.service}.example.com:${8080 + $iter.service * 10}' },
+        lineNumber: 1
       },
       {
+        rawLine: 'API_URL_2',
         key: 'API_URL_2', 
         type: 'url',
-        options: { default: 'http://api${$iter.service}.example.com:${8080 + $iter.service * 10}' }
+        options: { default: 'http://api${$iter.service}.example.com:${8080 + $iter.service * 10}' },
+        lineNumber: 2
       },
       {
+        rawLine: 'WEB_URL_1',
         key: 'WEB_URL_1',
         type: 'url', 
-        options: { default: 'http://web${$iter.frontend}.example.com:${3000 + $iter.frontend * 10}' }
+        options: { default: 'http://web${$iter.frontend}.example.com:${3000 + $iter.frontend * 10}' },
+        lineNumber: 3
       },
       {
+        rawLine: 'WEB_URL_2',
         key: 'WEB_URL_2',
         type: 'url',
-        options: { default: 'http://web${$iter.frontend}.example.com:${3000 + $iter.frontend * 10}' }
+        options: { default: 'http://web${$iter.frontend}.example.com:${3000 + $iter.frontend * 10}' },
+        lineNumber: 4
       }
     ];
 
@@ -106,7 +115,7 @@ describe('Global Variables Integration Test', () => {
     for (const field of fields) {
       const result = await promptService.evaluateTemplateExpression(
         field.options.default as string,
-        field as TemplateField,
+        field,
         context
       );
       results.push(result);
@@ -136,6 +145,7 @@ describe('Global Variables Integration Test', () => {
     ];
 
     const field: TemplateField = {
+      rawLine: 'TEST_FIELD',
       key: 'TEST_FIELD',
       type: 'string',
       lineNumber: 1,

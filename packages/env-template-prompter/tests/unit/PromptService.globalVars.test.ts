@@ -12,7 +12,7 @@ describe('PromptService - Global Variables', () => {
   let configService: ConfigService;
 
   beforeEach(() => {
-    configService = new ConfigService({ debug: false, interactive: false });
+    configService = new ConfigService({ debugMode: false, interactive: false });
     validationService = new ValidationService(configService);
     transformerService = new TransformerService(configService);
     promptService = new PromptService(validationService, transformerService, configService);
@@ -21,6 +21,7 @@ describe('PromptService - Global Variables', () => {
   describe('$index global variable', () => {
     it('should use processing index instead of line number', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_PORT',
         key: 'TEST_PORT',
         type: 'number',
         lineNumber: 10, // This should be ignored
@@ -45,6 +46,7 @@ describe('PromptService - Global Variables', () => {
 
     it('should handle $index in various expressions', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_FIELD',
         key: 'TEST_FIELD',
         type: 'string',
         lineNumber: 5,
@@ -78,6 +80,7 @@ describe('PromptService - Global Variables', () => {
   describe('$iter.namespace global variable', () => {
     it('should increment counters for different namespaces', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_FIELD',
         key: 'TEST_FIELD',
         type: 'string',
         lineNumber: 1,
@@ -117,6 +120,7 @@ describe('PromptService - Global Variables', () => {
 
     it('should handle multiple $iter variables in same expression', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_FIELD',
         key: 'TEST_FIELD',
         type: 'string',
         lineNumber: 1,
@@ -146,6 +150,7 @@ describe('PromptService - Global Variables', () => {
   describe('JavaScript expression evaluation', () => {
     it('should handle string concatenation vs numeric addition correctly', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_FIELD',
         key: 'TEST_FIELD',
         type: 'string',
         lineNumber: 1,
@@ -180,6 +185,7 @@ describe('PromptService - Global Variables', () => {
 
     it('should handle complex expressions', async () => {
       const field: TemplateField = {
+        rawLine: 'TEST_FIELD',
         key: 'TEST_FIELD',
         type: 'string',
         lineNumber: 1,
@@ -214,18 +220,21 @@ describe('PromptService - Global Variables', () => {
     it('should correctly set index for each field in group processing', async () => {
       const fields: TemplateField[] = [
         {
+          rawLine: 'FIELD_1',
           key: 'FIELD_1',
           type: 'string', 
           lineNumber: 1,
           options: { default: 'field-$index' }
         },
         {
+          rawLine: 'FIELD_2',
           key: 'FIELD_2', 
           type: 'string',
           lineNumber: 5,
           options: { default: 'field-$index' }
         },
         {
+          rawLine: 'FIELD_3',
           key: 'FIELD_3',
           type: 'string',
           lineNumber: 10, 

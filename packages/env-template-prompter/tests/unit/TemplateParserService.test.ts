@@ -19,9 +19,9 @@ describe('TemplateParserService', () => {
     const result = templateParserService.parseTemplate(content);
     
     expect(result).toHaveLength(1);
-    expect(result[0].key).toBe('TEST_VAR');
-    expect(result[0].type).toBe('string');
-    expect(result[0].options.value).toBe('template_value');
+    expect(result[0]!.key).toBe('TEST_VAR');
+    expect(result[0]!.type).toBe('string');
+    expect(result[0]!.options.value).toBe('template_value');
   });
 
   it('should parse field with options', () => {
@@ -30,7 +30,7 @@ describe('TemplateParserService', () => {
     
     expect(result).toHaveLength(1);
     
-    const field = result[0];
+    const field = result[0]!;
     expect(field.key).toBe('DATABASE_URL');
     expect(field.type).toBe('string');
     expect(field.options.value).toBe('postgres://user:pass@localhost:5432/db');
@@ -44,7 +44,7 @@ describe('TemplateParserService', () => {
     
     expect(result).toHaveLength(1);
     
-    const field = result[0];
+    const field = result[0]!;
     expect(field.options.transformer).toBe('extract_hostname');
   });
 
@@ -58,7 +58,7 @@ TEST_VAR={{string|value=test}}
     const result = templateParserService.parseTemplate(content);
     
     expect(result).toHaveLength(1);
-    expect(result[0].key).toBe('TEST_VAR');
+    expect(result[0]!.key).toBe('TEST_VAR');
   });
 
   it('should set correct line numbers', () => {
@@ -70,8 +70,8 @@ TEST_VAR2={{string|value=test2}}`;
     const result = templateParserService.parseTemplate(content);
     
     expect(result).toHaveLength(2);
-    expect(result[0].lineNumber).toBe(2);
-    expect(result[1].lineNumber).toBe(4);
+    expect(result[0]!.lineNumber).toBe(2);
+    expect(result[1]!.lineNumber).toBe(4);
   });
 
   it('should handle fields with groups', () => {
@@ -80,6 +80,6 @@ TEST_VAR2={{string|value=test2}}`;
     const result = templateParserService.parseTemplate(content);
     
     expect(result).toHaveLength(1);
-    expect(result[0].group).toBe('database');
+    expect(result[0]!.group).toBe('database');
   });
 });

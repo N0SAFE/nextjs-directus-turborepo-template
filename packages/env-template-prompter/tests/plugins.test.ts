@@ -152,8 +152,9 @@ describe('Plugin System', () => {
     it('should register custom validator', () => {
       const customValidator: ValidatorPlugin = {
         name: 'custom',
-        handle: (services: ServiceContainer, field: any) => ({
-          validate: (value: string) => value.length > 5,
+        description: 'A custom validator for testing',
+        handle: (_services: ServiceContainer, field: any) => ({
+          validate: (value: string) => value.length > 5 ? true : 'Value must be longer than 5 characters',
           transform: (value: string) => value.trim(),
           transformPrompt: (promptOptions: any, field: any) => promptOptions
         }),

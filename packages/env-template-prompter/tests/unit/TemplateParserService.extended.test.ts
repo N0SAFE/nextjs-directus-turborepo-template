@@ -143,9 +143,9 @@ FINAL_FIELD={{number|value=123}}`;
       const fields = templateParserService.parseTemplate(template);
 
       expect(fields).toHaveLength(3);
-      expect(fields[0].lineNumber).toBe(2); // DATABASE_URL
-      expect(fields[1].lineNumber).toBe(5); // API_KEY  
-      expect(fields[2].lineNumber).toBe(7); // FINAL_FIELD
+      expect(fields[0]!.lineNumber).toBe(2); // DATABASE_URL
+      expect(fields[1]!.lineNumber).toBe(5); // API_KEY  
+      expect(fields[2]!.lineNumber).toBe(7); // FINAL_FIELD
     });
 
     it('should handle templates with only comments', () => {
@@ -174,9 +174,9 @@ API_KEY=    {{string|value=secret}}
       const fields = templateParserService.parseTemplate(template);
 
       expect(fields).toHaveLength(3);
-      expect(fields[0].key).toBe('DATABASE_URL');
-      expect(fields[1].key).toBe('API_KEY');
-      expect(fields[2].key).toBe('FINAL_FIELD');
+      expect(fields[0]!.key).toBe('DATABASE_URL');
+      expect(fields[1]!.key).toBe('API_KEY');
+      expect(fields[2]!.key).toBe('FINAL_FIELD');
     });
   });
 

@@ -46,7 +46,7 @@ export class PromptService implements IPromptService {
     }
 
     // Replace all $iter.namespace variables with their captured values
-    expr = expr.replace(/\$iter\.([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, namespace) => {
+    expr = expr.replace(/\$iter\.([a-zA-Z_][a-zA-Z0-9_]*)/g, (_match, namespace) => {
       return String(iterValues.get(namespace) || 0);
     });
 
