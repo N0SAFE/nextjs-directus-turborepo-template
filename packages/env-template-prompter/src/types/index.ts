@@ -34,6 +34,15 @@ export interface ValidationResult {
   value?: string;
 }
 
+// Variable validation result
+export interface VariableValidationResult {
+  valid: boolean;
+  value: string;
+  errors: string[];
+  warnings: string[];
+  wasTransformed: boolean;
+}
+
 // Grouped fields for presentation
 export interface GroupedFields {
   groups: Map<string, TemplateField[]>;
@@ -56,6 +65,13 @@ export interface TransformContext {
   allValues: Map<string, string>;
   field: TemplateField;
   templateFields: TemplateField[];
+  isVariableValue?: boolean; // Flag to indicate if the value comes from a variable reference
+}
+
+// Global variables context for computed expressions
+export interface GlobalVariablesContext {
+  index: number; // Current field processing index
+  iterCounters: Map<string, number>; // Namespace counters for $iter.namespace
 }
 
 // Prompt context for user interaction
@@ -65,6 +81,7 @@ export interface PromptContext {
   groupInfo?: { id: string, name: string, description?: string };
   skipExisting: boolean;
   interactive: boolean;
+  globalVars?: GlobalVariablesContext; // Global variables for computed expressions
 }
 
 // Prompt result

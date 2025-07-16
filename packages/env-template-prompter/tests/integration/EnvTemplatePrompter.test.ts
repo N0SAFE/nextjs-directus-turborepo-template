@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { EnvTemplatePrompter } from '../../src/EnvTemplatePrompter.js';
+import type { ValidatorPlugin } from '../../src/index.js';
 
 describe('EnvTemplatePrompter Integration', () => {
   let prompter: EnvTemplatePrompter;
@@ -29,22 +30,29 @@ describe('EnvTemplatePrompter Integration', () => {
     prompter.registerTransformer(customTransformer);
     
     // Test that transformer was registered by checking it exists
-    const transformers = prompter['services'].transformerService['transformers'];
-    expect(transformers.has('test_transformer')).toBe(true);
+    const transformers = prompter['services'].transformerService.getRegisteredTransformers();
+    expect(transformers.some(transformer => transformer.name === 'test_transformer')).toBe(true);
   });
 
   it('should register custom validator', () => {
-    const customValidator = {
+    const customValidator: ValidatorPlugin = {
       name: 'test_validator',
-      validate: (value: string) => value === 'valid',
-      message: 'Must be "valid"'
+      handle: (_services, _field) => ({
+        validate: (value: string) => value === 'valid' ? true : 'Value must be "valid"',
+        transform: (value: string) => `validated_${value}`,
+        transformPrompt: (promptOptions, _field) => ({
+          ...promptOptions,
+          message: promptOptions.message || 'Enter a valid value'
+        })
+      }),
+      description: 'A custom validator for testing',
     };
 
     prompter.registerValidator(customValidator);
     
     // Test that validator was registered by checking it exists
-    const validators = prompter['services'].validationService['validators'];
-    expect(validators.has('test_validator')).toBe(true);
+    const validators = prompter['services'].validationService.getRegisteredValidators();
+    expect(validators.some(validator => validator.name === 'test_validator')).toBe(true);
   });
 
   it('should handle debug mode configuration', () => {

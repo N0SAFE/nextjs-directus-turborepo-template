@@ -3,18 +3,26 @@ import type {
   TransformContext,
   TransformerPlugin
 } from '../types/index.js';
-import type { ITransformerService, IConfigService } from '../types/services.js';
+import type { ITransformerService, IConfigService, IValidationService } from '../types/services.js';
 import { getDefaultTransformerPlugins } from '../plugins/transformers/defaultTransformers.js';
 
 export class TransformerService implements ITransformerService {
   public readonly serviceName = 'TransformerService';
   
   private transformers = new Map<string, TransformerPlugin>();
+  private validationService?: IValidationService;
 
   constructor(
     private configService: IConfigService
   ) {
     this.registerBuiltInTransformers();
+  }
+
+  /**
+   * Set the validation service for variable validation
+   */
+  public setValidationService(validationService: IValidationService): void {
+    this.validationService = validationService;
   }
 
   public async applyTransformers(field: TemplateField, context: TransformContext): Promise<string> {
@@ -25,13 +33,22 @@ export class TransformerService implements ITransformerService {
       return context.sourceValue;
     }
 
+    // Only apply transformers to variable values, not direct user input
+    if (!context.isVariableValue && !field.options.source) {
+      this.configService.debug(
+        `Skipping transformer for ${field.key}: not a variable value and no source specified`,
+        this.serviceName
+      );
+      return context.sourceValue;
+    }
+
     const transformerName = String(field.options.transformer);
     const params = this.extractTransformerParams(field.options);
 
     try {
       const result = await this.transformValue(context.sourceValue, transformerName, params, context);
       this.configService.debug(
-        `Transformer ${transformerName} for ${field.key}: "${context.sourceValue}" -> "${result}"`,
+        `Transformer ${transformerName} for ${field.key}: "${context.sourceValue}" -> "${result}" (variable: ${!!context.isVariableValue})`,
         this.serviceName
       );
       return result;
@@ -83,34 +100,127 @@ export class TransformerService implements ITransformerService {
     ].map(name => this.transformers.get(name)).filter(Boolean) as TransformerPlugin[];
   }
 
-  public resolveSourceValue(field: TemplateField, context: TransformContext): string {
+  public async resolveSourceValue(field: TemplateField, context: TransformContext): Promise<string> {
     if (!field.options.source) {
       return '';
     }
 
     const source = String(field.options.source);
+    let variableName: string;
+    let rawValue: string;
     
     // Handle variable references: @{VAR_NAME} or ${VAR_NAME}
     if (source.startsWith('@{') && source.endsWith('}')) {
-      const varName = source.slice(2, -1);
-      return context.allValues.get(varName) || '';
-    }
-
-    if (source.startsWith('${') && source.endsWith('}')) {
+      variableName = source.slice(2, -1);
+      rawValue = context.allValues.get(variableName) || '';
+    } else if (source.startsWith('${') && source.endsWith('}')) {
       const expression = source.slice(2, -1);
-      return this.resolveExpression(expression, context);
+      const resolved = this.resolveExpression(expression, context);
+      // Extract variable name for validation
+      const [varName] = expression.split(':');
+      variableName = varName.trim();
+      rawValue = resolved;
+    } else {
+      // Direct variable reference
+      variableName = source;
+      rawValue = context.allValues.get(source) || '';
     }
 
-    // Direct variable reference
-    return context.allValues.get(source) || '';
+    // If no value found, return empty
+    if (!rawValue) {
+      return '';
+    }
+
+    // Validate and potentially transform the variable value
+    if (this.validationService && variableName) {
+      // Find the source field in template fields for validation
+      const sourceField = context.templateFields.find(f => f.key === variableName);
+      if (sourceField) {
+        try {
+          const validationResult = await this.validationService.validateVariable(
+            variableName,
+            rawValue,
+            sourceField,
+            context
+          );
+
+          if (!validationResult.valid) {
+            this.configService.debug(
+              `Variable validation failed for ${variableName}: ${validationResult.errors.join(', ')}`,
+              this.serviceName
+            );
+            // Return raw value but log warnings
+            for (const error of validationResult.errors) {
+              console.warn(`Warning: ${error}`);
+            }
+          }
+
+          return validationResult.value; // Use validated/transformed value
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unknown validation error';
+          this.configService.debug(`Variable validation error for ${variableName}: ${message}`, this.serviceName);
+        }
+      }
+    }
+
+    return rawValue;
   }
 
-  public resolvePlaceholders(value: string, context: TransformContext): string {
-    return value.replace(/\$\{([^}]+)\}/g, (_match, expression) => {
-      return this.resolveExpression(expression, context);
-    }).replace(/@\{([^}]+)\}/g, (_match, varName) => {
-      return context.allValues.get(varName) || '';
-    });
+  public async resolvePlaceholders(value: string, context: TransformContext): Promise<string> {
+    // First handle ${} expressions
+    let result = value;
+    const dollarExpressions = value.match(/\$\{([^}]+)\}/g);
+    if (dollarExpressions) {
+      for (const match of dollarExpressions) {
+        const expression = match.slice(2, -1); // Remove ${ and }
+        const resolved = this.resolveExpression(expression, context);
+        result = result.replace(match, resolved);
+      }
+    }
+
+    // Then handle @{} variable references with validation
+    const atExpressions = result.match(/@\{([^}]+)\}/g);
+    if (atExpressions) {
+      for (const match of atExpressions) {
+        const variableName = match.slice(2, -1); // Remove @{ and }
+        let variableValue = context.allValues.get(variableName) || '';
+
+        // Validate variable if validation service is available
+        if (this.validationService && variableValue && variableName) {
+          const sourceField = context.templateFields.find(f => f.key === variableName);
+          if (sourceField) {
+            try {
+              const validationResult = await this.validationService.validateVariable(
+                variableName,
+                variableValue,
+                sourceField,
+                context
+              );
+
+              if (!validationResult.valid) {
+                this.configService.debug(
+                  `Variable validation failed for ${variableName} in placeholder: ${validationResult.errors.join(', ')}`,
+                  this.serviceName
+                );
+                // Use original value but log warnings
+                for (const error of validationResult.errors) {
+                  console.warn(`Warning: ${error}`);
+                }
+              }
+
+              variableValue = validationResult.value; // Use validated/transformed value
+            } catch (error) {
+              const message = error instanceof Error ? error.message : 'Unknown validation error';
+              this.configService.debug(`Variable validation error for ${variableName}: ${message}`, this.serviceName);
+            }
+          }
+        }
+
+        result = result.replace(match, variableValue);
+      }
+    }
+
+    return result;
   }
 
   private resolveExpression(expression: string, context: TransformContext): string {

@@ -196,7 +196,7 @@ export class EnvTemplatePrompter {
         const promptService = new PromptService(validationService, transformerService, configService);
         const outputService = new OutputService(configService);
 
-        return {
+        const serviceContainer = {
             configService,
             templateParserService,
             validationService,
@@ -205,6 +205,12 @@ export class EnvTemplatePrompter {
             promptService,
             outputService
         };
+
+        // Set cross-service references for variable validation and transformation
+        validationService.setServiceContainer(serviceContainer);
+        transformerService.setValidationService(validationService);
+
+        return serviceContainer;
     }
 
     private async processFields(fields: TemplateField[], options: ProcessOptions): Promise<Map<string, string>> {

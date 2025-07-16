@@ -2,6 +2,7 @@ import type {
   RuntimeConfig,
   TemplateField,
   ValidationResult,
+  VariableValidationResult,
   GroupedFields,
   GroupConfiguration,
   TransformContext,
@@ -13,6 +14,17 @@ import type {
   TransformerPlugin,
   ValidatorPlugin
 } from './index.js';
+
+// Forward declaration for ServiceContainer to avoid circular dependency
+export interface ServiceContainer {
+  configService: IConfigService;
+  templateParserService: ITemplateParserService;
+  validationService: IValidationService;
+  transformerService: ITransformerService;
+  groupingService: IGroupingService;
+  promptService: IPromptService;
+  outputService: IOutputService;
+}
 
 // Base service interface
 export interface BaseService {
@@ -44,6 +56,12 @@ export interface ITemplateParserService extends BaseService {
 // Validation service interface
 export interface IValidationService extends BaseService {
   validateField(value: string, field: TemplateField): Promise<ValidationResult>;
+  validateVariable(
+    variableName: string, 
+    value: string, 
+    sourceField: TemplateField,
+    context: any
+  ): Promise<VariableValidationResult>;
   validateUrl(url: string): boolean;
   validateNumber(value: string, min?: number, max?: number, allow?: number[]): boolean;
   validateString(value: string, minLength?: number, maxLength?: number): boolean;
@@ -53,6 +71,7 @@ export interface IValidationService extends BaseService {
   registerValidator(plugin: ValidatorPlugin): void;
   unregisterValidator(name: string): void;
   getRegisteredValidators(): ValidatorPlugin[];
+  setServiceContainer(serviceContainer: ServiceContainer): void;
 }
 
 // Transformer service interface
@@ -68,8 +87,9 @@ export interface ITransformerService extends BaseService {
   unregisterTransformer(name: string): void;
   getRegisteredTransformers(): TransformerPlugin[];
   getBuiltInTransformers(): TransformerPlugin[];
-  resolveSourceValue(field: TemplateField, context: TransformContext): string;
-  resolvePlaceholders(value: string, context: TransformContext): string;
+  resolveSourceValue(field: TemplateField, context: TransformContext): Promise<string>;
+  resolvePlaceholders(value: string, context: TransformContext): Promise<string>;
+  setValidationService(validationService: IValidationService): void;
 }
 
 // Grouping service interface
@@ -99,7 +119,7 @@ export interface IPromptService extends BaseService {
   displayGroupHeader(groupName: string, groupTitle: string): void;
   displayValidationError(error: string): void;
   displaySummary(results: Map<string, PromptResult>): void;
-  collectUserInput(field: TemplateField, message: string): Promise<string>;
+  collectUserInput(field: TemplateField, message: string, context?: PromptContext): Promise<string>;
   validateAndRetry(field: TemplateField, context: PromptContext): Promise<string>;
   processNonInteractive(
     fields: TemplateField[], 
@@ -126,15 +146,4 @@ export interface IOutputService extends BaseService {
   generateYAMLConfig(values: Map<string, string>): string;
   ensureDirectoryExists(path: string): Promise<void>;
   checkWritePermissions(path: string): Promise<boolean>;
-}
-
-// Service container interface
-export interface ServiceContainer {
-  configService: IConfigService;
-  templateParserService: ITemplateParserService;
-  validationService: IValidationService;
-  transformerService: ITransformerService;
-  groupingService: IGroupingService;
-  promptService: IPromptService;
-  outputService: IOutputService;
 }

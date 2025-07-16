@@ -1,4 +1,4 @@
-import type { TransformContext, FieldOptions } from './index.js';
+import type { TransformContext, FieldOptions, TemplateField, ServiceContainer } from './index.js';
 
 // Plugin base interface
 export interface Plugin {
@@ -16,25 +16,17 @@ export interface TransformerPlugin extends Plugin {
   requiresSource?: boolean;
 }
 
-// Validator plugin interface
+// Validator plugin interface  
 export interface ValidatorPlugin {
   name: string;
-  description?: string;
-  handle: (services: {
-    configService: any;
-    validationService: any;
-    transformerService: any;
-    parserService: any;
-  }, field: import('./index.js').TemplateField) => {
-    promptParams?: {
-      type?: string;
-      choices?: Array<{ title: string; value: string }>;
-      format?: string;
-      message?: string;
-      [key: string]: any;
-    };
-    validate: (value: string, params: Record<string, string>) => boolean | Promise<boolean>;
+  description: string;
+  handle: (
+    services: ServiceContainer,
+    field: TemplateField
+  ) => {
+    validate: (value: string, params: Record<string, string>) => true | string | Promise<true | string>;
     transform?: (value: string, params: Record<string, string>) => string | Promise<string>;
+    transformPrompt?: (promptOptions: any, field: TemplateField) => any;
   };
 }
 

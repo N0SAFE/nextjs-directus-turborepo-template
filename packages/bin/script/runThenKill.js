@@ -106,8 +106,8 @@ program
     .requiredOption('-c, --command <command>', 'Command to run')
     .requiredOption('-p, --port <port>', 'Port to monitor', parseInt)
     .option('-a, --args <args...>', 'Arguments for the command')
-    .option('-s, --secondary-command <command>', 'Secondary command to run if port is not open')
-    .option('-sa, --secondary-args <args...>', 'Arguments for the secondary command')
+    .option('--secondary-command <command>', 'Secondary command to run if port is not open')
+    .option('--secondary-args <args...>', 'Arguments for the secondary command')
     .action(async (options) => {
         const { command, port, args = [], secondaryCommand, secondaryArgs = [] } = options;
         

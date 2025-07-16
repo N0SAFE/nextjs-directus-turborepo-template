@@ -2,7 +2,7 @@
 
 import path from 'path';
 import { readFileSync } from 'fs';
-import { TemplateParserService, GroupingService, ConfigService, TemplateField } from '../index.js';
+import { TemplateParserService, GroupingService, ConfigService, TemplateField, ValidationService } from '../index.js';
 
 function getDependencyGraph(fields: TemplateField[]) {
   const graph: Record<string, string[]> = {};
@@ -33,7 +33,8 @@ async function main() {
   const configService = new ConfigService();
   const templatePath = path.resolve(process.cwd(), '.env.template');
   const templateContent = readFileSync(templatePath, 'utf-8');
-  const parser = new TemplateParserService(configService);
+  const validationService = new ValidationService(configService);
+  const parser = new TemplateParserService(configService, validationService);
   const fields = parser.parseTemplate(templateContent);
 
   // Group info

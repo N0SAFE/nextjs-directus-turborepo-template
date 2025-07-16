@@ -11,7 +11,7 @@ export default defineProject({
         include: [
             'src/**/*.test.{ts,tsx,js,jsx}',
             'src/**/*.spec.{ts,tsx,js,jsx}',
-            'src/**/__tests__/**/*.{ts,tsx,js,jsx}'
+            'src/**/__tests__/**/*.{ts,tsx,js,jsx}',
         ],
         exclude: ['node_modules', 'dist', '.next'],
         setupFiles: ['./vitest.setup.ts'],

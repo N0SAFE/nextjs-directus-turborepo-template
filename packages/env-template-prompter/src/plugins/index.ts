@@ -30,6 +30,16 @@ export {
   getDefaultValidatorPlugins
 } from './validators/defaultValidators.js';
 
+// Init.js Compatible Validators
+export {
+  initJsUrlValidator,
+  initJsNumberValidator,
+  initJsStringValidator,
+  initJsDateValidator,
+  initJsCompatValidatorPlugins,
+  getInitJsCompatValidatorPlugins
+} from './validators/initJsCompatValidators.js';
+
 // Plugin Collection Helper
 import type { TransformerPlugin, ValidatorPlugin } from '../types/index.js';
 import { getDefaultTransformerPlugins } from './transformers/defaultTransformers.js';

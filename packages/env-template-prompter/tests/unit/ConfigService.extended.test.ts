@@ -199,9 +199,11 @@ describe('ConfigService - Extended Tests', () => {
 
   describe('Edge Cases', () => {
     it('should handle null and undefined values in updateConfig', () => {
+      // @ts-expect-error - Testing null value
       configService.updateConfig(null);
       expect(configService.getConfig()).toBeDefined();
 
+      // @ts-expect-error - Testing undefined value
       configService.updateConfig(undefined);
       expect(configService.getConfig()).toBeDefined();
     });

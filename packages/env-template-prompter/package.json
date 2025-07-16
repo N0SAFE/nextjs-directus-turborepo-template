@@ -34,8 +34,6 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "vitest run tests/e2e",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "clean": "rm -rf dist",
     "demo": "node demo.js"
   },
@@ -47,7 +45,6 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@types/node": "^20.10.0",

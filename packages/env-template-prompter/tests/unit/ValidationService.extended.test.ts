@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ValidationService } from '../../src/services/ValidationService.js';
 import { ConfigService } from '../../src/services/ConfigService.js';
-import type { TemplateField, ValidatorPlugin } from '../../src/types/index.js';
+import type { TemplateField, ValidatorPlugin, ServiceContainer } from '../../src/types/index.js';
 
 describe('ValidationService - Extended Tests', () => {
   let validationService: ValidationService;
@@ -10,11 +10,24 @@ describe('ValidationService - Extended Tests', () => {
   beforeEach(() => {
     configService = new ConfigService({ debugMode: false });
     validationService = new ValidationService(configService);
+    
+    // Create a mock service container for plugin testing
+    const mockServiceContainer: ServiceContainer = {
+      configService,
+      templateParserService: null as any,
+      transformerService: null as any,
+      groupingService: null as any,
+      promptService: null as any,
+      outputService: null as any,
+      validationService
+    };
+    
+    validationService.setServiceContainer(mockServiceContainer);
   });
 
   const createTestField = (type: string, options: Record<string, unknown> = {}): TemplateField => ({
     key: 'TEST_FIELD',
-    type: type as any,
+    type,
     options,
     rawLine: '',
     lineNumber: 1
@@ -22,7 +35,9 @@ describe('ValidationService - Extended Tests', () => {
 
   describe('URL Validation', () => {
     it('should validate only http and https URLs as valid', async () => {
-      const field = createTestField('url');
+      const field = createTestField('url', {
+        protocol: 'http,https',
+      });
 
       const urls = [
         'https://example.com',
@@ -44,8 +59,12 @@ describe('ValidationService - Extended Tests', () => {
     });
 
     it('should validate URLs with ports and paths', async () => {
-      const field = createTestField('url');
-
+      const field = createTestField('url', {
+        protocol: 'http,https',
+        port: '8080,3000',
+        hostname: 'api.example.com,localhost'
+      }); 
+      
       const complexUrls = [
         'https://api.example.com:8080/v1/users',
         'http://localhost:3000/auth/callback?code=123',
@@ -296,8 +315,10 @@ describe('ValidationService - Extended Tests', () => {
     it('should register and use custom validators', async () => {
       const customValidator: ValidatorPlugin = {
         name: 'ends_with_test',
-        validate: (value: string) => value.endsWith('_test'),
-        message: 'Value must end with _test'
+        description: 'Validates that the value ends with _test',
+        handle: (_services: ServiceContainer, _field: TemplateField) => ({
+          validate: (value: string) => value.endsWith('_test') ? true : 'Value must end with _test',
+        })
       };
 
       validationService.registerValidator(customValidator);
@@ -314,11 +335,14 @@ describe('ValidationService - Extended Tests', () => {
     it('should handle async custom validators', async () => {
       const asyncValidator: ValidatorPlugin = {
         name: 'async_test',
-        validate: async (value: string) => {
-          return new Promise(resolve => {
-            setTimeout(() => resolve(value.length > 5), 10);
-          });
-        }
+        description: 'An async validator that checks string length',
+        handle: (_services: ServiceContainer, _field: TemplateField) => ({
+          validate: async (value: string) => {
+            return new Promise(resolve => {
+              setTimeout(() => resolve(value.length > 5 ? true : 'Value must be longer than 5 characters'), 10);
+            });
+          }
+        })
       };
 
       validationService.registerValidator(asyncValidator);
@@ -335,7 +359,10 @@ describe('ValidationService - Extended Tests', () => {
     it('should unregister validators', () => {
       const customValidator: ValidatorPlugin = {
         name: 'temp_validator',
-        validate: () => true
+        description: 'A temporary validator for testing',
+        handle: (_services: ServiceContainer, _field: TemplateField) => ({
+          validate: () => true
+        })
       };
 
       validationService.registerValidator(customValidator);
@@ -348,9 +375,12 @@ describe('ValidationService - Extended Tests', () => {
     it('should handle validator errors gracefully', async () => {
       const faultyValidator: ValidatorPlugin = {
         name: 'faulty',
-        validate: () => {
-          throw new Error('Validator error');
-        }
+        description: 'A validator that throws an error',
+        handle: (_services: ServiceContainer, _field: TemplateField) => ({
+          validate: () => {
+            throw new Error('Validator error');
+          }
+        })
       };
 
       validationService.registerValidator(faultyValidator);

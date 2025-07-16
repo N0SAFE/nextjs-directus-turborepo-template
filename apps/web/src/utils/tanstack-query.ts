@@ -145,7 +145,6 @@ export function toAdvancedUseQuery<
         ctx: FunctionContext<TParams, TPageParam, TQueryKey>
     ) => TQueryFnData | Promise<TQueryFnData>
 ) {
-    
     function use<
         Options extends Omit<
             | (DefinedInitialDataOptions<
@@ -187,7 +186,6 @@ export function toAdvancedUseQuery<
                     : { params: TParams }),
             'queryKey'
         > & { queryKey?: TQueryKey },
-       
     >(options: Options, queryClient?: QueryClient) {
         return useQuery<TQueryFnData, TError, TData, TQueryKey>(
             {
@@ -294,13 +292,12 @@ export function toAdvancedUseQuery<
         >
     }
 
-    
     Object.assign(use, {
         transformParams,
         transformReturn,
         addQueryKey,
     })
-    
+
     return use as typeof use & {
         transformParams: typeof transformParams
         transformReturn: typeof transformReturn
@@ -349,7 +346,6 @@ export function toAdvancedUseSuspenseQuery<
         ctx: FunctionContext<TParams, TPageParam, TQueryKey>
     ) => TQueryFnData | Promise<TQueryFnData>
 ) {
-    
     function use<
         Options extends Omit<
             | (DefinedInitialDataOptions<
@@ -392,7 +388,6 @@ export function toAdvancedUseSuspenseQuery<
             'queryKey'
         > & { queryKey?: TQueryKey },
     >(options: Options, queryClient?: QueryClient) {
-       
         return useQuery<TQueryFnData, TError, TData, TQueryKey>(
             {
                 ...options,
@@ -509,7 +504,7 @@ export function toAdvancedUseSuspenseQuery<
         transformReturn,
         addQueryKey,
     })
-    
+
     return use as typeof use & {
         transformParams: typeof transformParams
         transformReturn: typeof transformReturn
@@ -560,7 +555,6 @@ export function toUseMutation<
             TContext
         > = UseMutationOptions<TData, TError, TVariables, TContext>,
     >(options: Options, queryClient?: QueryClient) {
-       
         return useMutation<TData, TError, TVariables, TContext>(
             {
                 ...options,
@@ -583,7 +577,6 @@ export function toAdvancedUseInfiniteQuery<
         ctx: FunctionContext<TParams, TPageParam, TQueryKey>
     ) => TQueryFnData | Promise<TQueryFnData>
 ) {
-    
     function use<
         Options extends Omit<
             | (DefinedInitialDataInfiniteOptions<
@@ -640,7 +633,6 @@ export function toAdvancedUseInfiniteQuery<
             'queryKey'
         > & { queryKey?: TQueryKey },
     >(options: Options) {
-       
         return useInfiniteQuery<
             TQueryFnData,
             TError,
@@ -752,13 +744,12 @@ export function toAdvancedUseInfiniteQuery<
         >
     }
 
-    
     Object.assign(use, {
         transformParams,
         transformReturn,
         addQueryKey,
     })
-    
+
     return use as typeof use & {
         transformParams: typeof transformParams
         transformReturn: typeof transformReturn

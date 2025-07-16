@@ -15,23 +15,27 @@ describe('TransformerService', () => {
     transformerService = new TransformerService(configService);
   });
 
-  const createTestField = (key: string, transformer: string): TemplateField => ({
+  const createTestField = (key: string, transformer: string, source?: string): TemplateField => ({
     key,
     type: 'string',
-    options: { transformer },
-    rawLine: `${key}=test_value|transformer=${transformer}`,
+    options: { 
+      transformer,
+      ...(source && { source })
+    },
+    rawLine: `${key}=test_value|transformer=${transformer}${source ? `|source=${source}` : ''}`,
     lineNumber: 1
   });
 
-  const createTestContext = (sourceValue: string, allValues: Record<string, string> = {}): TransformContext => ({
+  const createTestContext = (sourceValue: string, allValues: Record<string, string> = {}, isVariableValue = true): TransformContext => ({
     sourceValue,
     allValues: new Map(Object.entries(allValues)),
     field: createTestField('TEST_FIELD', 'test'),
-    templateFields: []
+    templateFields: [],
+    isVariableValue
   });
 
   it('should apply extract_hostname transformer', async () => {
-    const field = createTestField('API_URL', 'extract_hostname');
+    const field = createTestField('API_URL', 'extract_hostname', 'SOURCE_URL');
     const context = createTestContext('http://localhost:3001/path');
     context.field = field;
     
@@ -40,7 +44,7 @@ describe('TransformerService', () => {
   });
 
   it('should apply extract_port transformer', async () => {
-    const field = createTestField('API_PORT', 'extract_port');
+    const field = createTestField('API_PORT', 'extract_port', 'SOURCE_URL');
     const context = createTestContext('http://localhost:3001/path');
     context.field = field;
     
@@ -49,7 +53,7 @@ describe('TransformerService', () => {
   });
 
   it('should apply array_from_csv transformer', async () => {
-    const field = createTestField('ALLOWED_ORIGINS', 'array_from_csv');
+    const field = createTestField('ALLOWED_ORIGINS', 'array_from_csv', 'CSV_DATA');
     const context = createTestContext('http://localhost:3000,http://localhost:3001');
     context.field = field;
     
@@ -58,7 +62,7 @@ describe('TransformerService', () => {
   });
 
   it('should apply cors_origins transformer', async () => {
-    const field = createTestField('CORS_ORIGINS', 'cors_origins');
+    const field = createTestField('CORS_ORIGINS', 'cors_origins', 'URL_LIST');
     const context = createTestContext(
       'http://localhost:3000',
       {
@@ -74,7 +78,7 @@ describe('TransformerService', () => {
   });
 
   it('should generate secret with generate_secret transformer', async () => {
-    const field = createTestField('SECRET_KEY', 'generate_secret');
+    const field = createTestField('SECRET_KEY', 'generate_secret', 'EXISTING_SECRET');
     const context = createTestContext('32');
     context.field = field;
     
@@ -91,7 +95,7 @@ describe('TransformerService', () => {
     
     transformerService.registerTransformer(customTransformer);
     
-    const field = createTestField('TEST_FIELD', 'uppercase');
+    const field = createTestField('TEST_FIELD', 'uppercase', 'SOURCE');
     const context = createTestContext('hello world');
     context.field = field;
     
@@ -100,13 +104,22 @@ describe('TransformerService', () => {
   });
 
   it('should handle unknown transformers gracefully', async () => {
-    const field = createTestField('TEST_FIELD', 'unknown_transformer');
+    const field = createTestField('TEST_FIELD', 'unknown_transformer', 'SOURCE');
     const context = createTestContext('test value');
     context.field = field;
     
     await expect(transformerService.applyTransformers(field, context))
       .rejects
       .toThrow('Unknown transformer: unknown_transformer');
+  });
+
+  it('should skip transformation for non-variable values without source', async () => {
+    const field = createTestField('TEST_FIELD', 'extract_hostname');
+    const context = createTestContext('http://localhost:3000', {}, false); // isVariableValue = false
+    context.field = field;
+    
+    const result = await transformerService.applyTransformers(field, context);
+    expect(result).toBe('http://localhost:3000'); // Should return original value
   });
 
   it('should return original value when no transformer specified', async () => {
