@@ -15,23 +15,57 @@ import type {
 
 export class PromptService implements IPromptService {
   /**
-   * Evaluate template expressions like ${...} and $index in default values
+   * Evaluate template expressions like ${...}, $index, and $iter.namespace in default values
    */
   public async evaluateTemplateExpression(
     expr: string,
     field: TemplateField,
     context: PromptContext
   ): Promise<string> {
-    // Support $index (field index in group or template)
-    let index = 0;
-    if (field && typeof field.lineNumber === "number") {
-      index = field.lineNumber - 1;
+    // Initialize global variables context if not present
+    if (!context.globalVars) {
+      context.globalVars = {
+        index: 0,
+        iterCounters: new Map()
+      };
     }
-    // Replace $index
-    expr = expr.replace(/\$index/g, String(index));
 
-    // Handle variable references using the transformer service
-    if (expr.includes("@{") || expr.includes("${")) {
+    // Replace $index with current processing index
+    expr = expr.replace(/\$index/g, String(context.globalVars.index));
+
+    // Collect all unique $iter.namespace variables first to increment only once per namespace
+    const iterMatches = [...expr.matchAll(/\$iter\.([a-zA-Z_][a-zA-Z0-9_]*)/g)];
+    const uniqueNamespaces = new Set(iterMatches.map(match => match[1]));
+    
+    // For each unique namespace, get current value and increment counter
+    const iterValues = new Map<string, number>();
+    for (const namespace of uniqueNamespaces) {
+      const currentCount = context.globalVars.iterCounters.get(namespace) || 0;
+      iterValues.set(namespace, currentCount);
+      context.globalVars.iterCounters.set(namespace, currentCount + 1);
+    }
+
+    // Replace all $iter.namespace variables with their captured values
+    expr = expr.replace(/\$iter\.([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, namespace) => {
+      return String(iterValues.get(namespace) || 0);
+    });
+
+    // Handle ${...} expressions with JavaScript evaluation
+    expr = expr.replace(/\$\{([^}]+)\}/g, (_match, code) => {
+      try {
+        // eslint-disable-next-line no-new-func
+        return String(Function("return (" + code + ")")());
+      } catch (error) {
+        this.configService.debug(
+          `JavaScript evaluation error in expression "${code}": ${error}`,
+          this.serviceName
+        );
+        return "";
+      }
+    });
+
+    // Handle @{} variable references using the transformer service
+    if (expr.includes("@{")) {
       const transformContext: TransformContext = {
         sourceValue: "",
         allValues: context.existingValues,
@@ -55,16 +89,6 @@ export class PromptService implements IPromptService {
       }
     }
 
-    // Replace ${...} with evaluated JS (for backward compatibility)
-    expr = expr.replace(/\$\{([^}]+)\}/g, (_match, code) => {
-      try {
-        // Only allow numeric expressions for safety
-        // eslint-disable-next-line no-new-func
-        return Function("return (" + code + ")")();
-      } catch {
-        return "";
-      }
-    });
     return expr;
   }
   // For interface compatibility
@@ -251,8 +275,20 @@ export class PromptService implements IPromptService {
 
     const results = new Map<string, PromptResult>();
 
+    // Initialize global variables context if not present
+    if (!context.globalVars) {
+      context.globalVars = {
+        index: 0,
+        iterCounters: new Map()
+      };
+    }
+
     for (let i = 0; i < sortedFields.length; i++) {
       const field = sortedFields[i];
+      
+      // Update the current processing index
+      context.globalVars.index = i;
+      
       try {
         const result = await this.promptForField(field, context);
         results.set(field.key, result);
@@ -418,14 +454,15 @@ export class PromptService implements IPromptService {
 
   public async collectUserInput(
     field: TemplateField,
-    message: string
+    message: string,
+    context?: PromptContext
   ): Promise<string> {
     // Use promptParams from validator plugin if available
     let promptOptions: any = {
       type: this.getPromptType(field),
       name: "value",
       message: message,
-      initial: await this.getInitialValue(field),
+      initial: await this.getInitialValue(field, context),
     };
 
     // Get validator plugin for this field type
@@ -529,7 +566,7 @@ export class PromptService implements IPromptService {
     while (attempt < maxRetries) {
       try {
         const message = this.generatePromptMessage(field);
-        const input = await this.collectUserInput(field, message);
+        const input = await this.collectUserInput(field, message, _context);
 
         // Validate input
         const validation = await this.validationService.validateField(
@@ -637,7 +674,8 @@ export class PromptService implements IPromptService {
   }
 
   private async getInitialValue(
-    field: TemplateField
+    field: TemplateField,
+    context?: PromptContext
   ): Promise<string | number | undefined> {
     // Use value, or fallback to default
     let val: unknown = field.options.value;
@@ -650,11 +688,16 @@ export class PromptService implements IPromptService {
 
     let value = String(val);
     // Parse template expressions in default value
-    value = await this.evaluateTemplateExpression(value, field, {
+    const promptContext = context || {
       existingValues: new Map(),
       skipExisting: false,
       interactive: true,
-    });
+      globalVars: {
+        index: 0,
+        iterCounters: new Map()
+      }
+    };
+    value = await this.evaluateTemplateExpression(value, field, promptContext);
     if (field.type === "number" || field.type === "port") {
       const num = parseFloat(value);
       return isNaN(num) ? undefined : num;

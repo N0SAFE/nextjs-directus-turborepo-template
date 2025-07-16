@@ -68,6 +68,12 @@ export interface TransformContext {
   isVariableValue?: boolean; // Flag to indicate if the value comes from a variable reference
 }
 
+// Global variables context for computed expressions
+export interface GlobalVariablesContext {
+  index: number; // Current field processing index
+  iterCounters: Map<string, number>; // Namespace counters for $iter.namespace
+}
+
 // Prompt context for user interaction
 export interface PromptContext {
   existingValues: Map<string, string>;
@@ -75,6 +81,7 @@ export interface PromptContext {
   groupInfo?: { id: string, name: string, description?: string };
   skipExisting: boolean;
   interactive: boolean;
+  globalVars?: GlobalVariablesContext; // Global variables for computed expressions
 }
 
 // Prompt result

@@ -119,7 +119,7 @@ export interface IPromptService extends BaseService {
   displayGroupHeader(groupName: string, groupTitle: string): void;
   displayValidationError(error: string): void;
   displaySummary(results: Map<string, PromptResult>): void;
-  collectUserInput(field: TemplateField, message: string): Promise<string>;
+  collectUserInput(field: TemplateField, message: string, context?: PromptContext): Promise<string>;
   validateAndRetry(field: TemplateField, context: PromptContext): Promise<string>;
   processNonInteractive(
     fields: TemplateField[], 
