@@ -18,7 +18,7 @@
     "coverage:merge": "rimraf coverage && node scripts/collect-coverage.js && nyc merge coverage/raw coverage/coverage-final.json",
     "coverage:report": "mkdir -p coverage && nyc report --temp-dir coverage --report-dir coverage/report --reporter=html --reporter=text --reporter=lcov && echo \"\\n📊 Merged coverage report generated at: coverage/report/index.html\"",
     "lint": "turbo lint",
-    "format": "turbo pretify",
+    "format": "turbo prettify",
     "clean": "turbo clean",
     "init": "bun --bun scripts/init.js",
     "generate": "turbo generate",

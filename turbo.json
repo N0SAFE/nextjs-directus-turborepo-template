@@ -64,7 +64,7 @@
             "cache": false,
             "inputs": ["src/**", "*.config.*", "package.json"]
         },
-        "pretify": {
+        "prettify": {
             "dependsOn": ["^lint"],
             "cache": false
         },

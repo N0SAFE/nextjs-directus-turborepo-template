@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "echo": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH}",
-        "pretify": "bun x prettier . --write --no-error-on-unmatched-pattern",
+        "prettify": "bun x prettier . --write --no-error-on-unmatched-pattern",
         "dev": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli cross-env NODE_OPTIONS='--inspect' next dev -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",
         "dev:docker": "concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli cross-env NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",
         "dev:open": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"(envcli open $:{NEXT_PUBLIC_APP_URL} || envcli cmd.exe /c start $:{NEXT_PUBLIC_APP_URL}) && envcli cross-env NODE_OPTIONS='--inspect' next dev -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",

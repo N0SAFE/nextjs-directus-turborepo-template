@@ -153,13 +153,12 @@ export type TupleIndices<A extends any[]> = A extends [any, ...infer T]
     ? TupleIndices<T> | T['length']
     : never
 
-export type Pretify<T> = {
-    // @ts-ignore
+export type Prettify<T> = {
     [K in keyof T]: T[K]
+    // eslint-disable-next-line @typescript-eslint/ban-types
 } & {}
 export type Promisable<T> = T | Promise<T>
-export type OmitNever<T extends {}> = {
-    // @ts-ignore
+export type OmitNever<T extends object> = {
     [K in keyof T as T[K] extends never ? never : K]: T[K]
 }
 
