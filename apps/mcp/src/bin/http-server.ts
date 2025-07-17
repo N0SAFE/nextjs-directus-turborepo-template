@@ -13,6 +13,14 @@ import { ProxyMcpServer } from '../manager/proxy-mcp-server.js';
 import { ConfigurationManager } from '../manager/configuration-manager.js';
 import { getConfigFromCommanderAndEnv } from './config.js';
 
+// Helper function to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+}
+
 interface McpHttpServer {
   app: express.Application;
   server: any;
@@ -124,7 +132,7 @@ export class McpHttpServerManager {
         const result = await proxyServer.backend.callTool(serverId, actualToolName, args);
         res.json(result);
       } catch (error) {
-        res.status(500).json({ error: 'Failed to call tool', details: error.message });
+        res.status(500).json({ error: 'Failed to call tool', details: getErrorMessage(error) });
       }
     });
 
@@ -148,7 +156,7 @@ export class McpHttpServerManager {
         
         res.json({ success: true, message: 'Server added successfully' });
       } catch (error) {
-        res.status(500).json({ error: 'Failed to add server', details: error.message });
+        res.status(500).json({ error: 'Failed to add server', details: getErrorMessage(error) });
       }
     });
 
@@ -220,7 +228,7 @@ export class McpHttpServerManager {
           // Send response back through stream
           res.write(`data: ${JSON.stringify(response)}\n\n`);
         } catch (error) {
-          res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+          res.write(`data: ${JSON.stringify({ type: 'error', error: getErrorMessage(error) })}\n\n`);
         }
       });
 
@@ -244,7 +252,7 @@ export class McpHttpServerManager {
           const result = await proxyServer.backend.callTool(serverId, actualToolName, args);
           socket.emit('mcp:toolResult', { success: true, result });
         } catch (error) {
-          socket.emit('mcp:toolResult', { success: false, error: error.message });
+          socket.emit('mcp:toolResult', { success: false, error: getErrorMessage(error) });
         }
       });
 
@@ -325,7 +333,7 @@ async function main() {
 }
 
 // Check if this file is being run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   main().catch(console.error);
 }
 

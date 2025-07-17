@@ -70,7 +70,7 @@ async function createEnhancedProxyServer() {
           args: ["-y", "@modelcontextprotocol/server-brave-search"],
           env: {
             BRAVE_API_KEY: process.env.BRAVE_API_KEY || "demo-api-key",
-          },
+          } as Record<string, string>,
         },
         security: {
           allowedTools: ["brave_web_search"],
@@ -88,7 +88,7 @@ async function createEnhancedProxyServer() {
           args: ["-y", "@modelcontextprotocol/server-postgres"],
           env: {
             POSTGRES_CONNECTION_STRING: process.env.POSTGRES_CONNECTION_STRING || "postgresql://localhost:5432/demo",
-          },
+          } as Record<string, string>,
         },
         security: {
           allowedTools: ["query", "list_tables", "describe_table"],
@@ -108,7 +108,7 @@ async function createEnhancedProxyServer() {
           args: ["-y", "@modelcontextprotocol/server-slack"],
           env: {
             SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN || "",
-          },
+          } as Record<string, string>,
         },
         security: {
           allowedTools: ["list_channels", "send_message", "get_channel_history"],
