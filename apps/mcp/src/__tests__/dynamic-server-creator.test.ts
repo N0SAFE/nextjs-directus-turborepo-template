@@ -25,14 +25,14 @@ describe('DynamicServerCreator', () => {
       
       expect(server.id).toMatch(/^generated-\d+-[a-f0-9]{8}$/);
       expect(server.name).toContain('OpenAPI Server');
-      expect(server.description).toBe('Test OpenAPI server');
+      expect(server.description).toContain('Generated OpenAPI MCP server: Test OpenAPI server');
       expect(server.transportType).toBe('stdio');
       expect(server.generated).toBe(true);
       expect(server.generatedAt).toBeInstanceOf(Date);
       expect(server.instructions).toEqual(instructions);
       expect(server.stdio).toBeDefined();
-      expect(server.stdio?.command).toBe('npx');
-      expect(server.stdio?.args).toContain('@modelcontextprotocol/server-openapi');
+      expect(server.stdio?.command).toBe('node');
+      expect(server.stdio?.args).toContain('-e');
     });
 
     it('should create a webhook server', async () => {
@@ -49,7 +49,7 @@ describe('DynamicServerCreator', () => {
       const server = await creator.createServerFromInstructions(instructions);
       
       expect(server.name).toContain('Webhook Server');
-      expect(server.description).toBe('Test webhook server');
+      expect(server.description).toContain('Generated webhook MCP server: Test webhook server');
       expect(server.stdio?.env).toHaveProperty('WEBHOOK_URL', 'https://example.com/webhook');
       expect(server.stdio?.env).toHaveProperty('WEBHOOK_SECRET', 'secret123');
     });
@@ -69,7 +69,7 @@ describe('DynamicServerCreator', () => {
       const server = await creator.createServerFromInstructions(instructions);
       
       expect(server.name).toContain('Database Server');
-      expect(server.description).toBe('Test database server');
+      expect(server.description).toContain('Generated database MCP server: Test database server');
       expect(server.stdio?.env).toHaveProperty('DATABASE_URL', 'postgresql://localhost:5432/testdb');
       expect(server.stdio?.env).toHaveProperty('DATABASE_TYPE', 'postgresql');
     });
@@ -89,7 +89,7 @@ describe('DynamicServerCreator', () => {
       const server = await creator.createServerFromInstructions(instructions);
       
       expect(server.name).toContain('Custom Server');
-      expect(server.description).toBe('Test custom server');
+      expect(server.description).toContain('Generated custom MCP server: Test custom server');
       expect(server.stdio?.command).toBe('node');
       expect(server.stdio?.args).toEqual(['custom-server.js']);
       expect(server.stdio?.env).toHaveProperty('CUSTOM_VAR', 'value');
@@ -100,7 +100,10 @@ describe('DynamicServerCreator', () => {
         serverType: 'custom',
         description: 'Test server with custom ID',
         capabilities: [],
-        configuration: {}
+        configuration: {
+          command: 'echo',
+          args: ['test']
+        }
       };
 
       const customId = 'my-custom-server-id';
@@ -120,6 +123,30 @@ describe('DynamicServerCreator', () => {
       await expect(creator.createServerFromInstructions(instructions))
         .rejects.toThrow('Unsupported server type: unsupported');
     });
+
+    it('should throw error for OpenAPI server without required config', async () => {
+      const instructions: ServerCreationInstructions = {
+        serverType: 'openapi',
+        description: 'Invalid OpenAPI server',
+        capabilities: [],
+        configuration: {} // Missing openApiUrl or openApiSpec
+      };
+
+      await expect(creator.createServerFromInstructions(instructions))
+        .rejects.toThrow('OpenAPI server requires either openApiUrl or openApiSpec');
+    });
+
+    it('should throw error for webhook server without required config', async () => {
+      const instructions: ServerCreationInstructions = {
+        serverType: 'webhook',
+        description: 'Invalid webhook server',
+        capabilities: [],
+        configuration: {} // Missing webhookUrl
+      };
+
+      await expect(creator.createServerFromInstructions(instructions))
+        .rejects.toThrow('Webhook server requires webhookUrl');
+    });
   });
 
   describe('listGeneratedServers', () => {
@@ -133,14 +160,14 @@ describe('DynamicServerCreator', () => {
         serverType: 'openapi',
         description: 'Server 1',
         capabilities: [],
-        configuration: {}
+        configuration: { openApiUrl: 'https://api1.com/swagger.json' }
       };
       
       const instructions2: ServerCreationInstructions = {
         serverType: 'webhook',
         description: 'Server 2',
         capabilities: [],
-        configuration: {}
+        configuration: { webhookUrl: 'https://example.com/webhook' }
       };
 
       await creator.createServerFromInstructions(instructions1);
@@ -148,8 +175,8 @@ describe('DynamicServerCreator', () => {
 
       const servers = creator.listGeneratedServers();
       expect(servers).toHaveLength(2);
-      expect(servers[0].description).toBe('Server 1');
-      expect(servers[1].description).toBe('Server 2');
+      expect(servers[0].description).toContain('Server 1');
+      expect(servers[1].description).toContain('Server 2');
     });
   });
 
@@ -159,7 +186,7 @@ describe('DynamicServerCreator', () => {
         serverType: 'openapi',
         description: 'Test server',
         capabilities: [],
-        configuration: {}
+        configuration: { openApiUrl: 'https://api.com/swagger.json' }
       };
 
       const server = await creator.createServerFromInstructions(instructions);
@@ -182,7 +209,7 @@ describe('DynamicServerCreator', () => {
         serverType: 'webhook',
         description: 'Test webhook',
         capabilities: [],
-        configuration: {}
+        configuration: { webhookUrl: 'https://example.com/webhook' }
       };
 
       const server = await creator.createServerFromInstructions(instructions);
@@ -190,7 +217,7 @@ describe('DynamicServerCreator', () => {
       
       expect(retrieved).toBeDefined();
       expect(retrieved?.id).toBe(server.id);
-      expect(retrieved?.description).toBe('Test webhook');
+      expect(retrieved?.description).toContain('Test webhook');
     });
 
     it('should return undefined for non-existent server', () => {
