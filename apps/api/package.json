@@ -24,8 +24,8 @@
     "generate:directus:types": "bun --bun run export",
     "import": "bun --bun run schema:import && bun --bun run data:import",
     "export": "bun --bun run schema:export && bun --bun run data:export",
-    "data:export": "dotenv -v CONFIG_PATH=config.js -- envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && bun x --bun tsx ./bin/seed.ts export -o seed.json -u $:{NEXT_PUBLIC_API_URL} -t $:{API_ADMIN_TOKEN}\"",
-    "data:import": "dotenv -v CONFIG_PATH=config.js -- envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && bun x --bun tsx ./bin/seed.ts import -i seed.json -u $:{NEXT_PUBLIC_API_URL} -t $:{API_ADMIN_TOKEN}\"",
+    "data:export": "dotenv -v CONFIG_PATH=config.js -- envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && bun --bun ./bin/seed.ts export -o seed.json -u $:{NEXT_PUBLIC_API_URL} -t $:{API_ADMIN_TOKEN}\"",
+    "data:import": "dotenv -v CONFIG_PATH=config.js -- envcli \"wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && bun --bun ./bin/seed.ts import -i seed.json -u $:{NEXT_PUBLIC_API_URL} -t $:{API_ADMIN_TOKEN}\"",
     "schema:export": "dotenv -v CONFIG_PATH=config.js -- directus schema snapshot --yes ./snapshot.yaml",
     "schema:import": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --yes ./snapshot.yaml",
     "schema:import:dryRun": "dotenv -v CONFIG_PATH=config.js -- directus schema apply --dry-run ./snapshot.yaml",
@@ -45,7 +45,6 @@
   "devDependencies": {
     "@n0safe/runwhileerror": "^1.0.0",
     "@repo/vitest-config": "*",
-    "tsx": "^4.0.0",
     "vitest": "catalog:testing",
     "@vitest/coverage-v8": "catalog:testing"
   }
