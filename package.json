@@ -154,7 +154,8 @@
     "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
     "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
     ".": "dotenv -e .env -- bun --bun --cwd=./ run --",
-    "rm:node_modules": "bun x rimraf node_modules && rimraf packages/*/node_modules && rimraf apps/*/node_modules"
+    "rm:node_modules": "bun x rimraf node_modules && rimraf packages/*/node_modules && rimraf apps/*/node_modules",
+    " ": " "
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^18.0.1",

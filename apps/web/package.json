@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
+        " ": " ",
         "echo": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH}",
         "prettify": "bun x prettier . --write --no-error-on-unmatched-pattern",
         "dev": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli cross-env NODE_OPTIONS='--inspect' next dev -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",

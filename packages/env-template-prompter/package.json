@@ -25,6 +25,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    " ": " ",
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    " ": " ",
     "update": "bun --bun update && directus database migrate:latest",
     "directus:bootstrap": "directus bootstrap",
     "directus:bootstrap:config.js": "dotenv -v CONFIG_PATH=config.js -- directus bootstrap",
