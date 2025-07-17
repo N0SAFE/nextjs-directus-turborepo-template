@@ -41,7 +41,6 @@
         "@n0safe/runwhileerror": "^1.0.0",
         "@repo/vitest-config": "*",
         "@vitest/coverage-v8": "catalog:testing",
-        "tsx": "^4.0.0",
         "vitest": "catalog:testing",
       },
     },

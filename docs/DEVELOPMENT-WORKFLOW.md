@@ -77,7 +77,10 @@ Manage test data with the seeder extension:
 
 ```bash
 # Dump current database state to seed file
-bun run api -- node ./bin/seed.ts
+bun run api -- data:export
+
+# Or run the seed script directly
+bun run api -- bun ./bin/seed.ts export --help
 
 # Seed data will be saved to seed.json
 ```
