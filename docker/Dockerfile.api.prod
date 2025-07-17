@@ -1,5 +1,5 @@
 # Production Dockerfile for Directus API
-FROM directus/directus:11.8.0
+FROM directus/directus:11.9.3
 
 ARG NEXT_PUBLIC_API_URL=http://localhost:8055
 ARG NEXT_PUBLIC_API_PORT=8055
