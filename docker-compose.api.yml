@@ -1,0 +1,111 @@
+services:
+  # Database for development
+  api-db-dev:
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-dev
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_DATABASE:-directus}
+    volumes:
+      - api_db_data_dev:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - api_network_dev
+
+  # Redis cache for development
+  api-cache-dev:
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-dev
+    image: redis:8
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+    networks:
+      - api_network_dev
+
+  # Directus API for development
+  api-dev:
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-dev
+    image: directus/directus:11.8.0
+    depends_on:
+      api-db-dev:
+        condition: service_healthy
+      api-cache-dev:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_API_PORT:-8055}:${NEXT_PUBLIC_API_PORT:-8055}"
+    volumes:
+      # Mount source code for hot reloading
+      - ./apps/api:/app/apps/api
+      - ./apps/api/uploads:/directus/uploads
+      - ./apps/api/extensions:/directus/extensions
+      - ./apps/api/database:/directus/database
+    environment:
+      SECRET: "replace-with-secure-random-value"
+      DB_CLIENT: mysql
+      DB_HOST: api-db-dev
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-directus}
+      DB_USER: root
+      DB_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      CACHE_ENABLED: "true"
+      CACHE_AUTO_PURGE: "true"
+      CACHE_STORE: "redis"
+      REDIS: "redis://api-cache-dev:6379"
+      ADMIN_EMAIL: "admin@admin.com"
+      ADMIN_PASSWORD: "adminadmin"
+      ADMIN_TOKEN: ${API_ADMIN_TOKEN:-secret-admin-token}
+      PUBLIC_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8055/}
+      # CORS Configuration for cross-origin requests from web app
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "${NEXT_PUBLIC_APP_URL:-http://localhost:3000}"
+      CORS_METHODS: "GET,POST,PATCH,DELETE,OPTIONS"
+      CORS_ALLOWED_HEADERS: "Content-Type,Authorization,X-Requested-With"
+      CORS_CREDENTIALS: "true"
+      # Enable hot reloading for extensions
+      EXTENSIONS_AUTO_RELOAD: "true"
+      # Development specific settings
+      LOG_LEVEL: "debug"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:8055/server/health || exit 1
+      start_period: 15s
+      interval: 15s
+      timeout: 15s
+      retries: 5
+    networks:
+      - api_network_dev
+
+networks:
+  api_network_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_network_dev
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+
+volumes:
+  api_db_data_dev:
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_dev

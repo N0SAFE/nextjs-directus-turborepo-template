@@ -1,8 +1,79 @@
 # Docker Build Strategies
 
-This project provides two distinct Docker build strategies for the web service, each optimized for different deployment scenarios.
+This project provides multiple Docker compose configurations optimized for different development and deployment scenarios.
 
-## Build-Time Compilation (Recommended for Production)
+## Development Environment
+
+### Full Development Environment (Default)
+
+**Files:**
+- `docker-compose.yml` (main development setup)
+
+**What it includes:**
+- Next.js web app with hot reloading
+- Directus API with hot reloading  
+- MySQL database
+- Redis cache
+
+**Usage:**
+```bash
+bun run dev
+# or
+docker-compose up
+```
+
+### Separate Development Services
+
+For independent development, you can run API and Web services separately:
+
+#### API Development Only
+
+**Files:**
+- `docker-compose.api.dev.yml`
+- `docker/Dockerfile.api.dev`
+
+**What it includes:**
+- Directus API with development tools
+- MySQL database (exposed on port 3306)
+- Redis cache (exposed on port 6379)
+
+**Usage:**
+```bash
+bun run dev:api
+# or
+docker-compose -f docker-compose.api.dev.yml up
+```
+
+**Benefits:**
+- ✅ **Independent API development** - work on backend without frontend
+- ✅ **External connections** - database and Redis exposed for external tools
+- ✅ **Development tools** - curl, wget, bash, nano, git included
+- ✅ **Hot reloading** - extensions auto-reload on changes
+
+#### Web Development Only
+
+**Files:**
+- `docker-compose.web.dev.yml`
+- `docker/Dockerfile.web.dev` (existing)
+
+**What it includes:**
+- Next.js web app with hot reloading
+- Connects to external API server
+
+**Usage:**
+```bash
+bun run dev:web
+# or
+docker-compose -f docker-compose.web.dev.yml up
+```
+
+**Benefits:**
+- ✅ **Independent web development** - work on frontend with external API
+- ✅ **Host networking** - easy connection to external services
+- ✅ **Hot reloading** - instant updates on code changes
+- ✅ **Development features** - auth logs, telemetry disabled
+
+## Production Environment
 
 **Files:**
 - `docker/Dockerfile.web.build-time.prod` 
@@ -63,6 +134,23 @@ This project provides two distinct Docker build strategies for the web service, 
 - Docker Compose local development
 
 ## Quick Reference
+
+### Development Commands
+
+```bash
+# Full development environment
+bun run dev                    # Start all services (API + Web + Database + Redis)
+
+# Separate development services  
+bun run dev:api               # Start API services only
+bun run dev:web               # Start Web service only
+bun run dev:api:build         # Build and start API services
+bun run dev:web:build         # Build and start Web service  
+bun run dev:api:down          # Stop API services
+bun run dev:web:down          # Stop Web service
+bun run dev:api:logs          # View API logs
+bun run dev:web:logs          # View Web logs
+```
 
 ### For Render/Vercel Deployment:
 ```bash

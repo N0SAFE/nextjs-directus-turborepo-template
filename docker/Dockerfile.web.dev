@@ -65,7 +65,7 @@ COPY --from=deps --chown=node:node /app/apps/web/node_modules ./apps/web/node_mo
 COPY --chown=node:node . .
 
 # Ensure all files have proper write permissions for the node user
-RUN chmod -R u+w /app/apps/web
+RUN chown --recursive node:node /app/apps/web
 
 # Set environment variables for development
 ENV NODE_ENV=development

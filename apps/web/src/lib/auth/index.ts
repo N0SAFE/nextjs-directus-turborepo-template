@@ -89,6 +89,9 @@ const result = NextAuth({
                     if (env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                         console.log('login: Logging in as :', email)
                     }
+                    console.log({
+                        email, password, directusUrl: directus.url,
+                    })
                     const auth = await directus.login(email, password, {
                         mode: 'json',
                     })
