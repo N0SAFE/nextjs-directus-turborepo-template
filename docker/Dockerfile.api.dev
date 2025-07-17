@@ -1,0 +1,24 @@
+# Development Dockerfile for Directus API
+# This extends the official Directus image with development-specific configurations
+
+FROM directus/directus:11.8.0
+
+# Set development environment
+ENV NODE_ENV=development
+ENV LOG_LEVEL=debug
+ENV EXTENSIONS_AUTO_RELOAD=true
+
+# Install additional development tools if needed
+USER root
+RUN apk add --no-cache \
+    curl \
+    wget \
+    bash \
+    nano \
+    git
+
+# Switch back to directus user
+USER directus
+
+# The rest of the configuration is handled via environment variables
+# in the docker-compose.api.dev.yml file

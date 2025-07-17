@@ -73,22 +73,43 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
 
 ## Development Workflow
 
-1. **Running the Development Environment**
+1. **Running the Full Development Environment**
    ```bash
-   bun --bun dev # Starts all services
+   bun --bun dev # Starts all services (API + Web + Database + Redis)
    ```
 
-2. **Building for Production**
+2. **Running Services Separately (for independent development)**
+   ```bash
+   # API only (includes database and Redis)
+   bun run dev:api
+   
+   # Web only (connects to external API)
+   bun run dev:web
+   
+   # Build and run with fresh images
+   bun run dev:api:build
+   bun run dev:web:build
+   
+   # Stop services
+   bun run dev:api:down
+   bun run dev:web:down
+   
+   # View logs
+   bun run dev:api:logs
+   bun run dev:web:logs
+   ```
+
+3. **Building for Production**
    ```bash
    bun --bun build # Builds all apps and packages
    ```
 
-3. **Running Tests**
+4. **Running Tests**
    ```bash
    bun --bun test # Runs tests across all packages
    ```
 
-4. **Linting and Formatting**
+5. **Linting and Formatting**
    ```bash
    bun --bun lint # Run ESLint
    bun --bun format # Run Prettier
