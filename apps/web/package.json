@@ -57,7 +57,7 @@
         "lodash.snakecase": "catalog:utils"
     },
     "devDependencies": {
-        "@asteasolutions/zod-to-openapi": "^7.3.4",
+        "@asteasolutions/zod-to-openapi": "^8.0.0",
         "@eslint/eslintrc": "^3",
         "@repo/eslint-config": "*",
         "@repo/prettier-config": "*",
