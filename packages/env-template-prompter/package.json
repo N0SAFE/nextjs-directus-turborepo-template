@@ -35,7 +35,7 @@
     "test:e2e": "vitest run tests/e2e",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "demo": "node demo.js"
+    "demo": "bun --bun demo.js"
   },
   "dependencies": {
     "commander": "^14.0.0",
