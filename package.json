@@ -1,10 +1,92 @@
 {
   "name": "nextjs-directus-turborepo-template",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalogs": {
+      "build": {
+        "typescript": "^5.8.3",
+        "rimraf": "^6.0.1"
+      },
+      "dev": {
+        "dotenv": "^16.4.5",
+        "dotenv-cli": "^7.4.2",
+        "dotenv-expand": "^11.0.6",
+        "wait-port": "^1.1.0",
+        "wait-on": "^8.0.1",
+        "concurrently": "^9.2.0",
+        "cross-env": "^7.0.3"
+      },
+      "linting": {
+        "eslint": "^9",
+        "prettier": "^3.3.3",
+        "prettier-plugin-tailwindcss": "^0.6.13"
+      },
+      "next": {
+        "next": "15.4.0",
+        "eslint-config-next": "15.4.0",
+        "@next/bundle-analyzer": "^15.3.5",
+        "next-auth": "^5.0.0-beta.29",
+        "next-sitemap": "^4.2.3",
+        "next-themes": "^0.4.6",
+        "nextjs-toploader": "^3.8.16"
+      },
+      "react": {
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "@types/react": "^19.0.7",
+        "@types/react-dom": "^19.0.3",
+        "react-hook-form": "^7.53.0"
+      },
+      "query": {
+        "@tanstack/react-query": "^5.81.5",
+        "@tanstack/react-query-devtools": "^5.81.5",
+        "@tanstack/eslint-plugin-query": "^5.81.2"
+      },
+      "styling": {
+        "tailwindcss": "^4",
+        "@tailwindcss/postcss": "^4",
+        "tailwind-merge": "^2.0.0",
+        "tailwind-variants": "^0.1.18",
+        "tailwindcss-animate": "^1.0.7",
+        "postcss": "^8.4.31",
+        "clsx": "^2.0.0"
+      },
+      "testing": {
+        "vitest": "^3.2.4",
+        "@vitest/ui": "^3.2.4",
+        "@vitest/coverage-v8": "^3.2.4",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/react": "^16.1.0",
+        "@testing-library/user-event": "^14.5.2",
+        "jsdom": "^25.0.1",
+        "@vitejs/plugin-react": "^4.3.4"
+      },
+      "ui": {
+        "lucide-react": "^0.525.0",
+        "@radix-ui/react-alert-dialog": "^1.1.1",
+        "@radix-ui/react-dialog": "^1.1.2",
+        "@radix-ui/react-dropdown-menu": "^2.1.2",
+        "@radix-ui/react-icons": "^1.3.0",
+        "@radix-ui/react-label": "^2.1.0",
+        "@radix-ui/react-separator": "^1.1.0",
+        "@radix-ui/react-slot": "^1.1.0",
+        "framer-motion": "^10.16.4",
+        "class-variance-authority": "^0.7.0"
+      },
+      "utils": {
+        "zod": "^4.0.0",
+        "@hookform/resolvers": "^3.9.0",
+        "query-string": "^9.2.2",
+        "zustand": "^5.0.6",
+        "lodash.snakecase": "^4.1.1",
+        "@types/lodash.snakecase": "^4.1.1"
+      }
+    }
+  },
   "scripts": {
     "dev": "docker compose down && docker compose up",
     "dev:api": "bun --bun run dev:api:down && docker compose -f ./docker-compose.api.yml up",
@@ -71,7 +153,8 @@
     "@repo/tailwind-config": "dotenv -e .env -- bun --bun --cwd=./packages/tailwind-config run --",
     "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
     "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
-    ".": "dotenv -e .env -- bun --bun --cwd=./ run --"
+    ".": "dotenv -e .env -- bun --bun --cwd=./ run --",
+    "rm:node_modules": "bun x rimraf node_modules && rimraf packages/*/node_modules && rimraf apps/*/node_modules"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^18.0.1",
@@ -99,88 +182,5 @@
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "catalog": {
-    "catalog:build": {
-      "typescript": "^5.8.3",
-      "rimraf": "^6.0.1"
-    },
-    "catalog:dev": {
-      "dotenv": "^16.4.5",
-      "dotenv-cli": "^7.4.2",
-      "dotenv-expand": "^11.0.6",
-      "wait-port": "^1.1.0",
-      "wait-on": "^8.0.1",
-      "concurrently": "^9.2.0",
-      "cross-env": "^7.0.3"
-    },
-    "catalog:linting": {
-      "eslint": "^9",
-      "prettier": "^3.3.3",
-      "prettier-plugin-tailwindcss": "^0.6.13"
-    },
-    "catalog:next": {
-      "next": "15.4.0",
-      "eslint-config-next": "15.4.0",
-      "@next/bundle-analyzer": "^15.3.5",
-      "next-auth": "^5.0.0-beta.29",
-      "next-sitemap": "^4.2.3",
-      "next-themes": "^0.4.6",
-      "nextjs-toploader": "^3.8.16"
-    },
-    "catalog:react": {
-      "react": "^19.0.0",
-      "react-dom": "^19.0.0",
-      "@types/react": "^19.0.7",
-      "@types/react-dom": "^19.0.3",
-      "react-hook-form": "^7.53.0"
-    },
-    "catalog:query": {
-      "@tanstack/react-query": "^5.81.5",
-      "@tanstack/react-query-devtools": "^5.81.5",
-      "@tanstack/eslint-plugin-query": "^5.81.2"
-    },
-    "catalog:styling": {
-      "tailwindcss": "^4",
-      "@tailwindcss/postcss": "^4",
-      "tailwind-merge": "^2.0.0",
-      "tailwind-variants": "^0.1.18",
-      "tailwindcss-animate": "^1.0.7",
-      "postcss": "^8.4.31",
-      "clsx": "^2.0.0"
-    },
-    "catalog:testing": {
-      "vitest": "^3.2.4",
-      "@vitest/ui": "^3.2.4",
-      "@vitest/coverage-v8": "^3.2.4",
-      "@testing-library/jest-dom": "^6.6.3",
-      "@testing-library/react": "^16.1.0",
-      "@testing-library/user-event": "^14.5.2",
-      "jsdom": "^25.0.1",
-      "@vitejs/plugin-react": "^4.3.4"
-    },
-    "catalog:ui": {
-      "lucide-react": "^0.525.0",
-      "@radix-ui/react-alert-dialog": "^1.1.1",
-      "@radix-ui/react-dialog": "^1.1.2",
-      "@radix-ui/react-dropdown-menu": "^2.1.2",
-      "@radix-ui/react-icons": "^1.3.0",
-      "@radix-ui/react-label": "^2.1.0",
-      "@radix-ui/react-separator": "^1.1.0",
-      "@radix-ui/react-slot": "^1.1.0",
-      "framer-motion": "^10.16.4",
-      "class-variance-authority": "^0.7.0"
-    },
-    "catalog:utils": {
-      "zod": "^3.25.76",
-      "@hookform/resolvers": "^3.9.0",
-      "query-string": "^9.2.2",
-      "zustand": "^5.0.6",
-      "lodash.snakecase": "^4.1.1",
-      "@types/lodash.snakecase": "^4.1.1"
-    },
-    "catalog:vite": {
-      "vite": "^5.4.11"
-    }
   }
 }

@@ -27,8 +27,5 @@
     "jsdom": "catalog:testing",
     "typescript": "catalog:build",
     "vitest": "catalog:testing"
-  },
-  "dependencies": {
-    "vite": "catalog:vite"
   }
 }
