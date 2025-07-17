@@ -79,17 +79,17 @@
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
         "@repo/vitest-config": "*",
-        "@testing-library/jest-dom": "^6.6.3",
-        "jsdom": "^25.0.1",
-        "typescript": "^5.5.3",
-        "vitest": "^3.2.4"
+        "@testing-library/jest-dom": "catalog:testing",
+        "jsdom": "catalog:testing",
+        "typescript": "catalog:build",
+        "vitest": "catalog:testing"
     },
     "dependencies": {
         "@directus/sdk": "^17.0.0",
         "@n0safe/envcli": "^1.0.2",
         "@n0safe/indirectus": "^1.0.2",
-        "next": "15.4.0",
-        "rimraf": "^6.0.1",
-        "wait-port": "^1.1.0"
+        "next": "catalog:next",
+        "rimraf": "catalog:build",
+        "wait-port": "catalog:dev"
     }
 }
