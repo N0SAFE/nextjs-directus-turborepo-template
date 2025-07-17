@@ -1,5 +1,5 @@
 {
-  "name": "mcp-server-template",
+  "name": "mcp",
   "version": "1.0.0",
   "exports": {
     ".": "./dist/index.js",
