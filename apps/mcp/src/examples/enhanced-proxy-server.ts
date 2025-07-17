@@ -178,6 +178,29 @@ Examples:
 - \`proxy_config_enable_server\` - Enable servers
 - \`proxy_config_disable_server\` - Disable servers
 
+### Dynamic Server Creation 🆕
+- \`proxy_create_custom_server\` - Create MCP servers from natural language instructions
+- \`proxy_list_generated_servers\` - List all dynamically created servers  
+- \`proxy_remove_generated_server\` - Remove dynamically created servers
+
+#### Supported Dynamic Server Types:
+- **OpenAPI/REST**: Create servers from OpenAPI specifications or REST API endpoints
+- **Webhook**: Create servers that send HTTP POST requests to webhook endpoints
+- **Database**: Create servers for database query and management operations
+- **Custom**: Create servers from custom code or command specifications
+
+#### Example Usage:
+\`\`\`
+proxy_create_custom_server({
+  "instructions": "Create a server to interact with the JSONPlaceholder API at https://jsonplaceholder.typicode.com/ using their OpenAPI spec",
+  "serverType": "openapi",
+  "configuration": {
+    "openApiUrl": "https://jsonplaceholder.typicode.com/openapi.json",
+    "baseUrl": "https://jsonplaceholder.typicode.com"
+  }
+})
+\`\`\`
+
 ## 🔒 Security Features
 
 - **Per-server tool filtering**: Control which tools are exposed

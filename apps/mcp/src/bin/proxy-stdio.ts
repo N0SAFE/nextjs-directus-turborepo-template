@@ -36,11 +36,19 @@ This server acts as a reverse proxy for multiple MCP servers, providing:
 - Dynamic server discovery and management
 - Security and access control
 - Server health monitoring and management
+- Dynamic server creation from natural language instructions
 
 ### Quick Start:
 1. Use \`proxy_server_list\` to see all configured backend servers
 2. Use \`proxy_server_tools <serverId>\` to see tools from a specific server
 3. Use tools from backend servers with the format: \`{serverId}__{toolName}\`
+4. Create new servers dynamically with \`proxy_create_custom_server\`
+
+### Dynamic Server Creation:
+- Create OpenAPI/REST API servers from specifications
+- Create webhook servers for HTTP POST operations  
+- Create database servers for SQL operations
+- Create custom servers from code or commands
 
 ### Server Management:
 - Add new servers with \`proxy_config_add_server\`
@@ -65,6 +73,19 @@ Create a config file with servers like:
     }
   ]
 }
+\`\`\`
+
+### Example Dynamic Server Creation:
+\`\`\`
+proxy_create_custom_server({
+  "instructions": "Create a server to connect to the GitHub API for repository management",
+  "serverType": "openapi", 
+  "configuration": {
+    "openApiUrl": "https://api.github.com/openapi.yaml",
+    "baseUrl": "https://api.github.com",
+    "apiKey": "your-github-token"
+  }
+})
 \`\`\`
 `,
     });

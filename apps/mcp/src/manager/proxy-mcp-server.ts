@@ -3,6 +3,7 @@ import { McpServer } from "../mcp-server.js";
 import { BackendServerManager } from "./backend-server-manager.js";
 import { ProxyToolManager } from "./proxy-tool-manager.js";
 import { ConfigurationManager } from "./configuration-manager.js";
+import { DynamicServerCreator } from "./dynamic-server-creator.js";
 import {
   ToolsetConfig,
   DynamicToolDiscoveryOptions,
@@ -15,6 +16,7 @@ export class ProxyMcpServer extends McpServer {
   private backendServerManager: BackendServerManager;
   private configurationManager: ConfigurationManager;
   private proxyToolManager: ProxyToolManager;
+  private dynamicServerCreator: DynamicServerCreator;
 
   constructor({
     name,
@@ -38,6 +40,9 @@ export class ProxyMcpServer extends McpServer {
     // Initialize backend server manager
     const backendServerManager = new BackendServerManager(proxyConfig.servers);
 
+    // Initialize dynamic server creator
+    const dynamicServerCreator = new DynamicServerCreator();
+
     // Initialize proxy tool manager
     const proxyToolManager = new ProxyToolManager(
       name,
@@ -53,8 +58,16 @@ export class ProxyMcpServer extends McpServer {
       proxyToolManager
     );
 
+    // Create dynamic server creation tools
+    const dynamicServerTools = ProxyMcpServer.createDynamicServerTools(
+      dynamicServerCreator,
+      configMgr,
+      backendServerManager,
+      proxyToolManager
+    );
+
     // Combine with existing proxy tools
-    const allTools = [...serverManagementTools];
+    const allTools = [...serverManagementTools, ...dynamicServerTools];
 
     // Enhanced instructions for proxy server
     const proxyInstructions = `
@@ -63,6 +76,11 @@ export class ProxyMcpServer extends McpServer {
 This is an MCP proxy server that provides access to multiple backend MCP servers through a unified interface.
 
 ## Available Capabilities:
+
+### Dynamic Server Creation:
+- \`proxy_create_custom_server\`: Create new MCP servers from natural language instructions
+- \`proxy_list_generated_servers\`: List all dynamically created servers
+- \`proxy_remove_generated_server\`: Remove a dynamically created server
 
 ### Server Management:
 - \`proxy_server_list\`: List all configured backend servers and their status
@@ -103,10 +121,11 @@ ${instructions || ""}`;
     this.configurationManager = configMgr;
     this.backendServerManager = backendServerManager;
     this.proxyToolManager = proxyToolManager;
+    this.dynamicServerCreator = dynamicServerCreator;
 
     // Set up cleanup on shutdown
-    process.on("SIGTERM", () => this.shutdown());
-    process.on("SIGINT", () => this.shutdown());
+    process.on("SIGTERM", () => this.shutdownProxy());
+    process.on("SIGINT", () => this.shutdownProxy());
   }
 
   private static createServerManagementTools(
@@ -321,7 +340,247 @@ ${instructions || ""}`;
     ];
   }
 
-  private async shutdown() {
+  private static createDynamicServerTools(
+    dynamicServerCreator: DynamicServerCreator,
+    configManager: ConfigurationManager,
+    backendServerManager: BackendServerManager,
+    proxyToolManager: ProxyToolManager
+  ) {
+    const createCustomServerTool = createToolDefinition({
+      name: "proxy_create_custom_server",
+      description: "Create a new MCP server from natural language instructions. Supports OpenAPI/REST APIs, webhooks, databases, and custom servers.",
+      inputSchema: z.object({
+        instructions: z.string().describe("Natural language instructions describing what kind of MCP server to create and what it should do"),
+        serverId: z.string().optional().describe("Optional custom server ID (if not provided, one will be generated)"),
+        serverType: z.enum(["openapi", "webhook", "database", "custom"]).optional().describe("Specific server type to create (auto-detected if not provided)"),
+        configuration: z.object({
+          openApiUrl: z.string().optional().describe("URL to OpenAPI/Swagger specification"),
+          openApiSpec: z.any().optional().describe("OpenAPI specification as JSON object"),
+          baseUrl: z.string().optional().describe("Base URL for API calls"),
+          apiKey: z.string().optional().describe("API key for authentication"),
+          webhookUrl: z.string().optional().describe("Webhook endpoint URL"),
+          webhookSecret: z.string().optional().describe("Webhook secret for authentication"),
+          connectionString: z.string().optional().describe("Database connection string"),
+          databaseType: z.string().optional().describe("Database type (postgresql, mysql, sqlite, etc.)"),
+          schema: z.string().optional().describe("Database schema name"),
+          command: z.string().optional().describe("Command to execute for custom servers"),
+          args: z.array(z.string()).optional().describe("Command arguments"),
+          serverCode: z.string().optional().describe("Custom server code (JavaScript/Node.js)"),
+          env: z.record(z.string()).optional().describe("Environment variables"),
+          requireAuth: z.boolean().optional().describe("Whether the server requires authentication"),
+        }).optional().describe("Server-specific configuration options"),
+      }),
+      annotations: {
+        title: "Create Custom MCP Server",
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+    });
+
+    const listGeneratedServersTool = createToolDefinition({
+      name: "proxy_list_generated_servers",
+      description: "List all dynamically created MCP servers",
+      inputSchema: z.object({
+        includeInstructions: z.boolean().optional().describe("Include the original instructions used to create each server"),
+      }),
+      annotations: {
+        title: "List Generated Servers",
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    });
+
+    const removeGeneratedServerTool = createToolDefinition({
+      name: "proxy_remove_generated_server",
+      description: "Remove a dynamically created MCP server",
+      inputSchema: z.object({
+        serverId: z.string().describe("ID of the generated server to remove"),
+      }),
+      annotations: {
+        title: "Remove Generated Server",
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    });
+
+    return [
+      createTool(createCustomServerTool, async (params) => {
+        try {
+          // Parse instructions if configuration is not fully specified
+          let instructions;
+          if (params.configuration && Object.keys(params.configuration).length > 0) {
+            // Use provided configuration
+            instructions = {
+              serverType: params.serverType || "custom",
+              description: params.instructions,
+              capabilities: [], // Will be inferred from serverType
+              configuration: params.configuration,
+            };
+          } else {
+            // Parse from natural language instructions
+            instructions = dynamicServerCreator.parseInstructions(params.instructions);
+          }
+
+          // Override serverType if explicitly provided
+          if (params.serverType) {
+            instructions.serverType = params.serverType;
+          }
+
+          // Create the server
+          const serverConfig = await dynamicServerCreator.createServerFromInstructions(
+            instructions,
+            params.serverId
+          );
+
+          // Add to configuration and backend manager
+          configManager.addServer(serverConfig);
+          await backendServerManager.addServer(serverConfig);
+          
+          // Refresh proxy tools to include tools from the new server
+          setTimeout(async () => {
+            await proxyToolManager.refreshServerTools(serverConfig.id);
+          }, 2000); // Give the server time to start
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: true,
+                  serverId: serverConfig.id,
+                  serverName: serverConfig.name,
+                  description: serverConfig.description,
+                  serverType: instructions.serverType,
+                  capabilities: instructions.capabilities,
+                  message: `Successfully created ${instructions.serverType} MCP server '${serverConfig.name}' with ID '${serverConfig.id}'. The server will be available for use once it finishes initializing.`
+                }, null, 2),
+              },
+            ],
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  error: error instanceof Error ? error.message : String(error),
+                  message: "Failed to create custom MCP server. Please check your instructions and configuration."
+                }, null, 2),
+              },
+            ],
+          };
+        }
+      }),
+
+      createTool(listGeneratedServersTool, async (params) => {
+        try {
+          const generatedServers = dynamicServerCreator.listGeneratedServers();
+          
+          const serverList = generatedServers.map(server => {
+            const basic = {
+              id: server.id,
+              name: server.name,
+              description: server.description,
+              serverType: server.instructions.serverType,
+              enabled: server.enabled,
+              generatedAt: server.generatedAt,
+              capabilities: server.instructions.capabilities,
+            };
+
+            if (params.includeInstructions) {
+              return {
+                ...basic,
+                originalInstructions: server.instructions.description,
+                configuration: server.instructions.configuration,
+              };
+            }
+
+            return basic;
+          });
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  generatedServers: serverList,
+                  totalGenerated: serverList.length,
+                  summary: {
+                    byType: serverList.reduce((acc, server) => {
+                      acc[server.serverType] = (acc[server.serverType] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>),
+                  },
+                }, null, 2),
+              },
+            ],
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error listing generated servers: ${error instanceof Error ? error.message : String(error)}`,
+              },
+            ],
+          };
+        }
+      }),
+
+      createTool(removeGeneratedServerTool, async (params) => {
+        try {
+          const server = dynamicServerCreator.getGeneratedServer(params.serverId);
+          if (!server) {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `Generated server ${params.serverId} not found`,
+                },
+              ],
+            };
+          }
+
+          // Remove from backend manager and configuration
+          await backendServerManager.removeServer(params.serverId);
+          configManager.removeServer(params.serverId);
+          
+          // Remove from dynamic server creator
+          dynamicServerCreator.removeGeneratedServer(params.serverId);
+          
+          // Refresh proxy tools
+          await proxyToolManager.refreshServerTools(params.serverId);
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Generated server ${params.serverId} removed successfully`,
+              },
+            ],
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error removing generated server: ${error instanceof Error ? error.message : String(error)}`,
+              },
+            ],
+          };
+        }
+      }),
+    ];
+  }
+
+  private async shutdownProxy() {
     console.log("Shutting down MCP Proxy Server...");
     try {
       await this.backendServerManager.shutdown();
@@ -344,5 +603,9 @@ ${instructions || ""}`;
 
   get tools() {
     return this.proxyToolManager;
+  }
+
+  get serverCreator() {
+    return this.dynamicServerCreator;
   }
 }
