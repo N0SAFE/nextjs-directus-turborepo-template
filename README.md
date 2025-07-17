@@ -32,7 +32,21 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
    ```
    This will guide you through an interactive setup to configure your environment
 
-3. **Configure Project Name (Optional)**
+3. **Set Upstream Remote for Updates**
+   To keep your project up to date with the original template, add an `upstream` remote:
+   ```bash
+   git remote add upstream https://github.com/N0SAFE/nextjs-directus-turborepo-template.git
+   # To fetch and merge updates from the template later:
+   git fetch upstream
+   git merge upstream/main
+   ```
+   Or use the provided script:
+   ```bash
+   bun run add:upstream
+   ```
+   This will automatically add the upstream remote if it does not exist.
+
+4. **Configure Project Name (Optional)**
    To avoid conflicts when running multiple projects, set a unique project name in your `.env` file:
    ```bash
    COMPOSE_PROJECT_NAME=my-unique-project-name
