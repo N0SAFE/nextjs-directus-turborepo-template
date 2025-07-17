@@ -36,9 +36,9 @@ A modern, full-stack monorepo template featuring Next.js, Directus CMS, Shadcn U
    To keep your project up to date with the original template, add an `upstream` remote:
    ```bash
    git remote add upstream https://github.com/N0SAFE/nextjs-directus-turborepo-template.git
-   # To fetch and merge updates from the template later:
+   # To fetch and rebase updates from the template later:
    git fetch upstream
-   git merge upstream/main
+   git rebase upstream/main
    ```
    Or use the provided script:
    ```bash

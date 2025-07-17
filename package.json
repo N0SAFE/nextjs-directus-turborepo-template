@@ -36,7 +36,7 @@
     "clean": "turbo clean",
     "init": "bun --bun scripts/init.js",
     "add:upstream": "node scripts/add-upstream.js",
-    "merge:upstream": "bun --bun add:upstream && git fetch upstream && git merge upstream/main",
+    "rebase:upstream": "bun --bun add:upstream && git fetch upstream && git rebase upstream/main",
     "generate": "turbo generate",
     "generate:directus:types": "turbo run generate:directus:types",
     "docker:dev": "bun --bun run dev",
