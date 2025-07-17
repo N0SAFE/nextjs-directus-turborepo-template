@@ -1,7 +1,7 @@
 # Development Dockerfile for Directus API
 # This extends the official Directus image with development-specific configurations
 
-FROM directus/directus:11.8.0
+FROM directus/directus:11.9.3
 
 # Set development environment
 ENV NODE_ENV=development
