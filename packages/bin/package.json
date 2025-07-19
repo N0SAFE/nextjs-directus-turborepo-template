@@ -13,8 +13,8 @@
   "author": "",
   "devDependencies": {
     "@repo/vitest-config": "*",
-    "vitest": "^3.2.4",
-    "@types/node": "^20.9.0"
+    "vitest": "catalog:testing",
+    "@types/node": "catalog:build"
   },
   "type": "commonjs"
 }

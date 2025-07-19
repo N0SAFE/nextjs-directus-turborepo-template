@@ -17,8 +17,8 @@
   "description": "",
   "devDependencies": {
     "@repo/vitest-config": "*",
-    "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.5",
-    "vitest": "^3.2.4"
+    "prettier": "catalog:linting",
+    "prettier-plugin-tailwindcss": "catalog:linting",
+    "vitest": "catalog:testing"
   }
 }

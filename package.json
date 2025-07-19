@@ -9,7 +9,9 @@
     "catalogs": {
       "build": {
         "typescript": "^5.8.3",
-        "rimraf": "^6.0.1"
+        "rimraf": "^6.0.1",
+        "@types/node": "^20",
+        "vite": "^7.0.5"
       },
       "dev": {
         "dotenv": "^16.4.5",
@@ -63,7 +65,7 @@
         "@testing-library/react": "^16.1.0",
         "@testing-library/user-event": "^14.5.2",
         "jsdom": "^25.0.1",
-        "@vitejs/plugin-react": "^4.3.4"
+        "@vitejs/plugin-react": "^4.7.0"
       },
       "ui": {
         "lucide-react": "^0.525.0",
@@ -83,7 +85,11 @@
         "query-string": "^9.2.2",
         "zustand": "^5.0.6",
         "lodash.snakecase": "^4.1.1",
-        "@types/lodash.snakecase": "^4.1.1"
+        "@types/lodash.snakecase": "^4.1.1",
+        "commander": "^14.0.0",
+        "picocolors": "^1.0.0",
+        "prompts": "^2.4.2",
+        "@types/prompts": "^2.4.9"
       }
     }
   },
@@ -154,7 +160,7 @@
     "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
     "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
     ".": "dotenv -e .env -- bun --bun --cwd=./ run --",
-    "rm:node_modules": "bun x rimraf node_modules && rimraf packages/*/node_modules && rimraf apps/*/node_modules",
+    "rm:node_modules": "concurrently \"bun --bun x rimraf node_modules\" \"bun --bun x rimraf --glob packages/*/node_modules\" \"bun --bun x rimraf --glob apps/*/node_modules\"",
     " ": " "
   },
   "devDependencies": {
@@ -162,15 +168,17 @@
     "@n0safe/envcli": "^1.0.2",
     "@n0safe/rununtil": "^1.0.5",
     "@n0safe/trycli": "^1.0.4",
+    "@types/bun": "latest",
     "nyc": "^15.1.0",
-    "prompts": "^2.4.2",
-    "rimraf": "^6.0.1",
+    "prompts": "catalog:utils",
+    "rimraf": "catalog:build",
     "turbo": "^2.1.2",
-    "vitest": "^3.2.4",
-    "@types/bun": "latest"
+    "vitest": "catalog:testing",
+    "vite": "catalog:build",
+    "concurrently": "catalog:dev"
   },
   "engines": {
-    "node": ">=22"
+    "bun": ">=1.2.14"
   },
   "packageManager": "bun@1.2.14",
   "dependencies": {

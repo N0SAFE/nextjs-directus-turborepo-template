@@ -39,21 +39,21 @@
     "demo": "bun --bun demo.js"
   },
   "dependencies": {
-    "commander": "^14.0.0",
-    "dotenv": "^16.4.5",
-    "dotenv-expand": "^11.0.6",
-    "picocolors": "^1.0.0",
-    "prompts": "^2.4.2"
+    "commander": "catalog:utils",
+    "dotenv": "catalog:dev",
+    "dotenv-expand": "catalog:dev",
+    "picocolors": "catalog:utils",
+    "prompts": "catalog:utils"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@types/node": "^20.10.0",
-    "@types/prompts": "^2.4.9",
-    "@vitest/coverage-v8": "^1.0.0",
+    "@types/node": "catalog:build",
+    "@types/prompts": "catalog:utils",
+    "@vitest/coverage-v8": "catalog:testing",
     "tsup": "^8.0.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "typescript": "catalog:build",
+    "vitest": "catalog:testing"
   },
   "keywords": [
     "environment",
@@ -76,8 +76,5 @@
   },
   "homepage": "https://github.com/N0SAFE/nextjs-directus-turborepo-template#readme",
   "author": "N0SAFE",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "license": "MIT"
 }

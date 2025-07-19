@@ -67,7 +67,7 @@
         "@tailwindcss/postcss": "catalog:styling",
         "@tanstack/eslint-plugin-query": "catalog:query",
         "@types/lodash.snakecase": "catalog:utils",
-        "@types/node": "^20",
+        "@types/node": "catalog:build",
         "@types/nprogress": "^0.2.3",
         "@types/react": "catalog:react",
         "@types/react-dom": "catalog:react",

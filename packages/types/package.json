@@ -25,8 +25,8 @@
         "@repo/prettier-config": "*",
         "@repo/tsconfig": "*",
         "@repo/vitest-config": "*",
-        "typescript": "^5.5.3",
-        "vitest": "^3.2.4"
+        "typescript": "catalog:build",
+        "vitest": "catalog:testing"
     },
     "keywords": [],
     "author": "",
@@ -34,6 +34,6 @@
     "description": "",
     "dependencies": {
         "concurrently": "^8.2.2",
-        "rimraf": "^6.0.1"
+        "rimraf": "catalog:build"
     }
 }

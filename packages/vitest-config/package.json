@@ -22,7 +22,7 @@
     "@testing-library/jest-dom": "catalog:testing",
     "@testing-library/react": "catalog:testing",
     "@testing-library/user-event": "catalog:testing",
-    "@types/node": "^20.9.0",
+    "@types/node": "catalog:build",
     "@vitejs/plugin-react": "catalog:testing",
     "jsdom": "catalog:testing",
     "typescript": "catalog:build",

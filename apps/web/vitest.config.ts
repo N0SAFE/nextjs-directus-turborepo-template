@@ -1,9 +1,9 @@
 /// <reference types="vitest" />
-import { defineProject } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import * as path from 'path'
 
-export default defineProject({
+export default defineConfig({
     plugins: [react()],
     test: {
         name: 'web',

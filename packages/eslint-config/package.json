@@ -16,14 +16,14 @@
   },
   "devDependencies": {
     "@repo/vitest-config": "*",
-    "vitest": "^3.2.4",
+    "vitest": "catalog:testing",
     "@eslint/compat": "^1.0.3",
     "@eslint/js": "^9.4.0",
-    "@tanstack/eslint-plugin-query": "^5.43.1",
+    "@tanstack/eslint-plugin-query": "catalog:query",
     "@typescript-eslint/eslint-plugin": "^7.13.0",
     "@typescript-eslint/parser": "^7.13.0",
     "@vercel/style-guide": "^5.2.0",
-    "eslint": "^8.57.0",
+    "eslint": "catalog:linting",
     "eslint-config-next": "^14.2.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-turbo": "^2.0.0",
@@ -31,7 +31,7 @@
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "typescript": "^5.3.3",
+    "typescript": "catalog:build",
     "typescript-eslint": "^7.13.0"
   }
 }
