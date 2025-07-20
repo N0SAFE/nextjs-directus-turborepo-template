@@ -73,7 +73,7 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                         }
                     }
                 }
-            } catch (e) {
+            } catch {
                 if (request.nextUrl.pathname === errorPageRenderingPath) {
                     return NextResponse.next()
                 } else {

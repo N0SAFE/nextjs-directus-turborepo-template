@@ -15,5 +15,7 @@ export default [...compat.extends("@repo/eslint-config/react-internal.js"), {
     rules: {
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-unused-vars": "off",
+        '@typescript-eslint/no-require-imports': 'off',
+        "@typescript-eslint/no-empty-object-type": 'warn',
     },
 }];

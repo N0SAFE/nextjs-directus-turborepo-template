@@ -7,8 +7,6 @@ import { z } from 'zod'
 
 import { RouteBuilder } from './makeRoute'
 
-const emptySchema = z.object({})
-
 type PushOptions = Parameters<ReturnType<typeof useRouter>['push']>[1]
 
 export function usePush<

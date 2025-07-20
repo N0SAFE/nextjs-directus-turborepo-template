@@ -211,8 +211,6 @@ function createRouteBuilder<
     }
 }
 
-const emptySchema = z.object({})
-
 export function makePostRoute<
     Params extends z.ZodSchema,
     Search extends z.ZodSchema,
