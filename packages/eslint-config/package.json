@@ -18,10 +18,11 @@
     "@repo/vitest-config": "*",
     "vitest": "catalog:testing",
     "@eslint/compat": "^1.0.3",
-    "@eslint/js": "^9.4.0",
+    "@eslint/js": "^9.4.0", 
+    "typescript-eslint": "^8.15.0",
     "@tanstack/eslint-plugin-query": "catalog:query",
-    "@typescript-eslint/eslint-plugin": "^7.13.0",
-    "@typescript-eslint/parser": "^7.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
     "@vercel/style-guide": "^5.2.0",
     "eslint": "catalog:linting",
     "eslint-config-next": "^14.2.3",
@@ -31,7 +32,6 @@
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "typescript": "catalog:build",
-    "typescript-eslint": "^7.13.0"
+    "typescript": "catalog:build"
   }
 }
