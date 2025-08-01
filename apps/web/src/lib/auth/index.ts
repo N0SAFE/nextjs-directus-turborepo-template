@@ -11,7 +11,4 @@ export const pages = {
 } as const
 
 // Better Auth handlers for API routes
-export const handlers = {
-    GET: auth.handler,
-    POST: auth.handler,
-}
+export const handlers = auth.handler

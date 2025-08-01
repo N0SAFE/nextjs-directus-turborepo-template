@@ -24,7 +24,9 @@ import {
 } from 'lucide-react'
 
 export default async function MePage() {
-    const nextauthSession = await auth()
+    // For Better Auth, we'll get session client-side
+    // const nextauthSession = await auth()
+    const nextauthSession = null // Temporarily disabled for Better Auth migration
     const directusMe = await directus.request(readMe()).catch(() => null)
     const headersList = await headers()
     const url = headersList.get('x-pathname')

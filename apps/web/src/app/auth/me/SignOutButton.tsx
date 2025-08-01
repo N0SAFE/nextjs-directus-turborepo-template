@@ -8,7 +8,7 @@ const SignOutButton: React.FC = () => {
         <Button
             variant={'destructive'}
             onClick={async () => {
-                await signOut({ redirect: false })
+                await signOut()
                 window.location.reload()
             }}
         >

@@ -1,10 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { signIn as betterSignIn, signOut as betterSignOut } from './client'
+import { authClient } from './client'
 
 export async function signIn(email: string, password: string, redirectTo?: string) {
-    const result = await betterSignIn.email({
+    const result = await authClient.signIn.email({
         email,
         password,
         callbackURL: redirectTo,
@@ -14,8 +14,8 @@ export async function signIn(email: string, password: string, redirectTo?: strin
 }
 
 export async function signOut(redirectTo?: string) {
-    const result = await betterSignOut({
-        callbackURL: redirectTo,
+    const result = await authClient.signOut({
+        redirectTo,
     })
     revalidatePath('/', 'layout')
     return result

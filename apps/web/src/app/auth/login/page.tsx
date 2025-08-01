@@ -45,7 +45,7 @@ const LoginPage: React.FC = () => {
         values: z.infer<typeof loginSchema>
     ): Promise<void> => {
         setIsLoading(true)
-        const res = await signIn('credentials', { ...values, redirect: false })
+        const res = await signIn(values.email, values.password)
         if (res?.error) {
             setError(res?.error)
             setIsLoading(false)
