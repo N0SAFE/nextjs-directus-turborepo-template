@@ -1,14 +1,16 @@
-// Re-export all database types
-export type * from "./db/schema";
+// Simple re-exports for types only - avoid conflicts
+export type { 
+  User as DatabaseUser, 
+  NewUser, 
+  Session as DatabaseSession, 
+  NewSession,
+  Account,
+  NewAccount,
+  Verification,
+  NewVerification 
+} from "../db/schema";
 
-// Re-export auth types
-export type { Session, User } from "./auth";
-
-// Re-export services
-export * from "./services";
-
-// Re-export database connection
-export { db } from "./db";
-
-// Re-export auth instance
-export { auth } from "./auth";
+export type { 
+  Session as AuthSession, 
+  User as AuthUser 
+} from "../auth";

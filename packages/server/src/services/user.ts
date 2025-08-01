@@ -29,7 +29,7 @@ export class UserService {
 
   static async delete(id: string): Promise<boolean> {
     const result = await db.delete(users).where(eq(users.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   static async list(limit: number = 50, offset: number = 0): Promise<User[]> {

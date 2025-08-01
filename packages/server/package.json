@@ -7,26 +7,26 @@
     ".": "./src/index.ts",
     "./db": {
       "import": "./src/db/index.ts",
-      "require": "./dist/db/index.cjs.js"
+      "require": "./src/db/index.cjs.js"
     },
     "./auth": {
       "import": "./src/auth/index.ts",
-      "require": "./dist/auth/index.cjs.js"
+      "require": "./src/auth/index.cjs.js"
     },
     "./services/*": {
       "import": "./src/services/*.ts",
-      "require": "./dist/services/*.cjs.js"
+      "require": "./src/services/*.cjs.js"
     },
     "./types": {
       "import": "./src/types/index.ts",
-      "require": "./dist/types/index.cjs.js"
+      "require": "./src/types/index.cjs.js"
     }
   },
   "scripts": {
     "build": "npm run switch:prod && rm -rf ./dist && tsc --project tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "switch:dev": "node scripts/switchToSrc.js",
-    "switch:prod": "node scripts/switchToDist.js",
+    "switch:dev": "node scripts/switchToSrc.mjs",
+    "switch:prod": "node scripts/switchToDist.mjs",
     "dev": "rm -rf ./dist && bun run esbuild && tsc --emitDeclarationOnly --outDir dist -p tsconfig.build.json",
     "esbuild": "tsx ./esbuild.config.ts && tsc --project tsconfig.build.json --emitDeclarationOnly",
     "typecheck": "tsc --noEmit",

@@ -15,6 +15,9 @@ const env = {
     API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
     AUTH_SECRET: zod.string(),
+    DATABASE_URL: zod.string().url(),
+    BETTER_AUTH_SECRET: zod.string().optional(),
+    BETTER_AUTH_URL: zod.string().url().optional(),
     REACT_SCAN: zod
         .enum(['true', 'false'])
         .transform((value) => value === 'true')
