@@ -91,7 +91,7 @@ export default async function MePage() {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {nextauthSession ? (
+                        {betterAuthSession ? (
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-medium">
@@ -117,13 +117,13 @@ export default async function MePage() {
                                         </span>
                                     </div>
                                 )}
-                                {betterAuthSession?.expiresAt && (
+                                {betterAuthSession?.session?.expiresAt && (
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="text-muted-foreground h-4 w-4" />
                                         <span className="text-sm">
                                             Expires:{' '}
                                             {new Date(
-                                                betterAuthSession.expiresAt
+                                                betterAuthSession.session.expiresAt
                                             ).toLocaleDateString()}
                                         </span>
                                     </div>
@@ -135,7 +135,7 @@ export default async function MePage() {
                                         </summary>
                                         <pre className="bg-muted mt-2 overflow-auto rounded p-2 text-xs">
                                             {JSON.stringify(
-                                                nextauthSession,
+                                                betterAuthSession,
                                                 null,
                                                 2
                                             )}

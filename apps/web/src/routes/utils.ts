@@ -6,17 +6,17 @@ type ParsedData<T> = { error?: string; data?: T }
 export function safeParseSearchParams<T extends z.ZodTypeAny>(
     schema: T,
     searchParams: URLSearchParams
-): z.infer<T> {
+): any {
     const paramsArray = getAllParamsAsArrays(searchParams)
     return processSchema(schema, paramsArray)
 }
 
 function processSchema(
-    schema: z.ZodTypeAny,
+    schema: any,
     paramsArray: Record<string, string[]>
 ): Record<string, unknown> {
     if (schema instanceof z.ZodOptional) {
-        schema = schema._def.innerType
+        schema = (schema as any)._def.innerType
     }
     switch (schema.constructor) {
         case z.ZodObject: {
@@ -73,7 +73,7 @@ function parseShape(
 
     for (const key in shape) {
         if (Object.hasOwn(shape, key)) {
-            const fieldSchema: z.ZodTypeAny = shape[key]
+            const fieldSchema: any = shape[key]
             if (paramsArray[key]) {
                 const fieldData = convertToRequiredType(
                     paramsArray[key],
@@ -162,11 +162,11 @@ function parseValues(schema: ZodType, values: string[]): ParsedData<unknown> {
     }
 }
 
-function getInnerType(schema: z.ZodTypeAny) {
+function getInnerType(schema: any) {
     switch (schema.constructor) {
         case z.ZodOptional:
         case z.ZodDefault:
-            return schema._def.innerType
+            return (schema as any)._def.innerType
         default:
             return schema
     }

@@ -28,51 +28,51 @@ class DirectusStore implements AuthenticationStorage {
             const session = sessionData?.session
             return (
                 session && {
-                    access_token: session.access_token ?? null,
-                    refresh_token: session.refresh_token ?? null,
-                    expires: session.expires_at
-                        ? new Date(session.expires_at).getTime() - Date.now()
+                    access_token: null, // Better Auth doesn't use access tokens for Directus
+                    refresh_token: null, // Better Auth manages its own tokens
+                    expires: session.expiresAt
+                        ? new Date(session.expiresAt).getTime() - Date.now()
                         : null,
-                    expires_at: session.expires_at ?? null,
+                    expires_at: session.expiresAt ? session.expiresAt.toISOString() : null,
                 }
             )
         }
         
         // Client-side: first try zustand store
         if (getZustandSession()) {
-            const session = getZustandSession()
-            // check if the session.expires_at is not expired
+            const sessionData = getZustandSession()
+            const session = sessionData?.session
+            // check if the session.expiresAt is not expired
             if (
-                session?.expires_at &&
-                new Date(session.expires_at).getTime() > Date.now()
+                session?.expiresAt &&
+                new Date(session.expiresAt).getTime() > Date.now()
             ) {
                 return (
                     session && {
-                        access_token: session.access_token ?? null,
-                        refresh_token: session.refresh_token ?? null,
-                        expires: session.expires_at
-                            ? new Date(session.expires_at).getTime() -
+                        access_token: null,
+                        refresh_token: null,
+                        expires: session.expiresAt
+                            ? new Date(session.expiresAt).getTime() -
                               Date.now()
                             : null,
-                        expires_at: session.expires_at ?? null,
+                        expires_at: session.expiresAt ? session.expiresAt.toISOString() : null,
                     }
                 )
             }
-            // else let the default session management works (with Better Auth that refetch a new session if he can get one with the refresh token)
         }
 
         // Get fresh session from Better Auth
         const { data: sessionData } = await getBetterAuthSession()
         const session = sessionData?.session
-        setZustandSession(session || null)
+        setZustandSession(sessionData || null)
         return (
             session && {
-                access_token: session.access_token ?? null,
-                refresh_token: session.refresh_token ?? null,
-                expires: session.expires_at
-                    ? new Date(session.expires_at).getTime() - Date.now()
+                access_token: null,
+                refresh_token: null,
+                expires: session.expiresAt
+                    ? new Date(session.expiresAt).getTime() - Date.now()
                     : null,
-                expires_at: session.expires_at ?? null,
+                expires_at: session.expiresAt ? session.expiresAt.toISOString() : null,
             }
         )
     }
