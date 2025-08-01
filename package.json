@@ -92,6 +92,15 @@
         "picocolors": "^1.0.0",
         "prompts": "^2.4.2",
         "@types/prompts": "^2.4.9"
+      },
+      "database": {
+        "drizzle-orm": "^0.39.3",
+        "drizzle-kit": "^0.30.6",
+        "drizzle-zod": "^0.5.1",
+        "postgres": "^3.4.4",
+        "nanoid": "^3.3.11",
+        "bcrypt": "^5.1.1",
+        "@types/bcrypt": "^5.0.2"
       }
     }
   },
