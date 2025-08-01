@@ -33,7 +33,7 @@ import { signOut } from '@/lib/auth/actions'
 
 const MainNavigation: React.FC = () => {
     const pathname = usePathname()
-    const { data: session, status } = useSession()
+    const { data: session, isPending } = useSession()
 
     const isActive = (path: string) => pathname === path
 
@@ -124,7 +124,7 @@ const MainNavigation: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                    {status === 'loading' ? (
+                    {isPending ? (
                         <div className="bg-muted h-8 w-8 animate-pulse rounded-md" />
                     ) : session ? (
                         <div className="flex items-center space-x-2">

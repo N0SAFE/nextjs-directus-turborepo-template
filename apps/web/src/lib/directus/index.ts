@@ -4,14 +4,14 @@ import {
     AuthenticationStorage,
     rest,
 } from '@repo/directus-sdk'
-import { getSession } from '../auth/client'
+import { getSession as getBetterAuthSession } from '../auth/client'
 import { createDefaultDirectusInstance, directusUrl } from './share'
 import {
     getSession as getZustandSession,
     setSession as setZustandSession,
 } from '@/state/session'
 import { Schema } from '@repo/directus-sdk/client'
-import { auth } from '../auth/index'
+import { auth, Session } from '../auth/index'
 
 if (process.env.NEXT_RUNTIME! === 'edge') {
     throw new Error('The module is not compatible with the runtime')
@@ -23,8 +23,9 @@ class DirectusStore implements AuthenticationStorage {
             console.log('DirectusStore: get')
         }
         if (typeof window === 'undefined') {
-            const {data} = await getSession()
-            const session= data?.session
+            // Server-side: get session from Better Auth
+            const { data: sessionData } = await getBetterAuthSession()
+            const session = sessionData?.session
             return (
                 session && {
                     access_token: session.access_token ?? null,
@@ -36,10 +37,10 @@ class DirectusStore implements AuthenticationStorage {
                 }
             )
         }
-        const t = auth.$Infer.Session.session
+        
+        // Client-side: first try zustand store
         if (getZustandSession()) {
-            const data = getZustandSession()
-            const session = data?.session
+            const session = getZustandSession()
             // check if the session.expires_at is not expired
             if (
                 session?.expires_at &&
@@ -57,11 +58,13 @@ class DirectusStore implements AuthenticationStorage {
                     }
                 )
             }
-            // else let the default session management works (with auth.js that refetch a new session if he can get one with the refresh token)
+            // else let the default session management works (with Better Auth that refetch a new session if he can get one with the refresh token)
         }
 
-        const session = await getSession()
-        setZustandSession(session)
+        // Get fresh session from Better Auth
+        const { data: sessionData } = await getBetterAuthSession()
+        const session = sessionData?.session
+        setZustandSession(session || null)
         return (
             session && {
                 access_token: session.access_token ?? null,

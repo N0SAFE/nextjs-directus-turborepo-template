@@ -24,9 +24,11 @@ import {
 } from 'lucide-react'
 
 export default async function MePage() {
-    // For Better Auth, we'll get session client-side
-    // const nextauthSession = await auth()
-    const nextauthSession = null // Temporarily disabled for Better Auth migration
+    // Get Better Auth session server-side
+    const betterAuthSession = await auth.api.getSession({
+        headers: await headers(),
+    }).catch(() => null)
+    
     const directusMe = await directus.request(readMe()).catch(() => null)
     const headersList = await headers()
     const url = headersList.get('x-pathname')
@@ -99,29 +101,29 @@ export default async function MePage() {
                                         Authenticated
                                     </span>
                                 </div>
-                                {nextauthSession.user?.email && (
+                                {betterAuthSession?.user?.email && (
                                     <div className="flex items-center space-x-2">
                                         <Mail className="text-muted-foreground h-4 w-4" />
                                         <span className="text-sm">
-                                            {nextauthSession.user.email}
+                                            {betterAuthSession.user.email}
                                         </span>
                                     </div>
                                 )}
-                                {nextauthSession.user?.name && (
+                                {betterAuthSession?.user?.name && (
                                     <div className="flex items-center space-x-2">
                                         <User className="text-muted-foreground h-4 w-4" />
                                         <span className="text-sm">
-                                            {nextauthSession.user.name}
+                                            {betterAuthSession.user.name}
                                         </span>
                                     </div>
                                 )}
-                                {nextauthSession.expires && (
+                                {betterAuthSession?.expiresAt && (
                                     <div className="flex items-center space-x-2">
                                         <Calendar className="text-muted-foreground h-4 w-4" />
                                         <span className="text-sm">
                                             Expires:{' '}
                                             {new Date(
-                                                nextauthSession.expires
+                                                betterAuthSession.expiresAt
                                             ).toLocaleDateString()}
                                         </span>
                                     </div>

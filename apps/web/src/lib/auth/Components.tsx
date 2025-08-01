@@ -1,7 +1,7 @@
 'use client'
 
 import { PropsWithChildren } from 'react'
-import { Session, User } from './better-auth'
+import { Session, User } from './index'
 import { Authlogin } from '@/routes/index'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { signOut } from './client'

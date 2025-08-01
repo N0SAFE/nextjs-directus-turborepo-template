@@ -7,6 +7,8 @@ import Link from 'next/link'
 import NProgress from 'nprogress'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
+const emptySchema = z.object({})
+
 type LinkProps = Parameters<typeof Link>[0]
 
 export type RouteInfo<

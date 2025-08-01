@@ -47,7 +47,9 @@ const LoginPage: React.FC = () => {
         setIsLoading(true)
         const res = await signIn(values.email, values.password)
         if (res?.error) {
-            setError(res.error)
+            // Handle both string and object error types
+            const errorMessage = typeof res.error === 'string' ? res.error : res.error.message || 'Authentication failed'
+            setError(errorMessage)
             setIsLoading(false)
         } else {
             redirect(searchParams.get('callbackUrl') ?? '/')
