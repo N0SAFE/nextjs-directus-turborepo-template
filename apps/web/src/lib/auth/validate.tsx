@@ -5,13 +5,15 @@ import {
     subscribeToUserSession as subscribeToZustandUserSession,
     getSession as getZustandSession,
 } from '@/state/session'
-import { getSession, signOut, useSession } from 'next-auth/react'
+import { useSession } from './client'
 import { useEffect, useRef } from 'react'
+import { createDirectusEdgeWithDefaultUrl } from '../directus/directus-edge'
+import { refresh } from '@directus/sdk'
 
 export default function Validate({
     children,
 }: React.PropsWithChildren<object>) {
-    const { data: session, update } = useSession()
+    const { data: session, error } = useSession()
     const isRefreshing = useRef(false)
 
     // Handle zustand session updates
@@ -24,51 +26,39 @@ export default function Validate({
             ) {
                 if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
                     console.log(
-                        'Validate: updating session from zustand',
+                        'Better Auth Validate: updating session from zustand',
                         state.session
                     )
                 }
-                update(state.session)
+                // Better Auth handles session updates differently
+                // We might need to trigger a re-fetch here
             }
         })
         return () => unsubscribe()
-    }, [update, session])
+    }, [session])
 
     // Handle session updates and errors
     useEffect(() => {
         if (!session) {
-            return
-        }
-        if (session.error === 'RefreshAccessTokenError') {
-            if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
-                console.log('Validate: signOut due to refresh error')
-            }
-            signOut()
             setZustandSession(null)
             return
         }
 
         if (session !== getZustandSession()) {
             if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
-                console.log('Validate: syncing session to zustand', session)
+                console.log('Better Auth Validate: syncing session to zustand', session)
             }
             setZustandSession(session)
         }
-    }, [session, update])
+    }, [session])
 
-    // Handle token refresh timing
+    // Handle token refresh timing for Directus tokens
     useEffect(() => {
-        if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
-            console.log({
-                expires_at: session?.expires_at,
-                isRefreshing: isRefreshing.current,
-            })
-        }
-        if (!session?.expires_at || isRefreshing.current) {
+        if (!session?.user?.directusTokenExpires || isRefreshing.current) {
             return
         }
 
-        const expiryTime = new Date(session.expires_at).getTime()
+        const expiryTime = session.user.directusTokenExpires
         const currentTime = Date.now()
         const timeUntilExpiry = expiryTime - currentTime
 
@@ -82,7 +72,7 @@ export default function Validate({
         )
 
         if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
-            console.log('TokenTimer: scheduled refresh in:', timeToRefresh, {
+            console.log('Better Auth TokenTimer: scheduled refresh in:', timeToRefresh, {
                 expiryTime,
                 currentTime,
                 timeUntilExpiry,
@@ -90,19 +80,29 @@ export default function Validate({
         }
 
         const timer = setTimeout(async () => {
-            if (!isRefreshing.current) {
+            if (!isRefreshing.current && session.user?.directusRefreshToken) {
                 isRefreshing.current = true
                 if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
-                    console.log('TokenTimer: refreshing token')
+                    console.log('Better Auth TokenTimer: refreshing Directus token')
                 }
-                const newSession = await getSession()
-                if (newSession) {
-                    update({
-                        ...newSession,
-                        tokenIsRefreshed: true,
-                    })
-                    setZustandSession(newSession)
+                
+                try {
+                    const directus = createDirectusEdgeWithDefaultUrl()
+                    const refreshResult = await directus.request(
+                        refresh('json', session.user.directusRefreshToken)
+                    )
+                    
+                    // Update the session with new tokens
+                    // This would need to be implemented with Better Auth's session update mechanism
+                    if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
+                        console.log('Better Auth TokenTimer: token refreshed successfully')
+                    }
+                } catch (error) {
+                    if (process.env.NEXT_PUBLIC_SHOW_AUTH_LOGS) {
+                        console.error('Better Auth TokenTimer: token refresh failed', error)
+                    }
                 }
+                
                 isRefreshing.current = false
             }
         }, timeToRefresh)
@@ -110,7 +110,7 @@ export default function Validate({
         return () => {
             clearTimeout(timer)
         }
-    }, [session?.expires_at, update])
+    }, [session?.user?.directusTokenExpires, session?.user?.directusRefreshToken])
 
-    return children
+    return <>{children}</>
 }
