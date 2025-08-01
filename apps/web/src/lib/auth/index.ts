@@ -1,3 +1,5 @@
+import { auth } from './better-auth'
+
 // Re-export Better Auth configuration and types
 export { auth, type Session, type User } from './better-auth'
 export { authClient, signIn, signOut, useSession, getSession } from './client'

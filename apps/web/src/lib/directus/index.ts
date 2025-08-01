@@ -23,7 +23,8 @@ class DirectusStore implements AuthenticationStorage {
             console.log('DirectusStore: get')
         }
         if (typeof window === 'undefined') {
-            const session = await auth()
+            const {data} = await getSession()
+            const session= data?.session
             return (
                 session && {
                     access_token: session.access_token ?? null,
@@ -35,8 +36,10 @@ class DirectusStore implements AuthenticationStorage {
                 }
             )
         }
+        const t = auth.$Infer.Session.session
         if (getZustandSession()) {
-            const session = getZustandSession()
+            const data = getZustandSession()
+            const session = data?.session
             // check if the session.expires_at is not expired
             if (
                 session?.expires_at &&
