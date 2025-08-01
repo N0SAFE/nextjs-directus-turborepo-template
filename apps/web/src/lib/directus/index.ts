@@ -4,7 +4,7 @@ import {
     AuthenticationStorage,
     rest,
 } from '@repo/directus-sdk'
-import { getSession } from 'next-auth/react'
+import { getSession } from '../auth/client'
 import { createDefaultDirectusInstance, directusUrl } from './share'
 import {
     getSession as getZustandSession,

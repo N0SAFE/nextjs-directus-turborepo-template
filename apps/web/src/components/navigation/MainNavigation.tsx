@@ -19,7 +19,7 @@ import {
     AppshowcaseClient,
     AppshowcaseServer,
 } from '@/routes'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/lib/auth/client'
 import {
     LogOut,
     User,
