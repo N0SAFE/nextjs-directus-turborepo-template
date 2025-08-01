@@ -47,7 +47,7 @@ const LoginPage: React.FC = () => {
         setIsLoading(true)
         const res = await signIn(values.email, values.password)
         if (res?.error) {
-            setError(res?.error)
+            setError(res.error)
             setIsLoading(false)
         } else {
             redirect(searchParams.get('callbackUrl') ?? '/')
