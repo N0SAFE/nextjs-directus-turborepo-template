@@ -47,7 +47,7 @@
         "declarative-routing": "^0.1.20",
         "lucide-react": "catalog:ui",
         "next": "catalog:next",
-        "next-auth": "catalog:next",
+        "better-auth": "catalog:auth",
         "next-sitemap": "catalog:next",
         "nextjs-toploader": "catalog:next",
         "query-string": "catalog:utils",
