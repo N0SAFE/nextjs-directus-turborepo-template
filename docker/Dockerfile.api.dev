@@ -1,24 +1,52 @@
-# Development Dockerfile for Directus API
-# This extends the official Directus image with development-specific configurations
+# Development Dockerfile for NestJS API
+# Multi-stage build for development with hot reloading
 
-FROM directus/directus:11.8.0
+FROM node:20-alpine AS base
 
-# Set development environment
-ENV NODE_ENV=development
-ENV LOG_LEVEL=debug
-ENV EXTENSIONS_AUTO_RELOAD=true
-
-# Install additional development tools if needed
-USER root
+# Install system dependencies
 RUN apk add --no-cache \
     curl \
     wget \
     bash \
-    nano \
-    git
+    git \
+    python3 \
+    make \
+    g++
 
-# Switch back to directus user
-USER directus
+# Set working directory
+WORKDIR /app
 
-# The rest of the configuration is handled via environment variables
-# in the docker-compose.api.dev.yml file
+# Install bun globally first
+RUN npm install -g bun
+
+# Install NestJS CLI globally for development
+RUN bun install -g @nestjs/cli
+
+# Copy workspace configuration files
+COPY package.json bun.lock* ./
+COPY turbo.json ./
+COPY tsconfig.json ./
+
+# Copy all packages to resolve workspace dependencies
+COPY packages/ ./packages/
+COPY apps/api/package.json ./apps/api/
+
+# Install all dependencies from workspace root (this resolves catalog references)
+RUN bun install
+
+# Copy API source code
+COPY apps/api ./apps/api
+
+# Set development environment
+ENV NODE_ENV=development
+ENV LOG_LEVEL=debug
+ENV API_PORT=3001
+
+# Change to API directory
+WORKDIR /app/apps/api
+
+# Expose port
+EXPOSE 3001
+
+# Start development server with hot reloading
+CMD ["bun", "run", "start:dev"]

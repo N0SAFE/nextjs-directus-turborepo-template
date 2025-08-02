@@ -25,15 +25,15 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@trpc/server": "^10.45.0",
+    "bcrypt": "catalog:database",
     "better-auth": "catalog:auth",
     "drizzle-orm": "catalog:database",
     "drizzle-zod": "catalog:database",
-    "postgres": "catalog:database",
-    "zod": "catalog:utils",
     "nanoid": "catalog:database",
-    "bcrypt": "catalog:database",
+    "postgres": "catalog:database",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "zod": "catalog:utils"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

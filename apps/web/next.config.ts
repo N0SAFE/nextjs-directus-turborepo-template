@@ -15,7 +15,7 @@ const isLintContext =
 if (!process.env.NEXT_PUBLIC_API_URL) {
     if (isLintContext) {
         // Provide a default URL for linting context to avoid breaking the lint process
-        process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8055'
+        process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3001'
         console.warn(
             'NEXT_PUBLIC_API_URL not defined, using default for lint context:',
             process.env.NEXT_PUBLIC_API_URL

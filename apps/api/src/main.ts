@@ -2,7 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    snapshot: process.env.NODE_ENV !== 'production',
+  });
   
   // Enable CORS for Next.js frontend
   app.enableCors({
@@ -15,4 +17,7 @@ async function bootstrap() {
   console.log(`🚀 NestJS API running on port ${port}`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Failed to start the application:', error);
+  process.exit(1);
+});

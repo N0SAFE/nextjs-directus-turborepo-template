@@ -9,7 +9,7 @@
         "dev": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli cross-env NODE_OPTIONS='--inspect' next dev -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",
         "dev:docker": "concurrently --kill-others-on-fail -n next,routing -c green,magenta \"envcli cross-env NODE_OPTIONS='--inspect' next dev -H 0.0.0.0 -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",
         "dev:open": "bun --bun wait-api && concurrently --kill-others-on-fail -n next,routing -c green,magenta \"(envcli open $:{NEXT_PUBLIC_APP_URL} || envcli cmd.exe /c start $:{NEXT_PUBLIC_APP_URL}) && envcli cross-env NODE_OPTIONS='--inspect' next dev -p $:{NEXT_PUBLIC_APP_PORT} --turbopack\" \"bun --bun dr:build:watch\"",
-        "wait-api": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} || wait-port api:8055",
+        "wait-api": "envcli echo $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} && envcli wait-port $:{NEXT_PUBLIC_API_URL}$:{API_PING_PATH} || wait-port api:3001",
         "analyze": "cross-env ANALYZE=true bun --bun build",
         "build": "bun --bun generate && bun --bun wait-api && next build --turbopack && next-sitemap",
         "build:docker": "cross-env SKIP_STATIC_GENERATION=true bun --bun generate && next build --turbopack",
