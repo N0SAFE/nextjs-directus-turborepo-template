@@ -6,23 +6,28 @@ import { auth } from './config';
 export class AuthController {
   @All('*')
   async handleAuth(@Req() req: Request, @Res() res: Response) {
-    // Better Auth expects a Web API Request, but we have Express Request
-    // Convert Express request to the format Better Auth expects
-    const webRequest = new globalThis.Request(req.url, {
-      method: req.method,
-      headers: req.headers as HeadersInit,
-      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
-    });
-    
-    const response = await auth.handler(webRequest);
-    
-    // Convert Web API Response back to Express response
-    res.status(response.status);
-    response.headers.forEach((value, key) => {
-      res.setHeader(key, value);
-    });
-    
-    const responseBody = await response.text();
-    return res.send(responseBody);
+    try {
+      // Create a Request-like object for Better Auth
+      const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+      const webRequest = new Request(url, {
+        method: req.method,
+        headers: req.headers as HeadersInit,
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+      });
+      
+      const response = await auth.handler(webRequest);
+      
+      // Set response status and headers
+      res.status(response.status);
+      for (const [key, value] of response.headers.entries()) {
+        res.setHeader(key, value);
+      }
+      
+      const body = await response.text();
+      res.send(body);
+    } catch (error) {
+      console.error('Auth handler error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
