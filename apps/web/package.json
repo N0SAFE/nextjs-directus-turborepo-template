@@ -37,7 +37,6 @@
         "@n0safe/envcli": "^1.0.2",
         "@next/bundle-analyzer": "catalog:next",
         "@repo/directus-sdk": "*",
-        "@repo/server": "*",
         "@repo/ui": "*",
         "@tanstack/react-query": "catalog:query",
         "@tanstack/react-query-devtools": "catalog:query",
