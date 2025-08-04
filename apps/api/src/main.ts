@@ -13,7 +13,9 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = process.env.API_PORT || 3001;
+  app.useLogger(['log', 'error', 'warn', 'debug', 'verbose']);
+
+  const port = process.env.API_PORT || 3005;
   await app.listen(port);
   console.log(`🚀 NestJS API with oRPC running on port ${port}`);
 }

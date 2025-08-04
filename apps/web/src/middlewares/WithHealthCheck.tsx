@@ -7,8 +7,8 @@ import {
 import { Matcher, MiddlewareFactory } from './utils/types'
 import { validateEnvSafe } from '#/env'
 import {
-    nextauthNoApi,
     nextjsRegexpPageOnly,
+    nextNoApi,
 } from './utils/static'
 import { orpcServer } from '@/lib/orpc'
 
@@ -85,7 +85,7 @@ export const matcher: Matcher = [
     {
         and: [
             nextjsRegexpPageOnly,
-            nextauthNoApi,
+            nextNoApi,
         ],
     },
 ]

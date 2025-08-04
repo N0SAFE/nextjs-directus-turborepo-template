@@ -1,4 +1,4 @@
-import { Authlogin, Home, Appshowcase } from '@/routes/index'
+import { Authsignin, Home, Appshowcase } from '@/routes/index'
 import { Button } from '@repo/ui/components/shadcn/button'
 import {
     Card,
@@ -9,8 +9,6 @@ import {
 } from '@repo/ui/components/shadcn/card'
 import { headers } from 'next/headers'
 import React from 'react'
-import { auth } from '@/lib/auth/index'
-import { signOut } from '@/lib/auth/actions'
 import {
     ArrowLeft,
     User,
@@ -20,15 +18,17 @@ import {
     Calendar,
     Shield,
 } from 'lucide-react'
+import { signOut } from '@/lib/auth'
+import { getServerSession } from '@/lib/auth/actions'
 
 export default async function MePage() {
-    // Get Better Auth session server-side
-    const betterAuthSession = await auth.api.getSession({
-        headers: await headers(),
-    }).catch(() => null)
-    
     const headersList = await headers()
     const url = headersList.get('x-pathname')
+    // Get Better Auth session server-side
+    const {data: betterAuthSession, error} = await getServerSession(headersList)
+
+    console.log('Better Auth MePage: session data', betterAuthSession)
+    console.log('Better Auth MePage: session error', error)
 
     if (!url) {
         throw new Error('No x-pathname header found')
@@ -173,7 +173,7 @@ export default async function MePage() {
                                 <span>View Showcase</span>
                             </Button>
                         </Appshowcase.Link>
-                        <Authlogin.Link search={{ callbackUrl: url }}>
+                        <Authsignin.Link search={{ callbackUrl: url }}>
                             <Button
                                 variant="outline"
                                 className="flex items-center space-x-2"
@@ -181,7 +181,7 @@ export default async function MePage() {
                                 <Shield className="h-4 w-4" />
                                 <span>Re-authenticate</span>
                             </Button>
-                        </Authlogin.Link>
+                        </Authsignin.Link>
                         <SignOutButton />
                     </div>
                 </CardContent>

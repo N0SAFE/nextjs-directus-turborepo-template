@@ -8,6 +8,7 @@ import * as schema from "./drizzle/schema";
 @Global()
 @Module({
     providers: [
+        DatabaseService,
         {
             provide: DATABASE_CONNECTION,
             useFactory: () => {

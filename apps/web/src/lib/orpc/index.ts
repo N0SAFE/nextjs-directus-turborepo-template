@@ -5,12 +5,13 @@ import { ContractRouterClient } from '@orpc/contract'
 import { createTanstackQueryUtils } from '@orpc/tanstack-query'
 
 // Get the API URL from environment variables
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
 
 const link = new OpenAPILink(appContract, {
-  url: `${API_URL}`,
-  headers: () => ({
-    authorization: 'Bearer token',
+  url: `${APP_URL}/api/nest`,
+  headers: ({context}) => ({
+    cookie: context.cookie || '',
   }),
   interceptors: [
     onError((error) => {

@@ -1,9 +1,30 @@
 {
-  "extends": "@repo/tsconfig/base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src"
+    "incremental": true,
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "baseUrl": "./",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "strict": true,
+    "strictBindCallApply": false,
+    "strictNullChecks": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitAny": false,
+    "declaration": false,
+    "outDir": "./dist",
+    "removeComments": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@repo/api-contracts/*": ["./*"]
+    }
   },
-  "include": ["src/**/*"],
+  "include": ["**/*", "modules", "index.ts", "common"],
   "exclude": ["node_modules", "dist"]
 }

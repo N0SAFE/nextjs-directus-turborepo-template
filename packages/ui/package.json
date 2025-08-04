@@ -55,7 +55,6 @@
         "@radix-ui/react-label": "catalog:ui",
         "@radix-ui/react-separator": "catalog:ui",
         "@radix-ui/react-slot": "catalog:ui",
-        "@repo/directus-sdk": "*",
         "class-variance-authority": "catalog:ui",
         "clsx": "catalog:styling",
         "concurrently": "^8.2.2",

@@ -56,6 +56,9 @@ ENV NODE_ENV=production
 # Install production dependencies
 RUN apk add --no-cache curl wget bash
 
+# Install bun for running migration scripts
+RUN npm install -g bun
+
 # Create app user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
@@ -70,6 +73,8 @@ COPY --from=deps --chown=nestjs:nodejs /app/apps/api/node_modules ./apps/api/nod
 # Copy built application
 COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./apps/api/dist
 COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package.json ./apps/api/
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/src/db ./apps/api/src/db
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/tsconfig.json ./apps/api/
 
 # Copy packages if needed
 COPY --from=builder --chown=nestjs:nodejs /app/packages ./packages
@@ -87,5 +92,5 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
 
-# Start the application
-CMD ["node", "dist/main.js"]
+# Start the application with migrations
+CMD ["sh", "-c", "bun run db:migrate && node dist/main.js"]

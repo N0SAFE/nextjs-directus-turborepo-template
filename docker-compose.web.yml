@@ -1,7 +1,7 @@
 services:
   # Next.js web app for development with HMR
   web-dev:
-    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-dev
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}-web-dev
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.dev

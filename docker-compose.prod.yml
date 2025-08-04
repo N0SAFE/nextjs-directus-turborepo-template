@@ -1,7 +1,7 @@
 services:
   # API services (defined directly to override networks)
   api-db-prod:
-    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-db-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}-api-db-prod
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -19,7 +19,7 @@ services:
       - app_network_prod
 
   api-cache-prod:
-    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-cache-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}-api-cache-prod
     image: redis:8-alpine
     restart: unless-stopped
     healthcheck:
@@ -33,7 +33,7 @@ services:
       - app_network_prod
 
   api-prod:
-    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-api-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}-api-prod
     build:
       context: .
       dockerfile: ./docker/Dockerfile.api.prod
@@ -55,8 +55,8 @@ services:
       API_PORT: ${API_PORT:-3001}
       DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@api-db-prod:5432/${DB_DATABASE:-nestjs_api}
       REDIS_URL: redis://api-cache-prod:6379
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      AUTH_SECRET: ${AUTH_SECRET:-QgafJQw3O/k1gambz7YGKjtj5ZZe0dnL/WlSw4PtMDc=}
+      JWT_SECRET: ${JWT_SECRET:-jwt-fallback-secret}
+      AUTH_SECRET: ${AUTH_SECRET:-auth-fallback-secret}
       NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       # CORS Configuration for cross-origin requests from web app
       CORS_ORIGIN: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
@@ -73,7 +73,7 @@ services:
 
   # Web service (using runtime compilation for fresh builds)
   web-prod:
-    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}-web-prod
+    container_name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}-web-prod
     build:
       context: .
       dockerfile: ./docker/Dockerfile.web.runtime.prod
@@ -109,9 +109,9 @@ services:
 
 networks:
   app_network_prod:
-    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_app_network_prod
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}_app_network_prod
     driver: bridge
 
 volumes:
   api_db_data_prod:
-    name: ${COMPOSE_PROJECT_NAME:-nextjs-directus}_api_db_data_prod
+    name: ${COMPOSE_PROJECT_NAME:-nextjs-nestjs}_api_db_data_prod

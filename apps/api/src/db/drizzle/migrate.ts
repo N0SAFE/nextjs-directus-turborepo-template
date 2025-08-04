@@ -1,4 +1,4 @@
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { db } from './index';
 
 async function runMigrate() {
@@ -6,7 +6,7 @@ async function runMigrate() {
   
   try {
     await migrate(db, {
-      migrationsFolder: './src/db/migrations',
+      migrationsFolder: './src/db/drizzle/migrations',
     });
     console.log('✅ Database migrations completed');
   } catch (error) {

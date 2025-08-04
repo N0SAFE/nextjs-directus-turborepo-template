@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../../db/services/database.service';
-import { user } from '../../db/drizzle/schema/auth';
-import { eq, desc, asc, or, like, count, and, SQL } from 'drizzle-orm';
-import { CreateUserSchema, UpdateUserSchema, GetUsersQuerySchema } from '../contracts/user.contract';
-import { z } from 'zod';
+import { Injectable } from "@nestjs/common";
+import { DatabaseService } from "../../db/services/database.service";
+import { user } from "../../db/drizzle/schema/auth";
+import { eq, desc, asc, or, like, count, and, SQL } from "drizzle-orm";
+import {
+  userCreateInput,
+  userUpdateInput,
+  userListInput,
+} from "@repo/api-contracts";
+import { z } from "zod";
 
-export type CreateUserInput = z.infer<typeof CreateUserSchema>;
-export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
-export type GetUsersInput = z.infer<typeof GetUsersQuerySchema>;
+export type CreateUserInput = z.infer<typeof userCreateInput>;
+export type UpdateUserInput = z.infer<typeof userUpdateInput>;
+export type GetUsersInput = z.infer<typeof userListInput>;
 
 @Injectable()
 export class UserRepository {
@@ -31,23 +35,26 @@ export class UserRepository {
    * Transform multiple users for API response
    */
   private transformUsers(users: any[]) {
-    return users.map(user => this.transformUser(user));
+    return users.map((user) => this.transformUser(user));
   }
 
   /**
    * Create a new user
    */
   async create(input: CreateUserInput) {
-    const newUser = await this.databaseService.db.insert(user).values({
-      id: crypto.randomUUID(),
-      name: input.name,
-      email: input.email,
-      image: input.image || null,
-      status: input.status || 'active',
-      emailVerified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).returning();
+    const newUser = await this.databaseService.db
+      .insert(user)
+      .values({
+        id: crypto.randomUUID(),
+        name: input.name,
+        email: input.email,
+        image: input.image || null,
+        status: input.status || "active",
+        emailVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
 
     return this.transformUser(newUser[0]);
   }
@@ -84,73 +91,80 @@ export class UserRepository {
   async findMany(input: GetUsersInput) {
     // Build the where conditions
     const conditions: SQL<unknown>[] = [];
-    
-    if (input.search) {
-      conditions.push(
-        or(
-          like(user.name, `%${input.search}%`),
-          like(user.email, `%${input.search}%`)
-        )!
-      );
+
+    if (input) {
+      conditions.push(or(like(user.name, `%${input}%`))!);
     }
-    
-    if (input.status) {
-      conditions.push(eq(user.status, input.status));
+
+    if (input.filter?.status) {
+      conditions.push(eq(user.status, input.filter.status));
     }
-    
-    const whereCondition = conditions.length > 0 
-      ? conditions.length === 1 
-        ? conditions[0] 
-        : and(...conditions)
-      : undefined;
+
+    const whereCondition =
+      conditions.length > 0
+        ? conditions.length === 1
+          ? conditions[0]
+          : and(...conditions)
+        : undefined;
 
     // Build the order by condition
     let orderByCondition;
-    if (input.sortBy === 'name') {
-      orderByCondition = input.sortOrder === 'asc' ? asc(user.name) : desc(user.name);
-    } else if (input.sortBy === 'email') {
-      orderByCondition = input.sortOrder === 'asc' ? asc(user.email) : desc(user.email);
-    } else if (input.sortBy === 'status') {
-      orderByCondition = input.sortOrder === 'asc' ? asc(user.status) : desc(user.status);
-    } else {
-      orderByCondition = input.sortOrder === 'asc' ? asc(user.createdAt) : desc(user.createdAt);
+    switch (input.sort?.field) {
+      case "name":
+        orderByCondition =
+          input.sort.direction === "asc" ? asc(user.name) : desc(user.name);
+        break;
+      case "email":
+        orderByCondition =
+          input.sort.direction === "asc" ? asc(user.email) : desc(user.email);
+        break;
+      case "status":
+        orderByCondition =
+          input.sort.direction === "asc" ? asc(user.status) : desc(user.status);
+        break;
+      case undefined:
+        orderByCondition =
+          input.sort.direction === "asc" ? asc(user.id) : desc(user.id);
+        break;
+      default:
+        throw new Error(`Unsupported sort field: ${input.sort.field}`);
     }
 
     // Execute the main query with all conditions
-    const users = whereCondition 
+    const users = whereCondition
       ? await this.databaseService.db
           .select()
           .from(user)
           .where(whereCondition)
           .orderBy(orderByCondition)
-          .limit(input.limit)
-          .offset(input.offset)
+          .limit(input.pagination.limit)
+          .offset(input.pagination.offset)
       : await this.databaseService.db
           .select()
           .from(user)
           .orderBy(orderByCondition)
-          .limit(input.limit)
-          .offset(input.offset);
-    
+          .limit(input.pagination.limit)
+          .offset(input.pagination.offset);
+
     // Get total count for pagination info
     const totalResult = whereCondition
       ? await this.databaseService.db
           .select({ count: count() })
           .from(user)
           .where(whereCondition)
-      : await this.databaseService.db
-          .select({ count: count() })
-          .from(user);
+      : await this.databaseService.db.select({ count: count() }).from(user);
 
     const total = totalResult[0]?.count || 0;
 
     return {
       users: this.transformUsers(users),
-      pagination: {
-        total,
-        limit: input.limit,
-        offset: input.offset,
-        hasMore: input.offset + input.limit < total,
+      meta: {
+        pagination: {
+          total,
+          limit: input.pagination.limit,
+          offset: input.pagination.offset,
+          hasMore: input.pagination.offset + input.pagination.limit < total,
+        },
       },
     };
   }

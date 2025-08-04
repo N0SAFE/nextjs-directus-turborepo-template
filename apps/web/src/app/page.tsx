@@ -8,7 +8,7 @@ import {
     CardTitle,
 } from '@repo/ui/components/shadcn/card'
 import {
-    Authlogin,
+    Authsignin,
     Appshowcase,
     AppshowcaseClient,
     AppshowcaseServer,
@@ -91,7 +91,7 @@ export default function Page(): JSX.Element {
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Appshowcase.Link>
-                    <Authlogin.Link search={{ callbackUrl: '/showcase' }}>
+                    <Authsignin.Link search={{ callbackUrl: '/showcase' }}>
                         <Button
                             variant="outline"
                             size="lg"
@@ -100,7 +100,7 @@ export default function Page(): JSX.Element {
                             <Shield className="h-5 w-5" />
                             <span>Get Started</span>
                         </Button>
-                    </Authlogin.Link>
+                    </Authsignin.Link>
                 </div>
             </section>
 

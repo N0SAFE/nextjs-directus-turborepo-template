@@ -13,11 +13,13 @@ const ClientSideShowcase: React.FC = function ClientSideShowcase() {
     const { data: result, isFetched } = useQuery(
         orpc.user.list.queryOptions({
             input: {
-                query: {
+                pagination: {
                     limit: 10,
                     offset: 0,
-                    sortBy: 'createdAt',
-                    sortOrder: 'desc',
+                },
+                sort: {
+                    field: 'createdAt',
+                    direction: 'desc',
                 },
             },
         })

@@ -1,33 +1,18 @@
+// app/actions/auth.ts
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { authClient } from './client'
+import { authClient } from '@/lib/auth' // Your auth client import
+import { ReadonlyHeaders } from 'next/dist/server/web/spec-extension/adapters/headers'
 
-export async function signIn(email: string, password: string, redirectTo?: string) {
-    try {
-        const result = await authClient.signIn.email({
-            email,
-            password,
-        })
-        revalidatePath('/', 'layout')
-        if (redirectTo) {
-            // Handle redirect in the calling component
-        }
-        return result
-    } catch (error) {
-        return { error: error instanceof Error ? error.message : 'Authentication failed' }
-    }
-}
-
-export async function signOut(redirectTo?: string) {
-    try {
-        const result = await authClient.signOut()
-        revalidatePath('/', 'layout')
-        if (redirectTo) {
-            // Handle redirect in the calling component
-        }
-        return result
-    } catch (error) {
-        return { error: error instanceof Error ? error.message : 'Sign out failed' }
-    }
+export async function getServerSession(h: ReadonlyHeaders) {
+  // Extract session from authClient using request headers
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: {
+        cookie: h.get('cookie') || '',
+      },
+    },
+  })
+  
+  return session
 }

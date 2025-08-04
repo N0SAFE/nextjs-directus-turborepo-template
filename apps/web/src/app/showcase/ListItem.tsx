@@ -1,20 +1,12 @@
+import { userSchema } from '@repo/api-contracts/common/user'
 import { Card, CardContent } from '@repo/ui/components/shadcn/card'
 import { User, CheckCircle, XCircle, Clock } from 'lucide-react'
 import React from 'react'
+import z from 'zod/v4'
 
-type ApiUser = {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: boolean;
-    image: string | null;
-    status: 'active' | 'inactive' | 'pending';
-    createdAt: string;
-    updatedAt: string;
-}
 
 type ListItemShowcaseProps = {
-    users?: ApiUser[]
+    users?: z.infer<typeof userSchema>[]
 }
 
 const getStatusIcon = (status: string) => {

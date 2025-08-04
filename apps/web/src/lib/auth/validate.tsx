@@ -5,7 +5,7 @@ import {
     subscribeToUserSession as subscribeToZustandUserSession,
     getSession as getZustandSession,
 } from '@/state/session'
-import { useSession } from './client'
+import { useSession } from './index'
 import { useEffect } from 'react'
 
 export default function Validate({

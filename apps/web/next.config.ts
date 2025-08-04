@@ -12,16 +12,16 @@ const isLintContext =
     process.argv.some((arg) => arg.includes('next-lint')) ||
     commandLine.endsWith('lint')
 
-if (!process.env.NEXT_PUBLIC_API_URL) {
+if (!process.env.API_URL) {
     if (isLintContext) {
         // Provide a default URL for linting context to avoid breaking the lint process
-        process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3001'
+        process.env.API_URL = 'http://localhost:3001'
         console.warn(
-            'NEXT_PUBLIC_API_URL not defined, using default for lint context:',
-            process.env.NEXT_PUBLIC_API_URL
+            'API_URL not defined, using default for lint context:',
+            process.env.API_URL
         )
     } else {
-        throw new Error('NEXT_PUBLIC_API_URL is not defined')
+        throw new Error('API_URL is not defined')
     }
 }
 
@@ -29,11 +29,11 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
 let apiUrl: string
 try {
     // Try to parse as full URL first
-    new URL(process.env.NEXT_PUBLIC_API_URL)
-    apiUrl = process.env.NEXT_PUBLIC_API_URL
+    new URL(process.env.API_URL)
+    apiUrl = process.env.API_URL
 } catch {
     // If it fails, assume it's a hostname and add https protocol
-    apiUrl = `https://${process.env.NEXT_PUBLIC_API_URL}`
+    apiUrl = `https://${process.env.API_URL}`
 }
 
 const url = new URL(apiUrl)
@@ -47,6 +47,10 @@ const nextConfig: NextConfig = {
                 source: '/api/auth/:path*',
                 destination: `${url.origin}/api/auth/:path*`,
             },
+            {
+                source: '/api/nest/:path*',
+                destination: `${url.origin}/:path*`,
+            }
         ]
     },
     eslint: {

@@ -1,19 +1,21 @@
-import { orpcServer } from '@/lib/orpc';
+import { orpcServer } from '@/lib/orpc'
 import React from 'react'
 import ListItemShowcase from '../ListItem'
 
 const ServerSideShowcase: React.FC = async function ServerSideShowcase() {
     const startTime = Date.now()
-    
+
     try {
         const result = await orpcServer.user.list({
-            query: {
+            pagination: {
                 limit: 10,
                 offset: 0,
-                sortBy: 'createdAt',
-                sortOrder: 'desc',
-            }
-        });
+            },
+            sort: {
+                field: 'createdAt',
+                direction: 'desc',
+            },
+        })
 
         const endTime = Date.now()
 
@@ -25,12 +27,13 @@ const ServerSideShowcase: React.FC = async function ServerSideShowcase() {
         )
     } catch (error) {
         const endTime = Date.now()
-        
+
         return (
             <>
                 <div>Time taken: {endTime - startTime}ms</div>
                 <div className="text-red-500">
-                    Error loading users: {error instanceof Error ? error.message : 'Unknown error'}
+                    Error loading users:{' '}
+                    {error instanceof Error ? error.message : 'Unknown error'}
                 </div>
                 <ListItemShowcase users={[]} />
             </>

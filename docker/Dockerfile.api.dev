@@ -49,4 +49,4 @@ WORKDIR /app
 EXPOSE 3001
 
 # Start development server with hot reloading from workspace root
-CMD ["bun", "run", "--cwd", "apps/api", "start:dev"]
+CMD ["sh", "-c", "bun run --cwd apps/api db:migrate && bun run --cwd apps/api start:dev"]

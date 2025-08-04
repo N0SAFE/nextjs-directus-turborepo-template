@@ -13,13 +13,13 @@ import {
 } from '@repo/ui/components/shadcn/dropdown-menu'
 import {
     Home,
-    Authlogin,
+    Authsignin,
     Authme,
     Appshowcase,
     AppshowcaseClient,
     AppshowcaseServer,
 } from '@/routes'
-import { useSession } from '@/lib/auth/auth-client'
+import { useSession, signOut } from '@/lib/auth'
 import {
     LogOut,
     User,
@@ -29,7 +29,6 @@ import {
     Monitor,
     ChevronDown,
 } from 'lucide-react'
-import { signOut } from '@/lib/auth/actions'
 
 const MainNavigation: React.FC = () => {
     const pathname = usePathname()
@@ -149,11 +148,11 @@ const MainNavigation: React.FC = () => {
                             </Button>
                         </div>
                     ) : (
-                        <Authlogin.Link>
+                        <Authsignin.Link>
                             <Button variant="default" size="sm">
                                 Sign In
                             </Button>
-                        </Authlogin.Link>
+                        </Authsignin.Link>
                     )}
                 </div>
             </div>

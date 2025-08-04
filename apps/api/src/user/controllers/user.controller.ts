@@ -1,52 +1,58 @@
 import { Controller } from '@nestjs/common';
 import { Implement, implement } from '@orpc/nest';
-import { userContract } from '../contracts/user.contract';
+import { userContract } from '@repo/api-contracts';
 import { UserService } from '../services/user.service';
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  /**
-   * Implement the entire user contract
-   */
-  @Implement(userContract)
-  user() {
-    return {
-      // Get all users with pagination
-      list: implement(userContract.list).handler(async ({ input }) => {
-        return await this.userService.getUsers(input.query);
-      }),
+  @Implement(userContract.list)
+  list() {
+    return implement(userContract.list).handler(async ({ input }) => {
+      return await this.userService.getUsers(input);
+    });
+  }
 
-      // Find user by ID
-      findById: implement(userContract.findById).handler(async ({ input }) => {
-        return await this.userService.findUserById(input.params.id);
-      }),
+  @Implement(userContract.findById)
+  findById() {
+    return implement(userContract.findById).handler(async ({ input }) => {
+      return await this.userService.findUserById(input.id);
+    });
+  }
 
-      // Create a new user
-      create: implement(userContract.create).handler(async ({ input }) => {
-        return await this.userService.createUser(input.json);
-      }),
+  @Implement(userContract.create)
+  create() {
+    return implement(userContract.create).handler(async ({ input }) => {
+      return await this.userService.createUser(input);
+    });
+  }
 
-      // Update existing user
-      update: implement(userContract.update).handler(async ({ input }) => {
-        return await this.userService.updateUser(input.params.id, input.json);
-      }),
+  @Implement(userContract.update)
+  update() {
+    return implement(userContract.update).handler(async ({ input }) => {
+      return await this.userService.updateUser(input.id, input);
+    });
+  }
 
-      // Delete user
-      delete: implement(userContract.delete).handler(async ({ input }) => {
-        return await this.userService.deleteUser(input.params.id);
-      }),
+  @Implement(userContract.delete)
+  delete() {
+    return implement(userContract.delete).handler(async ({ input }) => {
+      return await this.userService.deleteUser(input.id);
+    });
+  }
 
-      // Check if email exists
-      checkEmail: implement(userContract.checkEmail).handler(async ({ input }) => {
-        return await this.userService.checkUserExistsByEmail(input.json.email);
-      }),
+  @Implement(userContract.checkEmail)
+  checkEmail() {
+    return implement(userContract.checkEmail).handler(async ({ input }) => {
+      return await this.userService.checkUserExistsByEmail(input.json.email);
+    });
+  }
 
-      // Get user count
-      count: implement(userContract.count).handler(async () => {
-        return await this.userService.getUserCount();
-      }),
-    };
+  @Implement(userContract.count)
+  count() {
+    return implement(userContract.count).handler(async () => {
+      return await this.userService.getUserCount();
+    });
   }
 }

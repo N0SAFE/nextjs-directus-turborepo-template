@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-directus-turborepo-template",
+  "name": "nextjs-nestjs-turborepo-template",
   "private": true,
   "workspaces": {
     "packages": [
@@ -36,19 +36,21 @@
         "nextjs-toploader": "^3.8.16"
       },
       "auth": {
-        "better-auth": "^1.3.4"
+        "@better-fetch/fetch": "^1.1.18",
+        "better-auth": "^1.3.4",
+        "@mguay/nestjs-better-auth": "^1.0.2"
       },
       "react": {
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "@types/react": "^19.0.0",
-        "@types/react-dom": "^19.0.3",
+        "@types/react-dom": "^19.0.0",
         "react-hook-form": "^7.53.0"
       },
       "query": {
         "@tanstack/react-query": "^5.81.5",
         "@tanstack/react-query-devtools": "^5.81.5",
-        "@tanstack/eslint-plugin-query": "^5.81.2"
+        "@tanstack/eslint-plugin-query": "^5.81.5"
       },
       "styling": {
         "tailwindcss": "^4",
@@ -91,7 +93,7 @@
         "commander": "^14.0.0",
         "picocolors": "^1.0.0",
         "prompts": "^2.4.2",
-        "@types/prompts": "^2.4.9"
+        "@types/prompts": "^2.4.2"
       },
       "database": {
         "drizzle-orm": "^0.39.3",
@@ -103,6 +105,7 @@
         "@types/bcrypt": "^5.0.2"
       },
       "orpc": {
+        "@orpc/openapi-client": "^1.7.8",
         "@orpc/client": "^1.7.8",
         "@orpc/contract": "^1.7.8",
         "@orpc/tanstack-query": "^1.7.8",
@@ -110,6 +113,18 @@
         "@orpc/openapi": "^1.7.8",
         "@orpc/server": "^1.7.8",
         "@orpc/shared": "^1.7.8"
+      },
+      "api:nest": {
+        "@nestjs/cli": "^10.0.0",
+        "@nestjs/schematics": "^10.0.0",
+        "@nestjs/testing": "^10.0.0",
+        "@nestjs/core": "^10.4.15",
+        "@nestjs/common": "^10.4.15",
+        "@nestjs/platform-express": "^10.4.15",
+        "@nestjs/config": "^3.3.0",
+        "@nestjs/swagger": "^8.0.9",
+        "reflect-metadata": "^0.1.13",
+        "rxjs": "^7.8.1"
       }
     }
   },
@@ -178,7 +193,6 @@
     "@repo/tsconfig": "dotenv -e .env -- bun --bun --cwd=./packages/tsconfig run --",
     "@repo/tailwind-config": "dotenv -e .env -- bun --bun --cwd=./packages/tailwind-config run --",
     "@repo/eslint-config": "dotenv -e .env -- bun --bun --cwd=./packages/eslint-config run --",
-    "@repo/directus-sdk": "dotenv -e .env -- bun --bun --cwd=./packages/directus-sdk run --",
     ".": "dotenv -e .env -- bun --bun --cwd=./ run --",
     "rm:node_modules": "concurrently \"bun --bun x rimraf node_modules\" \"bun --bun x rimraf --glob packages/*/node_modules\" \"bun --bun x rimraf --glob apps/*/node_modules\"",
     " ": " "

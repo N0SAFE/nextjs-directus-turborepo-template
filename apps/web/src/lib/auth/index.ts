@@ -1,20 +1,20 @@
-import { auth } from '@repo/auth'
+import { createAuthClient } from "better-auth/react"
 
-// Re-export Better Auth configuration and types
-export { auth } from '@repo/auth'
-export {
-    authClient,
-    signIn,
-    signOut,
-    signUp,
-    useSession,
-    getSession,
-    $store,
-    $fetch,
-    $ERROR_CODES,
-    $Infer,
-} from './client'
-export * from './actions'
+export const authClient = createAuthClient({
+  basePath: '/api/auth'
+})
+
+export const {
+  signIn,
+  signOut,
+  signUp,
+  useSession,
+  getSession,
+  $store,
+  $fetch,
+  $ERROR_CODES,
+  $Infer
+} = authClient
 
 // Auth pages configuration for Better Auth
 export const pages = {
@@ -22,6 +22,3 @@ export const pages = {
     signOut: '/auth/logout',
     error: '/auth/error',
 } as const
-
-// Better Auth handlers for API routes
-export const handlers = auth.handler
