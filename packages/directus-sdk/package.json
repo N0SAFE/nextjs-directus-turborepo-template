@@ -85,7 +85,7 @@
         "vitest": "catalog:testing"
     },
     "dependencies": {
-        "@directus/sdk": "^17.0.0",
+        "@directus/sdk": "^20.0.1",
         "@n0safe/envcli": "^1.0.2",
         "@n0safe/indirectus": "^1.0.2",
         "next": "catalog:next",
