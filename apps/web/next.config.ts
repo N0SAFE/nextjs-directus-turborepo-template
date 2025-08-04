@@ -41,6 +41,14 @@ const url = new URL(apiUrl)
 const noCheck = process.env.CHECK_ON_BUILD !== 'true'
 
 const nextConfig: NextConfig = {
+    async rewrites() {
+        return [
+            {
+                source: '/api/auth/:path*',
+                destination: `${url.origin}/api/auth/:path*`,
+            },
+        ]
+    },
     eslint: {
         ignoreDuringBuilds: noCheck,
     },

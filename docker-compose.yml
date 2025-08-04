@@ -53,10 +53,17 @@ services:
       - "${API_PORT:-3001}:${API_PORT:-3001}"
     volumes:
       # Mount source code for hot reloading
-      - ./apps/api:/app/apps/api
+      - ./apps/api/src:/app/apps/api/src
+      # Mount essential configuration files needed for NestJS build
+      - ./apps/api/nest-cli.json:/app/apps/api/nest-cli.json
+      - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json
+      - ./apps/api/tsconfig.build.json:/app/apps/api/tsconfig.build.json
+      # Keep packages in sync
       - ./packages:/app/packages
+      # Anonymous volumes for dependencies and build artifacts
       - /app/node_modules
       - /app/apps/api/node_modules
+      - /app/apps/api/dist
     environment:
       NODE_ENV: development
       API_PORT: ${API_PORT:-3001}
@@ -69,6 +76,8 @@ services:
       CORS_ORIGIN: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       # Development specific settings
       LOG_LEVEL: debug
+      # Enable polling for file watching to avoid EBUSY errors in Docker on Windows
+      CHOKIDAR_USEPOLLING: "true"
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://127.0.0.1:${API_PORT:-3001}/health || exit 1
       start_period: 15s

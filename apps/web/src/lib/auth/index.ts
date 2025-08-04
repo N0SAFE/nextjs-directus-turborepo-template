@@ -1,8 +1,19 @@
-import { auth } from './better-auth'
+import { auth } from '@repo/auth'
 
 // Re-export Better Auth configuration and types
-export { auth, type Session, type User } from './better-auth'
-export { authClient, signIn, signOut, useSession, getSession } from './client'
+export { auth } from '@repo/auth'
+export {
+    authClient,
+    signIn,
+    signOut,
+    signUp,
+    useSession,
+    getSession,
+    $store,
+    $fetch,
+    $ERROR_CODES,
+    $Infer,
+} from './client'
 export * from './actions'
 
 // Auth pages configuration for Better Auth

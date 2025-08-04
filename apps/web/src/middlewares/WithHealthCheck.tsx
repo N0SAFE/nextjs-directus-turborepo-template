@@ -5,14 +5,12 @@ import {
     NextResponse,
 } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
-import { serverHealth, withToken } from '@repo/directus-sdk'
 import { validateEnvSafe } from '#/env'
 import {
-    directusProxy,
     nextauthNoApi,
     nextjsRegexpPageOnly,
 } from './utils/static'
-import { createDirectusEdgeWithDefaultUrl } from '@/lib/directus/directus-edge'
+import { orpcServer } from '@/lib/orpc'
 
 const env = validateEnvSafe(process.env).data
 const errorPageRenderingPath = '/middleware/error/healthCheck'
@@ -25,17 +23,9 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
         )
         if (env?.NODE_ENV === 'development') {
             try {
-                const directus = createDirectusEdgeWithDefaultUrl()
-                console.log(
-                    'Directus instance created with url:',
-                    directus.url.href
-                )
+                console.log('Checking API health via ORPC...')
                 try {
-                    const data = await (env.API_ADMIN_TOKEN
-                        ? directus.request(
-                              withToken(env.API_ADMIN_TOKEN, serverHealth())
-                          )
-                        : directus.serverHealth())
+                    const data = await orpcServer.health.check({})
                     console.log('Health Check Response:', data)
                     if (!(data.status === 'ok')) {
                         if (
@@ -52,25 +42,19 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                     }
                 } catch (e: unknown) {
                     console.log('Health Check Error:', e)
-                    if (
-                        (e as { response: { status: number } }).response
-                            .status === 401
-                    ) {
-                        const data = await directus.request(serverHealth())
-                        if (!(data.status === 'ok')) {
-                            if (
-                                request.nextUrl.pathname ===
-                                errorPageRenderingPath
-                            ) {
-                                return NextResponse.next()
-                            } else {
-                                return NextResponse.redirect(
-                                    request.nextUrl.origin +
-                                        errorPageRenderingPath +
-                                        `?json=${JSON.stringify(data)}&from=${encodeURIComponent(request.url)}`
-                                )
-                            }
-                        }
+                    const errorData = {
+                        status: 'error',
+                        message: (e as Error).message || 'Unknown error',
+                        timestamp: new Date().toISOString(),
+                    }
+                    if (request.nextUrl.pathname === errorPageRenderingPath) {
+                        return NextResponse.next()
+                    } else {
+                        return NextResponse.redirect(
+                            request.nextUrl.origin +
+                                errorPageRenderingPath +
+                                `?json=${JSON.stringify(errorData)}&from=${encodeURIComponent(request.url)}`
+                        )
                     }
                 }
             } catch {
@@ -102,11 +86,6 @@ export const matcher: Matcher = [
         and: [
             nextjsRegexpPageOnly,
             nextauthNoApi,
-            {
-                not:
-                    process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH ||
-                    directusProxy,
-            },
         ],
     },
 ]

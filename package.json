@@ -101,6 +101,15 @@
         "nanoid": "^3.3.11",
         "bcrypt": "^5.1.1",
         "@types/bcrypt": "^5.0.2"
+      },
+      "orpc": {
+        "@orpc/client": "^1.7.8",
+        "@orpc/contract": "^1.7.8",
+        "@orpc/tanstack-query": "^1.7.8",
+        "@orpc/nest": "^1.7.8",
+        "@orpc/openapi": "^1.7.8",
+        "@orpc/server": "^1.7.8",
+        "@orpc/shared": "^1.7.8"
       }
     }
   },

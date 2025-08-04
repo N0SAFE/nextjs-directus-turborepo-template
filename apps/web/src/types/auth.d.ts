@@ -1,5 +1,5 @@
 // Better Auth types - this file defines the Better Auth session structure
-import { Session, User } from '../lib/auth/better-auth'
+import { Session, User } from '../lib/auth/auth-client'
 
 export type AuthRefresh = {
     access_token?: string | null

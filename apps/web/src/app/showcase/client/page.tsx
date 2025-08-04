@@ -110,8 +110,8 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                             <h3 className="font-semibold">Key Technologies</h3>
                             <ul className="text-muted-foreground space-y-1 text-sm">
                                 <li>• React Query for data fetching</li>
-                                <li>• Custom Directus SDK wrapper</li>
-                                <li>• TypeScript for type safety</li>
+                                <li>• ORPC client with type safety</li>
+                                <li>• TypeScript for end-to-end types</li>
                                 <li>• Suspense for loading states</li>
                                 <li>• Error boundaries for error handling</li>
                             </ul>
@@ -130,9 +130,13 @@ const ShowcaseClientPage: React.FC = async function ShowcaseClientPage() {
                     <div className="border-t pt-4">
                         <h3 className="mb-2 font-semibold">Code Example</h3>
                         <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
-                            {`const { data: users, isFetched } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => directus.DirectusUsers.query()
+                            {`const { data: result, isFetched } = orpcReact.user.list.useQuery({
+    query: {
+        limit: 10,
+        offset: 0,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+    }
 })`}
                         </pre>
                     </div>

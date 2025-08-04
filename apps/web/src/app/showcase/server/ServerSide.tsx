@@ -1,21 +1,41 @@
-import directus from '@/lib/directus'
+import { orpcServer } from '@/lib/orpc';
 import React from 'react'
 import ListItemShowcase from '../ListItem'
 
 const ServerSideShowcase: React.FC = async function ServerSideShowcase() {
     const startTime = Date.now()
-    const users = await directus.DirectusUsers.query({
-        fields: ['id', 'status'],
-    })
+    
+    try {
+        const result = await orpcServer.user.list({
+            query: {
+                limit: 10,
+                offset: 0,
+                sortBy: 'createdAt',
+                sortOrder: 'desc',
+            }
+        });
 
-    const endTime = Date.now()
+        const endTime = Date.now()
 
-    return (
-        <>
-            <div>Time taken: {endTime - startTime}ms</div>
-            <ListItemShowcase users={users} />
-        </>
-    )
+        return (
+            <>
+                <div>Time taken: {endTime - startTime}ms</div>
+                <ListItemShowcase users={result.users} />
+            </>
+        )
+    } catch (error) {
+        const endTime = Date.now()
+        
+        return (
+            <>
+                <div>Time taken: {endTime - startTime}ms</div>
+                <div className="text-red-500">
+                    Error loading users: {error instanceof Error ? error.message : 'Unknown error'}
+                </div>
+                <ListItemShowcase users={[]} />
+            </>
+        )
+    }
 }
 
 export default ServerSideShowcase

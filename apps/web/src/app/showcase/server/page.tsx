@@ -112,7 +112,7 @@ const ShowcaseServerPage: React.FC = async function ShowcaseServerPage() {
                             <ul className="text-muted-foreground space-y-1 text-sm">
                                 <li>• React Server Components</li>
                                 <li>• Next.js App Router</li>
-                                <li>• Direct Directus SDK calls</li>
+                                <li>• ORPC server-side calls</li>
                                 <li>• TypeScript for type safety</li>
                                 <li>• Streaming and Suspense</li>
                             </ul>
@@ -133,8 +133,8 @@ const ShowcaseServerPage: React.FC = async function ShowcaseServerPage() {
                         <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
                             {`// React Server Component
 export default async function ServerComponent() {
-    const users = await directus.DirectusUsers.query({
-        fields: ['id', 'status']
+    const result = await orpc.user.list({
+        query: { limit: 10, offset: 0 }
     })
     
     return <div>{/* Render users */}</div>

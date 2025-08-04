@@ -42,11 +42,11 @@ ENV NODE_ENV=development
 ENV LOG_LEVEL=debug
 ENV API_PORT=3001
 
-# Change to API directory
-WORKDIR /app/apps/api
+# Stay in workspace root to maintain access to all packages
+WORKDIR /app
 
 # Expose port
 EXPOSE 3001
 
-# Start development server with hot reloading
-CMD ["bun", "run", "start:dev"]
+# Start development server with hot reloading from workspace root
+CMD ["bun", "run", "--cwd", "apps/api", "start:dev"]

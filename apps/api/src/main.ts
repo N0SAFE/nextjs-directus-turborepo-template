@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     snapshot: process.env.NODE_ENV !== 'production',
+    bodyParser: false, // Disable NestJS body parser for oRPC
   });
   
   // Enable CORS for Next.js frontend
@@ -14,7 +15,7 @@ async function bootstrap() {
 
   const port = process.env.API_PORT || 3001;
   await app.listen(port);
-  console.log(`🚀 NestJS API running on port ${port}`);
+  console.log(`🚀 NestJS API with oRPC running on port ${port}`);
 }
 
 bootstrap().catch((error) => {

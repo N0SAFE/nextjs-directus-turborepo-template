@@ -1,11 +1,20 @@
-import { Collections } from '@repo/directus-sdk/client'
-import { ApplyFields } from '@repo/directus-sdk/utils'
 import { Card, CardContent } from '@repo/ui/components/shadcn/card'
 import { User, CheckCircle, XCircle, Clock } from 'lucide-react'
 import React from 'react'
 
+type ApiUser = {
+    id: string;
+    name: string;
+    email: string;
+    emailVerified: boolean;
+    image: string | null;
+    status: 'active' | 'inactive' | 'pending';
+    createdAt: string;
+    updatedAt: string;
+}
+
 type ListItemShowcaseProps = {
-    users?: ApplyFields<Collections.DirectusUser, ['id', 'status']>[]
+    users?: ApiUser[]
 }
 
 const getStatusIcon = (status: string) => {
@@ -54,7 +63,7 @@ const ListItemShowcase: React.FC<ListItemShowcaseProps> =
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">
-                        Directus Users ({users.length})
+                        API Users ({users.length})
                     </h3>
                     <span className="text-muted-foreground text-sm">
                         Showing {users.length} user
@@ -75,10 +84,10 @@ const ListItemShowcase: React.FC<ListItemShowcaseProps> =
                                         </div>
                                         <div>
                                             <div className="font-medium">
-                                                User #{user.id}
+                                                {user.name}
                                             </div>
                                             <div className="text-muted-foreground text-sm">
-                                                Directus User Account
+                                                {user.email}
                                             </div>
                                         </div>
                                     </div>

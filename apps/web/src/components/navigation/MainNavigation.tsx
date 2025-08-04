@@ -19,7 +19,7 @@ import {
     AppshowcaseClient,
     AppshowcaseServer,
 } from '@/routes'
-import { useSession } from '@/lib/auth/client'
+import { useSession } from '@/lib/auth/auth-client'
 import {
     LogOut,
     User,
@@ -45,7 +45,7 @@ const MainNavigation: React.FC = () => {
                         <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-md">
                             <HomeIcon className="h-4 w-4" />
                         </div>
-                        <span className="font-bold">Directus App</span>
+                        <span className="font-bold">NestJS App</span>
                     </Home.Link>
                 </div>
 

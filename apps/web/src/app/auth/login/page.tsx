@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
                                 </CardTitle>
                                 <CardDescription className="text-base">
                                     Sign in to your account to access the
-                                    Directus dashboard
+                                    NestJS application
                                 </CardDescription>
                             </div>
                         </CardHeader>

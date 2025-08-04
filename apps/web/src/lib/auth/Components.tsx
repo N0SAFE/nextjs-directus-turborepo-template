@@ -1,19 +1,17 @@
 'use client'
 
 import { PropsWithChildren } from 'react'
-import { Session, User } from './index'
 import { Authlogin } from '@/routes/index'
 import { Button } from '@repo/ui/components/shadcn/button'
-import { signOut } from './client'
+import { signOut, useSession, $Infer } from './client'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { toAbsoluteUrl } from '../utils'
-import { useSession } from './client'
 
 export function IsSignedIn({
     children,
     validator,
 }: PropsWithChildren<{
-    validator?: (session: Session) => boolean
+    validator?: (session: typeof $Infer.Session) => boolean
 }>) {
     const { data: session } = useSession()
     if (session && (validator ? validator(session) : true)) {

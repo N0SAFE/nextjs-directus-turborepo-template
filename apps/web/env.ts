@@ -7,15 +7,16 @@ const publicEnv = {
     NEXT_PUBLIC_API_URL: zod.string().url(),
     NEXT_PUBLIC_APP_URL: zod.string().url(),
     NEXT_PUBLIC_SIGNIN_PATH: zod.string().optional(),
+    NEXT_PUBLIC_SHOW_AUTH_LOGS: zod
+        .enum(['true', 'false'])
+        .transform((value) => value === 'true')
+        .optional()
+        .default(false),
 }
 
 const env = {
     ...publicEnv,
-    API_URL: zod.string().url().optional(),
-    API_ADMIN_TOKEN: zod.string(),
     NODE_ENV: zod.string(),
-    AUTH_SECRET: zod.string(),
-    DATABASE_URL: zod.string().url(),
     BETTER_AUTH_SECRET: zod.string().optional(),
     BETTER_AUTH_URL: zod.string().url().optional(),
     REACT_SCAN: zod
@@ -24,11 +25,6 @@ const env = {
         .optional()
         .default(false),
     MILLION_LINT: zod
-        .enum(['true', 'false'])
-        .transform((value) => value === 'true')
-        .optional()
-        .default(false),
-    NEXT_PUBLIC_SHOW_AUTH_LOGS: zod
         .enum(['true', 'false'])
         .transform((value) => value === 'true')
         .optional()

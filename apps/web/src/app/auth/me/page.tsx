@@ -1,6 +1,4 @@
-import directus from '@/lib/directus'
 import { Authlogin, Home, Appshowcase } from '@/routes/index'
-import { readMe } from '@repo/directus-sdk'
 import { Button } from '@repo/ui/components/shadcn/button'
 import {
     Card,
@@ -29,7 +27,6 @@ export default async function MePage() {
         headers: await headers(),
     }).catch(() => null)
     
-    const directusMe = await directus.request(readMe()).catch(() => null)
     const headersList = await headers()
     const url = headersList.get('x-pathname')
 
@@ -150,86 +147,6 @@ export default async function MePage() {
                                 </p>
                                 <span className="mt-2 inline-block rounded-md bg-red-100 px-2 py-1 text-xs text-red-800 dark:bg-red-900 dark:text-red-200">
                                     Not Authenticated
-                                </span>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Directus Profile Card */}
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center space-x-3">
-                            <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
-                                <Database className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div>
-                                <CardTitle>Directus Profile</CardTitle>
-                                <CardDescription>
-                                    CMS user information
-                                </CardDescription>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {directusMe ? (
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">
-                                        Status
-                                    </span>
-                                    <span className="rounded-md bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                        Connected
-                                    </span>
-                                </div>
-                                {directusMe.id && (
-                                    <div className="flex items-center space-x-2">
-                                        <User className="text-muted-foreground h-4 w-4" />
-                                        <span className="text-sm">
-                                            ID: {directusMe.id}
-                                        </span>
-                                    </div>
-                                )}
-                                {directusMe.email && (
-                                    <div className="flex items-center space-x-2">
-                                        <Mail className="text-muted-foreground h-4 w-4" />
-                                        <span className="text-sm">
-                                            {directusMe.email}
-                                        </span>
-                                    </div>
-                                )}
-                                {directusMe.first_name &&
-                                    directusMe.last_name && (
-                                        <div className="flex items-center space-x-2">
-                                            <User className="text-muted-foreground h-4 w-4" />
-                                            <span className="text-sm">
-                                                {directusMe.first_name}{' '}
-                                                {directusMe.last_name}
-                                            </span>
-                                        </div>
-                                    )}
-                                <div className="border-t pt-2">
-                                    <details className="text-xs">
-                                        <summary className="text-muted-foreground cursor-pointer">
-                                            View raw Directus data
-                                        </summary>
-                                        <pre className="bg-muted mt-2 overflow-auto rounded p-2 text-xs">
-                                            {JSON.stringify(
-                                                directusMe,
-                                                null,
-                                                2
-                                            )}
-                                        </pre>
-                                    </details>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="py-4 text-center">
-                                <p className="text-muted-foreground">
-                                    Unable to load Directus profile
-                                </p>
-                                <span className="mt-2 inline-block rounded-md bg-red-100 px-2 py-1 text-xs text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    Not Connected
                                 </span>
                             </div>
                         )}
