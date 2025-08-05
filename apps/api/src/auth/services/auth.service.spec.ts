@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AuthService } from '@/auth/auth-service';
-import { AUTH_INSTANCE_KEY } from '@/auth/symbols';
+import { AuthService } from './auth.service';
+import { AUTH_INSTANCE_KEY } from '../types/symbols';
 
 describe('AuthService', () => {
   let service: AuthService;

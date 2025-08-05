@@ -7,7 +7,7 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';  
 import { DATABASE_CONNECTION } from './db/database-connection';
-import {AuthModule} from './auth/auth-module'
+import {AuthModule} from './auth/auth.module'
 
 @Module({
   imports: [

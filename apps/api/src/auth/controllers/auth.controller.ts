@@ -1,7 +1,7 @@
 import { Controller, Logger, Inject, All, Req, Res } from "@nestjs/common";
 import { Request, Response } from "express";
 import { toNodeHandler } from "better-auth/node";
-import { AUTH_INSTANCE_KEY } from "./symbols";
+import { AUTH_INSTANCE_KEY } from "../types/symbols";
 import { Auth } from "better-auth";
 
 /**

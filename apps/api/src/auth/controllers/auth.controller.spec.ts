@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AuthController } from '@/auth/auth-controller';
-import { AUTH_INSTANCE_KEY } from '@/auth/symbols';
+import { AuthController } from './auth.controller';
+import { AUTH_INSTANCE_KEY } from '../types/symbols';
 import { Request, Response } from 'express';
 
 // Mock the better-auth/node module

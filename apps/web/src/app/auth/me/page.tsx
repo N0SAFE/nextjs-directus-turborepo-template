@@ -24,11 +24,7 @@ import { getServerSession } from '@/lib/auth/actions'
 export default async function MePage() {
     const headersList = await headers()
     const url = headersList.get('x-pathname')
-    // Get Better Auth session server-side
-    const {data: betterAuthSession, error} = await getServerSession(headersList)
-
-    console.log('Better Auth MePage: session data', betterAuthSession)
-    console.log('Better Auth MePage: session error', error)
+    const { data: betterAuthSession } = await getServerSession(headersList)
 
     if (!url) {
         throw new Error('No x-pathname header found')
@@ -71,7 +67,7 @@ export default async function MePage() {
                 </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6">
                 {/* NextAuth Session Card */}
                 <Card>
                     <CardHeader>

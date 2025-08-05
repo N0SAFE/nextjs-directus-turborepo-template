@@ -4,7 +4,7 @@ import { Reflector } from "@nestjs/core";
 import type { Auth } from "better-auth";
 import { APIError, type getSession } from "better-auth/api";
 import { fromNodeHeaders } from "better-auth/node";
-import { AUTH_INSTANCE_KEY } from "./symbols";
+import { AUTH_INSTANCE_KEY } from "../types/symbols";
 
 /**
  * Type representing a valid user session after authentication

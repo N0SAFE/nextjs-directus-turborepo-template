@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { ExecutionContext } from '@nestjs/common';
-import { Public, Optional, Session, BeforeHook, AfterHook, Hook } from '@/auth/decorators';
+import { Public, Optional, BeforeHook, AfterHook, Hook } from './decorators';
 import { Reflector } from '@nestjs/core';
 
 describe('Auth Decorators', () => {

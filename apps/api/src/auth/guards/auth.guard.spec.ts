@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
-import { AuthGuard } from '@/auth/auth-guard';
-import { AUTH_INSTANCE_KEY } from '@/auth/symbols';
+import { AuthGuard } from './auth.guard';
+import { AUTH_INSTANCE_KEY } from '../types/symbols';
 import { APIError } from 'better-auth/api';
 
 // Mock better-auth/node

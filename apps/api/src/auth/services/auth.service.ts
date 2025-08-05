@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import type { Auth } from "better-auth";
-import { AUTH_INSTANCE_KEY } from "./symbols";
+import { AUTH_INSTANCE_KEY } from "../types/symbols";
 
 /**
  * NestJS service that provides access to the Better Auth instance
