@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DatabaseService } from './database.service';
-import { DATABASE_CONNECTION } from './database-connection';
+import { DatabaseService } from '../database.service';
+import { DATABASE_CONNECTION } from '../database-connection';
 
 describe('DatabaseService', () => {
   let service: DatabaseService;
@@ -114,7 +114,7 @@ describe('DatabaseService', () => {
     });
 
     it('should indicate no connection when database is null', async () => {
-      const moduleWithNullDb: TestingModule = await Test.createTestingModule({
+      await Test.createTestingModule({
         providers: [
           {
             provide: DATABASE_CONNECTION,

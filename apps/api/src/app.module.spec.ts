@@ -70,10 +70,7 @@ describe('LoggerMiddleware', () => {
       expect(mockResponse.on).toHaveBeenCalledWith('close', expect.any(Function));
     });
 
-    it('should extract request information', () => {
-      const getUserAgent = vi.fn().mockReturnValue('test-agent');
-      const getReferer = vi.fn().mockReturnValue('http://example.com');
-      
+    it('should extract request information', () => {=
       mockRequest.get = vi.fn()
         .mockReturnValueOnce('test-agent') // user-agent
         .mockReturnValueOnce('http://example.com'); // referer
@@ -92,9 +89,7 @@ describe('LoggerMiddleware', () => {
       expect(nextFunction).toHaveBeenCalledOnce();
     });
 
-    it('should log request details on response close', () => {
-      const debugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
-      
+    it('should log request details on response close', () => {=
       // Mock os.hostname
       vi.mock('os', () => ({
         hostname: () => 'test-hostname',

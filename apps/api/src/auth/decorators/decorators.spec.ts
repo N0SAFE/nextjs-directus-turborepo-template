@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ExecutionContext } from '@nestjs/common';
 import { Public, Optional, BeforeHook, AfterHook, Hook } from './decorators';
-import { Reflector } from '@nestjs/core';
 
 describe('Auth Decorators', () => {
   describe('Public', () => {
@@ -143,8 +142,6 @@ describe('Auth Decorators', () => {
   // Test integration with Reflector (simulating NestJS metadata behavior)
   describe('Metadata Integration', () => {
     it('should work with Reflector to check PUBLIC metadata', () => {
-      const reflector = new Reflector();
-      
       @Public()
       class TestController {
         testMethod() {}

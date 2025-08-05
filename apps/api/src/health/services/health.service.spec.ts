@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HealthService } from './health.service';
-import { HealthRepository } from '../repositories/health.repository';
 
 describe('HealthService', () => {
   let service: HealthService;

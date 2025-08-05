@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { UserRepository } from './user.repository';
-import { DatabaseService } from '../../db/services/database.service';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
@@ -106,7 +105,7 @@ describe('UserRepository', () => {
       const mockInsertBuilder = mockDb.insert();
       mockInsertBuilder.returning.mockResolvedValue([{ ...mockUser, status: 'inactive' }]);
 
-      const result = await repository.create(input);
+      await repository.create(input);
 
       expect(mockInsertBuilder.values).toHaveBeenCalledWith(
         expect.objectContaining({

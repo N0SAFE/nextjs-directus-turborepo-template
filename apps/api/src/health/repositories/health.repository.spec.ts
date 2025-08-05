@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HealthRepository } from './health.repository';
-import { DatabaseService } from '../../db/services/database.service';
 
 describe('HealthRepository', () => {
   let repository: HealthRepository;
@@ -35,7 +34,6 @@ describe('HealthRepository', () => {
 
   describe('checkDatabaseHealth', () => {
     it('should return ok status when database query succeeds', async () => {
-      const startTime = Date.now();
       mockDatabaseService.db.execute.mockResolvedValue(undefined);
 
       const result = await repository.checkDatabaseHealth();

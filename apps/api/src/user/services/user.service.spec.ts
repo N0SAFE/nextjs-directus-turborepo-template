@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserRepository } from '../repositories/user.repository';
 
 describe('UserService', () => {
   let service: UserService;
