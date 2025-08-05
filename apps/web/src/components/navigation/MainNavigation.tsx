@@ -29,6 +29,7 @@ import {
     Monitor,
     ChevronDown,
 } from 'lucide-react'
+import SignOutButton from '../signout/signoutButton'
 
 const MainNavigation: React.FC = () => {
     const pathname = usePathname()
@@ -137,15 +138,7 @@ const MainNavigation: React.FC = () => {
                                     <span>Profile</span>
                                 </Button>
                             </Authme.Link>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => signOut()}
-                                className="flex items-center space-x-2"
-                            >
-                                <LogOut className="h-4 w-4" />
-                                <span>Sign Out</span>
-                            </Button>
+                            <SignOutButton />
                         </div>
                     ) : (
                         <Authsignin.Link>

@@ -19,7 +19,8 @@
     "db:seed": "bun --bun src/db/drizzle/seed.ts",
     "db:push": "drizzle-kit push",
     "db:reset": "drizzle-kit reset",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@mguay/nestjs-better-auth": "catalog:auth",

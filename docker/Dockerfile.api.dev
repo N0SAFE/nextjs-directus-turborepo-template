@@ -11,7 +11,8 @@ RUN apk add --no-cache \
     git \
     python3 \
     make \
-    g++
+    g++ \
+    supervisor
 
 # Set working directory
 WORKDIR /app
@@ -37,16 +38,15 @@ RUN bun install
 # Copy API source code
 COPY apps/api ./apps/api
 
+# Copy supervisord config
+COPY apps/api/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Set development environment
 ENV NODE_ENV=development
 ENV LOG_LEVEL=debug
-ENV API_PORT=3001
 
 # Stay in workspace root to maintain access to all packages
 WORKDIR /app
 
-# Expose port
-EXPOSE 3001
-
 # Start development server with hot reloading from workspace root
-CMD ["sh", "-c", "bun run --cwd apps/api db:migrate && bun run --cwd apps/api start:dev"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -67,7 +67,7 @@ function FeatureCard({
 
 export default function Page(): JSX.Element {
     return (
-        <div className="container mx-auto space-y-12 px-4 py-12">
+        <div className="container mx-auto mt-8 space-y-12 px-4 py-12 md:py-16 lg:py-20">
             {/* Hero Section */}
             <section className="space-y-6 text-center">
                 <div className="space-y-4">

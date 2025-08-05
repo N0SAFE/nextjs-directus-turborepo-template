@@ -47,9 +47,10 @@ services:
         restart: unless-stopped
         ports:
             - "${API_PORT:-3001}:${API_PORT:-3001}"
+            - "${DRIZZLE_STUDIO_PORT:-4983}:4983"
         volumes:
             # Mount source code for hot reloading
-            - ./apps/api/src:/app/apps/api/src
+            - ./apps/api:/app/apps/api
             # Mount essential configuration files needed for NestJS build
             - ./apps/api/nest-cli.json:/app/apps/api/nest-cli.json
             - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json

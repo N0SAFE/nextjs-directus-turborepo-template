@@ -38,6 +38,12 @@ const SignupPage: React.FC = () => {
 
     const form = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+        },
     })
 
     const onSubmit = async (
@@ -67,155 +73,146 @@ const SignupPage: React.FC = () => {
     }
 
     return (
-        <div className="from-background to-muted/20 min-h-screen bg-gradient-to-br">
-            <div className="container mx-auto px-4 py-8">
-                {/* Back to Home Link */}
-                <Home.Link className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center space-x-2 text-sm">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span>Back to Home</span>
-                </Home.Link>
+        <div className="flex flex-1 items-center justify-center">
+            <div className="w-full max-w-md space-y-8">
+                <Card>
+                    <CardHeader className="space-y-4 text-center">
+                        <div className="flex justify-center">
+                            <div className="bg-primary/10 rounded-full p-3">
+                                <UserPlus className="text-primary h-8 w-8" />
+                            </div>
+                        </div>
+                        <div>
+                            <CardTitle className="text-2xl font-bold">
+                                Create Account
+                            </CardTitle>
+                            <CardDescription className="text-base">
+                                Sign up to get started with the NestJS
+                                application
+                            </CardDescription>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Form {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-6"
+                            >
+                                <div className="space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel htmlFor="name">
+                                                    Full Name
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="John Doe"
+                                                        id="name"
+                                                        type="text"
+                                                        className="h-12"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel htmlFor="email">
+                                                    Email Address
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="john@example.com"
+                                                        id="email"
+                                                        type="email"
+                                                        className="h-12"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel htmlFor="password">
+                                                    Password
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id="password"
+                                                        type="password"
+                                                        className="h-12"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel htmlFor="confirmPassword">
+                                                    Confirm Password
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id="confirmPassword"
+                                                        type="password"
+                                                        className="h-12"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
-                    <Card className="w-full max-w-md">
-                        <CardHeader className="space-y-4 text-center">
-                            <div className="flex justify-center">
-                                <div className="bg-primary/10 rounded-full p-3">
-                                    <UserPlus className="text-primary h-8 w-8" />
+                                    {error && (
+                                        <Alert variant="destructive">
+                                            <AlertCircle className="h-4 w-4" />
+                                            <AlertDescription>
+                                                {error}
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+
+                                    {success && (
+                                        <Alert>
+                                            <AlertDescription>
+                                                {success}
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+
+                                    <Button
+                                        disabled={isLoading}
+                                        type="submit"
+                                        className="h-12 w-full text-base"
+                                    >
+                                        {isLoading && <Spinner />}
+                                        Create Account
+                                    </Button>
                                 </div>
-                            </div>
-                            <div>
-                                <CardTitle className="text-2xl font-bold">
-                                    Create Account
-                                </CardTitle>
-                                <CardDescription className="text-base">
-                                    Sign up to get started with the NestJS application
-                                </CardDescription>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Form {...form}>
-                                <form
-                                    onSubmit={form.handleSubmit(onSubmit)}
-                                    className="space-y-6"
-                                >
-                                    <div className="space-y-4">
-                                        <FormField
-                                            control={form.control}
-                                            name="name"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel htmlFor="name">
-                                                        Full Name
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="John Doe"
-                                                            id="name"
-                                                            type="text"
-                                                            className="h-12"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="email"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel htmlFor="email">
-                                                        Email Address
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="john@example.com"
-                                                            id="email"
-                                                            type="email"
-                                                            className="h-12"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="password"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel htmlFor="password">
-                                                        Password
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            id="password"
-                                                            type="password"
-                                                            className="h-12"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="confirmPassword"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel htmlFor="confirmPassword">
-                                                        Confirm Password
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            id="confirmPassword"
-                                                            type="password"
-                                                            className="h-12"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        {error && (
-                                            <Alert variant="destructive">
-                                                <AlertCircle className="h-4 w-4" />
-                                                <AlertDescription>
-                                                    {error}
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-
-                                        {success && (
-                                            <Alert>
-                                                <AlertDescription>
-                                                    {success}
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-
-                                        <Button
-                                            disabled={isLoading}
-                                            type="submit"
-                                            className="h-12 w-full text-base"
-                                        >
-                                            {isLoading && <Spinner />}
-                                            Create Account
-                                        </Button>
-                                    </div>
-                                </form>
-                            </Form>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Footer */}
-                <div className="text-muted-foreground mt-8 text-center text-sm">
+                            </form>
+                        </Form>
+                    </CardContent>
+                </Card>
+                <div className="text-muted-foreground text-center text-sm">
                     <p>
                         Already have an account?{' '}
                         <Authsignin.Link
@@ -224,6 +221,12 @@ const SignupPage: React.FC = () => {
                         >
                             Sign in here
                         </Authsignin.Link>
+                    </p>
+                    <p className="mt-2">
+                        <Home.Link className="text-muted-foreground hover:text-foreground inline-flex items-center space-x-2 text-sm">
+                            <ArrowLeft className="h-4 w-4" />
+                            <span>Back to Home</span>
+                        </Home.Link>
                     </p>
                 </div>
             </div>

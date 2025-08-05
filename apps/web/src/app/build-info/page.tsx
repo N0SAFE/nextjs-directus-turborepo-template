@@ -39,15 +39,39 @@ export default function BuildInfoPage() {
                         </p>
                     </div>
 
-                    <div className="rounded-lg bg-blue-50 p-4">
-                        <h2 className="mb-2 text-lg font-semibold text-blue-700">
+                    <div
+                        className={`rounded-lg p-4 ${
+                            process.env.NODE_ENV === 'development'
+                                ? 'bg-orange-50'
+                                : 'bg-blue-50'
+                        }`}
+                    >
+                        <h2
+                            className={`mb-2 text-lg font-semibold ${
+                                process.env.NODE_ENV === 'development'
+                                    ? 'text-orange-700'
+                                    : 'text-blue-700'
+                            }`}
+                        >
                             📋 Info
                         </h2>
-                        <p className="text-sm text-blue-800">
-                            This page was generated at build time and shows when
-                            the application was last built. The timestamp will
-                            only change when the application is rebuilt.
-                        </p>
+                        {process.env.NODE_ENV === 'development' ? (
+                            <p className="text-sm text-orange-800">
+                                You are in the{' '}
+                                <strong>development environment</strong>. In
+                                this mode, the build time reflects the moment
+                                the page was last rendered. After a production
+                                build, this timestamp will be fixed to the build
+                                date.
+                            </p>
+                        ) : (
+                            <p className="text-sm text-blue-800">
+                                This page was generated at build time and shows
+                                when the application was last built. The
+                                timestamp will only change when the application
+                                is rebuilt.
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -66,4 +90,4 @@ export default function BuildInfoPage() {
 
 // Force static generation at build time
 export const dynamic = 'force-static'
-export const revalidate = false
+export const revalidate = false // Disable revalidation to keep the build time static
