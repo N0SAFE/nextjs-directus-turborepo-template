@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE_CONNECTION } from './database-connection';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { eq } from 'drizzle-orm';
 import * as schema from './drizzle/schema';
 
 // Define the proper database type with schema

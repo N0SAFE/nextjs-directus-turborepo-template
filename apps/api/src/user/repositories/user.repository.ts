@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DatabaseService } from "../../db/services/database.service";
 import { user } from "../../db/drizzle/schema/auth";
-import { eq, desc, asc, or, like, count, and, SQL } from "drizzle-orm";
+import { eq, desc, asc, like, count, and, SQL } from "drizzle-orm";
 import {
   userCreateInput,
   userUpdateInput,

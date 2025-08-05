@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DatabaseModule } from './db/database.module';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
-import { onError, ORPCModule, onStart } from '@orpc/nest';
+import { onError, ORPCModule } from '@orpc/nest';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';  
@@ -48,7 +48,7 @@ export class AppModule implements NestModule {
 
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
