@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
 Derived from: https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety
 */
