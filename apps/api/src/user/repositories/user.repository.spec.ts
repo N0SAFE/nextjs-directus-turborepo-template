@@ -25,37 +25,36 @@ describe('UserRepository', () => {
   };
 
   beforeEach(async () => {
-    // Create a fluent mock chain for Drizzle query builder
-    const createQueryMock = () => ({
+    // Create proper Drizzle query builder chain mocks that handle the findMany complexity
+    const mockSelectQueryBuilder = {
       from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       orderBy: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
       offset: vi.fn().mockReturnThis(),
+    };
+
+    const mockInsertQueryBuilder = {
+      values: vi.fn().mockReturnThis(),
       returning: vi.fn(),
+    };
+
+    const mockUpdateQueryBuilder = {
       set: vi.fn().mockReturnThis(),
-    });
+      where: vi.fn().mockReturnThis(),
+      returning: vi.fn(),
+    };
+
+    const mockDeleteQueryBuilder = {
+      where: vi.fn().mockReturnThis(),
+      returning: vi.fn(),
+    };
 
     mockDb = {
-      insert: vi.fn(() => ({
-        values: vi.fn(() => ({
-          returning: vi.fn(),
-        })),
-      })),
-      select: vi.fn(() => createQueryMock()),
-      update: vi.fn(() => ({
-        set: vi.fn(() => ({
-          where: vi.fn(() => ({
-            returning: vi.fn(),
-          })),
-        })),
-      })),
-      delete: vi.fn(() => ({
-        where: vi.fn(() => ({
-          returning: vi.fn(),
-        })),
-      })),
+      select: vi.fn(() => mockSelectQueryBuilder),
+      insert: vi.fn(() => mockInsertQueryBuilder),
+      update: vi.fn(() => mockUpdateQueryBuilder),
+      delete: vi.fn(() => mockDeleteQueryBuilder),
     };
 
     const mockDatabaseService = {
@@ -84,13 +83,14 @@ describe('UserRepository', () => {
   describe('create', () => {
     it('should create a new user', async () => {
       const input = { name: 'John Doe', email: 'john@example.com' };
-      mockDb.returning.mockResolvedValue([mockUser]);
+      const mockInsertBuilder = mockDb.insert();
+      mockInsertBuilder.returning.mockResolvedValue([mockUser]);
 
       const result = await repository.create(input);
 
       expect(result).toEqual(transformedUser);
       expect(mockDb.insert).toHaveBeenCalled();
-      expect(mockDb.values).toHaveBeenCalledWith(
+      expect(mockInsertBuilder.values).toHaveBeenCalledWith(
         expect.objectContaining({
           name: input.name,
           email: input.email,
@@ -98,16 +98,17 @@ describe('UserRepository', () => {
           status: 'active',
         })
       );
-      expect(mockDb.returning).toHaveBeenCalled();
+      expect(mockInsertBuilder.returning).toHaveBeenCalled();
     });
 
     it('should create user with custom status', async () => {
       const input = { name: 'John Doe', email: 'john@example.com', status: 'inactive' };
-      mockDb.returning.mockResolvedValue([{ ...mockUser, status: 'inactive' }]);
+      const mockInsertBuilder = mockDb.insert();
+      mockInsertBuilder.returning.mockResolvedValue([{ ...mockUser, status: 'inactive' }]);
 
       const result = await repository.create(input);
 
-      expect(mockDb.values).toHaveBeenCalledWith(
+      expect(mockInsertBuilder.values).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'inactive',
         })
@@ -117,19 +118,22 @@ describe('UserRepository', () => {
 
   describe('findById', () => {
     it('should find user by id', async () => {
-      mockDb.from.mockResolvedValue([mockUser]);
+      const mockSelectBuilder = mockDb.select();
+      // Mock the final execution result
+      mockSelectBuilder.limit.mockResolvedValue([mockUser]);
 
       const result = await repository.findById('1');
 
       expect(result).toEqual(transformedUser);
       expect(mockDb.select).toHaveBeenCalled();
-      expect(mockDb.from).toHaveBeenCalled();
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.limit).toHaveBeenCalledWith(1);
+      expect(mockSelectBuilder.from).toHaveBeenCalled();
+      expect(mockSelectBuilder.where).toHaveBeenCalled();
+      expect(mockSelectBuilder.limit).toHaveBeenCalledWith(1);
     });
 
     it('should return null when user not found', async () => {
-      mockDb.from.mockResolvedValue([]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.limit.mockResolvedValue([]);
 
       const result = await repository.findById('nonexistent');
 
@@ -139,19 +143,21 @@ describe('UserRepository', () => {
 
   describe('findByEmail', () => {
     it('should find user by email', async () => {
-      mockDb.from.mockResolvedValue([mockUser]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.limit.mockResolvedValue([mockUser]);
 
       const result = await repository.findByEmail('john@example.com');
 
       expect(result).toEqual(transformedUser);
       expect(mockDb.select).toHaveBeenCalled();
-      expect(mockDb.from).toHaveBeenCalled();
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.limit).toHaveBeenCalledWith(1);
+      expect(mockSelectBuilder.from).toHaveBeenCalled();
+      expect(mockSelectBuilder.where).toHaveBeenCalled();
+      expect(mockSelectBuilder.limit).toHaveBeenCalledWith(1);
     });
 
     it('should return null when user not found', async () => {
-      mockDb.from.mockResolvedValue([]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.limit.mockResolvedValue([]);
 
       const result = await repository.findByEmail('nonexistent@example.com');
 
@@ -165,10 +171,22 @@ describe('UserRepository', () => {
       const users = [mockUser];
       const countResult = [{ count: 1 }];
 
-      // Mock the main query
-      mockDb.from.mockResolvedValueOnce(users);
-      // Mock the count query
-      mockDb.from.mockResolvedValueOnce(countResult);
+      // Create separate mock builder instances for the two queries
+      const mainQueryBuilder = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockResolvedValue(users),
+      };
+
+      const countQueryBuilder = {
+        from: vi.fn().mockResolvedValue(countResult),
+      };
+
+      // Mock both select calls (first for main query, second for count)
+      mockDb.select
+        .mockReturnValueOnce(mainQueryBuilder)
+        .mockReturnValueOnce(countQueryBuilder);
 
       const result = await repository.findMany(input);
 
@@ -194,13 +212,27 @@ describe('UserRepository', () => {
       const users = [mockUser];
       const countResult = [{ count: 1 }];
 
-      mockDb.from.mockResolvedValueOnce(users);
-      mockDb.from.mockResolvedValueOnce(countResult);
+      const mainQueryBuilder = {
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockResolvedValue(users),
+      };
+
+      const countQueryBuilder = {
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockResolvedValue(countResult),
+      };
+
+      mockDb.select
+        .mockReturnValueOnce(mainQueryBuilder)
+        .mockReturnValueOnce(countQueryBuilder);
 
       await repository.findMany(input);
 
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.orderBy).toHaveBeenCalled();
+      expect(mainQueryBuilder.where).toHaveBeenCalled();
+      expect(mainQueryBuilder.orderBy).toHaveBeenCalled();
     });
 
     it('should handle default sorting when no sort provided', async () => {
@@ -208,12 +240,24 @@ describe('UserRepository', () => {
       const users = [mockUser];
       const countResult = [{ count: 1 }];
 
-      mockDb.from.mockResolvedValueOnce(users);
-      mockDb.from.mockResolvedValueOnce(countResult);
+      const mainQueryBuilder = {
+        from: vi.fn().mockReturnThis(),
+        orderBy: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        offset: vi.fn().mockResolvedValue(users),
+      };
+
+      const countQueryBuilder = {
+        from: vi.fn().mockResolvedValue(countResult),
+      };
+
+      mockDb.select
+        .mockReturnValueOnce(mainQueryBuilder)
+        .mockReturnValueOnce(countQueryBuilder);
 
       await repository.findMany(input);
 
-      expect(mockDb.orderBy).toHaveBeenCalled();
+      expect(mainQueryBuilder.orderBy).toHaveBeenCalled();
     });
 
     it('should throw error for unsupported sort field', async () => {
@@ -232,24 +276,26 @@ describe('UserRepository', () => {
     it('should update user', async () => {
       const input = { name: 'Jane Doe' };
       const updatedUser = { ...mockUser, name: 'Jane Doe' };
-      mockDb.returning.mockResolvedValue([updatedUser]);
+      const mockUpdateBuilder = mockDb.update();
+      mockUpdateBuilder.returning.mockResolvedValue([updatedUser]);
 
       const result = await repository.update('1', input);
 
       expect(result).toEqual({ ...transformedUser, name: 'Jane Doe' });
       expect(mockDb.update).toHaveBeenCalled();
-      expect(mockDb.set).toHaveBeenCalledWith(
+      expect(mockUpdateBuilder.set).toHaveBeenCalledWith(
         expect.objectContaining({
           ...input,
           updatedAt: expect.any(Date),
         })
       );
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.returning).toHaveBeenCalled();
+      expect(mockUpdateBuilder.where).toHaveBeenCalled();
+      expect(mockUpdateBuilder.returning).toHaveBeenCalled();
     });
 
     it('should return null when update fails', async () => {
-      mockDb.returning.mockResolvedValue([]);
+      const mockUpdateBuilder = mockDb.update();
+      mockUpdateBuilder.returning.mockResolvedValue([]);
 
       const result = await repository.update('nonexistent', { name: 'Jane' });
 
@@ -259,18 +305,20 @@ describe('UserRepository', () => {
 
   describe('delete', () => {
     it('should delete user', async () => {
-      mockDb.returning.mockResolvedValue([mockUser]);
+      const mockDeleteBuilder = mockDb.delete();
+      mockDeleteBuilder.returning.mockResolvedValue([mockUser]);
 
       const result = await repository.delete('1');
 
       expect(result).toEqual(transformedUser);
       expect(mockDb.delete).toHaveBeenCalled();
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.returning).toHaveBeenCalled();
+      expect(mockDeleteBuilder.where).toHaveBeenCalled();
+      expect(mockDeleteBuilder.returning).toHaveBeenCalled();
     });
 
     it('should return null when delete fails', async () => {
-      mockDb.returning.mockResolvedValue([]);
+      const mockDeleteBuilder = mockDb.delete();
+      mockDeleteBuilder.returning.mockResolvedValue([]);
 
       const result = await repository.delete('nonexistent');
 
@@ -280,19 +328,21 @@ describe('UserRepository', () => {
 
   describe('existsByEmail', () => {
     it('should return true when user exists', async () => {
-      mockDb.from.mockResolvedValue([{ id: '1' }]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.limit.mockResolvedValue([{ id: '1' }]);
 
       const result = await repository.existsByEmail('john@example.com');
 
       expect(result).toBe(true);
       expect(mockDb.select).toHaveBeenCalled();
-      expect(mockDb.from).toHaveBeenCalled();
-      expect(mockDb.where).toHaveBeenCalled();
-      expect(mockDb.limit).toHaveBeenCalledWith(1);
+      expect(mockSelectBuilder.from).toHaveBeenCalled();
+      expect(mockSelectBuilder.where).toHaveBeenCalled();
+      expect(mockSelectBuilder.limit).toHaveBeenCalledWith(1);
     });
 
     it('should return false when user does not exist', async () => {
-      mockDb.from.mockResolvedValue([]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.limit.mockResolvedValue([]);
 
       const result = await repository.existsByEmail('nonexistent@example.com');
 
@@ -302,17 +352,19 @@ describe('UserRepository', () => {
 
   describe('getCount', () => {
     it('should return user count', async () => {
-      mockDb.from.mockResolvedValue([{ count: 42 }]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.from.mockResolvedValue([{ count: 42 }]);
 
       const result = await repository.getCount();
 
       expect(result).toBe(42);
       expect(mockDb.select).toHaveBeenCalled();
-      expect(mockDb.from).toHaveBeenCalled();
+      expect(mockSelectBuilder.from).toHaveBeenCalled();
     });
 
     it('should return 0 when no count result', async () => {
-      mockDb.from.mockResolvedValue([]);
+      const mockSelectBuilder = mockDb.select();
+      mockSelectBuilder.from.mockResolvedValue([]);
 
       const result = await repository.getCount();
 

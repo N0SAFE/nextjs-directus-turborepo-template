@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DatabaseModule } from '@/db/database.module';
-import { DatabaseService } from '@/db/database.service';
-import { DATABASE_CONNECTION } from '@/db/database-connection';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { DatabaseModule } from './database.module';
+import { DatabaseService } from './services/database.service';
+import { DATABASE_CONNECTION } from './database-connection';
 
 describe('DatabaseModule', () => {
   let module: TestingModule;

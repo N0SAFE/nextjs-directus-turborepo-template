@@ -33,7 +33,9 @@ describe('Auth Decorators', () => {
         }),
       } as ExecutionContext;
 
-      const result = Session(undefined, mockContext);
+      // Get the actual function from the param decorator
+      const decoratorFactory = Session[Object.getOwnPropertySymbols(Session)[0]] as any;
+      const result = decoratorFactory(undefined, mockContext);
 
       expect(result).toBe(mockSession);
     });
@@ -46,7 +48,9 @@ describe('Auth Decorators', () => {
         }),
       } as ExecutionContext;
 
-      const result = Session(undefined, mockContext);
+      // Get the actual function from the param decorator
+      const decoratorFactory = Session[Object.getOwnPropertySymbols(Session)[0]] as any;
+      const result = decoratorFactory(undefined, mockContext);
 
       expect(result).toBeUndefined();
     });
