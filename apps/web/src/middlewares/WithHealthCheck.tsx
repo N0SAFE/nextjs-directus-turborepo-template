@@ -5,7 +5,7 @@ import {
     NextResponse,
 } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
-import { validateEnvSafe } from '#/env'
+import { validateEnvPath } from '#/env'
 import {
     nextjsRegexpPageOnly,
     nextNoApi,
@@ -14,7 +14,7 @@ import { orpcServer } from '@/lib/orpc'
 import { toAbsoluteUrl } from '@/lib/utils'
 import { MiddlewareerrorhealthCheck } from '@/routes'
 
-const env = validateEnvSafe(process.env).data
+const NODE_ENV = validateEnvPath(process.env.NODE_ENV, 'NODE_ENV')
 const errorPageRenderingPath = '/middleware/error/healthCheck'
 
 const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
@@ -23,7 +23,7 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
             `Health Check Middleware: Checking server health for ${request.nextUrl.pathname}`,
             request.nextUrl.pathname
         )
-        if (env?.NODE_ENV === 'development') {
+        if (NODE_ENV === 'development') {
             try {
                 console.log('Checking API health via ORPC...')
                 try {
