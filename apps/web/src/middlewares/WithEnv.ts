@@ -3,6 +3,8 @@ import { Matcher, MiddlewareFactory } from './utils/types'
 import { envIsValid, validateEnvSafe } from '#/env'
 import { nextjsRegexpPageOnly, nextNoApi, noPublic } from './utils/static'
 import { matcherHandler } from './utils/utils'
+import { toAbsoluteUrl } from '@/lib/utils'
+import { Middlewareerrorenv } from '@/routes'
 
 const errorPageRenderingPath = '/middleware/error/env'
 
@@ -29,9 +31,11 @@ const withEnv: MiddlewareFactory = (next: NextMiddleware) => {
                     }
                     if (process.env?.NODE_ENV === 'development') {
                         return NextResponse.redirect(
-                            request.nextUrl.origin +
-                                errorPageRenderingPath +
-                                `?from=${encodeURIComponent(request.url)}`
+                            toAbsoluteUrl(
+                                Middlewareerrorenv({}, {
+                                    from: request.url
+                                })
+                            )
                         )
                     } else {
                         throw new Error(
