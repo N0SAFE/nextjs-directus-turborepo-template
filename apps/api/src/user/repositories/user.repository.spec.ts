@@ -25,28 +25,37 @@ describe('UserRepository', () => {
   };
 
   beforeEach(async () => {
-    mockDb = {
-      insert: vi.fn().mockReturnThis(),
-      select: vi.fn(() => ({
-        from: vi.fn(() => ({
-          where: vi.fn().mockReturnThis(),
-          orderBy: vi.fn().mockReturnThis(),
-          limit: vi.fn().mockReturnThis(),
-          offset: vi.fn().mockReturnThis(),
-        })),
-      })),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn(() => ({
-        where: vi.fn().mockReturnThis(),
-      })),
+    // Create a fluent mock chain for Drizzle query builder
+    const createQueryMock = () => ({
       from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
-      values: vi.fn().mockReturnThis(),
-      returning: vi.fn(),
+      orderBy: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
       offset: vi.fn().mockReturnThis(),
-      orderBy: vi.fn().mockReturnThis(),
+      returning: vi.fn(),
       set: vi.fn().mockReturnThis(),
+    });
+
+    mockDb = {
+      insert: vi.fn(() => ({
+        values: vi.fn(() => ({
+          returning: vi.fn(),
+        })),
+      })),
+      select: vi.fn(() => createQueryMock()),
+      update: vi.fn(() => ({
+        set: vi.fn(() => ({
+          where: vi.fn(() => ({
+            returning: vi.fn(),
+          })),
+        })),
+      })),
+      delete: vi.fn(() => ({
+        where: vi.fn(() => ({
+          returning: vi.fn(),
+        })),
+      })),
     };
 
     const mockDatabaseService = {

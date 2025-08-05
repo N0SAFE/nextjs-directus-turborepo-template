@@ -1,29 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HealthRepository } from '@/health/repositories/health.repository';
-import { DatabaseService } from '@/db/services/database.service';
+import { HealthRepository } from './health.repository';
+import { DatabaseService } from '../../db/services/database.service';
 
 describe('HealthRepository', () => {
   let repository: HealthRepository;
-  let databaseService: DatabaseService;
+  let mockDatabaseService: any;
 
   beforeEach(async () => {
+    mockDatabaseService = {
+      db: {
+        execute: vi.fn(),
+      },
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        HealthRepository,
         {
-          provide: DatabaseService,
-          useValue: {
-            db: {
-              execute: vi.fn(),
-            },
-          },
+          provide: HealthRepository,
+          useFactory: () => new HealthRepository(mockDatabaseService),
         },
       ],
     }).compile();
 
     repository = module.get<HealthRepository>(HealthRepository);
-    databaseService = module.get<DatabaseService>(DatabaseService);
+    
+    // Reset mocks
+    vi.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -33,7 +36,7 @@ describe('HealthRepository', () => {
   describe('checkDatabaseHealth', () => {
     it('should return ok status when database query succeeds', async () => {
       const startTime = Date.now();
-      vi.mocked(databaseService.db.execute).mockResolvedValue(undefined);
+      mockDatabaseService.db.execute.mockResolvedValue(undefined);
 
       const result = await repository.checkDatabaseHealth();
 
@@ -41,12 +44,12 @@ describe('HealthRepository', () => {
       expect(result.timestamp).toBeDefined();
       expect(typeof result.responseTime).toBe('number');
       expect(result.responseTime).toBeGreaterThanOrEqual(0);
-      expect(databaseService.db.execute).toHaveBeenCalledWith('SELECT 1');
+      expect(mockDatabaseService.db.execute).toHaveBeenCalledWith('SELECT 1');
     });
 
     it('should return error status when database query fails', async () => {
       const errorMessage = 'Connection timeout';
-      vi.mocked(databaseService.db.execute).mockRejectedValue(new Error(errorMessage));
+      mockDatabaseService.db.execute.mockRejectedValue(new Error(errorMessage));
 
       const result = await repository.checkDatabaseHealth();
 
@@ -55,11 +58,11 @@ describe('HealthRepository', () => {
       expect(typeof result.responseTime).toBe('number');
       expect(result.responseTime).toBeGreaterThanOrEqual(0);
       expect(result.error).toBe(errorMessage);
-      expect(databaseService.db.execute).toHaveBeenCalledWith('SELECT 1');
+      expect(mockDatabaseService.db.execute).toHaveBeenCalledWith('SELECT 1');
     });
 
     it('should handle unknown errors', async () => {
-      vi.mocked(databaseService.db.execute).mockRejectedValue('Unknown error');
+      mockDatabaseService.db.execute.mockRejectedValue('Unknown error');
 
       const result = await repository.checkDatabaseHealth();
 

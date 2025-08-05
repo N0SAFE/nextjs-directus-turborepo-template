@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DatabaseService } from '@/db/database.service';
-import { DATABASE_CONNECTION } from '@/db/database-connection';
+import { DatabaseService } from './database.service';
+import { DATABASE_CONNECTION } from './database-connection';
 
 describe('DatabaseService', () => {
   let service: DatabaseService;
@@ -30,17 +30,20 @@ describe('DatabaseService', () => {
   });
 
   it('should throw error if database connection is not initialized', async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        DatabaseService,
-        {
-          provide: DATABASE_CONNECTION,
-          useValue: null,
-        },
-      ],
-    }).compile();
+    const createServiceWithNullDb = () => {
+      const module: TestingModule = Test.createTestingModule({
+        providers: [
+          DatabaseService,
+          {
+            provide: DATABASE_CONNECTION,
+            useValue: null,
+          },
+        ],
+      });
+      return module.compile().then(m => m.get<DatabaseService>(DatabaseService));
+    };
 
-    expect(() => module.get<DatabaseService>(DatabaseService)).toThrow(
+    await expect(createServiceWithNullDb()).rejects.toThrow(
       'Database connection is not initialized'
     );
   });
