@@ -49,7 +49,6 @@ export class UserRepository {
         name: input.name,
         email: input.email,
         image: input.image || null,
-        status: input.status || "active",
         emailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -104,10 +103,6 @@ export class UserRepository {
       conditions.push(eq(user.id, input.filter.id));
     }
 
-    if (input.filter?.status) {
-      conditions.push(eq(user.status, input.filter.status));
-    }
-
     const whereCondition =
       conditions.length > 0
         ? conditions.length === 1
@@ -142,10 +137,6 @@ export class UserRepository {
         case "image":
           orderByCondition =
             input.sort.direction === "asc" ? asc(user.image) : desc(user.image);
-          break;
-        case "status":
-          orderByCondition =
-            input.sort.direction === "asc" ? asc(user.status) : desc(user.status);
           break;
         case "createdAt":
           orderByCondition =

@@ -20,7 +20,8 @@
     "db:push": "drizzle-kit push",
     "db:reset": "drizzle-kit reset",
     "db:generate": "drizzle-kit generate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "auth:generate": "bun x @better-auth/cli generate --config src/auth.ts --output src/db/drizzle/schema/auth.ts --y && bun run db:generate"
   },
   "dependencies": {
     "@mguay/nestjs-better-auth": "catalog:auth",

@@ -49,4 +49,4 @@ ENV LOG_LEVEL=debug
 WORKDIR /app
 
 # Start development server with hot reloading from workspace root
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["sh", "-c", "bun run --cwd apps/api db:migrate && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]

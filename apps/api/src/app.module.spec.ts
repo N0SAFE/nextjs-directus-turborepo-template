@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { AppModule, LoggerMiddleware } from '@/app.module';
 import { Request, Response } from 'express';
 
@@ -32,7 +32,7 @@ describe('LoggerMiddleware', () => {
   let middleware: LoggerMiddleware;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let nextFunction: vi.Mock;
+  let nextFunction: Mock;
 
   beforeEach(() => {
     middleware = new LoggerMiddleware();
@@ -89,7 +89,7 @@ describe('LoggerMiddleware', () => {
       expect(nextFunction).toHaveBeenCalledOnce();
     });
 
-    it('should log request details on response close', () => {=
+    it('should log request details on response close', () => {
       // Mock os.hostname
       vi.mock('os', () => ({
         hostname: () => 'test-hostname',

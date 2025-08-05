@@ -28,7 +28,6 @@ export const userListInput = z.object({
     id: userSchema.shape.id,
     email: userSchema.shape.email,
     name: userSchema.shape.name,
-    status: userSchema.shape.status,
     // Add more fields as needed
   }).partial().optional(),
 });

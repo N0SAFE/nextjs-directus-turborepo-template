@@ -6,7 +6,6 @@ export const userCreateInput = z.object({
   name: userSchema.shape.name,
   email: userSchema.shape.email,
   image: userSchema.shape.image,
-  status: userSchema.shape.status,
 });
 
 export const userCreateOutput = userSchema

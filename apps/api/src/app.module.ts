@@ -3,9 +3,6 @@ import { DatabaseModule } from './db/database.module';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
 import { onError, ORPCModule } from '@orpc/nest';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres'
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';  
 import { DATABASE_CONNECTION } from './db/database-connection';
 import {AuthModule} from './auth/auth.module'
 
@@ -16,16 +13,7 @@ import {AuthModule} from './auth/auth.module'
     UserModule,
     AuthModule.forRootAsync({
       imports: [DatabaseModule],
-      useFactory: (database: unknown) => ({
-        auth: betterAuth({
-          database: drizzleAdapter(database as NodePgDatabase, {
-            provider: 'pg'
-          }),
-          emailAndPassword: {
-            enabled: true,
-          },
-        }) as unknown as import("better-auth").Auth
-      }),
+      useFactory: betterAuthFactory,
       inject: [DATABASE_CONNECTION],
     }),
     ORPCModule.forRoot({
@@ -49,6 +37,7 @@ export class AppModule implements NestModule {
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 
 import { Request, Response } from 'express';
+import { betterAuthFactory } from './auth';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
