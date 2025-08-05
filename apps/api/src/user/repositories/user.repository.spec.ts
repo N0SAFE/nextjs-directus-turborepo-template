@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { UserRepository } from '@/user/repositories/user.repository';
-import { DatabaseService } from '@/db/services/database.service';
+import { UserRepository } from './user.repository';
+import { DatabaseService } from '../../db/services/database.service';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
-  let databaseService: DatabaseService;
   let mockDb: any;
 
   const mockUser = {
@@ -28,9 +27,18 @@ describe('UserRepository', () => {
   beforeEach(async () => {
     mockDb = {
       insert: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn().mockReturnThis(),
+          orderBy: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockReturnThis(),
+          offset: vi.fn().mockReturnThis(),
+        })),
+      })),
       update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
+      delete: vi.fn(() => ({
+        where: vi.fn().mockReturnThis(),
+      })),
       from: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       values: vi.fn().mockReturnThis(),
@@ -41,20 +49,23 @@ describe('UserRepository', () => {
       set: vi.fn().mockReturnThis(),
     };
 
+    const mockDatabaseService = {
+      db: mockDb,
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UserRepository,
         {
-          provide: DatabaseService,
-          useValue: {
-            db: mockDb,
-          },
+          provide: UserRepository,
+          useFactory: () => new UserRepository(mockDatabaseService as any),
         },
       ],
     }).compile();
 
     repository = module.get<UserRepository>(UserRepository);
-    databaseService = module.get<DatabaseService>(DatabaseService);
+    
+    // Reset all mocks
+    vi.clearAllMocks();
   });
 
   it('should be defined', () => {
