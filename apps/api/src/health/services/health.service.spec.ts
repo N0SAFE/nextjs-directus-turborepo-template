@@ -1,29 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HealthService } from '@/health/services/health.service';
-import { HealthRepository } from '@/health/repositories/health.repository';
+import { HealthService } from './health.service';
+import { HealthRepository } from '../repositories/health.repository';
 
 describe('HealthService', () => {
   let service: HealthService;
-  let repository: HealthRepository;
+  let mockRepository: any;
 
   beforeEach(async () => {
+    mockRepository = {
+      checkDatabaseHealth: vi.fn(),
+      getMemoryInfo: vi.fn(),
+      getUptime: vi.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        HealthService,
         {
-          provide: HealthRepository,
-          useValue: {
-            checkDatabaseHealth: vi.fn(),
-            getMemoryInfo: vi.fn(),
-            getUptime: vi.fn(),
-          },
+          provide: HealthService,
+          useFactory: () => new HealthService(mockRepository),
         },
       ],
     }).compile();
 
     service = module.get<HealthService>(HealthService);
-    repository = module.get<HealthRepository>(HealthRepository);
+    
+    // Reset mocks
+    vi.clearAllMocks();
   });
 
   it('should be defined', () => {
