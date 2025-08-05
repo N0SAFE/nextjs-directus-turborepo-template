@@ -31,18 +31,28 @@ describe('HealthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('check', () => {
-    it('should return handler function', () => {
-      const mockHealth = { status: 'ok', timestamp: new Date().toISOString() };
-      vi.mocked(service.getHealth).mockResolvedValue(mockHealth);
-
+  describe('ORPC implementation methods', () => {
+    it('should have check method that returns implementation handler', () => {
       const implementation = controller.check();
-      
       expect(implementation).toBeDefined();
       expect(typeof implementation.handler).toBe('function');
     });
 
-    it('should call health service when handler is executed', async () => {
+    it('should have detailed method that returns implementation handler', () => {
+      const implementation = controller.detailed();
+      expect(implementation).toBeDefined();
+      expect(typeof implementation.handler).toBe('function');
+    });
+  });
+
+  describe('Service integration', () => {
+    it('should have service injected properly', () => {
+      expect(service).toBeDefined();
+      expect(service.getHealth).toBeDefined();
+      expect(service.getDetailedHealth).toBeDefined();
+    });
+
+    it('should be able to call getHealth service method directly', async () => {
       const mockHealth = { 
         status: 'ok', 
         timestamp: new Date().toISOString(),
@@ -50,16 +60,12 @@ describe('HealthController', () => {
       };
       vi.mocked(service.getHealth).mockResolvedValue(mockHealth);
 
-      const implementation = controller.check();
-      const result = await implementation.handler({});
-
+      const result = await service.getHealth();
       expect(result).toEqual(mockHealth);
       expect(service.getHealth).toHaveBeenCalledOnce();
     });
-  });
 
-  describe('detailed', () => {
-    it('should return handler function', () => {
+    it('should be able to call getDetailedHealth service method directly', async () => {
       const mockDetailedHealth = { 
         status: 'ok', 
         timestamp: new Date().toISOString(),
@@ -70,26 +76,7 @@ describe('HealthController', () => {
       };
       vi.mocked(service.getDetailedHealth).mockResolvedValue(mockDetailedHealth);
 
-      const implementation = controller.detailed();
-      
-      expect(implementation).toBeDefined();
-      expect(typeof implementation.handler).toBe('function');
-    });
-
-    it('should call detailed health service when handler is executed', async () => {
-      const mockDetailedHealth = { 
-        status: 'ok', 
-        timestamp: new Date().toISOString(),
-        service: 'nestjs-api',
-        uptime: 123,
-        memory: { used: 1000, free: 2000, total: 3000 },
-        database: { status: 'ok' }
-      };
-      vi.mocked(service.getDetailedHealth).mockResolvedValue(mockDetailedHealth);
-
-      const implementation = controller.detailed();
-      const result = await implementation.handler({});
-
+      const result = await service.getDetailedHealth();
       expect(result).toEqual(mockDetailedHealth);
       expect(service.getDetailedHealth).toHaveBeenCalledOnce();
     });

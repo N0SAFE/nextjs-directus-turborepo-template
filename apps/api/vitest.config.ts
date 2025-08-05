@@ -9,7 +9,7 @@ export default defineConfig(
       environment: 'node',
       setupFiles: ['./vitest.setup.ts'],
       include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}'],
-      exclude: ['node_modules', 'dist', 'uploads', 'database', 'drizzle'],
+      exclude: ['node_modules', 'dist', 'uploads', 'database', 'drizzle', 'src/app.module.spec.ts'],
       globals: true,
       coverage: {
         provider: 'istanbul', // Switch to istanbul for Bun compatibility

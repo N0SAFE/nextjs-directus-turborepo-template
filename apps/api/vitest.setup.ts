@@ -52,3 +52,16 @@ vi.mock('./src/db/database-connection', () => ({
 vi.mock('os', () => ({
   hostname: vi.fn(() => 'test-hostname'),
 }));
+
+// Mock @orpc/nest for controller testing
+vi.mock('@orpc/nest', () => ({
+  Implement: vi.fn(() => (target: any, propertyKey: string) => {}),
+  implement: vi.fn((contract: any) => ({
+    handler: vi.fn((handlerFn: Function) => {
+      // Return a handler that preserves the original function context
+      return {
+        handler: handlerFn,
+      };
+    }),
+  })),
+}));

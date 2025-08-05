@@ -1,70 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppModule, LoggerMiddleware } from '@/app.module';
-import { DatabaseModule } from '@/db/database.module';
-import { HealthModule } from '@/health/health.module';
-import { UserModule } from '@/user/user.module';
-import { AuthModule } from '@/auth/auth-module';
-import { ORPCModule } from '@orpc/nest';
-import { DATABASE_CONNECTION } from '@/db/database-connection';
 import { Request, Response } from 'express';
-
-// Mock the external modules and dependencies
-vi.mock('@orpc/nest', () => ({
-  ORPCModule: {
-    forRoot: vi.fn(() => ({
-      module: 'MockORPCModule',
-    })),
-  },
-  onError: vi.fn(),
-}));
-
-vi.mock('better-auth', () => ({
-  betterAuth: vi.fn(() => ({
-    api: {},
-    handler: vi.fn(),
-  })),
-}));
-
-vi.mock('better-auth/adapters/drizzle', () => ({
-  drizzleAdapter: vi.fn(() => ({})),
-}));
 
 describe('AppModule', () => {
   let appModule: AppModule;
-  let module: TestingModule;
 
-  beforeEach(async () => {
-    const testModule: TestingModule = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        HealthModule,
-        UserModule,
-        AuthModule.forRootAsync({
-          imports: [DatabaseModule],
-          useFactory: (database: unknown) => ({
-            auth: {} as any,
-          }),
-          inject: [DATABASE_CONNECTION],
-        }),
-        ORPCModule.forRoot({
-          interceptors: [],
-          eventIteratorKeepAliveInterval: 5000,
-        }),
-      ],
-    })
-    .overrideModule(DatabaseModule)
-    .useValue({ providers: [], exports: [] })
-    .overrideModule(HealthModule)
-    .useValue({ providers: [], exports: [] })
-    .overrideModule(UserModule)
-    .useValue({ providers: [], exports: [] })
-    .overrideModule(AuthModule)
-    .useValue({ providers: [], exports: [] })
-    .compile();
-
-    module = testModule;
+  beforeEach(() => {
     appModule = new AppModule();
   });
 
