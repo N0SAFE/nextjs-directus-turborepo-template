@@ -1,6 +1,7 @@
 import MillionLint from '@million/lint'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { NextConfig } from 'next'
+import { envSchema } from './env'
 
 // Check if we're running in a lint context or other non-build contexts
 const commandLine = process.argv.join(' ')
@@ -26,30 +27,21 @@ if (!process.env.API_URL) {
 }
 
 // Handle both full URLs and hostname-only values (for Render deployment)
-let apiUrl: string
-try {
-    // Try to parse as full URL first
-    new URL(process.env.API_URL)
-    apiUrl = process.env.API_URL
-} catch {
-    // If it fails, assume it's a hostname and add https protocol
-    apiUrl = `https://${process.env.API_URL}`
-}
-
-const url = new URL(apiUrl)
+const apiUrl = new URL(envSchema.shape.API_URL.parse(process.env.API_URL))
 
 const noCheck = process.env.CHECK_ON_BUILD !== 'true'
 
 const nextConfig: NextConfig = {
     async rewrites() {
+        console.log('redirect external orpc request from', '/api/nest/:path*', 'to', `${apiUrl.href}`);
         return [
             {
                 source: '/api/auth/:path*',
-                destination: `${url.origin}/api/auth/:path*`,
+                destination: `${apiUrl.href}/api/auth/:path*`,
             },
             {
                 source: '/api/nest/:path*',
-                destination: `${url.origin}/:path*`,
+                destination: `${apiUrl.href}/:path*`,
             }
         ]
     },
@@ -73,9 +65,9 @@ const nextConfig: NextConfig = {
         dangerouslyAllowSVG: true,
         remotePatterns: [
             {
-                hostname: url.hostname,
-                port: url.port,
-                protocol: url.protocol.replace(':', '') as 'http' | 'https',
+                hostname: apiUrl.hostname,
+                port: apiUrl.port,
+                protocol: apiUrl.protocol.replace(':', '') as 'http' | 'https',
             },
         ],
     },

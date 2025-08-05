@@ -11,6 +11,7 @@ import { matcherHandler } from './utils/utils'
 import { validateEnvSafe } from '#/env'
 import { toAbsoluteUrl } from '@/lib/utils'
 import { betterFetch } from '@better-fetch/fetch'
+import { Authsignin } from '@/routes/index'
 
 const env = validateEnvSafe(process.env).data
 
@@ -27,12 +28,15 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
         )
 
         // Get session using Better Auth
-       const { data: session } = await betterFetch<typeof $Infer.Session>("/api/auth/get-session", {
-		baseURL: request.nextUrl.origin,
-		headers: {
-			cookie: request.headers.get("cookie") || "", // Forward the cookies from the request
-		},
-	});
+        const { data: session } = await betterFetch<typeof $Infer.Session>(
+            '/api/auth/get-session',
+            {
+                baseURL: request.nextUrl.origin,
+                headers: {
+                    cookie: request.headers.get('cookie') || '', // Forward the cookies from the request
+                },
+            }
+        )
 
         const isAuth = !!session
 
@@ -71,12 +75,14 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
             // this else is hit when the user is not authenticated and on the routes listed on the export matcher
             return NextResponse.redirect(
                 toAbsoluteUrl(
-                    '/auth/login' +
-                        '?callbackUrl=' +
-                        encodeURIComponent(
-                            request.nextUrl.pathname +
-                                (request.nextUrl.search ?? '')
-                        )
+                    Authsignin(
+                        {},
+                        {
+                            callbackUrl:
+                                request.nextUrl.pathname +
+                                (request.nextUrl.search ?? ''),
+                        }
+                    )
                 )
             ) // not authenticated, redirect to login
         }
