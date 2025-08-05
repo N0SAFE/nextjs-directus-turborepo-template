@@ -45,7 +45,8 @@ describe('HealthService', () => {
 
   describe('getReadiness', () => {
     it('should return ready status when database is healthy', async () => {
-      (repository.checkDatabaseHealth as any).mockResolvedValue({
+      const mockCheckHealth = repository.checkDatabaseHealth as any;
+      mockCheckHealth.mockResolvedValue({
         status: 'ok',
         timestamp: new Date().toISOString(),
         responseTime: 10,
@@ -58,11 +59,12 @@ describe('HealthService', () => {
         service: 'nestjs-api',
       });
       expect(result.timestamp).toBeDefined();
-      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
+      expect(mockCheckHealth).toHaveBeenCalledOnce();
     });
 
     it('should return not-ready status when database is unhealthy', async () => {
-      (repository.checkDatabaseHealth as any).mockResolvedValue({
+      const mockCheckHealth = repository.checkDatabaseHealth as any;
+      mockCheckHealth.mockResolvedValue({
         status: 'error',
         timestamp: new Date().toISOString(),
         responseTime: 1000,
@@ -76,7 +78,7 @@ describe('HealthService', () => {
         service: 'nestjs-api',
       });
       expect(result.timestamp).toBeDefined();
-      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
+      expect(mockCheckHealth).toHaveBeenCalledOnce();
     });
   });
 
@@ -102,9 +104,13 @@ describe('HealthService', () => {
       const mockMemory = { used: 1000, free: 2000, total: 3000 };
       const mockUptime = 123.45;
 
-      (repository.checkDatabaseHealth as any).mockResolvedValue(mockDbHealth);
-      (repository.getMemoryInfo as any).mockReturnValue(mockMemory);
-      (repository.getUptime as any).mockReturnValue(mockUptime);
+      const mockCheckHealth = repository.checkDatabaseHealth as any;
+      const mockGetMemory = repository.getMemoryInfo as any;
+      const mockGetUptime = repository.getUptime as any;
+
+      mockCheckHealth.mockResolvedValue(mockDbHealth);
+      mockGetMemory.mockReturnValue(mockMemory);
+      mockGetUptime.mockReturnValue(mockUptime);
 
       const result = await service.getDetailedHealth();
 
@@ -116,9 +122,9 @@ describe('HealthService', () => {
         database: mockDbHealth,
       });
       expect(result.timestamp).toBeDefined();
-      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
-      expect(repository.getMemoryInfo).toHaveBeenCalledOnce();
-      expect(repository.getUptime).toHaveBeenCalledOnce();
+      expect(mockCheckHealth).toHaveBeenCalledOnce();
+      expect(mockGetMemory).toHaveBeenCalledOnce();
+      expect(mockGetUptime).toHaveBeenCalledOnce();
     });
 
     it('should return degraded status when database is unhealthy', async () => {
@@ -131,9 +137,13 @@ describe('HealthService', () => {
       const mockMemory = { used: 1000, free: 2000, total: 3000 };
       const mockUptime = 123.45;
 
-      (repository.checkDatabaseHealth as any).mockResolvedValue(mockDbHealth);
-      (repository.getMemoryInfo as any).mockReturnValue(mockMemory);
-      (repository.getUptime as any).mockReturnValue(mockUptime);
+      const mockCheckHealth = repository.checkDatabaseHealth as any;
+      const mockGetMemory = repository.getMemoryInfo as any;
+      const mockGetUptime = repository.getUptime as any;
+
+      mockCheckHealth.mockResolvedValue(mockDbHealth);
+      mockGetMemory.mockReturnValue(mockMemory);
+      mockGetUptime.mockReturnValue(mockUptime);
 
       const result = await service.getDetailedHealth();
 
