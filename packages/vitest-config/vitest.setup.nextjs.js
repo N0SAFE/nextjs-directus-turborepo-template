@@ -1,7 +1,7 @@
-import { beforeEach, vi } from 'vitest';
+const { beforeEach, vi } = require('vitest')
 
-import '@testing-library/jest-dom'
-import * as React from 'react';
+require('@testing-library/jest-dom')
+const React = require('react')
 
 // Setup for Next.js components testing
 beforeEach(() => {
@@ -55,7 +55,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
-  default: (props: any) => {
+  default: (props) => {
     // eslint-disable-next-line @next/next/no-img-element
     return React.createElement('img', props)
   },
@@ -63,7 +63,7 @@ vi.mock('next/image', () => ({
 
 // Mock Next.js Link component
 vi.mock('next/link', () => ({
-  default: ({ children, ...props }: any) => {
+  default: ({ children, ...props }) => {
     return React.createElement('a', props, children)
   },
 }))

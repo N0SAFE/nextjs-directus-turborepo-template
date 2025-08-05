@@ -1,6 +1,9 @@
 {
   "name": "nextjs-nestjs-turborepo-template",
   "private": true,
+  "resolutions": {
+    "vite": "^5.4.10"
+  },
   "workspaces": {
     "packages": [
       "apps/*",

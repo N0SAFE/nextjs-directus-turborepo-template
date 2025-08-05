@@ -1,10 +1,10 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
+const { defineConfig } = require('vitest/config')
 
 /**
  * Base Vitest configuration for all packages
  */
-export const createBaseConfig = (overrides = {}) => {
+const createBaseConfig = (overrides = {}) => {
   return defineConfig({
     test: {
       globals: true,
@@ -56,4 +56,8 @@ export const createBaseConfig = (overrides = {}) => {
   })
 }
 
-export default createBaseConfig()
+const defaultConfig = createBaseConfig()
+
+module.exports = defaultConfig
+module.exports.createBaseConfig = createBaseConfig
+module.exports.default = defaultConfig

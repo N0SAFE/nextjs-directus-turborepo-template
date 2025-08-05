@@ -1,18 +1,18 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import { createBaseConfig } from './vitest.config.base'
-import * as path from 'path'
+const { defineConfig } = require('vitest/config')
+const react = require('@vitejs/plugin-react')
+const { createBaseConfig } = require('./vitest.config.base')
+const path = require('path')
 
 /**
  * Next.js-specific Vitest configuration for web applications
  */
-export const createNextJSConfig = (overrides = {}) => {
+const createNextJSConfig = (overrides = {}) => {
   return createBaseConfig({
     plugins: [react()],
     test: {
       environment: 'jsdom',
-      setupFiles: ['./vitest.setup.react.ts'],
+      setupFiles: ['./vitest.setup.nextjs.js'],
       globals: true,
       // Mock Next.js modules
       server: {
@@ -38,4 +38,8 @@ export const createNextJSConfig = (overrides = {}) => {
   })
 }
 
-export default createNextJSConfig()
+const defaultConfig = createNextJSConfig()
+
+module.exports = defaultConfig
+module.exports.createNextJSConfig = createNextJSConfig
+module.exports.default = defaultConfig

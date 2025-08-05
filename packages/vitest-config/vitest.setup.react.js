@@ -1,4 +1,6 @@
-import '@testing-library/jest-dom'
+const { beforeEach, vi } = require('vitest')
+
+require('@testing-library/jest-dom')
 
 // Global test setup for React components
 beforeEach(() => {

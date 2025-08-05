@@ -1,4 +1,5 @@
-import { beforeAll, beforeEach, vi } from 'vitest';
+const { beforeAll, beforeEach, afterAll, vi } = require('vitest')
+
 // Global test setup for Node.js packages
 
 beforeEach(() => {
