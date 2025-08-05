@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HealthController } from '@/health/controllers/health.controller';
-import { HealthService } from '@/health/services/health.service';
+import { HealthController } from './health.controller';
+import { HealthService } from '../services/health.service';
 
 describe('HealthController', () => {
   let controller: HealthController;
   let service: HealthService;
 
   beforeEach(async () => {
+    const mockHealthService = {
+      getHealth: vi.fn(),
+      getDetailedHealth: vi.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
       providers: [
         {
           provide: HealthService,
-          useValue: {
-            getHealth: vi.fn(),
-            getDetailedHealth: vi.fn(),
-          },
+          useFactory: () => mockHealthService,
         },
       ],
     }).compile();
