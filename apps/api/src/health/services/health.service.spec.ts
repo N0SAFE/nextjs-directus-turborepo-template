@@ -1,0 +1,150 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { HealthService } from '@/health/services/health.service';
+import { HealthRepository } from '@/health/repositories/health.repository';
+
+describe('HealthService', () => {
+  let service: HealthService;
+  let repository: HealthRepository;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        HealthService,
+        {
+          provide: HealthRepository,
+          useValue: {
+            checkDatabaseHealth: vi.fn(),
+            getMemoryInfo: vi.fn(),
+            getUptime: vi.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<HealthService>(HealthService);
+    repository = module.get<HealthRepository>(HealthRepository);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('getHealth', () => {
+    it('should return basic health status', async () => {
+      const result = await service.getHealth();
+
+      expect(result).toMatchObject({
+        status: 'ok',
+        service: 'nestjs-api',
+      });
+      expect(result.timestamp).toBeDefined();
+      expect(typeof result.timestamp).toBe('string');
+    });
+  });
+
+  describe('getReadiness', () => {
+    it('should return ready status when database is healthy', async () => {
+      (repository.checkDatabaseHealth as any).mockResolvedValue({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        responseTime: 10,
+      });
+
+      const result = await service.getReadiness();
+
+      expect(result).toMatchObject({
+        status: 'ready',
+        service: 'nestjs-api',
+      });
+      expect(result.timestamp).toBeDefined();
+      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
+    });
+
+    it('should return not-ready status when database is unhealthy', async () => {
+      (repository.checkDatabaseHealth as any).mockResolvedValue({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        responseTime: 1000,
+        error: 'Connection failed',
+      });
+
+      const result = await service.getReadiness();
+
+      expect(result).toMatchObject({
+        status: 'not-ready',
+        service: 'nestjs-api',
+      });
+      expect(result.timestamp).toBeDefined();
+      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('getLiveness', () => {
+    it('should return alive status', async () => {
+      const result = await service.getLiveness();
+
+      expect(result).toMatchObject({
+        status: 'alive',
+        service: 'nestjs-api',
+      });
+      expect(result.timestamp).toBeDefined();
+    });
+  });
+
+  describe('getDetailedHealth', () => {
+    it('should return detailed health when all systems are healthy', async () => {
+      const mockDbHealth = {
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        responseTime: 15,
+      };
+      const mockMemory = { used: 1000, free: 2000, total: 3000 };
+      const mockUptime = 123.45;
+
+      (repository.checkDatabaseHealth as any).mockResolvedValue(mockDbHealth);
+      (repository.getMemoryInfo as any).mockReturnValue(mockMemory);
+      (repository.getUptime as any).mockReturnValue(mockUptime);
+
+      const result = await service.getDetailedHealth();
+
+      expect(result).toMatchObject({
+        status: 'ok',
+        service: 'nestjs-api',
+        uptime: mockUptime,
+        memory: mockMemory,
+        database: mockDbHealth,
+      });
+      expect(result.timestamp).toBeDefined();
+      expect(repository.checkDatabaseHealth).toHaveBeenCalledOnce();
+      expect(repository.getMemoryInfo).toHaveBeenCalledOnce();
+      expect(repository.getUptime).toHaveBeenCalledOnce();
+    });
+
+    it('should return degraded status when database is unhealthy', async () => {
+      const mockDbHealth = {
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        responseTime: 5000,
+        error: 'Connection timeout',
+      };
+      const mockMemory = { used: 1000, free: 2000, total: 3000 };
+      const mockUptime = 123.45;
+
+      (repository.checkDatabaseHealth as any).mockResolvedValue(mockDbHealth);
+      (repository.getMemoryInfo as any).mockReturnValue(mockMemory);
+      (repository.getUptime as any).mockReturnValue(mockUptime);
+
+      const result = await service.getDetailedHealth();
+
+      expect(result).toMatchObject({
+        status: 'degraded',
+        service: 'nestjs-api',
+        uptime: mockUptime,
+        memory: mockMemory,
+        database: mockDbHealth,
+      });
+      expect(result.timestamp).toBeDefined();
+    });
+  });
+});
