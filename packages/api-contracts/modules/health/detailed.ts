@@ -9,16 +9,16 @@ export const healthDetailedOutput = z.object({
   status: z.string(),
   timestamp: z.string(),
   service: z.string(),
-  uptime: z.number(),
+  uptime: z.coerce.number(),
   memory: z.object({
-    used: z.number(),
-    free: z.number(),
-    total: z.number(),
+    used: z.coerce.number(),
+    free: z.coerce.number(),
+    total: z.coerce.number(),
   }),
   database: z.object({
     status: z.string(),
     timestamp: z.string(),
-    responseTime: z.number().optional(),
+    responseTime: z.coerce.number().optional(),
     error: z.string().optional(),
   }),
 });

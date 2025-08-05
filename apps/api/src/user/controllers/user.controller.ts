@@ -45,7 +45,7 @@ export class UserController {
   @Implement(userContract.checkEmail)
   checkEmail() {
     return implement(userContract.checkEmail).handler(async ({ input }) => {
-      return await this.userService.checkUserExistsByEmail(input.json.email);
+      return await this.userService.checkUserExistsByEmail(input.email);
     });
   }
 

@@ -2,9 +2,7 @@ import { oc } from "@orpc/contract";
 import { z } from "zod/v4";
 
 export const userCheckEmailInput = z.object({
-  json: z.object({
-    email: z.email(),
-  }),
+  email: z.email(),
 });
 
 export const userCheckEmailOutput = z.object({

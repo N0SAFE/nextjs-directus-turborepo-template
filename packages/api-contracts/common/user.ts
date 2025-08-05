@@ -7,6 +7,6 @@ export const userSchema = z.object({
   emailVerified: z.boolean(),
   image: z.string().nullable(),
   status: z.enum(["active", "inactive", "pending"]),
-  createdAt: z.iso.datetime().transform(date => new Date(date)),
-  updatedAt: z.iso.datetime().transform(date => new Date(date)),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 });

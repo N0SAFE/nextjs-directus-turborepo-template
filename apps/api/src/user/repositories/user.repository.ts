@@ -92,8 +92,16 @@ export class UserRepository {
     // Build the where conditions
     const conditions: SQL<unknown>[] = [];
 
-    if (input) {
-      conditions.push(or(like(user.name, `%${input}%`))!);
+    if (input.filter?.name) {
+      conditions.push(like(user.name, `%${input.filter.name}%`));
+    }
+
+    if (input.filter?.email) {
+      conditions.push(like(user.email, `%${input.filter.email}%`));
+    }
+
+    if (input.filter?.id) {
+      conditions.push(eq(user.id, input.filter.id));
     }
 
     if (input.filter?.status) {
@@ -109,25 +117,47 @@ export class UserRepository {
 
     // Build the order by condition
     let orderByCondition;
-    switch (input.sort?.field) {
-      case "name":
-        orderByCondition =
-          input.sort.direction === "asc" ? asc(user.name) : desc(user.name);
-        break;
-      case "email":
-        orderByCondition =
-          input.sort.direction === "asc" ? asc(user.email) : desc(user.email);
-        break;
-      case "status":
-        orderByCondition =
-          input.sort.direction === "asc" ? asc(user.status) : desc(user.status);
-        break;
-      case undefined:
-        orderByCondition =
-          input.sort.direction === "asc" ? asc(user.id) : desc(user.id);
-        break;
-      default:
-        throw new Error(`Unsupported sort field: ${input.sort.field}`);
+    
+    if (!input.sort) {
+      // Default sorting when no sort is provided
+      orderByCondition = desc(user.createdAt);
+    } else {
+      switch (input.sort.field) {
+        case "id":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.id) : desc(user.id);
+          break;
+        case "name":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.name) : desc(user.name);
+          break;
+        case "email":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.email) : desc(user.email);
+          break;
+        case "emailVerified":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.emailVerified) : desc(user.emailVerified);
+          break;
+        case "image":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.image) : desc(user.image);
+          break;
+        case "status":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.status) : desc(user.status);
+          break;
+        case "createdAt":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.createdAt) : desc(user.createdAt);
+          break;
+        case "updatedAt":
+          orderByCondition =
+            input.sort.direction === "asc" ? asc(user.updatedAt) : desc(user.updatedAt);
+          break;
+        default:
+          throw new Error(`Unsupported sort field: ${input.sort.field}`);
+      }
     }
 
     // Execute the main query with all conditions
@@ -177,6 +207,7 @@ export class UserRepository {
       .update(user)
       .set({
         ...input,
+        createdAt: new Date(input.createdAt || Date.now()),
         updatedAt: new Date(),
       })
       .where(eq(user.id, id))

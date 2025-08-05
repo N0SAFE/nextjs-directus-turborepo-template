@@ -1,28 +1,25 @@
 import zod from 'zod/v4'
 
-export const publicEnvSchema = zod.object({
+export const envSchema = zod.object({
     REACT_SCAN_GIT_COMMIT_HASH: zod.string().optional(),
     REACT_SCAN_GIT_BRANCH: zod.string().optional(),
     REACT_SCAN_TOKEN: zod.string().optional(),
     NEXT_PUBLIC_APP_URL: zod.url().transform((url) => {
         if (url.endsWith('/')) {
-            return url.slice(0, -1);
+            return url.slice(0, -1)
         }
-        return url;
+        return url
     }),
     NEXT_PUBLIC_SHOW_AUTH_LOGS: zod
         .enum(['true', 'false'])
         .transform((value) => value === 'true')
         .optional()
         .default(false),
-})
-
-export const envSchema = publicEnvSchema.extend({
     API_URL: zod.url().transform((url) => {
         if (url.endsWith('/')) {
-            return url.slice(0, -1);
+            return url.slice(0, -1)
         }
-        return url;
+        return url
     }),
     NODE_ENV: zod.string(),
     BETTER_AUTH_SECRET: zod.string().optional(),
@@ -51,14 +48,6 @@ export const validateEnv = (object: object) => {
     return envSchema.parse(object)
 }
 
-export const validatePublicEnvSafe = (object: object) => {
-    return publicEnvSchema.safeParse(object)
-}
-
-export const publicEnvIsValid = (object: object) => {
-    return validatePublicEnvSafe(object).success
-}
-
-export const validatePublicEnv = (object: object) => {
-    return publicEnvSchema.parse(object)
+export const validateEnvPath = <T extends keyof typeof envSchema.shape>(input: zod.input<typeof envSchema.shape[T]>, path: T): zod.infer<typeof envSchema.shape[T]> => {
+    return envSchema.shape[path].parse(input) as zod.infer<typeof envSchema.shape[T]>
 }

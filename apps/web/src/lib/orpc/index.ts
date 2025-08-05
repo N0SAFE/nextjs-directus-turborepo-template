@@ -3,12 +3,9 @@ import { type AppContract, appContract } from '@repo/api-contracts';
 import { OpenAPILink } from '@orpc/openapi-client/fetch'
 import { ContractRouterClient } from '@orpc/contract'
 import { createTanstackQueryUtils } from '@orpc/tanstack-query'
-import { validateEnv } from '#/env';
+import { validateEnvPath } from '#/env';
 
-const env = validateEnv(process.env)
-
-// Get the API URL from environment variables
-const APP_URL = env.NEXT_PUBLIC_APP_URL
+const APP_URL = validateEnvPath(process.env.NEXT_PUBLIC_APP_URL!, 'NEXT_PUBLIC_APP_URL')
 
 const link = new OpenAPILink(appContract, {
   url: `${APP_URL}/api/nest`,
