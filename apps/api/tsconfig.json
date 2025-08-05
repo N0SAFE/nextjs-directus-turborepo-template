@@ -22,6 +22,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "paths": {
+      "@/*": [
+        "./src/*"
+      ],
       "@repo/database": [
         "../../packages/database/src"
       ],

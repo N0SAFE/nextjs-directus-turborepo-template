@@ -70,7 +70,7 @@ describe('LoggerMiddleware', () => {
       expect(mockResponse.on).toHaveBeenCalledWith('close', expect.any(Function));
     });
 
-    it('should extract request information', () => {=
+    it('should extract request information', () => {
       mockRequest.get = vi.fn()
         .mockReturnValueOnce('test-agent') // user-agent
         .mockReturnValueOnce('http://example.com'); // referer
