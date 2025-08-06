@@ -15,7 +15,7 @@ import Script from 'next/script'
 import { validateEnv } from '#/env'
 import MainNavigation from '@/components/navigation/MainNavigation'
 import { DevToolProvider } from '@/devtools'
-import { authPlugin } from '@/devtools/plugins'
+import { authPlugin, examplePlugin } from '@/devtools/plugins'
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -87,7 +87,7 @@ export default async function RootLayout({
                 </NextAuthProviders>
                 
                 {/* DevTools - Only in development */}
-                <DevToolProvider plugins={[authPlugin]} />
+                <DevToolProvider plugins={[authPlugin, examplePlugin]} />
             </body>
         </html>
     )
