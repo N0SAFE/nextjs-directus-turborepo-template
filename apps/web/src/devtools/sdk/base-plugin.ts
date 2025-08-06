@@ -7,6 +7,7 @@ export abstract class BasePlugin implements DevToolPlugin {
   abstract metadata: PluginMetadata
   abstract groups: PluginGroup[]
   enabled?: boolean = true
+  reducedMode?: import('../types').ReducedModeConfig
 
   /**
    * Called when the plugin is registered
@@ -49,6 +50,7 @@ export function createPlugin(
     onActivate?(): void | Promise<void>
     onDeactivate?(): void | Promise<void>
     onUnregister?(): void | Promise<void>
+    reducedMode?: import('../types').ReducedModeConfig
   } = {}
 ): DevToolPlugin {
   return {
@@ -59,6 +61,7 @@ export function createPlugin(
     onActivate: pluginOptions.onActivate,
     onDeactivate: pluginOptions.onDeactivate,
     onUnregister: pluginOptions.onUnregister,
+    reducedMode: pluginOptions.reducedMode,
   }
 }
 
@@ -76,6 +79,7 @@ export function createSimplePlugin(
     onActivate?(): void | Promise<void>
     onDeactivate?(): void | Promise<void>
     onUnregister?(): void | Promise<void>
+    reducedMode?: import('../types').ReducedModeConfig
   } = {}
 ): DevToolPlugin {
   return createPlugin(

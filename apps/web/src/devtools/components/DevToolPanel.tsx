@@ -56,6 +56,8 @@ import { usePluginRegistry } from '../core/plugin-registry'
 import { useDevToolState } from '../core/devtool-state'
 import { DevToolState, PluginPage, PluginGroup, DevToolPlugin } from '../types'
 import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
+import { ReducedModeDisplay } from './ReducedModeDisplay'
+import { ReducedModeMenu } from './ReducedModeMenu'
 
 // Map of icon names to components
 const IconMap = {
@@ -143,10 +145,10 @@ function NormalStateBar() {
   const allPlugins = [...corePlugins, ...additionalPlugins]
 
   const sidebarClasses = {
-    left: 'left-0 top-0 h-full w-12 flex-col',
-    right: 'right-0 top-0 h-full w-12 flex-col', 
-    top: 'top-0 left-0 w-full h-12 flex-row',
-    bottom: 'bottom-0 left-0 w-full h-12 flex-row'
+    left: 'left-0 top-0 h-full w-16 flex-col',
+    right: 'right-0 top-0 h-full w-16 flex-col', 
+    top: 'top-0 left-0 w-full h-14 flex-row',
+    bottom: 'bottom-0 left-0 w-full h-14 flex-row'
   }
 
   const positionIcons = {
@@ -195,27 +197,79 @@ function NormalStateBar() {
             className="my-1" 
           />
 
-          {/* Plugin indicators */}
-          {allPlugins.slice(0, 3).map((plugin) => (
-            <Tooltip key={plugin.metadata.id}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setState(DevToolState.EXPANDED)}
-                  className="h-8 w-8 p-0"
-                >
-                  {getIconComponent(plugin.metadata.icon)}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{plugin.metadata.name}</p>
-                {plugin.metadata.description && (
-                  <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
-                )}
-              </TooltipContent>
-            </Tooltip>
-          ))}
+          {/* Plugin indicators with reduced mode configuration */}
+          {allPlugins.slice(0, 3).map((plugin) => {
+            const context = {
+              metadata: plugin.metadata,
+              isActive: true, // Core plugins are always active
+              activate: () => {},
+              deactivate: () => {}
+            }
+            
+            const isVertical = position.side === 'left' || position.side === 'right'
+            
+            // If plugin has reduced mode config, use menu, otherwise fallback to simple tooltip
+            if (plugin.reducedMode?.menu) {
+              return (
+                <ReducedModeMenu
+                  key={plugin.metadata.id}
+                  config={plugin.reducedMode}
+                  context={context}
+                  trigger={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "p-1 flex items-center justify-center gap-1",
+                        isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row"
+                      )}
+                    >
+                      <div className="flex items-center justify-center flex-shrink-0">
+                        {getIconComponent(plugin.metadata.icon)}
+                      </div>
+                      {plugin.reducedMode && (
+                        <div className="flex items-center justify-center min-w-0">
+                          <ReducedModeDisplay config={plugin.reducedMode} context={context} />
+                        </div>
+                      )}
+                    </Button>
+                  }
+                />
+              )
+            }
+            
+            // Fallback to simple tooltip for plugins without reduced mode config
+            return (
+              <Tooltip key={plugin.metadata.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setState(DevToolState.EXPANDED)}
+                    className={cn(
+                      "p-1 flex items-center justify-center gap-1",
+                      isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row"
+                    )}
+                  >
+                    <div className="flex items-center justify-center flex-shrink-0">
+                      {getIconComponent(plugin.metadata.icon)}
+                    </div>
+                    {plugin.reducedMode && (
+                      <div className="flex items-center justify-center min-w-0">
+                        <ReducedModeDisplay config={plugin.reducedMode} context={context} />
+                      </div>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{plugin.metadata.name}</p>
+                  {plugin.metadata.description && (
+                    <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
+                  )}
+                </TooltipContent>
+              </Tooltip>
+            )
+          })}
 
           {allPlugins.length > 3 && (
             <Tooltip>

@@ -111,6 +111,103 @@ export interface PluginContext {
 }
 
 /**
+ * Reduced mode display types for plugins
+ */
+export type ReducedModeDisplayType = 
+  | 'status'      // Shows status text/badge
+  | 'counter'     // Shows a numeric counter
+  | 'indicator'   // Shows colored indicator dot
+  | 'text'        // Shows custom text
+  | 'custom'      // Custom component
+
+/**
+ * Menu item for reduced mode interaction
+ */
+export interface ReducedModeMenuItem {
+  /** Unique identifier */
+  id: string
+  /** Display label */
+  label: string
+  /** Optional description */
+  description?: string
+  /** Item icon */
+  icon?: string | ReactNode
+  /** Action when clicked */
+  action: () => void
+  /** Whether item is disabled */
+  disabled?: boolean
+  /** Badge text or number */
+  badge?: string | number
+}
+
+/**
+ * Menu group for organizing menu items
+ */
+export interface ReducedModeMenuGroup {
+  /** Group label */
+  label: string
+  /** Menu items in this group */
+  items: ReducedModeMenuItem[]
+}
+
+/**
+ * Configuration for plugin behavior in reduced (normal) mode
+ */
+export interface ReducedModeConfig {
+  /** Display type for the plugin indicator */
+  displayType: ReducedModeDisplayType
+  
+  /** Status configuration (for status type) */
+  status?: {
+    /** Current status text */
+    text: string
+    /** Status variant/color */
+    variant?: 'default' | 'secondary' | 'destructive' | 'outline'
+  }
+  
+  /** Counter configuration (for counter type) */
+  counter?: {
+    /** Current count value */
+    value: number
+    /** Optional label for the counter */
+    label?: string
+    /** Maximum value for percentage display */
+    max?: number
+  }
+  
+  /** Indicator configuration (for indicator type) */
+  indicator?: {
+    /** Color of the indicator */
+    color: 'green' | 'red' | 'yellow' | 'blue' | 'purple' | 'gray'
+    /** Whether indicator should pulse/animate */
+    animate?: boolean
+  }
+  
+  /** Text configuration (for text type) */
+  text?: {
+    /** Text to display */
+    value: string
+    /** Text size */
+    size?: 'sm' | 'md' | 'lg'
+  }
+  
+  /** Custom component (for custom type) */
+  customComponent?: React.ComponentType<{ context: PluginContext }>
+  
+  /** Menu configuration - shown when plugin icon is clicked */
+  menu?: {
+    /** Menu groups with items */
+    groups: ReducedModeMenuGroup[]
+  } | {
+    /** Simple list of menu items */
+    items: ReducedModeMenuItem[]
+  }
+  
+  /** Function to get current reduced mode data (called on each render) */
+  getDisplayData?: () => Partial<ReducedModeConfig>
+}
+
+/**
  * Base plugin interface that all plugins must implement
  */
 export interface DevToolPlugin extends PluginLifecycle {
@@ -120,6 +217,8 @@ export interface DevToolPlugin extends PluginLifecycle {
   groups: PluginGroup[]
   /** Whether the plugin is enabled by default */
   enabled?: boolean
+  /** Configuration for reduced (normal) mode display */
+  reducedMode?: ReducedModeConfig
 }
 
 /**

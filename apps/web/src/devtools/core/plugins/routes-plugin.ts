@@ -2,6 +2,32 @@ import { createPlugin, PluginUtils } from '../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './routes'
 
 /**
+ * Get current route information for reduced mode display
+ */
+function getCurrentRouteInfo() {
+  if (typeof window === 'undefined') {
+    return { pathname: '/', routeName: 'Home' }
+  }
+  
+  const pathname = window.location.pathname
+  
+  // Map common routes to friendly names
+  const routeNameMap: Record<string, string> = {
+    '/': 'Home',
+    '/dashboard': 'Dashboard',
+    '/api/auth': 'Auth API',
+    '/api': 'API',
+  }
+  
+  // Find the best match for the current route
+  const routeName = Object.entries(routeNameMap).find(([route]) => 
+    pathname.startsWith(route)
+  )?.[1] || pathname.split('/').filter(Boolean).join(' > ') || 'Home'
+  
+  return { pathname, routeName }
+}
+
+/**
  * Routes DevTool Plugin - Core plugin for route inspection
  */
 export const routesPlugin = createPlugin(
@@ -42,5 +68,54 @@ export const routesPlugin = createPlugin(
     onRegister: () => {
       console.log('[DevTools Core] Routes plugin registered')
     },
+    // Reduced mode configuration
+    reducedMode: {
+      displayType: 'text',
+      text: {
+        value: 'Loading...',
+        size: 'sm'
+      },
+      menu: {
+        items: [
+          {
+            id: 'current-route',
+            label: 'Current Route',
+            description: 'View current route information',
+            action: () => {
+              const { pathname, routeName } = getCurrentRouteInfo()
+              alert(`Current route: ${routeName} (${pathname})`)
+            }
+          },
+          {
+            id: 'view-all-routes',
+            label: 'View All Routes',
+            description: 'Open routes overview in expanded mode',
+            action: () => {
+              // This will be handled by the DevTool system
+              console.log('Opening routes overview')
+            }
+          },
+          {
+            id: 'api-status',
+            label: 'API Status',
+            description: 'Check API endpoints status',
+            badge: 'Online',
+            action: () => {
+              alert('API endpoints are operational')
+            }
+          }
+        ]
+      },
+      // Dynamic data function that updates the display
+      getDisplayData: () => {
+        const { routeName } = getCurrentRouteInfo()
+        return {
+          text: {
+            value: routeName,
+            size: 'sm' as const
+          }
+        }
+      }
+    }
   }
 )
