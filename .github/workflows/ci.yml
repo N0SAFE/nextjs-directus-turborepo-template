@@ -104,6 +104,26 @@ jobs:
                   name: declarative-routes
                   path: .
 
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
+
             - name: 🔍 Run ESLint
               run: bun run lint
 
@@ -175,6 +195,26 @@ jobs:
               with:
                   name: declarative-routes
                   path: .
+
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
 
             - name: 🏗️ Build packages
               run: |
@@ -248,6 +288,26 @@ jobs:
               with:
                   name: declarative-routes
                   path: .
+
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
 
             - name: 🧪 Run tests for all packages
               run: bun run test
