@@ -1,5 +1,5 @@
 import { DevToolPlugin } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
+import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin } from '../core/plugins'
 
 /**
  * Plugin manager for server-side access to DevTool plugins
@@ -8,7 +8,7 @@ import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
 class DevToolPluginManager {
   private static instance: DevToolPluginManager | null = null
   private plugins: Map<string, DevToolPlugin> = new Map()
-  private corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
+  private corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
 
   private constructor() {
     // Register core plugins on instantiation

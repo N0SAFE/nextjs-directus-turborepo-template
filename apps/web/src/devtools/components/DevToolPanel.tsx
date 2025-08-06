@@ -55,7 +55,7 @@ import { cn } from '@repo/ui/lib/utils'
 import { usePluginRegistry } from '../core/plugin-registry'
 import { useDevToolState } from '../core/devtool-state'
 import { DevToolState, PluginPage, PluginGroup, DevToolPlugin } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
+import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin } from '../core/plugins'
 import { ReducedModeDisplay } from './ReducedModeDisplay'
 import { ReducedModeMenu } from './ReducedModeMenu'
 import { DevToolSettings } from './DevToolSettings'
@@ -142,7 +142,7 @@ function NormalStateBar() {
   const additionalPlugins = registry.getActivePlugins()
 
   // Core plugins that are always available
-  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
   const allPlugins = [...corePlugins, ...additionalPlugins]
   
   // Filter plugins to only show pinned ones, or default to first few if none pinned
@@ -365,7 +365,7 @@ function ExpandedStatePanel() {
   const selectedPageData = registry.getSelectedPage()
 
   // Core plugins that are always available
-  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
 
   return (
     <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-[90vw] max-w-6xl mb-4">

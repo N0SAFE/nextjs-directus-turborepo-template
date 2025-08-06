@@ -5,7 +5,7 @@ import { oc } from '@orpc/contract'
 import { User, Shield, Clock, Key, Users, AlertTriangle } from 'lucide-react'
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../sdk'
-import { AuthPlugin } from './AuthComponents'
+import { AuthComponent } from './ComprehensiveAuthComponent'
 import z from 'zod/v4'
 
 // Auth Plugin ORPC Contract
@@ -180,35 +180,35 @@ export const authPlugin = createPlugin(
           label: 'Session',
           description: 'Current session information and management',
           icon: 'User',
-          component: AuthPlugin
+          component: AuthComponent
         },
         {
           id: 'sessions',
           label: 'All Sessions',
           description: 'Manage all active user sessions',
           icon: 'Users',
-          component: AuthPlugin
+          component: AuthComponent
         },
         {
           id: 'passkeys',
           label: 'Passkeys',
           description: 'Passkey authentication management',
           icon: 'Key',
-          component: AuthPlugin
+          component: AuthComponent
         },
         {
           id: 'security',
           label: 'Security Events',
           description: 'Authentication security audit log',
           icon: 'Shield',
-          component: AuthPlugin
+          component: AuthComponent
         },
         {
           id: 'config',
           label: 'Configuration',
           description: 'Better Auth configuration and setup',
           icon: 'Settings',
-          component: AuthPlugin
+          component: AuthComponent
         }
       ]
     }
