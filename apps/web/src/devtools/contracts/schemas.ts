@@ -1,111 +1,111 @@
-import { oc } from "@orpc/contract";
+import z from "zod/v4";
 
 // CLI command schemas
-export const cliCommandSchema = oc.object({
-  command: oc.string(),
-  args: oc.array(oc.string()).optional(),
-  cwd: oc.string().optional(),
-  timeout: oc.number().optional(),
+export const cliCommandSchema = z.object({
+  command: z.string(),
+  args: z.array(z.string()).optional(),
+  cwd: z.string().optional(),
+  timeout: z.number().optional(),
 });
 
-export const cliCommandResultSchema = oc.object({
-  success: oc.boolean(),
-  output: oc.string(),
-  error: oc.string().optional(),
-  exitCode: oc.number().optional(),
-  duration: oc.number(),
+export const cliCommandResultSchema = z.object({
+  success: z.boolean(),
+  output: z.string(),
+  error: z.string().optional(),
+  exitCode: z.number().optional(),
+  duration: z.number(),
 });
 
 // File system schemas
-export const directoryListingSchema = oc.object({
-  path: oc.string(),
-  files: oc.array(oc.object({
-    name: oc.string(),
-    path: oc.string(),
-    type: oc.enum(['file', 'directory']),
-    size: oc.number().optional(),
-    modified: oc.string().optional(),
-    isHidden: oc.boolean(),
+export const directoryListingSchema = z.object({
+  path: z.string(),
+  files: z.array(z.object({
+    name: z.string(),
+    path: z.string(),
+    type: z.enum(['file', 'directory']),
+    size: z.number().optional(),
+    modified: z.string().optional(),
+    isHidden: z.boolean(),
   })),
-  totalFiles: oc.number(),
-  totalDirectories: oc.number(),
+  totalFiles: z.number(),
+  totalDirectories: z.number(),
 });
 
-export const fileContentSchema = oc.object({
-  path: oc.string(),
-  content: oc.string(),
-  encoding: oc.string(),
-  size: oc.number(),
-  modified: oc.string(),
+export const fileContentSchema = z.object({
+  path: z.string(),
+  content: z.string(),
+  encoding: z.string(),
+  size: z.number(),
+  modified: z.string(),
 });
 
 // System information schemas
-export const systemInfoSchema = oc.object({
-  platform: oc.string(),
-  arch: oc.string(),
-  nodeVersion: oc.string(),
-  npmVersion: oc.string().optional(),
-  hostname: oc.string(),
-  uptime: oc.number(),
-  memory: oc.object({
-    total: oc.number(),
-    free: oc.number(),
-    used: oc.number(),
+export const systemInfoSchema = z.object({
+  platform: z.string(),
+  arch: z.string(),
+  nodeVersion: z.string(),
+  npmVersion: z.string().optional(),
+  hostname: z.string(),
+  uptime: z.number(),
+  memory: z.object({
+    total: z.number(),
+    free: z.number(),
+    used: z.number(),
   }),
-  cpu: oc.object({
-    cores: oc.number(),
-    model: oc.string(),
+  cpu: z.object({
+    cores: z.number(),
+    model: z.string(),
   }),
 });
 
-export const environmentInfoSchema = oc.object({
-  nodeEnv: oc.string(),
-  port: oc.number().optional(),
-  variables: oc.record(oc.string()),
-  paths: oc.array(oc.string()),
+export const environmentInfoSchema = z.object({
+  nodeEnv: z.string(),
+  port: z.number().optional(),
+  variables: z.record(z.string(), z.string()),
+  paths: z.array(z.string()),
 });
 
 // Project analysis schemas
-export const packageInfoSchema = oc.object({
-  name: oc.string(),
-  version: oc.string(),
-  description: oc.string().optional(),
-  scripts: oc.record(oc.string()),
-  dependencies: oc.record(oc.string()),
-  devDependencies: oc.record(oc.string()),
-  peerDependencies: oc.record(oc.string()).optional(),
-  workspaces: oc.array(oc.string()).optional(),
+export const packageInfoSchema = z.object({
+  name: z.string(),
+  version: z.string(),
+  description: z.string().optional(),
+  scripts: z.record(z.string(), z.string()),
+  dependencies: z.record(z.string(), z.string()),
+  devDependencies: z.record(z.string(), z.string()),
+  peerDependencies: z.record(z.string(), z.string()).optional(),
+  workspaces: z.array(z.string()).optional(),
 });
 
-export const buildInfoSchema = oc.object({
-  nextVersion: oc.string().optional(),
-  buildTime: oc.string().optional(),
-  buildSize: oc.object({
-    total: oc.number(),
-    assets: oc.number(),
-    pages: oc.number(),
+export const buildInfoSchema = z.object({
+  nextVersion: z.string().optional(),
+  buildTime: z.string().optional(),
+  buildSize: z.object({
+    total: z.number(),
+    assets: z.number(),
+    pages: z.number(),
   }).optional(),
-  bundleAnalysis: oc.object({
-    chunks: oc.array(oc.object({
-      name: oc.string(),
-      size: oc.number(),
-      modules: oc.number(),
+  bundleAnalysis: z.object({
+    chunks: z.array(z.object({
+      name: z.string(),
+      size: z.number(),
+      modules: z.number(),
     })),
-    totalSize: oc.number(),
-    largestChunks: oc.array(oc.string()),
+    totalSize: z.number(),
+    largestChunks: z.array(z.string()),
   }).optional(),
 });
 
-export const routesAnalysisSchema = oc.object({
-  routes: oc.array(oc.object({
-    path: oc.string(),
-    type: oc.enum(['page', 'api', 'middleware']),
-    dynamic: oc.boolean(),
-    params: oc.array(oc.string()).optional(),
-    methods: oc.array(oc.string()).optional(),
+export const routesAnalysisSchema = z.object({
+  routes: z.array(z.object({
+    path: z.string(),
+    type: z.enum(['page', 'api', 'middleware']),
+    dynamic: z.boolean(),
+    params: z.array(z.string()).optional(),
+    methods: z.array(z.string()).optional(),
   })),
-  totalRoutes: oc.number(),
-  apiRoutes: oc.number(),
-  pageRoutes: oc.number(),
-  dynamicRoutes: oc.number(),
+  totalRoutes: z.number(),
+  apiRoutes: z.number(),
+  pageRoutes: z.number(),
+  dynamicRoutes: z.number(),
 });

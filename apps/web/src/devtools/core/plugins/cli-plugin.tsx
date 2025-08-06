@@ -8,28 +8,26 @@ import {
   cliCommandSchema,
   cliCommandResultSchema,
 } from '../../contracts/schemas'
+import z from 'zod/v4'
 
 // CLI Plugin ORPC Contract
 const cliContract = oc.router({
   // Execute a CLI command
   execute: oc
     .input(cliCommandSchema)
-    .output(cliCommandResultSchema)
-    .func(),
+    .output(cliCommandResultSchema),
 
   // Get available npm scripts
   getScripts: oc
-    .output(oc.record(oc.string()))
-    .func(),
+    .output(z.record(z.string(), z.string())),
 
   // Execute an npm script
   runScript: oc
-    .input(oc.object({
-      script: oc.string(),
-      args: oc.array(oc.string()).optional(),
+    .input(z.object({
+      script: z.string(),
+      args: z.array(z.string()).optional(),
     }))
-    .output(cliCommandResultSchema)
-    .func(),
+    .output(cliCommandResultSchema),
 })
 
 // CLI Plugin ORPC Handler Factory (uses dependency injection)
