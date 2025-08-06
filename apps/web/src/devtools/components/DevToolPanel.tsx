@@ -293,9 +293,9 @@ function ExpandedStatePanel() {
     <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-[90vw] max-w-6xl mb-4">
       <Card className="border-2 shadow-2xl h-[70vh]">
         <SidebarProvider defaultOpen={true}>
-          <div className="flex w-full h-full">
+          <div className="flex w-full h-auto">
             {/* Sidebar */}
-            <Sidebar variant="inset" className="w-64">
+            <Sidebar variant="sidebar" className="w-64 h-auto">
               <SidebarHeader className="border-b">
                 <div className="flex items-center justify-between px-2">
                   <div className="flex items-center space-x-2">
