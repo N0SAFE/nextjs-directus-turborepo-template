@@ -12,11 +12,38 @@ env:
     NODE_VERSION: "22"
 
 jobs:
+    # Job 0: Generate Declarative Routes
+    generate-declarative-routes:
+        name: 📝 Generate Declarative Routes
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
+
+            - name: 🐰 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
+
+            - name: 📦 Install dependencies
+              run: |
+                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+                  bun install
+                else
+                  bun install --frozen-lockfile
+                fi
+
+            - name: 📝 Generate declarative routes
+              run: bun run --cwd apps/web dr:build
+
     # Job 1: Lint and Type Check
     lint-and-typecheck:
         name: 🔍 Lint & Type Check
         runs-on: ubuntu-latest
         timeout-minutes: 10
+        needs: generate-declarative-routes
         env:
             # Essential environment variables for linting/type checking
             API_URL: http://localhost:8055/
@@ -54,10 +81,7 @@ jobs:
                   bun install --frozen-lockfile
                 fi
 
-            - name: � Generate declarative routes
-              run: cd apps/web && bun run dr:build && cd ../..
-
-            - name: �🔍 Run ESLint
+            - name: 🔍 Run ESLint
               run: bun run lint
 
             - name: 🎨 Check formatting with Prettier
@@ -68,7 +92,7 @@ jobs:
         name: 🏗️ Build
         runs-on: ubuntu-latest
         timeout-minutes: 15
-        needs: lint-and-typecheck
+        needs: [lint-and-typecheck, generate-declarative-routes]
         env:
             # API Configuration
             API_URL: http://localhost:8055/
@@ -125,8 +149,6 @@ jobs:
 
             - name: 🏗️ Build packages
               run: |
-                  # Generate declarative routes for web app before building
-                  bun run --cwd apps/web dr:build
                   # Build shared packages first
                   bun x turbo run build --filter="!web"
                   # Build web app without static generation to avoid API calls
@@ -137,7 +159,7 @@ jobs:
         name: 🧪 Test
         runs-on: ubuntu-latest
         timeout-minutes: 15
-        needs: lint-and-typecheck
+        needs: [lint-and-typecheck, generate-declarative-routes]
         env:
             # API Configuration
             API_URL: http://localhost:8055/
@@ -302,7 +324,7 @@ jobs:
         name: 🚀 Deployment Ready
         runs-on: ubuntu-latest
         timeout-minutes: 5
-        needs: [lint-and-typecheck, build, test]
+        needs: [lint-and-typecheck, build, test, generate-declarative-routes]
         if: always()
 
         steps:
@@ -316,13 +338,15 @@ jobs:
                   LINT_STATUS="${{ needs.lint-and-typecheck.result }}"
                   BUILD_STATUS="${{ needs.build.result }}"
                   TEST_STATUS="${{ needs.test.result }}"
+                  DR_STATUS="${{ needs.generate-declarative-routes.result }}"
 
                   echo "📋 Pipeline Results:"
                   echo "  - Lint & Type Check: $LINT_STATUS"
                   echo "  - Build: $BUILD_STATUS"
                   echo "  - Test: $TEST_STATUS"
+                  echo "  - Declarative Routes: $DR_STATUS"
 
-                  if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ] && [ "$TEST_STATUS" = "success" ]; then
+                  if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ] && [ "$TEST_STATUS" = "success" ] && [ "$DR_STATUS" = "success" ]; then
                     if [ "${{ github.ref }}" = "refs/heads/main" ]; then
                       echo "🚀 ✅ Ready for production deployment!"
                       echo "deployment_ready=true" >> $GITHUB_OUTPUT
@@ -345,6 +369,7 @@ jobs:
                   echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Build | ${{ needs.build.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Test | ${{ needs.test.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Declarative Routes | ${{ needs.generate-declarative-routes.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
 
                   if [ "${{ github.ref }}" = "refs/heads/main" ]; then
