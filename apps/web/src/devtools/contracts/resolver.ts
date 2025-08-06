@@ -1,29 +1,29 @@
-import { oc } from '@orpc/contract'
+import { os } from '@orpc/server'
 import { DevToolPlugin } from '../types'
 
 /**
- * Resolves ORPC contracts from an array of plugins
+ * Resolves ORPC router from an array of plugins
  * @param plugins - Array of DevTool plugins
- * @returns Combined ORPC contract router
+ * @returns Combined ORPC router
  */
 export function resolveOrpcContractFromPlugins(plugins: DevToolPlugin[]) {
-  const pluginContracts: Record<string, any> = {}
+  const pluginRouters: Record<string, any> = {}
   
-  // Collect contracts from plugins that have ORPC definitions
+  // Collect routers from plugins that have ORPC definitions
   for (const plugin of plugins) {
-    if (plugin.orpc?.contract) {
-      // Use plugin ID as the route namespace
-      pluginContracts[plugin.metadata.id] = plugin.orpc.contract
+    if (plugin.orpc?.contract && plugin.orpc?.handlers) {
+      // Create a router for this plugin using its contract and handlers
+      pluginRouters[plugin.metadata.id] = os.router(plugin.orpc.handlers)
     }
   }
   
-  // If no plugin contracts, return empty router
-  if (Object.keys(pluginContracts).length === 0) {
-    return oc.router({})
+  // If no plugin routers, return empty router
+  if (Object.keys(pluginRouters).length === 0) {
+    return os.router({})
   }
   
-  // Return combined router with plugin contracts under their respective namespaces
-  return oc.router(pluginContracts)
+  // Return combined router with plugin routers under their respective namespaces
+  return os.router(pluginRouters)
 }
 
 /**
