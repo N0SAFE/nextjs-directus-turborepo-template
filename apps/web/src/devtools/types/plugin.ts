@@ -1,6 +1,28 @@
 import { ReactNode } from 'react'
 
 /**
+ * DevTool display states
+ */
+export enum DevToolState {
+  /** Hidden/disabled */
+  NONE = 'none',
+  /** Small side bar (like Laravel DevBar) */
+  NORMAL = 'normal', 
+  /** Bottom center panel or separate browser window */
+  EXPANDED = 'expanded'
+}
+
+/**
+ * DevTool position configuration for normal state
+ */
+export interface DevToolPosition {
+  /** Side of screen for normal state bar */
+  side: 'left' | 'right' | 'top' | 'bottom'
+  /** Size of the bar in pixels */
+  size: number
+}
+
+/**
  * Plugin metadata and configuration
  */
 export interface PluginMetadata {
