@@ -40,4 +40,5 @@ export const serviceRegistry = new DevToolServiceRegistry()
 // Service keys constants
 export const SERVICE_KEYS = {
   DEVTOOLS_SERVICE: 'devtools-service',
+  BUILD_SERVICE: 'build-service', // Future service for build analysis
 } as const

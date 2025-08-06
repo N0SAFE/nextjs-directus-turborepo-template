@@ -109,3 +109,77 @@ export const routesAnalysisSchema = z.object({
   pageRoutes: z.number(),
   dynamicRoutes: z.number(),
 });
+
+// Additional routes schemas
+export const routeInfoSchema = z.object({
+  path: z.string(),
+  name: z.string(),
+  params: z.record(z.string(), z.string()),
+  query: z.record(z.string(), z.string()),
+});
+
+export const routeAnalysisSchema = z.object({
+  path: z.string(),
+  component: z.string(),
+  dependencies: z.array(z.string()),
+  size: z.string(),
+  performance: z.string(),
+});
+
+export const routesListSchema = z.object({
+  pages: z.array(z.object({
+    path: z.string(),
+    name: z.string(),
+  })),
+  apiRoutes: z.array(z.object({
+    path: z.string(),
+    method: z.string(),
+  })),
+});
+
+// Bundle analysis schemas
+export const bundleInfoSchema = z.object({
+  client: z.object({
+    size: z.string(),
+    gzipped: z.string(),
+    files: z.array(z.object({
+      name: z.string(),
+      size: z.string(),
+    })),
+  }),
+  server: z.object({
+    size: z.string(),
+    files: z.array(z.object({
+      name: z.string(),
+      size: z.string(),
+    })),
+  }),
+  total: z.string(),
+});
+
+export const dependencyAnalysisSchema = z.object({
+  production: z.object({
+    count: z.number(),
+    size: z.string(),
+    packages: z.array(z.string()),
+  }),
+  development: z.object({
+    count: z.number(),
+    size: z.string(),
+    packages: z.array(z.string()),
+  }),
+  outdated: z.array(z.object({
+    name: z.string(),
+    current: z.string(),
+    latest: z.string(),
+  })),
+});
+
+export const optimizationSuggestionsSchema = z.object({
+  suggestions: z.array(z.object({
+    type: z.string(),
+    description: z.string(),
+    impact: z.string(),
+  })),
+  score: z.number(),
+});

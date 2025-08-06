@@ -3,7 +3,7 @@ import { oc } from '@orpc/contract'
 import { cn } from '@repo/ui/lib/utils'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './cli'
-import { SERVICE_KEYS } from '../../services/registry'
+import { CLI_HANDLER_ID } from '../../orpc-handlers'
 import {
   cliCommandSchema,
   cliCommandResultSchema,
@@ -29,26 +29,6 @@ const cliContract = oc.router({
     }))
     .output(cliCommandResultSchema),
 })
-
-// CLI Plugin ORPC Handler Factory (uses dependency injection)
-function createCliHandlers(services: Record<string, any>) {
-  const devtoolsService = services[SERVICE_KEYS.DEVTOOLS_SERVICE]
-  
-  if (!devtoolsService) {
-    console.warn('[CLI Plugin] DevtoolsService not found in dependency injection')
-    return {
-      execute: async () => ({ success: false, output: '', error: 'Service not available', exitCode: 1, duration: 0 }),
-      getScripts: async () => ({}),
-      runScript: async () => ({ success: false, output: '', error: 'Service not available', exitCode: 1, duration: 0 }),
-    }
-  }
-
-  return {
-    execute: async (input: any) => devtoolsService.executeCommand(input),
-    getScripts: async () => devtoolsService.getScripts(),
-    runScript: async (input: any) => devtoolsService.runScript(input.script, input.args),
-  }
-}
 
 /**
  * Get CLI information for reduced mode display
@@ -205,10 +185,10 @@ export const cliPlugin = createPlugin(
         return { status, environment }
       }
     },
-    // ORPC contract and handler factory for server communication
+    // ORPC contract and identifier for server communication
     orpc: {
       contract: cliContract,
-      handlerFactory: createCliHandlers
+      identifier: CLI_HANDLER_ID
     }
   }
 )

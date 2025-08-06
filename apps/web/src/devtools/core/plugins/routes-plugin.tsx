@@ -2,43 +2,29 @@ import React from 'react'
 import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './routes'
+import { ROUTES_HANDLER_ID } from '../../orpc-handlers'
 import {
-  routesAnalysisSchema,
+  routesListSchema,
+  routeInfoSchema,
+  routeAnalysisSchema,
 } from '../../contracts/schemas'
+import z from 'zod/v4'
 
 // Routes Plugin ORPC Contract
 const routesContract = oc.router({
-  // Analyze project routes
-  analyze: oc
-    .output(routesAnalysisSchema)
-    .func(),
+  // Get all routes
+  getRoutes: oc
+    .output(routesListSchema),
 
   // Get current route information
   getCurrentRoute: oc
-    .output(oc.object({
-      pathname: oc.string(),
-      routeName: oc.string(),
-    }))
-    .func(),
-})
+    .output(routeInfoSchema),
 
-// Routes Plugin ORPC Handlers
-const routesHandlers = {
-  analyze: async () => ({
-    routes: [],
-    totalRoutes: 0,
-    apiRoutes: 0,
-    pageRoutes: 0,
-    dynamicRoutes: 0
-  }),
-  getCurrentRoute: async () => {
-    // This would typically get route info from the server
-    return {
-      pathname: '/',
-      routeName: 'Home'
-    }
-  },
-}
+  // Analyze a specific route
+  analyzeRoute: oc
+    .input(z.object({ path: z.string() }))
+    .output(routeAnalysisSchema),
+})
 
 /**
  * Get current route information for reduced mode display
@@ -160,10 +146,10 @@ export const routesPlugin = createPlugin(
         return { currentRoute: routeName }
       }
     },
-    // ORPC contract and handlers for server communication
+    // ORPC contract and identifier for server communication
     orpc: {
       contract: routesContract,
-      handlers: routesHandlers
+      identifier: ROUTES_HANDLER_ID
     }
   }
 )

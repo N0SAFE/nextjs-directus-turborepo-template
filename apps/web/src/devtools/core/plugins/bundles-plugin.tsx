@@ -3,56 +3,27 @@ import { oc } from '@orpc/contract'
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { BundleAnalysisComponent, DependenciesComponent, BuildInfoComponent } from './bundles'
+import { BUNDLES_HANDLER_ID } from '../../orpc-handlers'
 import {
-  buildInfoSchema,
-  packageInfoSchema,
+  bundleInfoSchema,
+  dependencyAnalysisSchema,
+  optimizationSuggestionsSchema,
 } from '../../contracts/schemas'
 
 // Bundles Plugin ORPC Contract
 const bundlesContract = oc.router({
-  // Get build information
-  getBuildInfo: oc
-    .output(buildInfoSchema)
-    .func(),
+  // Get bundle information
+  getBundles: oc
+    .output(bundleInfoSchema),
 
-  // Get package information
-  getPackageInfo: oc
-    .input(oc.object({
-      path: oc.string().optional(),
-    }))
-    .output(packageInfoSchema)
-    .func(),
+  // Analyze dependencies
+  analyzeDependencies: oc
+    .output(dependencyAnalysisSchema),
 
-  // Analyze bundle sizes
-  analyzeBundles: oc
-    .output(oc.object({
-      totalSize: oc.number(),
-      gzippedSize: oc.number(),
-      chunks: oc.array(oc.object({
-        name: oc.string(),
-        size: oc.number(),
-        gzippedSize: oc.number(),
-      })),
-    }))
-    .func(),
+  // Get optimization suggestions
+  getOptimizations: oc
+    .output(optimizationSuggestionsSchema),
 })
-
-// Bundles Plugin ORPC Handlers
-const bundlesHandlers = {
-  getBuildInfo: async () => ({}),
-  getPackageInfo: async () => ({
-    name: '',
-    version: '',
-    scripts: {},
-    dependencies: {},
-    devDependencies: {}
-  }),
-  analyzeBundles: async () => ({
-    totalSize: 0,
-    gzippedSize: 0,
-    chunks: []
-  }),
-}
 
 /**
  * Get bundle information for reduced mode display
@@ -192,10 +163,10 @@ export const bundlesPlugin = createPlugin(
         return { bundleSize, status }
       }
     },
-    // ORPC contract and handlers for server communication
+    // ORPC contract and identifier for server communication
     orpc: {
       contract: bundlesContract,
-      handlers: bundlesHandlers
+      identifier: BUNDLES_HANDLER_ID
     }
   }
 )
