@@ -1,7 +1,58 @@
 import React from 'react'
+import { oc } from '@orpc/contract'
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { BundleAnalysisComponent, DependenciesComponent, BuildInfoComponent } from './bundles'
+import {
+  buildInfoSchema,
+  packageInfoSchema,
+} from '../../contracts/schemas'
+
+// Bundles Plugin ORPC Contract
+const bundlesContract = oc.router({
+  // Get build information
+  getBuildInfo: oc
+    .output(buildInfoSchema)
+    .func(),
+
+  // Get package information
+  getPackageInfo: oc
+    .input(oc.object({
+      path: oc.string().optional(),
+    }))
+    .output(packageInfoSchema)
+    .func(),
+
+  // Analyze bundle sizes
+  analyzeBundles: oc
+    .output(oc.object({
+      totalSize: oc.number(),
+      gzippedSize: oc.number(),
+      chunks: oc.array(oc.object({
+        name: oc.string(),
+        size: oc.number(),
+        gzippedSize: oc.number(),
+      })),
+    }))
+    .func(),
+})
+
+// Bundles Plugin ORPC Handlers
+const bundlesHandlers = {
+  getBuildInfo: async () => ({}),
+  getPackageInfo: async () => ({
+    name: '',
+    version: '',
+    scripts: {},
+    dependencies: {},
+    devDependencies: {}
+  }),
+  analyzeBundles: async () => ({
+    totalSize: 0,
+    gzippedSize: 0,
+    chunks: []
+  }),
+}
 
 /**
  * Get bundle information for reduced mode display
@@ -140,6 +191,11 @@ export const bundlesPlugin = createPlugin(
         const { bundleSize, status } = getBundleInfo()
         return { bundleSize, status }
       }
+    },
+    // ORPC contract and handlers for server communication
+    orpc: {
+      contract: bundlesContract,
+      handlers: bundlesHandlers
     }
   }
 )

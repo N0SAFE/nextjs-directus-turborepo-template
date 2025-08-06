@@ -1,6 +1,44 @@
 import React from 'react'
+import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './routes'
+import {
+  routesAnalysisSchema,
+} from '../../contracts/schemas'
+
+// Routes Plugin ORPC Contract
+const routesContract = oc.router({
+  // Analyze project routes
+  analyze: oc
+    .output(routesAnalysisSchema)
+    .func(),
+
+  // Get current route information
+  getCurrentRoute: oc
+    .output(oc.object({
+      pathname: oc.string(),
+      routeName: oc.string(),
+    }))
+    .func(),
+})
+
+// Routes Plugin ORPC Handlers
+const routesHandlers = {
+  analyze: async () => ({
+    routes: [],
+    totalRoutes: 0,
+    apiRoutes: 0,
+    pageRoutes: 0,
+    dynamicRoutes: 0
+  }),
+  getCurrentRoute: async () => {
+    // This would typically get route info from the server
+    return {
+      pathname: '/',
+      routeName: 'Home'
+    }
+  },
+}
 
 /**
  * Get current route information for reduced mode display
@@ -121,6 +159,11 @@ export const routesPlugin = createPlugin(
         const { routeName } = getCurrentRouteInfo()
         return { currentRoute: routeName }
       }
+    },
+    // ORPC contract and handlers for server communication
+    orpc: {
+      contract: routesContract,
+      handlers: routesHandlers
     }
   }
 )

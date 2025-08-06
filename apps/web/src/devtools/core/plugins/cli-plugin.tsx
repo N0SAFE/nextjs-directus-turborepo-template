@@ -1,7 +1,46 @@
 import React from 'react'
+import { oc } from '@orpc/contract'
 import { cn } from '@repo/ui/lib/utils'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './cli'
+import { DevtoolsService } from '../../services/devtools.service'
+import {
+  cliCommandSchema,
+  cliCommandResultSchema,
+} from '../../contracts/schemas'
+
+// Create service instance for this plugin
+const devtoolsService = new DevtoolsService()
+
+// CLI Plugin ORPC Contract
+const cliContract = oc.router({
+  // Execute a CLI command
+  execute: oc
+    .input(cliCommandSchema)
+    .output(cliCommandResultSchema)
+    .func(),
+
+  // Get available npm scripts
+  getScripts: oc
+    .output(oc.record(oc.string()))
+    .func(),
+
+  // Execute an npm script
+  runScript: oc
+    .input(oc.object({
+      script: oc.string(),
+      args: oc.array(oc.string()).optional(),
+    }))
+    .output(cliCommandResultSchema)
+    .func(),
+})
+
+// CLI Plugin ORPC Handlers
+const cliHandlers = {
+  execute: async (input: any) => devtoolsService.executeCommand(input),
+  getScripts: async () => devtoolsService.getScripts(),
+  runScript: async (input: any) => devtoolsService.runScript(input.script, input.args),
+}
 
 /**
  * Get CLI information for reduced mode display
@@ -157,6 +196,11 @@ export const cliPlugin = createPlugin(
         const { status, environment } = getCliInfo()
         return { status, environment }
       }
+    },
+    // ORPC contract and handlers for server communication
+    orpc: {
+      contract: cliContract,
+      handlers: cliHandlers
     }
   }
 )

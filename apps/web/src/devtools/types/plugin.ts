@@ -161,6 +161,16 @@ export interface ReducedModeConfig {
 }
 
 /**
+ * ORPC contract definition for a plugin
+ */
+export interface PluginOrpcContract {
+  /** The ORPC contract router for this plugin */
+  contract: any
+  /** The handlers implementation for the contract */
+  handlers: any
+}
+
+/**
  * Base plugin interface that all plugins must implement
  */
 export interface DevToolPlugin extends PluginLifecycle {
@@ -172,6 +182,8 @@ export interface DevToolPlugin extends PluginLifecycle {
   enabled?: boolean
   /** Configuration for reduced (normal) mode display */
   reduced?: ReducedModeConfig
+  /** Optional ORPC contract and handlers for server communication */
+  orpc?: PluginOrpcContract
 }
 
 /**
