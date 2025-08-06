@@ -192,8 +192,8 @@ function NormalStateBar() {
         position.side === 'top' && 'border-b',
         position.side === 'bottom' && 'border-t'
       )} style={{ 
-        width: (position.side === 'left' || position.side === 'right') ? `${position.size}px` : 'auto',
-        height: (position.side === 'top' || position.side === 'bottom') ? `${position.size}px` : 'auto'
+        width: (position.side === 'left' || position.side === 'right') ? `${position.size}px` : '100vw',
+        height: (position.side === 'top' || position.side === 'bottom') ? `${position.size}px` : '100vh'
       }}>
         <div className={cn(
           'flex gap-1',
