@@ -58,6 +58,7 @@ import { DevToolState, PluginPage, PluginGroup, DevToolPlugin } from '../types'
 import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
 import { ReducedModeDisplay } from './ReducedModeDisplay'
 import { ReducedModeMenu } from './ReducedModeMenu'
+import { DevToolSettings } from './DevToolSettings'
 
 // Map of icon names to components
 const IconMap = {
@@ -136,13 +137,19 @@ export function DevToolPanel() {
  * Normal state - side bar like Laravel DevBar with tooltips
  */
 function NormalStateBar() {
-  const { position, setPosition, setState } = useDevToolState()
+  const { position, setPosition, setState, settings, isPluginPinned } = useDevToolState()
   const registry = usePluginRegistry()
   const additionalPlugins = registry.getActivePlugins()
 
   // Core plugins that are always available
   const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
   const allPlugins = [...corePlugins, ...additionalPlugins]
+  
+  // Filter plugins to only show pinned ones, or default to first few if none pinned
+  const pinnedPlugins = allPlugins.filter(plugin => isPluginPinned(plugin.metadata.id))
+  const pluginsToShow = pinnedPlugins.length > 0 
+    ? pinnedPlugins.slice(0, settings.maxNormalPlugins)
+    : allPlugins.slice(0, Math.min(3, settings.maxNormalPlugins))
 
   const sidebarClasses = {
     left: 'left-0 top-0 h-full w-16 flex-col',
@@ -160,6 +167,21 @@ function NormalStateBar() {
 
   const PositionIcon = positionIcons[position.side]
 
+  const wrapWithTooltip = (content: React.ReactNode, tooltipContent: React.ReactNode) => {
+    if (!settings.showTooltips) return content
+    
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {content}
+        </TooltipTrigger>
+        <TooltipContent>
+          {tooltipContent}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+
   return (
     <TooltipProvider>
       <div className={cn(
@@ -169,36 +191,35 @@ function NormalStateBar() {
         position.side === 'right' && 'border-l', 
         position.side === 'top' && 'border-b',
         position.side === 'bottom' && 'border-t'
-      )}>
+      )} style={{ 
+        width: (position.side === 'left' || position.side === 'right') ? `${position.size}px` : 'auto',
+        height: (position.side === 'top' || position.side === 'bottom') ? `${position.size}px` : 'auto'
+      }}>
         <div className={cn(
           'flex gap-1',
           (position.side === 'left' || position.side === 'right') && 'flex-col',
           (position.side === 'top' || position.side === 'bottom') && 'flex-row'
         )}>
           {/* DevTool toggle button */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setState(DevToolState.EXPANDED)}
-                className="h-8 w-8 p-0"
-              >
-                <Maximize2 className="h-3 w-3" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Expand DevTools</p>
-            </TooltipContent>
-          </Tooltip>
+          {wrapWithTooltip(
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setState(DevToolState.EXPANDED)}
+              className="h-8 w-8 p-0"
+            >
+              <Maximize2 className="h-3 w-3" />
+            </Button>,
+            <p>Expand DevTools</p>
+          )}
 
           <Separator 
             orientation={position.side === 'left' || position.side === 'right' ? 'horizontal' : 'vertical'} 
             className="my-1" 
           />
 
-          {/* Plugin indicators with reduced mode configuration */}
-          {allPlugins.slice(0, 3).map((plugin) => {
+          {/* Plugin indicators with reduced mode configuration - only show pinned plugins */}
+          {pluginsToShow.map((plugin) => {
             const context = {
               metadata: plugin.metadata,
               isActive: true, // Core plugins are always active
@@ -221,7 +242,8 @@ function NormalStateBar() {
                       size="sm"
                       className={cn(
                         "p-1 flex items-center justify-center gap-1",
-                        isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row"
+                        isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row",
+                        settings.enableAnimations && "transition-all duration-200"
                       )}
                     >
                       <div className="flex items-center justify-center flex-shrink-0">
@@ -239,54 +261,48 @@ function NormalStateBar() {
             }
             
             // Fallback to simple tooltip for plugins without reduced config
-            return (
-              <Tooltip key={plugin.metadata.id}>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setState(DevToolState.EXPANDED)}
-                    className={cn(
-                      "p-1 flex items-center justify-center gap-1",
-                      isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row"
-                    )}
-                  >
-                    <div className="flex items-center justify-center flex-shrink-0">
-                      {getIconComponent(plugin.metadata.icon)}
-                    </div>
-                    {plugin.reduced && (
-                      <div className="flex items-center justify-center min-w-0">
-                        <ReducedModeDisplay config={plugin.reduced} context={context} />
-                      </div>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{plugin.metadata.name}</p>
-                  {plugin.metadata.description && (
-                    <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
-                  )}
-                </TooltipContent>
-              </Tooltip>
+            return wrapWithTooltip(
+              <Button
+                key={plugin.metadata.id}
+                variant="ghost"
+                size="sm"
+                onClick={() => setState(DevToolState.EXPANDED)}
+                className={cn(
+                  "p-1 flex items-center justify-center gap-1",
+                  isVertical ? "h-10 w-10 flex-col" : "h-8 px-2 flex-row",
+                  settings.enableAnimations && "transition-all duration-200"
+                )}
+              >
+                <div className="flex items-center justify-center flex-shrink-0">
+                  {getIconComponent(plugin.metadata.icon)}
+                </div>
+                {plugin.reduced && (
+                  <div className="flex items-center justify-center min-w-0">
+                    <ReducedModeDisplay config={plugin.reduced} context={context} />
+                  </div>
+                )}
+              </Button>,
+              <>
+                <p>{plugin.metadata.name}</p>
+                {plugin.metadata.description && (
+                  <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
+                )}
+              </>
             )
           })}
 
-          {allPlugins.length > 3 && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setState(DevToolState.EXPANDED)}
-                  className="h-8 w-8 p-0"
-                >
-                  <MoreHorizontal className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{`+${allPlugins.length - 3} more plugins`}</p>
-              </TooltipContent>
-            </Tooltip>
+          {allPlugins.length > pluginsToShow.length && (
+            wrapWithTooltip(
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setState(DevToolState.EXPANDED)}
+                className="h-8 w-8 p-0"
+              >
+                <MoreHorizontal className="h-3 w-3" />
+              </Button>,
+              <p>{`+${allPlugins.length - pluginsToShow.length} more plugins`}</p>
+            )
           )}
 
           <Separator 
@@ -439,8 +455,11 @@ function ExpandedStatePanel() {
               </SidebarContent>
 
               <SidebarFooter className="border-t">
-                <div className="text-xs text-muted-foreground text-center">
-                  {corePlugins.length + additionalPlugins.length} plugins loaded
+                <div className="flex items-center justify-between px-2 py-1">
+                  <div className="text-xs text-muted-foreground">
+                    {corePlugins.length + additionalPlugins.length} plugins loaded
+                  </div>
+                  <DevToolSettings />
                 </div>
               </SidebarFooter>
               <SidebarRail />

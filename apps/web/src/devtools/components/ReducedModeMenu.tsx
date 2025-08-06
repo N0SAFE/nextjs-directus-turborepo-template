@@ -111,7 +111,7 @@ export function QuickActionButton({
   action: () => void
   icon?: ReactNode
   variant?: 'ghost' | 'outline' | 'secondary'
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'default' | 'lg'
 }) {
   return (
     <Button
