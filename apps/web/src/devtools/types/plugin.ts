@@ -41,106 +41,45 @@ export interface PluginMetadata {
 }
 
 /**
- * Plugin option types for different UI components
+ * Plugin page for hierarchical navigation
  */
-export type PluginOption = 
-  | DialogOption
-  | MenuOption
-  | TabsOption
-  | ToggleOption
-  | ListOption
-  | InputOption
-  | CustomOption
-
-export interface BaseOption {
-  /** Unique identifier for this option */
+export interface PluginPage {
+  /** Unique identifier for this page */
   id: string
   /** Display label */
   label: string
   /** Optional description */
   description?: string
-}
-
-export interface DialogOption extends BaseOption {
-  type: 'dialog'
-  /** Dialog title */
-  title: string
-  /** Dialog content component */
-  content: React.ComponentType<any>
-  /** Dialog trigger button text */
-  triggerText?: string
-  /** Dialog size */
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-}
-
-export interface MenuOption extends BaseOption {
-  type: 'menu'
-  /** Menu items */
-  items: Array<{
-    id: string
-    label: string
-    onClick: () => void
-    icon?: ReactNode
-  }>
-  /** Menu trigger text */
-  triggerText?: string
-}
-
-export interface TabsOption extends BaseOption {
-  type: 'tabs'
-  /** Tab items */
-  tabs: Array<{
-    id: string
-    label: string
-    content: React.ComponentType<any>
-  }>
-  /** Default active tab */
-  defaultTab?: string
-}
-
-export interface ToggleOption extends BaseOption {
-  type: 'toggle'
-  /** Current toggle state */
-  checked: boolean
-  /** Toggle change handler */
-  onChange: (checked: boolean) => void
-  /** Toggle size */
-  size?: 'sm' | 'md' | 'lg'
-}
-
-export interface ListOption extends BaseOption {
-  type: 'list'
-  /** List items */
-  items: Array<{
-    id: string
-    label: string
-    value: any
-    secondary?: string
-  }>
-  /** Whether list is selectable */
-  selectable?: boolean
-  /** Selection change handler */
-  onSelectionChange?: (selectedIds: string[]) => void
-}
-
-export interface InputOption extends BaseOption {
-  type: 'input'
-  /** Input type */
-  inputType: 'text' | 'number' | 'email' | 'password' | 'search' | 'textarea'
-  /** Current value */
-  value: string | number
-  /** Value change handler */
-  onChange: (value: string | number) => void
-  /** Placeholder text */
-  placeholder?: string
-  /** Whether input is disabled */
-  disabled?: boolean
-}
-
-export interface CustomOption extends BaseOption {
-  type: 'custom'
-  /** Custom component to render */
+  /** Page icon (Lucide icon name or custom React component) */
+  icon?: string | ReactNode
+  /** Component to render for this page */
   component: React.ComponentType<{ context: PluginContext }>
+  /** Child pages for hierarchical structure */
+  children?: PluginPage[]
+  /** Badge text or number to display */
+  badge?: string | number
+  /** Whether this page is active */
+  isActive?: boolean
+}
+
+/**
+ * Plugin group for organizing pages
+ */
+export interface PluginGroup {
+  /** Unique identifier for this group */
+  id: string
+  /** Display label */
+  label: string
+  /** Optional description */
+  description?: string
+  /** Group icon (Lucide icon name or custom React component) */
+  icon?: string | ReactNode
+  /** Pages in this group */
+  pages: PluginPage[]
+  /** Whether this group is collapsible */
+  collapsible?: boolean
+  /** Whether this group is initially collapsed */
+  defaultCollapsed?: boolean
 }
 
 /**
@@ -177,8 +116,8 @@ export interface PluginContext {
 export interface DevToolPlugin extends PluginLifecycle {
   /** Plugin metadata */
   metadata: PluginMetadata
-  /** Plugin options - array of different UI components to render */
-  options: PluginOption[]
+  /** Plugin groups containing hierarchical pages */
+  groups: PluginGroup[]
   /** Whether the plugin is enabled by default */
   enabled?: boolean
 }
@@ -191,7 +130,9 @@ export interface PluginRegistryState {
   plugins: Map<string, DevToolPlugin>
   /** Currently active plugin IDs */
   activePlugins: Set<string>
-  /** Currently selected plugin ID */
+  /** Currently selected page ID */
+  selectedPage: string | null
+  /** Currently selected plugin ID (for page context) */
   selectedPlugin: string | null
 }
 
@@ -207,14 +148,14 @@ export interface PluginRegistry {
   activate(pluginId: string): void
   /** Deactivate a plugin */
   deactivate(pluginId: string): void
-  /** Select a plugin for display */
-  select(pluginId: string | null): void
+  /** Select a page for display */
+  selectPage(pageId: string | null, pluginId?: string): void
   /** Get all registered plugins */
   getPlugins(): DevToolPlugin[]
   /** Get all active plugins */
   getActivePlugins(): DevToolPlugin[]
-  /** Get the currently selected plugin */
-  getSelectedPlugin(): DevToolPlugin | null
+  /** Get the currently selected page */
+  getSelectedPage(): { page: PluginPage; plugin: DevToolPlugin } | null
   /** Check if a plugin is registered */
   isRegistered(pluginId: string): boolean
   /** Check if a plugin is active */

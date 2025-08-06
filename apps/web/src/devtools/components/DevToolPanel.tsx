@@ -1,10 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { Settings, X, Maximize2, Minimize2, MoreHorizontal, ArrowLeft, ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
+import { 
+  Settings, 
+  X, 
+  Maximize2, 
+  Minimize2, 
+  MoreHorizontal, 
+  ArrowLeft, 
+  ArrowRight, 
+  ArrowUp, 
+  ArrowDown,
+  ChevronDown,
+  ChevronRight
+} from 'lucide-react'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Card, CardContent } from '@repo/ui/components/shadcn/card'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@repo/ui/components/shadcn/tabs'
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { Separator } from '@repo/ui/components/shadcn/separator'
 import { 
@@ -14,12 +25,36 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@repo/ui/components/shadcn/dropdown-menu'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+} from '@repo/ui/components/shadcn/sidebar'
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@repo/ui/components/shadcn/tooltip'
 
 import { cn } from '@repo/ui/lib/utils'
 import { usePluginRegistry } from '../core/plugin-registry'
 import { useDevToolState } from '../core/devtool-state'
-import { DevToolState } from '../types'
-import { OptionRenderer } from './OptionRenderer'
+import { DevToolState, PluginPage, PluginGroup } from '../types'
 
 // Map of icon names to components
 const IconMap = {
@@ -28,12 +63,24 @@ const IconMap = {
   ArrowRight, 
   ArrowUp,
   ArrowDown,
+  Activity: () => <div className="h-4 w-4 bg-green-500 rounded-full animate-pulse" />,
+  Cpu: () => <div className="h-4 w-4 bg-blue-500 rounded" />,
+  Terminal: () => <div className="h-4 w-4 bg-gray-800 rounded" />,
+  AlertTriangle: () => <div className="h-4 w-4 bg-yellow-500" style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }} />,
+  Bug: () => <div className="h-4 w-4 bg-red-500 rounded-full" />,
+  Sliders: () => <div className="h-4 w-4 bg-gray-500 rounded" />,
+  Wrench: () => <div className="h-4 w-4 bg-orange-500 rounded" />,
+  Database: () => <div className="h-4 w-4 bg-purple-500 rounded" />,
+  User: () => <div className="h-4 w-4 bg-indigo-500 rounded-full" />,
+  Shield: () => <div className="h-4 w-4 bg-green-600" style={{ clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)' }} />,
+  Info: () => <div className="h-4 w-4 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs">i</div>,
+  Code: () => <div className="h-4 w-4 bg-gray-700 rounded flex items-center justify-center text-white text-xs">{`<>`}</div>,
 } as const
 
 function getIconComponent(iconName: string | React.ReactNode) {
   if (typeof iconName === 'string' && iconName in IconMap) {
     const IconComponent = IconMap[iconName as keyof typeof IconMap]
-    return <IconComponent className="h-4 w-4" />
+    return <IconComponent />
   }
   if (typeof iconName === 'object') {
     return iconName
@@ -45,23 +92,30 @@ function getIconComponent(iconName: string | React.ReactNode) {
  * Main DevTool panel component with three states: none, normal, expanded
  */
 export function DevToolPanel() {
-  const { state, position, activeTab, setState, setPosition, setActiveTab, toggle, cycle } = useDevToolState()
-  const registry = usePluginRegistry()
-  const activePlugins = registry.getActivePlugins()
+  const { state, setState } = useDevToolState()
 
   // Don't render anything in NONE state
   if (state === DevToolState.NONE) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
-        <Button
-          onClick={() => setState(DevToolState.NORMAL)}
-          variant="secondary"
-          size="sm"
-          className="shadow-lg"
-        >
-          <Settings className="h-4 w-4 mr-2" />
-          DevTools
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setState(DevToolState.NORMAL)}
+                variant="secondary"
+                size="sm"
+                className="shadow-lg"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                DevTools
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Show DevTools</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     )
   }
@@ -71,12 +125,12 @@ export function DevToolPanel() {
     return <NormalStateBar />
   }
 
-  // EXPANDED state - bottom panel or separate window
+  // EXPANDED state - sidebar layout
   return <ExpandedStatePanel />
 }
 
 /**
- * Normal state - side bar like Laravel DevBar
+ * Normal state - side bar like Laravel DevBar with tooltips
  */
 function NormalStateBar() {
   const { position, setPosition, setState } = useDevToolState()
@@ -100,226 +154,337 @@ function NormalStateBar() {
   const PositionIcon = positionIcons[position.side]
 
   return (
-    <div className={cn(
-      'fixed z-50 bg-background/95 backdrop-blur border shadow-lg flex items-center justify-center',
-      sidebarClasses[position.side],
-      position.side === 'left' && 'border-r',
-      position.side === 'right' && 'border-l', 
-      position.side === 'top' && 'border-b',
-      position.side === 'bottom' && 'border-t'
-    )}>
+    <TooltipProvider>
       <div className={cn(
-        'flex gap-1',
-        (position.side === 'left' || position.side === 'right') && 'flex-col',
-        (position.side === 'top' || position.side === 'bottom') && 'flex-row'
+        'fixed z-50 bg-background/95 backdrop-blur border shadow-lg flex items-center justify-center',
+        sidebarClasses[position.side],
+        position.side === 'left' && 'border-r',
+        position.side === 'right' && 'border-l', 
+        position.side === 'top' && 'border-b',
+        position.side === 'bottom' && 'border-t'
       )}>
-        {/* DevTool toggle button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setState(DevToolState.EXPANDED)}
-          className="h-8 w-8 p-0"
-          title="Expand DevTools"
-        >
-          <Maximize2 className="h-3 w-3" />
-        </Button>
+        <div className={cn(
+          'flex gap-1',
+          (position.side === 'left' || position.side === 'right') && 'flex-col',
+          (position.side === 'top' || position.side === 'bottom') && 'flex-row'
+        )}>
+          {/* DevTool toggle button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setState(DevToolState.EXPANDED)}
+                className="h-8 w-8 p-0"
+              >
+                <Maximize2 className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Expand DevTools</p>
+            </TooltipContent>
+          </Tooltip>
 
-        <Separator 
-          orientation={position.side === 'left' || position.side === 'right' ? 'horizontal' : 'vertical'} 
-          className="my-1" 
-        />
+          <Separator 
+            orientation={position.side === 'left' || position.side === 'right' ? 'horizontal' : 'vertical'} 
+            className="my-1" 
+          />
 
-        {/* Plugin indicators */}
-        {activePlugins.slice(0, 3).map((plugin) => (
-          <Button
-            key={plugin.metadata.id}
-            variant="ghost"
-            size="sm"
-            onClick={() => setState(DevToolState.EXPANDED)}
-            className="h-8 w-8 p-0"
-            title={plugin.metadata.name}
-          >
-            {getIconComponent(plugin.metadata.icon)}
-          </Button>
-        ))}
+          {/* Plugin indicators */}
+          {activePlugins.slice(0, 3).map((plugin) => (
+            <Tooltip key={plugin.metadata.id}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setState(DevToolState.EXPANDED)}
+                  className="h-8 w-8 p-0"
+                >
+                  {getIconComponent(plugin.metadata.icon)}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{plugin.metadata.name}</p>
+                {plugin.metadata.description && (
+                  <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          ))}
 
-        {activePlugins.length > 3 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setState(DevToolState.EXPANDED)}
-            className="h-8 w-8 p-0"
-            title={`+${activePlugins.length - 3} more plugins`}
-          >
-            <MoreHorizontal className="h-3 w-3" />
-          </Button>
-        )}
+          {activePlugins.length > 3 && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setState(DevToolState.EXPANDED)}
+                  className="h-8 w-8 p-0"
+                >
+                  <MoreHorizontal className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{`+${activePlugins.length - 3} more plugins`}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
 
-        <Separator 
-          orientation={position.side === 'left' || position.side === 'right' ? 'horizontal' : 'vertical'} 
-          className="my-1" 
-        />
+          <Separator 
+            orientation={position.side === 'left' || position.side === 'right' ? 'horizontal' : 'vertical'} 
+            className="my-1" 
+          />
 
-        {/* Position and settings menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              title="DevTool settings"
-            >
-              <PositionIcon className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-48">
-            <DropdownMenuItem onClick={() => setState(DevToolState.EXPANDED)}>
-              <Maximize2 className="h-4 w-4 mr-2" />
-              Expand
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setState(DevToolState.NONE)}>
-              <X className="h-4 w-4 mr-2" />
-              Hide
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setPosition({ side: 'left' })}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Left side
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPosition({ side: 'right' })}>
-              <ArrowRight className="h-4 w-4 mr-2" />
-              Right side  
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPosition({ side: 'top' })}>
-              <ArrowUp className="h-4 w-4 mr-2" />
-              Top
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPosition({ side: 'bottom' })}>
-              <ArrowDown className="h-4 w-4 mr-2" />
-              Bottom
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* Position and settings menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+              >
+                <PositionIcon className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-48">
+              <DropdownMenuItem onClick={() => setState(DevToolState.EXPANDED)}>
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Expand
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setState(DevToolState.NONE)}>
+                <X className="h-4 w-4 mr-2" />
+                Hide
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setPosition({ side: 'left' })}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Left side
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPosition({ side: 'right' })}>
+                <ArrowRight className="h-4 w-4 mr-2" />
+                Right side  
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPosition({ side: 'top' })}>
+                <ArrowUp className="h-4 w-4 mr-2" />
+                Top
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setPosition({ side: 'bottom' })}>
+                <ArrowDown className="h-4 w-4 mr-2" />
+                Bottom
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   )
 }
 
 /**
- * Expanded state - bottom center panel
+ * Expanded state - full sidebar layout
  */
 function ExpandedStatePanel() {
-  const { activeTab, setActiveTab, setState } = useDevToolState()
+  const { setState } = useDevToolState()
   const registry = usePluginRegistry()
   const activePlugins = registry.getActivePlugins()
-
-  // Set first plugin as active tab if none selected
-  if (!activeTab && activePlugins.length > 0) {
-    setActiveTab(activePlugins[0].metadata.id)
-  }
+  const selectedPageData = registry.getSelectedPage()
 
   return (
     <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-[90vw] max-w-6xl mb-4">
-      <Card className="border-2 shadow-2xl">
-        {/* Header with tabs and controls */}
-        <div className="border-b bg-muted/30 px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Settings className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">DevTools</span>
-                <Badge variant="secondary" className="text-xs">
-                  v1.0.0
-                </Badge>
-              </div>
-              
-              {activePlugins.length > 0 && (
-                <>
-                  <Separator orientation="vertical" className="h-4" />
-                  <span className="text-xs text-muted-foreground">
-                    {activePlugins.length} plugins active
-                  </span>
-                </>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setState(DevToolState.NORMAL)}
-                className="h-6 w-6 p-0"
-                title="Minimize to sidebar"
-              >
-                <Minimize2 className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setState(DevToolState.NONE)}
-                className="h-6 w-6 p-0"
-                title="Close DevTools"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Plugin tabs content */}
-        <CardContent className="p-0">
-          {activePlugins.length === 0 ? (
-            <div className="p-8 text-center">
-              <div className="text-sm text-muted-foreground">
-                No plugins active. Register some plugins to get started.
-              </div>
-            </div>
-          ) : (
-            <Tabs value={activeTab || undefined} onValueChange={setActiveTab} className="w-full">
-              {/* Tab navigation */}
-              <div className="border-b px-4 py-2">
-                <TabsList className="h-8">
-                  {activePlugins.map((plugin) => (
-                    <TabsTrigger 
-                      key={plugin.metadata.id} 
-                      value={plugin.metadata.id}
-                      className="text-xs px-3 h-6 flex items-center gap-2"
+      <Card className="border-2 shadow-2xl h-[70vh]">
+        <SidebarProvider defaultOpen={true}>
+          <div className="flex w-full h-full">
+            {/* Sidebar */}
+            <Sidebar variant="inset" className="w-64">
+              <SidebarHeader className="border-b">
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">DevTools</span>
+                    <Badge variant="secondary" className="text-xs">
+                      v1.0.0
+                    </Badge>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setState(DevToolState.NORMAL)}
+                      className="h-6 w-6 p-0"
+                      title="Minimize to sidebar"
                     >
-                      {plugin.metadata.icon && (
-                        <span className="text-muted-foreground">
-                          {getIconComponent(plugin.metadata.icon)}
-                        </span>
-                      )}
-                      {plugin.metadata.name}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
+                      <Minimize2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setState(DevToolState.NONE)}
+                      className="h-6 w-6 p-0"
+                      title="Close DevTools"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </SidebarHeader>
 
-              {/* Tab content */}
-              <div className="h-[400px] overflow-y-auto">
-                {activePlugins.map((plugin) => (
-                  <TabsContent 
-                    key={plugin.metadata.id} 
-                    value={plugin.metadata.id}
-                    className="mt-0 p-4"
-                  >
-                    <PluginContent plugin={plugin} />
-                  </TabsContent>
-                ))}
+              <SidebarContent>
+                {activePlugins.length === 0 ? (
+                  <div className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">
+                      No plugins active
+                    </div>
+                  </div>
+                ) : (
+                  activePlugins.map((plugin) => (
+                    <PluginSidebarSection key={plugin.metadata.id} plugin={plugin} />
+                  ))
+                )}
+              </SidebarContent>
+
+              <SidebarFooter className="border-t">
+                <div className="text-xs text-muted-foreground text-center">
+                  {activePlugins.length} plugins active
+                </div>
+              </SidebarFooter>
+              <SidebarRail />
+            </Sidebar>
+
+            {/* Main content area */}
+            <SidebarInset className="flex-1">
+              <div className="h-full overflow-y-auto p-4">
+                {selectedPageData ? (
+                  <PageContent 
+                    page={selectedPageData.page} 
+                    plugin={selectedPageData.plugin} 
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">DevTools</h3>
+                      <p className="text-muted-foreground">
+                        Select a page from the sidebar to get started
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            </Tabs>
-          )}
-        </CardContent>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
       </Card>
     </div>
   )
 }
 
 /**
- * Renders a single plugin's content within a tab
+ * Renders a plugin section in the sidebar
  */
-function PluginContent({ plugin }: { plugin: any }) {
+function PluginSidebarSection({ plugin }: { plugin: any }) {
+  return (
+    <>
+      {plugin.groups.map((group: PluginGroup, index: number) => (
+        <SidebarGroup key={group.id}>
+          <SidebarGroupLabel>
+            <div className="flex items-center gap-2">
+              {group.icon && getIconComponent(group.icon)}
+              {group.label}
+            </div>
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {group.pages.map((page: PluginPage) => (
+                <PluginPageItem key={page.id} page={page} pluginId={plugin.metadata.id} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+          {index < plugin.groups.length - 1 && <SidebarSeparator />}
+        </SidebarGroup>
+      ))}
+    </>
+  )
+}
+
+/**
+ * Renders a page item in the sidebar menu
+ */
+function PluginPageItem({ page, pluginId }: { page: PluginPage; pluginId: string }) {
+  const registry = usePluginRegistry()
+  const selectedPageData = registry.getSelectedPage()
+  const isSelected = selectedPageData?.page.id === page.id
+
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const handlePageClick = () => {
+    registry.selectPage(page.id, pluginId)
+  }
+
+  const handleToggleExpanded = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsExpanded(!isExpanded)
+  }
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton 
+        isActive={isSelected}
+        onClick={handlePageClick}
+        className="group"
+      >
+        <div className="flex items-center gap-2 flex-1">
+          {page.icon && getIconComponent(page.icon)}
+          <span className="flex-1">{page.label}</span>
+          {page.badge && (
+            <Badge variant="secondary" className="text-xs">
+              {page.badge}
+            </Badge>
+          )}
+          {page.children && page.children.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100"
+              onClick={handleToggleExpanded}
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
+            </Button>
+          )}
+        </div>
+      </SidebarMenuButton>
+
+      {page.children && page.children.length > 0 && isExpanded && (
+        <SidebarMenuSub>
+          {page.children.map((childPage) => (
+            <SidebarMenuSubItem key={childPage.id}>
+              <SidebarMenuSubButton 
+                isActive={selectedPageData?.page.id === childPage.id}
+                onClick={() => registry.selectPage(childPage.id, pluginId)}
+              >
+                {childPage.icon && getIconComponent(childPage.icon)}
+                <span>{childPage.label}</span>
+                {childPage.badge && (
+                  <Badge variant="secondary" className="text-xs ml-auto">
+                    {childPage.badge}
+                  </Badge>
+                )}
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          ))}
+        </SidebarMenuSub>
+      )}
+    </SidebarMenuItem>
+  )
+}
+
+/**
+ * Renders the content for a selected page
+ */
+function PageContent({ page, plugin }: { page: PluginPage; plugin: any }) {
   const registry = usePluginRegistry()
   const context = {
     metadata: plugin.metadata,
@@ -328,14 +493,24 @@ function PluginContent({ plugin }: { plugin: any }) {
     deactivate: () => registry.deactivate(plugin.metadata.id)
   }
 
+  const PageComponent = page.component
+
   return (
     <div className="space-y-4">
-      {/* Plugin header */}
-      <div className="flex items-center justify-between">
+      {/* Page header */}
+      <div className="flex items-center justify-between border-b pb-4">
         <div>
-          <h3 className="text-lg font-semibold">{plugin.metadata.name}</h3>
-          {plugin.metadata.description && (
-            <p className="text-sm text-muted-foreground">{plugin.metadata.description}</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            {page.icon && getIconComponent(page.icon)}
+            {page.label}
+            {page.badge && (
+              <Badge variant="secondary">
+                {page.badge}
+              </Badge>
+            )}
+          </h1>
+          {page.description && (
+            <p className="text-muted-foreground mt-1">{page.description}</p>
           )}
         </div>
         <div className="flex items-center space-x-2">
@@ -350,17 +525,9 @@ function PluginContent({ plugin }: { plugin: any }) {
         </div>
       </div>
 
-      <Separator />
-
-      {/* Plugin options */}
-      <div className="space-y-4">
-        {plugin.options.map((option: any) => (
-          <OptionRenderer
-            key={option.id}
-            option={option}
-            context={context}
-          />
-        ))}
+      {/* Page content */}
+      <div className="min-h-[200px]">
+        <PageComponent context={context} />
       </div>
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
-import { DevToolPlugin, PluginRegistry, PluginRegistryState } from '../types'
+import { DevToolPlugin, PluginRegistry, PluginRegistryState, PluginPage } from '../types'
 
 interface PluginRegistryStore extends PluginRegistryState, PluginRegistry {}
 
@@ -14,6 +14,7 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
     // State
     plugins: new Map(),
     activePlugins: new Set(),
+    selectedPage: null,
     selectedPlugin: null,
 
     // Methods
@@ -37,7 +38,6 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         return {
           plugins: newPlugins,
           activePlugins: newActivePlugins,
-          selectedPlugin: state.selectedPlugin || (plugin.enabled !== false ? plugin.metadata.id : null)
         }
       })
 
@@ -68,6 +68,7 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         return {
           plugins: newPlugins,
           activePlugins: newActivePlugins,
+          selectedPage: state.selectedPlugin === pluginId ? null : state.selectedPage,
           selectedPlugin: state.selectedPlugin === pluginId ? null : state.selectedPlugin
         }
       })
@@ -122,6 +123,7 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         
         return {
           activePlugins: newActivePlugins,
+          selectedPage: state.selectedPlugin === pluginId ? null : state.selectedPage,
           selectedPlugin: state.selectedPlugin === pluginId ? null : state.selectedPlugin
         }
       })
@@ -129,20 +131,34 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
       plugin.onDeactivate?.()
     },
 
-    select: (pluginId: string | null) => {
+    selectPage: (pageId: string | null, pluginId?: string) => {
       const { plugins, activePlugins } = get()
       
-      if (pluginId && !plugins.has(pluginId)) {
-        console.warn(`Plugin ${pluginId} is not registered`)
-        return
+      if (pageId && pluginId) {
+        if (!plugins.has(pluginId)) {
+          console.warn(`Plugin ${pluginId} is not registered`)
+          return
+        }
+
+        if (!activePlugins.has(pluginId)) {
+          console.warn(`Plugin ${pluginId} is not active`)
+          return
+        }
+
+        // Find the page in the plugin
+        const plugin = plugins.get(pluginId)!
+        const foundPage = findPageInPlugin(plugin, pageId)
+        
+        if (!foundPage) {
+          console.warn(`Page ${pageId} not found in plugin ${pluginId}`)
+          return
+        }
       }
 
-      if (pluginId && !activePlugins.has(pluginId)) {
-        console.warn(`Plugin ${pluginId} is not active`)
-        return
-      }
-
-      set({ selectedPlugin: pluginId })
+      set({ 
+        selectedPage: pageId,
+        selectedPlugin: pluginId || null
+      })
     },
 
     getPlugins: () => Array.from(get().plugins.values()),
@@ -154,9 +170,24 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         .filter(Boolean) as DevToolPlugin[]
     },
 
-    getSelectedPlugin: () => {
-      const { plugins, selectedPlugin } = get()
-      return selectedPlugin ? plugins.get(selectedPlugin) || null : null
+    getSelectedPage: () => {
+      const { plugins, selectedPage, selectedPlugin } = get()
+      
+      if (!selectedPage || !selectedPlugin) {
+        return null
+      }
+      
+      const plugin = plugins.get(selectedPlugin)
+      if (!plugin) {
+        return null
+      }
+      
+      const page = findPageInPlugin(plugin, selectedPage)
+      if (!page) {
+        return null
+      }
+      
+      return { page, plugin }
     },
 
     isRegistered: (pluginId: string) => get().plugins.has(pluginId),
@@ -164,6 +195,31 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
     isActive: (pluginId: string) => get().activePlugins.has(pluginId),
   }))
 )
+
+/**
+ * Helper function to find a page by ID in a plugin
+ */
+function findPageInPlugin(plugin: DevToolPlugin, pageId: string): PluginPage | null {
+  for (const group of plugin.groups) {
+    const page = findPageInPages(group.pages, pageId)
+    if (page) return page
+  }
+  return null
+}
+
+/**
+ * Helper function to recursively find a page by ID in an array of pages
+ */
+function findPageInPages(pages: PluginPage[], pageId: string): PluginPage | null {
+  for (const page of pages) {
+    if (page.id === pageId) return page
+    if (page.children) {
+      const childPage = findPageInPages(page.children, pageId)
+      if (childPage) return childPage
+    }
+  }
+  return null
+}
 
 /**
  * Hook to get plugin context for a specific plugin

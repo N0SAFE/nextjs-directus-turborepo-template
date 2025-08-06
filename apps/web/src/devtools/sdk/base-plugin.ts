@@ -1,11 +1,11 @@
-import { DevToolPlugin, PluginMetadata, PluginContext, PluginOption } from '../types'
+import { DevToolPlugin, PluginMetadata, PluginContext, PluginGroup } from '../types'
 
 /**
  * Abstract base class for creating plugins
  */
 export abstract class BasePlugin implements DevToolPlugin {
   abstract metadata: PluginMetadata
-  abstract options: PluginOption[]
+  abstract groups: PluginGroup[]
   enabled?: boolean = true
 
   /**
@@ -42,7 +42,7 @@ export abstract class BasePlugin implements DevToolPlugin {
  */
 export function createPlugin(
   metadata: PluginMetadata,
-  options: PluginOption[],
+  groups: PluginGroup[],
   pluginOptions: {
     enabled?: boolean
     onRegister?(): void | Promise<void>
@@ -53,7 +53,7 @@ export function createPlugin(
 ): DevToolPlugin {
   return {
     metadata,
-    options,
+    groups,
     enabled: pluginOptions.enabled ?? true,
     onRegister: pluginOptions.onRegister,
     onActivate: pluginOptions.onActivate,
@@ -63,13 +63,15 @@ export function createPlugin(
 }
 
 /**
- * Legacy function to create a plugin with a single component (for backward compatibility)
+ * Utility function to create a simple plugin with a single page
  */
-export function createLegacyPlugin(
+export function createSimplePlugin(
   metadata: PluginMetadata,
   component: React.ComponentType<{ context: PluginContext }>,
   options: {
     enabled?: boolean
+    groupLabel?: string
+    pageLabel?: string
     onRegister?(): void | Promise<void>
     onActivate?(): void | Promise<void>
     onDeactivate?(): void | Promise<void>
@@ -80,11 +82,16 @@ export function createLegacyPlugin(
     metadata,
     [
       {
-        id: 'main',
-        type: 'custom',
-        label: metadata.name,
-        description: metadata.description,
-        component
+        id: `${metadata.id}-group`,
+        label: options.groupLabel || metadata.name,
+        pages: [
+          {
+            id: `${metadata.id}-main`,
+            label: options.pageLabel || 'Main',
+            component,
+            icon: metadata.icon
+          }
+        ]
       }
     ],
     options
@@ -143,8 +150,8 @@ export const PluginUtils = {
       typeof plugin === 'object' &&
       plugin !== null &&
       'metadata' in plugin &&
-      'options' in plugin &&
-      Array.isArray(plugin.options) &&
+      'groups' in plugin &&
+      Array.isArray(plugin.groups) &&
       PluginUtils.validateMetadata(plugin.metadata).length === 0
     )
   },

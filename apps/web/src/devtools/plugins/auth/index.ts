@@ -18,30 +18,39 @@ export const authPlugin = createPlugin(
   ),
   [
     {
-      id: 'user-info',
-      type: 'custom',
-      label: 'Current User',
-      description: 'Display current authenticated user information',
-      component: UserInfoComponent
+      id: 'user-group',
+      label: 'User Management',
+      icon: 'User',
+      pages: [
+        {
+          id: 'user-info',
+          label: 'Current User',
+          description: 'Display current authenticated user information',
+          icon: 'User',
+          component: UserInfoComponent
+        }
+      ]
     },
     {
-      id: 'session-tabs',
-      type: 'tabs',
-      label: 'Session Information',
-      description: 'Detailed session data and debugging information',
-      tabs: [
+      id: 'session-group', 
+      label: 'Session Data',
+      icon: 'Shield',
+      pages: [
         {
-          id: 'details',
-          label: 'Details',
-          content: SessionDetailsComponent
+          id: 'session-details',
+          label: 'Session Details',
+          description: 'Detailed session information',
+          icon: 'Info',
+          component: SessionDetailsComponent
         },
         {
-          id: 'raw',
+          id: 'session-raw',
           label: 'Raw Data',
-          content: RawSessionDataComponent
+          description: 'Raw session data for debugging',
+          icon: 'Code',
+          component: RawSessionDataComponent
         }
-      ],
-      defaultTab: 'details'
+      ]
     }
   ],
   {
