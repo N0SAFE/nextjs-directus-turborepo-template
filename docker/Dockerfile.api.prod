@@ -1,7 +1,7 @@
 # Production Dockerfile for NestJS API
 # Multi-stage build for optimized production image
 
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -41,7 +41,7 @@ WORKDIR /app/apps/api
 RUN bun run build
 
 # Stage 3: Production runtime
-FROM node:20-alpine AS runtime
+FROM node:24-alpine AS runtime
 
 ARG NEXT_PUBLIC_API_URL=http://localhost:3001
 ARG API_PORT=3001
