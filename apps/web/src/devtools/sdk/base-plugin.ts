@@ -1,11 +1,11 @@
-import { DevToolPlugin, PluginMetadata, PluginContext } from '../types'
+import { DevToolPlugin, PluginMetadata, PluginContext, PluginOption } from '../types'
 
 /**
  * Abstract base class for creating plugins
  */
 export abstract class BasePlugin implements DevToolPlugin {
   abstract metadata: PluginMetadata
-  abstract component: React.ComponentType<{ context: PluginContext }>
+  abstract options: PluginOption[]
   enabled?: boolean = true
 
   /**
@@ -42,8 +42,8 @@ export abstract class BasePlugin implements DevToolPlugin {
  */
 export function createPlugin(
   metadata: PluginMetadata,
-  component: React.ComponentType<{ context: PluginContext }>,
-  options: {
+  options: PluginOption[],
+  pluginOptions: {
     enabled?: boolean
     onRegister?(): void | Promise<void>
     onActivate?(): void | Promise<void>
@@ -53,13 +53,42 @@ export function createPlugin(
 ): DevToolPlugin {
   return {
     metadata,
-    component,
-    enabled: options.enabled ?? true,
-    onRegister: options.onRegister,
-    onActivate: options.onActivate,
-    onDeactivate: options.onDeactivate,
-    onUnregister: options.onUnregister,
+    options,
+    enabled: pluginOptions.enabled ?? true,
+    onRegister: pluginOptions.onRegister,
+    onActivate: pluginOptions.onActivate,
+    onDeactivate: pluginOptions.onDeactivate,
+    onUnregister: pluginOptions.onUnregister,
   }
+}
+
+/**
+ * Legacy function to create a plugin with a single component (for backward compatibility)
+ */
+export function createLegacyPlugin(
+  metadata: PluginMetadata,
+  component: React.ComponentType<{ context: PluginContext }>,
+  options: {
+    enabled?: boolean
+    onRegister?(): void | Promise<void>
+    onActivate?(): void | Promise<void>
+    onDeactivate?(): void | Promise<void>
+    onUnregister?(): void | Promise<void>
+  } = {}
+): DevToolPlugin {
+  return createPlugin(
+    metadata,
+    [
+      {
+        id: 'main',
+        type: 'custom',
+        label: metadata.name,
+        description: metadata.description,
+        component
+      }
+    ],
+    options
+  )
 }
 
 /**
@@ -114,8 +143,8 @@ export const PluginUtils = {
       typeof plugin === 'object' &&
       plugin !== null &&
       'metadata' in plugin &&
-      'component' in plugin &&
-      typeof plugin.component === 'function' &&
+      'options' in plugin &&
+      Array.isArray(plugin.options) &&
       PluginUtils.validateMetadata(plugin.metadata).length === 0
     )
   },

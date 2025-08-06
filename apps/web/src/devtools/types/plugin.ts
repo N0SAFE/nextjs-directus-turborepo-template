@@ -19,6 +19,109 @@ export interface PluginMetadata {
 }
 
 /**
+ * Plugin option types for different UI components
+ */
+export type PluginOption = 
+  | DialogOption
+  | MenuOption
+  | TabsOption
+  | ToggleOption
+  | ListOption
+  | InputOption
+  | CustomOption
+
+export interface BaseOption {
+  /** Unique identifier for this option */
+  id: string
+  /** Display label */
+  label: string
+  /** Optional description */
+  description?: string
+}
+
+export interface DialogOption extends BaseOption {
+  type: 'dialog'
+  /** Dialog title */
+  title: string
+  /** Dialog content component */
+  content: React.ComponentType<any>
+  /** Dialog trigger button text */
+  triggerText?: string
+  /** Dialog size */
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+}
+
+export interface MenuOption extends BaseOption {
+  type: 'menu'
+  /** Menu items */
+  items: Array<{
+    id: string
+    label: string
+    onClick: () => void
+    icon?: ReactNode
+  }>
+  /** Menu trigger text */
+  triggerText?: string
+}
+
+export interface TabsOption extends BaseOption {
+  type: 'tabs'
+  /** Tab items */
+  tabs: Array<{
+    id: string
+    label: string
+    content: React.ComponentType<any>
+  }>
+  /** Default active tab */
+  defaultTab?: string
+}
+
+export interface ToggleOption extends BaseOption {
+  type: 'toggle'
+  /** Current toggle state */
+  checked: boolean
+  /** Toggle change handler */
+  onChange: (checked: boolean) => void
+  /** Toggle size */
+  size?: 'sm' | 'md' | 'lg'
+}
+
+export interface ListOption extends BaseOption {
+  type: 'list'
+  /** List items */
+  items: Array<{
+    id: string
+    label: string
+    value: any
+    secondary?: string
+  }>
+  /** Whether list is selectable */
+  selectable?: boolean
+  /** Selection change handler */
+  onSelectionChange?: (selectedIds: string[]) => void
+}
+
+export interface InputOption extends BaseOption {
+  type: 'input'
+  /** Input type */
+  inputType: 'text' | 'number' | 'email' | 'password' | 'search' | 'textarea'
+  /** Current value */
+  value: string | number
+  /** Value change handler */
+  onChange: (value: string | number) => void
+  /** Placeholder text */
+  placeholder?: string
+  /** Whether input is disabled */
+  disabled?: boolean
+}
+
+export interface CustomOption extends BaseOption {
+  type: 'custom'
+  /** Custom component to render */
+  component: React.ComponentType<{ context: PluginContext }>
+}
+
+/**
  * Plugin lifecycle hooks
  */
 export interface PluginLifecycle {
@@ -52,8 +155,8 @@ export interface PluginContext {
 export interface DevToolPlugin extends PluginLifecycle {
   /** Plugin metadata */
   metadata: PluginMetadata
-  /** Main component to render in the devtool panel */
-  component: React.ComponentType<{ context: PluginContext }>
+  /** Plugin options - array of different UI components to render */
+  options: PluginOption[]
   /** Whether the plugin is enabled by default */
   enabled?: boolean
 }

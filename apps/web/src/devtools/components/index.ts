@@ -1,1 +1,2 @@
-export * from './components/DevToolPanel'
+export * from './DevToolPanel'
+export * from './OptionRenderer'

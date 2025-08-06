@@ -1,6 +1,6 @@
 import { User } from 'lucide-react'
 import { createPlugin, PluginUtils } from '../../sdk'
-import { AuthPlugin } from './AuthPlugin'
+import { UserInfoComponent, SessionDetailsComponent, RawSessionDataComponent } from './AuthComponents'
 
 /**
  * Authentication DevTool Plugin
@@ -16,7 +16,34 @@ export const authPlugin = createPlugin(
       icon: 'User',
     }
   ),
-  AuthPlugin,
+  [
+    {
+      id: 'user-info',
+      type: 'custom',
+      label: 'Current User',
+      description: 'Display current authenticated user information',
+      component: UserInfoComponent
+    },
+    {
+      id: 'session-tabs',
+      type: 'tabs',
+      label: 'Session Information',
+      description: 'Detailed session data and debugging information',
+      tabs: [
+        {
+          id: 'details',
+          label: 'Details',
+          content: SessionDetailsComponent
+        },
+        {
+          id: 'raw',
+          label: 'Raw Data',
+          content: RawSessionDataComponent
+        }
+      ],
+      defaultTab: 'details'
+    }
+  ],
   {
     enabled: true,
     onRegister: () => {

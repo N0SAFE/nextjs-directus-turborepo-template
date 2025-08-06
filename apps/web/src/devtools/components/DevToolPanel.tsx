@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronUp, ChevronDown, Settings, X } from 'lucide-react'
+import { ChevronUp, ChevronDown, Settings, X, User, Shield, Clock } from 'lucide-react'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
 import { Badge } from '@repo/ui/components/shadcn/badge'
@@ -9,6 +9,27 @@ import { Separator } from '@repo/ui/components/shadcn/separator'
 
 import { cn } from '@repo/ui/lib/utils'
 import { usePluginRegistry, usePluginContext } from '../core/plugin-registry'
+import { OptionRenderer } from './OptionRenderer'
+import { PluginOption } from '../types'
+
+// Map of icon names to components
+const IconMap = {
+  User,
+  Settings,
+  Shield,
+  Clock,
+} as const
+
+function getIconComponent(iconName: string | React.ReactNode) {
+  if (typeof iconName === 'string' && iconName in IconMap) {
+    const IconComponent = IconMap[iconName as keyof typeof IconMap]
+    return <IconComponent className="h-4 w-4" />
+  }
+  if (typeof iconName === 'object') {
+    return iconName
+  }
+  return null
+}
 
 /**
  * Main DevTool panel component
@@ -19,7 +40,6 @@ export function DevToolPanel() {
   
   const registry = usePluginRegistry()
   const activePlugins = registry.getActivePlugins()
-  const selectedPlugin = registry.getSelectedPlugin()
 
   if (!isOpen) {
     return (
@@ -38,7 +58,7 @@ export function DevToolPanel() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-96 max-h-[600px] shadow-2xl">
+    <div className="fixed bottom-4 right-4 z-50 w-[500px] max-h-[700px] shadow-2xl">
       <Card className="border-2">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -88,31 +108,11 @@ export function DevToolPanel() {
                 No plugins active. Register some plugins to get started.
               </div>
             ) : (
-              <div className="space-y-0">
-                {/* Plugin Tabs */}
-                <div className="flex flex-wrap gap-1 p-2 border-b">
+              <div className="h-[500px] overflow-y-auto">
+                <div className="p-4 space-y-4">
                   {activePlugins.map((plugin) => (
-                    <Button
-                      key={plugin.metadata.id}
-                      variant={selectedPlugin?.metadata.id === plugin.metadata.id ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => registry.select(plugin.metadata.id)}
-                      className="h-7 text-xs px-2"
-                    >
-                      {plugin.metadata.name}
-                    </Button>
+                    <PluginCard key={plugin.metadata.id} plugin={plugin} />
                   ))}
-                </div>
-
-                {/* Plugin Content */}
-                <div className="h-[400px] overflow-y-auto">
-                  {selectedPlugin ? (
-                    <PluginRenderer plugin={selectedPlugin} />
-                  ) : (
-                    <div className="p-4 text-center text-sm text-muted-foreground">
-                      Select a plugin to view its content
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -124,15 +124,40 @@ export function DevToolPanel() {
 }
 
 /**
- * Renders the selected plugin component
+ * Renders a single plugin as a card with its options
  */
-function PluginRenderer({ plugin }: { plugin: NonNullable<ReturnType<typeof usePluginRegistry>['getSelectedPlugin']> }) {
+function PluginCard({ plugin }: { plugin: any }) {
   const context = usePluginContext(plugin.metadata.id)
-  const PluginComponent = plugin.component
 
   return (
-    <div className="p-4">
-      <PluginComponent context={context} />
-    </div>
+    <Card className="border border-border/50">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            {plugin.metadata.icon && (
+              <span className="text-muted-foreground">
+                {getIconComponent(plugin.metadata.icon)}
+              </span>
+            )}
+            {plugin.metadata.name}
+          </CardTitle>
+          <Badge variant="outline" className="text-xs">
+            {plugin.metadata.version}
+          </Badge>
+        </div>
+        {plugin.metadata.description && (
+          <p className="text-xs text-muted-foreground">{plugin.metadata.description}</p>
+        )}
+      </CardHeader>
+      <CardContent className="pt-0 space-y-4">
+        {plugin.options.map((option: PluginOption) => (
+          <OptionRenderer
+            key={option.id}
+            option={option}
+            context={context}
+          />
+        ))}
+      </CardContent>
+    </Card>
   )
 }
