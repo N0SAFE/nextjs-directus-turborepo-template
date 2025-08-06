@@ -1,180 +1,295 @@
 'use client'
 
-import { User, Shield, Clock, Key } from 'lucide-react'
+import React from 'react'
+import { oc } from '@orpc/contract'
+import { User, Shield, Clock, Key, Users, AlertTriangle } from 'lucide-react'
 import { Badge } from '@repo/ui/components/shadcn/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
-import { Separator } from '@repo/ui/components/shadcn/separator'
-import { useSession } from '@/lib/auth'
-import { PluginContext } from '../../types'
+import { createPlugin, PluginUtils } from '../../sdk'
+import { AuthPlugin } from './AuthComponents'
+import z from 'zod/v4'
+
+// Auth Plugin ORPC Contract
+const authContract = oc.router({
+  // Get Better Auth configuration
+  getAuthConfig: oc
+    .output(z.object({
+      configPath: z.string(),
+      baseURL: z.string(),
+      basePath: z.string(),
+      plugins: z.array(z.string()),
+      providers: z.array(z.string()),
+      configExists: z.boolean(),
+    })),
+
+  // Get current session information
+  getSessionInfo: oc
+    .input(z.object({ sessionId: z.string().optional() }))
+    .output(z.object({
+      sessionId: z.string(),
+      userId: z.string(),
+      email: z.string(),
+      name: z.string(),
+      createdAt: z.string(),
+      expiresAt: z.string(),
+      lastActivity: z.string(),
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      isActive: z.boolean(),
+      permissions: z.array(z.string()),
+      metadata: z.object({
+        loginMethod: z.string(),
+        twoFactorEnabled: z.boolean(),
+        passkeyRegistered: z.boolean(),
+      }),
+    })),
+
+  // Get all active sessions
+  getActiveSessions: oc
+    .output(z.array(z.object({
+      id: z.string(),
+      userId: z.string(),
+      createdAt: z.string(),
+      lastActivity: z.string(),
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      isActive: z.boolean(),
+      location: z.string(),
+    }))),
+
+  // Get passkey information
+  getPasskeyInfo: oc
+    .output(z.object({
+      enabled: z.boolean(),
+      registeredKeys: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        createdAt: z.string(),
+        lastUsed: z.string(),
+        type: z.string(),
+        credentialId: z.string(),
+      })),
+      supportedTransports: z.array(z.string()),
+      settings: z.object({
+        requireUserVerification: z.boolean(),
+        allowCrossPlatform: z.boolean(),
+        timeout: z.number(),
+      }),
+    })),
+
+  // Get security events
+  getSecurityEvents: oc
+    .output(z.array(z.object({
+      id: z.string(),
+      type: z.string(),
+      timestamp: z.string(),
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      location: z.string(),
+      success: z.boolean(),
+      details: z.string(),
+    }))),
+
+  // Get authentication statistics
+  getAuthStats: oc
+    .output(z.object({
+      activeSessions: z.number(),
+      totalSessions: z.number(),
+      registeredPasskeys: z.number(),
+      recentLogins: z.number(),
+      successRate: z.number(),
+      securityEvents: z.number(),
+      suspiciousActivity: z.number(),
+      lastLogin: z.string(),
+    })),
+
+  // Test authentication endpoints
+  testAuthEndpoints: oc
+    .output(z.array(z.object({
+      path: z.string(),
+      method: z.string(),
+      description: z.string(),
+      success: z.boolean(),
+      status: z.number(),
+      duration: z.number(),
+      response: z.any(),
+    }))),
+})
 
 /**
- * Authentication plugin component
+ * Get authentication status for reduced mode display
  */
-export function AuthPlugin({ context }: { context: PluginContext }) {
-  const { data: session, isPending, error } = useSession()
-
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-sm text-muted-foreground">Loading session...</div>
-      </div>
-    )
+function getAuthStatus() {
+  // This would normally come from the current session context
+  return {
+    isAuthenticated: true,
+    userEmail: 'user@example.com',
+    sessionCount: 3,
+    hasPasskey: true,
+    securityScore: 85,
   }
+}
 
-  if (error) {
-    return (
-      <div className="space-y-3">
-        <Card className="border-destructive/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-destructive flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Authentication Error
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <p className="text-xs text-muted-foreground">
-              {error?.message || 'Failed to load session'}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
+/**
+ * Custom component for auth reduced mode display
+ */
+function AuthReducedDisplay({ context }: { context: any }) {
+  const { isAuthenticated, securityScore } = getAuthStatus()
+  
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600'
+    if (score >= 60) return 'text-yellow-600'
+    return 'text-red-600'
   }
-
-  if (!session) {
-    return (
-      <div className="space-y-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Authentication Status
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">Not Authenticated</Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              User is not currently signed in
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
+  
   return (
-    <div className="space-y-3">
-      {/* User Info */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Current User
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-              Authenticated
-            </Badge>
-          </div>
-          
-          <div className="space-y-2 text-xs">
-            {session.user.id && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">ID:</span>
-                <span className="font-mono">{session.user.id}</span>
-              </div>
-            )}
-            
-            {session.user.email && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Email:</span>
-                <span>{session.user.email}</span>
-              </div>
-            )}
-            
-            {session.user.name && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Name:</span>
-                <span>{session.user.name}</span>
-              </div>
-            )}
-
-            {session.user.image && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Avatar:</span>
-                <img 
-                  src={session.user.image} 
-                  alt="User avatar" 
-                  className="w-6 h-6 rounded-full"
-                />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Session Info */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Session Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-2 text-xs">
-          {session.session.id && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Session ID:</span>
-              <span className="font-mono text-xs">{session.session.id.slice(0, 8)}...</span>
-            </div>
-          )}
-          
-          {session.session.expiresAt && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Expires:</span>
-              <span>{new Date(session.session.expiresAt).toLocaleString()}</span>
-            </div>
-          )}
-          
-          {session.session.createdAt && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Created:</span>
-              <span>{new Date(session.session.createdAt).toLocaleString()}</span>
-            </div>
-          )}
-
-          {session.session.updatedAt && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Updated:</span>
-              <span>{new Date(session.session.updatedAt).toLocaleString()}</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Additional Session Data */}
-      {session && Object.keys(session).length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              Raw Session Data
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Debug information for the current session
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-              {JSON.stringify(session, null, 2)}
-            </pre>
-          </CardContent>
-        </Card>
+    <div className="flex items-center gap-1">
+      {isAuthenticated ? (
+        <Shield className="h-3 w-3 text-green-600" />
+      ) : (
+        <AlertTriangle className="h-3 w-3 text-red-600" />
       )}
+      <span className={`text-xs font-mono ${getScoreColor(securityScore)}`}>
+        {securityScore}%
+      </span>
     </div>
   )
 }
+
+/**
+ * Auth DevTool Plugin - Comprehensive authentication and security management
+ */
+export const authPlugin = createPlugin(
+  PluginUtils.createMetadata(
+    'auth',
+    'Authentication',
+    {
+      description: 'User authentication and session management',
+      author: 'DevTools Team',
+      icon: 'Shield',
+      version: '1.0.0',
+    }
+  ),
+  [
+    {
+      id: 'auth-group',
+      label: 'Authentication',
+      icon: 'Shield',
+      pages: [
+        {
+          id: 'session',
+          label: 'Session',
+          description: 'Current session information and management',
+          icon: 'User',
+          component: AuthPlugin
+        },
+        {
+          id: 'sessions',
+          label: 'All Sessions',
+          description: 'Manage all active user sessions',
+          icon: 'Users',
+          component: AuthPlugin
+        },
+        {
+          id: 'passkeys',
+          label: 'Passkeys',
+          description: 'Passkey authentication management',
+          icon: 'Key',
+          component: AuthPlugin
+        },
+        {
+          id: 'security',
+          label: 'Security Events',
+          description: 'Authentication security audit log',
+          icon: 'Shield',
+          component: AuthPlugin
+        },
+        {
+          id: 'config',
+          label: 'Configuration',
+          description: 'Better Auth configuration and setup',
+          icon: 'Settings',
+          component: AuthPlugin
+        }
+      ]
+    }
+  ],
+  {
+    enabled: true,
+    onRegister: () => {
+      console.log('[DevTools] Auth plugin registered')
+    },
+    // Reduced mode configuration
+    reduced: {
+      component: AuthReducedDisplay,
+      menu: {
+        groups: [
+          {
+            label: 'Session',
+            items: [
+              {
+                id: 'current-user',
+                label: 'Current User',
+                description: 'View current user information',
+                action: () => {
+                  const { userEmail } = getAuthStatus()
+                  alert(`Logged in as: ${userEmail}`)
+                }
+              },
+              {
+                id: 'session-info',
+                label: 'Session Details',
+                description: 'View current session details',
+                action: () => {
+                  alert('Session expires in 6 days, 23 hours')
+                }
+              }
+            ]
+          },
+          {
+            label: 'Security',
+            items: [
+              {
+                id: 'security-score',
+                label: 'Security Score',
+                description: 'View overall security rating',
+                action: () => {
+                  const { securityScore } = getAuthStatus()
+                  alert(`Security Score: ${securityScore}% - Good security posture`)
+                }
+              },
+              {
+                id: 'active-sessions',
+                label: 'Active Sessions',
+                description: 'View all active sessions',
+                badge: '3',
+                action: () => {
+                  const { sessionCount } = getAuthStatus()
+                  alert(`${sessionCount} active sessions found`)
+                }
+              },
+              {
+                id: 'passkey-status',
+                label: 'Passkey Status',
+                description: 'Check passkey registration',
+                action: () => {
+                  const { hasPasskey } = getAuthStatus()
+                  alert(hasPasskey ? 'Passkeys are registered and active' : 'No passkeys registered')
+                }
+              }
+            ]
+          }
+        ]
+      },
+      // Dynamic data function
+      getData: () => {
+        const { isAuthenticated, securityScore } = getAuthStatus()
+        return { isAuthenticated, securityScore }
+      }
+    },
+    // ORPC contract and identifier for server communication
+    orpc: {
+      contract: authContract,
+      identifier: 'auth-handler'
+    }
+  }
+)

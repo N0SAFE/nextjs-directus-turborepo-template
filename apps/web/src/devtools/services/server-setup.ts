@@ -17,9 +17,11 @@ export function initializeServerServices() {
 
   // Lazy import server-only dependencies
   const { DevtoolsService } = require('./devtools.service')
+  const { AuthService } = require('./auth.service')
   
   // Register services
   serviceRegistry.register(SERVICE_KEYS.DEVTOOLS_SERVICE, new DevtoolsService())
+  serviceRegistry.register(SERVICE_KEYS.AUTH_SERVICE, new AuthService())
   
   console.log('[DevTools] Server services initialized')
 }

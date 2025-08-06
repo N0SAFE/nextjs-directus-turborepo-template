@@ -4,7 +4,9 @@ import {
   createRoutesHandlers,
   ROUTES_HANDLER_ID,
   createBundlesHandlers,
-  BUNDLES_HANDLER_ID
+  BUNDLES_HANDLER_ID,
+  createAuthHandlers,
+  AUTH_HANDLER_ID
 } from '../orpc-handlers'
 
 /**
@@ -43,6 +45,12 @@ export const allOrpcRouterList: OrpcRouterEntry[] = [
     handlerFactory: createBundlesHandlers,
     name: 'Bundles Handler',
     description: 'Handles bundle analysis and build information'
+  },
+  {
+    identifier: AUTH_HANDLER_ID,
+    handlerFactory: createAuthHandlers,
+    name: 'Auth Handler',
+    description: 'Handles authentication, sessions, and security operations'
   }
 ]
 
