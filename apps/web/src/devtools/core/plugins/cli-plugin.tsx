@@ -1,3 +1,5 @@
+import React from 'react'
+import { cn } from '@repo/ui/lib/utils'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './cli'
 
@@ -28,6 +30,26 @@ function copyToClipboard(text: string) {
   } else {
     alert(`Command: ${text}`)
   }
+}
+
+/**
+ * Custom component for CLI reduced mode display
+ */
+function CliReducedDisplay({ context }: { context: any }) {
+  const { status } = getCliInfo()
+  
+  const colorClasses = {
+    production: 'bg-red-500',
+    development: 'bg-green-500'
+  }
+  
+  return (
+    <div className={cn(
+      'h-2 w-2 rounded-full',
+      colorClasses[status as keyof typeof colorClasses] || 'bg-gray-500',
+      status === 'development' && 'animate-pulse'
+    )} />
+  )
 }
 
 /**
@@ -79,12 +101,8 @@ export const cliPlugin = createPlugin(
       console.log('[DevTools Core] CLI plugin registered')
     },
     // Reduced mode configuration
-    reducedMode: {
-      displayType: 'indicator',
-      indicator: {
-        color: 'blue',
-        animate: false
-      },
+    reduced: {
+      component: CliReducedDisplay,
       menu: {
         groups: [
           {
@@ -135,14 +153,9 @@ export const cliPlugin = createPlugin(
         ]
       },
       // Dynamic data function
-      getDisplayData: () => {
-        const { status } = getCliInfo()
-        return {
-          indicator: {
-            color: status === 'production' ? 'red' as const : 'green' as const,
-            animate: status === 'development'
-          }
-        }
+      getData: () => {
+        const { status, environment } = getCliInfo()
+        return { status, environment }
       }
     }
   }

@@ -30,9 +30,9 @@ export function ReducedModeMenu({ config, context, trigger, onOpenChange }: Redu
     return <>{trigger}</>
   }
 
-  // Get dynamic data if getDisplayData function is provided
-  const dynamicConfig = config.getDisplayData?.() || {}
-  const finalMenu = dynamicConfig.menu || menu
+  // Get dynamic data if getData function is provided
+  const dynamicData = config.getData?.() || {}
+  const finalMenu = dynamicData.menu || menu
 
   const renderMenuItem = (item: ReducedModeMenuItem) => (
     <DropdownMenuItem

@@ -1,3 +1,5 @@
+import React from 'react'
+import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { BundleAnalysisComponent, DependenciesComponent, BuildInfoComponent } from './bundles'
 
@@ -16,6 +18,22 @@ function getBundleInfo() {
     buildTime: `${buildTime}s`,
     status: bundleSize > 500 ? 'warning' : 'good'
   }
+}
+
+/**
+ * Custom component for bundles reduced mode display
+ */
+function BundlesReducedDisplay({ context }: { context: any }) {
+  const { bundleSize, status } = getBundleInfo()
+  
+  return (
+    <Badge 
+      variant={status === 'warning' ? 'destructive' : 'default'}
+      className="text-xs"
+    >
+      {bundleSize}
+    </Badge>
+  )
 }
 
 /**
@@ -67,12 +85,8 @@ export const bundlesPlugin = createPlugin(
       console.log('[DevTools Core] Bundles plugin registered')
     },
     // Reduced mode configuration
-    reducedMode: {
-      displayType: 'status',
-      status: {
-        text: 'Loading...',
-        variant: 'secondary'
-      },
+    reduced: {
+      component: BundlesReducedDisplay,
       menu: {
         groups: [
           {
@@ -122,14 +136,9 @@ export const bundlesPlugin = createPlugin(
         ]
       },
       // Dynamic data function
-      getDisplayData: () => {
+      getData: () => {
         const { bundleSize, status } = getBundleInfo()
-        return {
-          status: {
-            text: bundleSize,
-            variant: status === 'warning' ? 'destructive' as const : 'default' as const
-          }
-        }
+        return { bundleSize, status }
       }
     }
   }

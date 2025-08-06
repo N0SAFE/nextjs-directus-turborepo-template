@@ -208,12 +208,12 @@ function NormalStateBar() {
             
             const isVertical = position.side === 'left' || position.side === 'right'
             
-            // If plugin has reduced mode config, use menu, otherwise fallback to simple tooltip
-            if (plugin.reducedMode?.menu) {
+            // If plugin has reduced config with menu, use menu, otherwise fallback to simple tooltip
+            if (plugin.reduced?.menu) {
               return (
                 <ReducedModeMenu
                   key={plugin.metadata.id}
-                  config={plugin.reducedMode}
+                  config={plugin.reduced}
                   context={context}
                   trigger={
                     <Button
@@ -227,9 +227,9 @@ function NormalStateBar() {
                       <div className="flex items-center justify-center flex-shrink-0">
                         {getIconComponent(plugin.metadata.icon)}
                       </div>
-                      {plugin.reducedMode && (
+                      {plugin.reduced && (
                         <div className="flex items-center justify-center min-w-0">
-                          <ReducedModeDisplay config={plugin.reducedMode} context={context} />
+                          <ReducedModeDisplay config={plugin.reduced} context={context} />
                         </div>
                       )}
                     </Button>
@@ -238,7 +238,7 @@ function NormalStateBar() {
               )
             }
             
-            // Fallback to simple tooltip for plugins without reduced mode config
+            // Fallback to simple tooltip for plugins without reduced config
             return (
               <Tooltip key={plugin.metadata.id}>
                 <TooltipTrigger asChild>
@@ -254,9 +254,9 @@ function NormalStateBar() {
                     <div className="flex items-center justify-center flex-shrink-0">
                       {getIconComponent(plugin.metadata.icon)}
                     </div>
-                    {plugin.reducedMode && (
+                    {plugin.reduced && (
                       <div className="flex items-center justify-center min-w-0">
-                        <ReducedModeDisplay config={plugin.reducedMode} context={context} />
+                        <ReducedModeDisplay config={plugin.reduced} context={context} />
                       </div>
                     )}
                   </Button>

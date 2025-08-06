@@ -1,3 +1,4 @@
+import React from 'react'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './routes'
 
@@ -25,6 +26,19 @@ function getCurrentRouteInfo() {
   )?.[1] || pathname.split('/').filter(Boolean).join(' > ') || 'Home'
   
   return { pathname, routeName }
+}
+
+/**
+ * Custom component for routes reduced mode display
+ */
+function RoutesReducedDisplay({ context }: { context: any }) {
+  const { routeName } = getCurrentRouteInfo()
+  
+  return (
+    <span className="text-xs truncate max-w-20 text-muted-foreground">
+      {routeName}
+    </span>
+  )
 }
 
 /**
@@ -69,12 +83,8 @@ export const routesPlugin = createPlugin(
       console.log('[DevTools Core] Routes plugin registered')
     },
     // Reduced mode configuration
-    reducedMode: {
-      displayType: 'text',
-      text: {
-        value: 'Loading...',
-        size: 'sm'
-      },
+    reduced: {
+      component: RoutesReducedDisplay,
       menu: {
         items: [
           {
@@ -107,14 +117,9 @@ export const routesPlugin = createPlugin(
         ]
       },
       // Dynamic data function that updates the display
-      getDisplayData: () => {
+      getData: () => {
         const { routeName } = getCurrentRouteInfo()
-        return {
-          text: {
-            value: routeName,
-            size: 'sm' as const
-          }
-        }
+        return { currentRoute: routeName }
       }
     }
   }
