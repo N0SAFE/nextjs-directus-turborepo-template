@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DatabaseModule } from './db/database.module';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
-import { DevToolsModule } from './devtools/devtools.module';
 import { onError, ORPCModule } from '@orpc/nest';
 import { DATABASE_CONNECTION } from './db/database-connection';
 import {AuthModule} from './auth/auth.module'
@@ -12,7 +11,6 @@ import {AuthModule} from './auth/auth.module'
     DatabaseModule,
     HealthModule,
     UserModule,
-    DevToolsModule,
     AuthModule.forRootAsync({
       imports: [DatabaseModule],
       useFactory: betterAuthFactory,
