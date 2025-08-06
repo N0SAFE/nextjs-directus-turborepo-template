@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
 Derived from: https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety
 */
@@ -6,6 +7,10 @@ import queryString from 'query-string'
 import Link from 'next/link'
 import NProgress from 'nprogress'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+
+const emptySchema = z.object({})
+
+export { emptySchema }
 
 type LinkProps = Parameters<typeof Link>[0]
 
@@ -182,10 +187,10 @@ function createRouteBuilder<
     Params extends z.ZodSchema,
     Search extends z.ZodSchema,
 >(route: string, info: RouteInfo<Params, Search>) {
-    const fn = createPathBuilder<z.output<Params>>(route)
+    const fn = createPathBuilder<Record<string, any>>(route)
 
     return (params?: z.input<Params>, search?: z.input<Search>) => {
-        let checkedParams = params || {}
+        let checkedParams: any = params || {}
         if (info.params) {
             const safeParams = info.params.safeParse(checkedParams)
             if (!safeParams?.success) {
@@ -393,12 +398,11 @@ export function makeDeleteRoute<
 >(route: string, info: RouteInfo<Params, Search>): DeleteRouteBuilder<Params> {
     const urlBuilder = createRouteBuilder(route, info)
 
-    const routeBuilder: DeleteRouteBuilder<Params> = (
+    const routeBuilder = (
         p?: z.input<Params>,
-        search?: z.input<Search>,
         options?: FetchOptions
     ): Promise<void> => {
-        return fetch(urlBuilder(p, search), options).then((res) => {
+        return fetch(urlBuilder(p), options).then((res) => {
             if (!res.ok) {
                 throw new Error(
                     `Failed to fetch ${info.name}: ${res.statusText}`
@@ -463,15 +467,16 @@ export function makeRoute<
         z.input<Params> & {
             search?: z.input<Search>
         } & { children?: React.ReactNode }) {
-        const params = info.params.parse(props)
+        const parsedParams = info.params.parse(props)
+        const params = parsedParams as Record<string, any>
         const extraProps = { ...props }
         for (const key of Object.keys(params)) {
-            delete extraProps[key]
+            delete (extraProps as any)[key]
         }
         return (
             <Link
                 {...extraProps}
-                href={urlBuilder(info.params.parse(props), linkSearch)}
+                href={urlBuilder(parsedParams, linkSearch)}
             >
                 {children}
             </Link>

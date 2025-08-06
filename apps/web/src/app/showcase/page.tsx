@@ -43,7 +43,7 @@ const ShowcasePage: React.FC = async function ShowcasePage() {
                     </h1>
                     <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
                         Compare server-side and client-side data fetching
-                        approaches with real Directus data
+                        approaches with real API data
                     </p>
                 </div>
             </div>
@@ -194,7 +194,7 @@ const ShowcasePage: React.FC = async function ShowcasePage() {
                             <li>• Immediate content display</li>
                             <li>• Better SEO and performance</li>
                             <li>• Uses React Server Components</li>
-                            <li>• Direct Directus SDK calls</li>
+                            <li>• Direct ORPC API calls</li>
                         </ul>
                     </div>
                     <div className="space-y-3">
@@ -207,7 +207,7 @@ const ShowcasePage: React.FC = async function ShowcasePage() {
                             <li>• Loading states and error handling</li>
                             <li>• Real-time updates and caching</li>
                             <li>• Uses React Query for state management</li>
-                            <li>• API calls through custom endpoints</li>
+                            <li>• ORPC client with type safety</li>
                         </ul>
                     </div>
                 </CardContent>

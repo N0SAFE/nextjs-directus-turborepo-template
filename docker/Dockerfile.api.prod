@@ -1,29 +1,96 @@
-# Production Dockerfile for Directus API
-FROM directus/directus:11.8.0
+# Production Dockerfile for NestJS API
+# Multi-stage build for optimized production image
 
-ARG NEXT_PUBLIC_API_URL=http://localhost:8055
-ARG NEXT_PUBLIC_API_PORT=8055
+FROM node:20-alpine AS base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    wget \
+    bash \
+    python3 \
+    make \
+    g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and lock files for better caching
+COPY package.json bun.lock* ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/ ./packages/
+COPY turbo.json ./
+COPY tsconfig.json ./
+
+# Install dependencies using bun
+RUN npm install -g bun
+
+# Stage 1: Build dependencies
+FROM base AS deps
+RUN bun install --production
+
+# Stage 2: Build the application
+FROM base AS builder
+COPY apps/api ./apps/api
+
+# Install all dependencies (including dev dependencies for build)
+RUN bun install
+
+# Change to API directory and build
+WORKDIR /app/apps/api
+RUN bun run build
+
+# Stage 3: Production runtime
+FROM node:20-alpine AS runtime
+
+ARG NEXT_PUBLIC_API_URL=http://localhost:3001
+ARG API_PORT=3001
 ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
-ARG NEXT_PUBLIC_APP_PORT=3000
-ARG API_PING_PATH=/server/health
+ARG API_PING_PATH=/health
 
-ENV CORS_ORIGIN=$NEXT_PUBLIC_APP_URL
+ENV API_PORT=$API_PORT
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_WEB_URL=$NEXT_PUBLIC_APP_URL
+ENV NODE_ENV=production
 
-# Create uploads and extensions directories with proper permissions
-RUN mkdir -p /directus/uploads /directus/extensions && \
-    chown -R node:node /directus/uploads /directus/extensions
+# Install production dependencies
+RUN apk add --no-cache curl wget bash
 
-# Copy custom extensions and uploads if they exist (as node user)
-COPY --chown=node:node apps/api/extensions /directus/extensions
-COPY --chown=node:node apps/api/uploads /directus/uploads
+# Install bun for running migration scripts
+RUN npm install -g bun
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy production dependencies
+COPY --from=deps --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=deps --chown=nestjs:nodejs /app/apps/api/node_modules ./apps/api/node_modules
+
+# Copy built application
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./apps/api/dist
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/package.json ./apps/api/
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/src/db ./apps/api/src/db
+COPY --from=builder --chown=nestjs:nodejs /app/apps/api/tsconfig.json ./apps/api/
+
+# Copy packages if needed
+COPY --from=builder --chown=nestjs:nodejs /app/packages ./packages
+
+# Change to API directory
+WORKDIR /app/apps/api
 
 # Switch to non-root user
-USER node
+USER nestjs
 
 # Expose port
-EXPOSE ${NEXT_PUBLIC_API_PORT}
+EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider ${NEXT_PUBLIC_API_URL}/server/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+
+# Start the application with migrations
+CMD ["sh", "-c", "bun run db:migrate && node dist/main.js"]

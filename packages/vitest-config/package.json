@@ -3,17 +3,32 @@
   "version": "1.0.0",
   "private": true,
   "description": "Shared Vitest configuration for the monorepo",
-  "main": "index.ts",
+  "main": "index.js",
+  "type": "commonjs",
   "exports": {
-    ".": "./index.ts",
-    "./base": "./vitest.config.base.ts",
-    "./react": "./vitest.config.react.ts",
-    "./node": "./vitest.config.node.ts",
-    "./nextjs": "./vitest.config.nextjs.ts"
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    },
+    "./base": {
+      "import": "./vitest.config.base.js",
+      "require": "./vitest.config.base.js"
+    },
+    "./react": {
+      "import": "./vitest.config.react.js",
+      "require": "./vitest.config.react.js"
+    },
+    "./node": {
+      "import": "./vitest.config.node.js",
+      "require": "./vitest.config.node.js"
+    },
+    "./nextjs": {
+      "import": "./vitest.config.nextjs.js",
+      "require": "./vitest.config.nextjs.js"
+    }
   },
   "scripts": {
-    "test": "echo 'vitest-config package ready'",
-    "type-check": "tsc --noEmit"
+    "test": "echo 'vitest-config package ready'"
   },
   "keywords": ["vitest", "testing", "config"],
   "author": "",
@@ -25,7 +40,6 @@
     "@types/node": "catalog:build",
     "@vitejs/plugin-react": "catalog:testing",
     "jsdom": "catalog:testing",
-    "typescript": "catalog:build",
     "vitest": "catalog:testing"
   }
 }

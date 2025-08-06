@@ -5,7 +5,7 @@ import {
 } from 'next/navigation'
 import { z } from 'zod'
 
-import { RouteBuilder } from './makeRoute'
+import { emptySchema, RouteBuilder } from './makeRoute'
 
 type PushOptions = Parameters<ReturnType<typeof useRouter>['push']>[1]
 

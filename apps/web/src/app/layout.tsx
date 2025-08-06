@@ -43,7 +43,7 @@ export default async function RootLayout({
             <body
                 className={cn(
                     fontSans.variable,
-                    'bg-background flex min-h-screen flex-col font-sans antialiased'
+                    'bg-background flex h-dvh w-dvw flex-col font-sans antialiased'
                 )}
             >
                 {process.env.NODE_ENV === 'development' &&
@@ -75,7 +75,9 @@ export default async function RootLayout({
                                         </div>
                                     }
                                 >
-                                    <main className="flex-1">{children}</main>
+                                    <main className="flex flex-1 flex-col overflow-y-auto">
+                                        {children}
+                                    </main>
                                 </Suspense>
                             </ReactQueryProviders>
                         </ThemeProvider>

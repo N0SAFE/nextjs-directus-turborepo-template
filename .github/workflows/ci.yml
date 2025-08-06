@@ -12,15 +12,59 @@ env:
     NODE_VERSION: "22"
 
 jobs:
+    # Job 0: Generate Declarative Routes
+    generate-declarative-routes:
+        name: 📝 Generate Declarative Routes
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: 📚 Checkout repository
+              uses: actions/checkout@v4
+
+            - name: 🐰 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: ${{ env.BUN_VERSION }}
+
+            - name: 📦 Install dependencies
+              run: |
+                if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+                  echo "Dependabot PR detected: running bun install without --frozen-lockfile"
+                  bun install
+                else
+                  bun install --frozen-lockfile
+                fi
+
+            - name: 📝 Generate declarative routes
+              run: bun run --cwd apps/web dr:build
+
+            - name: 📝 Generate OpenAPI documentation
+              run: |
+                  cd apps/web
+                  bun run openapi:yaml
+                  bun run openapi:html
+
+            - name: 📤 Upload declarative routes artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: declarative-routes
+                  path: |
+                      apps/web/src/routes/index.ts
+                      apps/web/src/routes/openapi.ts
+                      apps/web/openapi-docs.yml
+                      apps/web/redoc-static.html
+                  retention-days: 1
+
     # Job 1: Lint and Type Check
     lint-and-typecheck:
         name: 🔍 Lint & Type Check
         runs-on: ubuntu-latest
         timeout-minutes: 10
+        needs: generate-declarative-routes
         env:
             # Essential environment variables for linting/type checking
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
             NEXT_PUBLIC_APP_URL: http://localhost:3003/
@@ -54,10 +98,42 @@ jobs:
                   bun install --frozen-lockfile
                 fi
 
-            - name: � Generate declarative routes
-              run: cd apps/web && bun run dr:build && cd ../..
+            - name: 📥 Download declarative routes artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: declarative-routes
+                  path: .
 
-            - name: �🔍 Run ESLint
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
+
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
+                  fi
+
+            - name: 🔍 Run ESLint
               run: bun run lint
 
             - name: 🎨 Check formatting with Prettier
@@ -68,11 +144,11 @@ jobs:
         name: 🏗️ Build
         runs-on: ubuntu-latest
         timeout-minutes: 15
-        needs: lint-and-typecheck
+        needs: [lint-and-typecheck, generate-declarative-routes]
         env:
             # API Configuration
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
 
@@ -123,10 +199,43 @@ jobs:
                   bun install --frozen-lockfile
                 fi
 
+            - name: 📥 Download declarative routes artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: declarative-routes
+                  path: .
+
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
+
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
+                  fi
+
             - name: 🏗️ Build packages
               run: |
-                  # Generate declarative routes for web app before building
-                  bun run --cwd apps/web dr:build
                   # Build shared packages first
                   bun x turbo run build --filter="!web"
                   # Build web app without static generation to avoid API calls
@@ -137,11 +246,11 @@ jobs:
         name: 🧪 Test
         runs-on: ubuntu-latest
         timeout-minutes: 15
-        needs: lint-and-typecheck
+        needs: [lint-and-typecheck, generate-declarative-routes]
         env:
             # API Configuration
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
 
@@ -191,6 +300,41 @@ jobs:
                 else
                   bun install --frozen-lockfile
                 fi
+
+            - name: 📥 Download declarative routes artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: declarative-routes
+                  path: .
+
+            - name: 🔍 Verify downloaded artifacts
+              run: |
+                  echo "📋 Checking downloaded declarative routes artifacts..."
+                  echo "Current directory: $(pwd)"
+                  echo "Files in apps/web/src/routes/:"
+                  ls -la apps/web/src/routes/ || echo "❌ apps/web/src/routes/ directory not found"
+                  echo "Checking for index.ts:"
+                  if [ -f "apps/web/src/routes/index.ts" ]; then
+                    echo "✅ index.ts found"
+                    head -5 apps/web/src/routes/index.ts
+                  else
+                    echo "❌ index.ts not found"
+                  fi
+                  echo "Checking for openapi.ts:"
+                  if [ -f "apps/web/src/routes/openapi.ts" ]; then
+                    echo "✅ openapi.ts found" 
+                  else
+                    echo "❌ openapi.ts not found"
+                  fi
+
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
+                  fi
 
             - name: 🧪 Run tests for all packages
               run: bun run test
@@ -204,8 +348,8 @@ jobs:
     #     if: always() && needs.build-and-test.result == 'success'
     #     env:
     #         # API Configuration
-    #         NEXT_PUBLIC_API_URL: http://localhost:8055/
-    #         NEXT_PUBLIC_API_PORT: 8055
+    #         API_URL: http://localhost:8055/
+    #         API_PORT: 8055
     #         API_PING_PATH: /server/health
     #         API_ADMIN_TOKEN: ci-test-admin-token
 
@@ -302,7 +446,7 @@ jobs:
         name: 🚀 Deployment Ready
         runs-on: ubuntu-latest
         timeout-minutes: 5
-        needs: [lint-and-typecheck, build, test]
+        needs: [lint-and-typecheck, build, test, generate-declarative-routes]
         if: always()
 
         steps:
@@ -316,13 +460,15 @@ jobs:
                   LINT_STATUS="${{ needs.lint-and-typecheck.result }}"
                   BUILD_STATUS="${{ needs.build.result }}"
                   TEST_STATUS="${{ needs.test.result }}"
+                  DR_STATUS="${{ needs.generate-declarative-routes.result }}"
 
                   echo "📋 Pipeline Results:"
                   echo "  - Lint & Type Check: $LINT_STATUS"
                   echo "  - Build: $BUILD_STATUS"
                   echo "  - Test: $TEST_STATUS"
+                  echo "  - Declarative Routes: $DR_STATUS"
 
-                  if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ] && [ "$TEST_STATUS" = "success" ]; then
+                  if [ "$LINT_STATUS" = "success" ] && [ "$BUILD_STATUS" = "success" ] && [ "$TEST_STATUS" = "success" ] && [ "$DR_STATUS" = "success" ]; then
                     if [ "${{ github.ref }}" = "refs/heads/main" ]; then
                       echo "🚀 ✅ Ready for production deployment!"
                       echo "deployment_ready=true" >> $GITHUB_OUTPUT
@@ -345,6 +491,7 @@ jobs:
                   echo "| Lint & Type Check | ${{ needs.lint-and-typecheck.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Build | ${{ needs.build.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "| Test | ${{ needs.test.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+                  echo "| Declarative Routes | ${{ needs.generate-declarative-routes.result == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
 
                   if [ "${{ github.ref }}" = "refs/heads/main" ]; then

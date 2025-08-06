@@ -6,10 +6,12 @@ import {
 } from 'next/server'
 import { ConfigFactory, Matcher, MiddlewareFactory } from './utils/types'
 import { nextjsRegexpPageOnly, nextNoApi } from './utils/static'
-import { auth, pages } from '@/lib/auth/index'
+import { $Infer } from '@/lib/auth'
 import { matcherHandler } from './utils/utils'
 import { validateEnvSafe } from '#/env'
 import { toAbsoluteUrl } from '@/lib/utils'
+import { betterFetch } from '@better-fetch/fetch'
+import { Authsignin } from '@/routes/index'
 
 const env = validateEnvSafe(process.env).data
 
@@ -24,77 +26,66 @@ const withAuth: MiddlewareFactory = (next: NextMiddleware) => {
             `Auth Middleware: Checking authentication for ${request.nextUrl.pathname}`,
             request.nextUrl.pathname
         )
-        const res = await auth(async function middleware(req) {
-            const toNext = async () =>
-                (await next(
-                    req as unknown as Parameters<typeof next>[0],
-                    _next
-                ))!
-            const isAuth = !!req.auth
 
-            console.log(
-                `Auth Middleware: isAuth: ${isAuth}`,
-                req.nextUrl.pathname
-            )
-
-            if (isAuth) {
-                const matcher = matcherHandler(req.nextUrl.pathname, [
-                    {
-                        and: [showcaseRegexpAndChildren, '/me/customer'],
-                    },
-                    () => {
-                        // in this route we can check if the user is authenticated with the customer role
-                        // if (session?.role === 'customer') {
-                        //     return toNext()
-                        // }
-                        // return NextResponse.redirect(
-                        //     process.env.NEXT_PUBLIC_APP_URL!.replace(/\/$/, '') +
-                        //         (pages?.signIn ||
-                        //             process.env.NEXT_PUBLIC_SIGNIN_PATH ||
-                        //             '/auth/login') +
-                        //         '?' +
-                        //         encodeURIComponent(
-                        //             'callbackUrl=' +
-                        //                 req.nextUrl.pathname +
-                        //                 (req.nextUrl.search ?? '')
-                        //         )
-                        // )
-                    },
-                ])
-                if (matcher.hit) {
-                    return matcher.data // return the Response associated
-                }
-                return toNext() // call the next middleware because the route is good
-            } else {
-                // this else is hit when the user is not authenticated and on the routes listed on the export matcher
-                return NextResponse.redirect(
-                    toAbsoluteUrl(
-                        (pages?.signIn ||
-                            env?.NEXT_PUBLIC_SIGNIN_PATH ||
-                            '/auth/login') +
-                            '?callbackUrl=' +
-                            encodeURIComponent(
-                                req.nextUrl.pathname +
-                                    (req.nextUrl.search ?? '')
-                            )
-                    )
-                ) // not authenticated, redirect to login
-            }
-        })(
-            request as unknown as Parameters<ReturnType<typeof auth>>[0],
-            _next as unknown as {
-                params: Promise<unknown>
+        // Get session using Better Auth
+        const { data: session } = await betterFetch<typeof $Infer.Session>(
+            '/api/auth/get-session',
+            {
+                baseURL: request.nextUrl.origin,
+                headers: {
+                    cookie: request.headers.get('cookie') || '', // Forward the cookies from the request
+                },
             }
         )
-        if (res) {
-            return new NextResponse(res.body, {
-                url: res.url,
-                status: res.status,
-                statusText: res.statusText,
-                headers: res.headers,
-            }) // convert to NextResponse
+
+        const isAuth = !!session
+
+        console.log(
+            `Auth Middleware: isAuth: ${isAuth}`,
+            request.nextUrl.pathname
+        )
+
+        if (isAuth) {
+            const matcher = matcherHandler(request.nextUrl.pathname, [
+                {
+                    and: [showcaseRegexpAndChildren, '/me/customer'],
+                },
+                () => {
+                    // in this route we can check if the user is authenticated with the customer role
+                    // if (session?.user?.role === 'customer') {
+                    //     return next(request, _next)
+                    // }
+                    // return NextResponse.redirect(
+                    //     process.env.NEXT_PUBLIC_APP_URL!.replace(/\/$/, '') +
+                    //         '/auth/login' +
+                    //         '?' +
+                    //         encodeURIComponent(
+                    //             'callbackUrl=' +
+                    //                 request.nextUrl.pathname +
+                    //                 (request.nextUrl.search ?? '')
+                    //         )
+                    // )
+                },
+            ])
+            if (matcher.hit) {
+                return matcher.data // return the Response associated
+            }
+            return next(request, _next) // call the next middleware because the route is good
+        } else {
+            // this else is hit when the user is not authenticated and on the routes listed on the export matcher
+            return NextResponse.redirect(
+                toAbsoluteUrl(
+                    Authsignin(
+                        {},
+                        {
+                            callbackUrl:
+                                request.nextUrl.pathname +
+                                (request.nextUrl.search ?? ''),
+                        }
+                    )
+                )
+            ) // not authenticated, redirect to login
         }
-        return NextResponse.next()
     }
 }
 

@@ -1,6 +1,7 @@
 import MillionLint from '@million/lint'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { NextConfig } from 'next'
+import { envSchema } from './env'
 
 // Check if we're running in a lint context or other non-build contexts
 const commandLine = process.argv.join(' ')
@@ -12,35 +13,38 @@ const isLintContext =
     process.argv.some((arg) => arg.includes('next-lint')) ||
     commandLine.endsWith('lint')
 
-if (!process.env.NEXT_PUBLIC_API_URL) {
+if (!process.env.API_URL) {
     if (isLintContext) {
         // Provide a default URL for linting context to avoid breaking the lint process
-        process.env.NEXT_PUBLIC_API_URL = 'http://localhost:8055'
+        process.env.API_URL = 'http://localhost:3001'
         console.warn(
-            'NEXT_PUBLIC_API_URL not defined, using default for lint context:',
-            process.env.NEXT_PUBLIC_API_URL
+            'API_URL not defined, using default for lint context:',
+            process.env.API_URL
         )
     } else {
-        throw new Error('NEXT_PUBLIC_API_URL is not defined')
+        throw new Error('API_URL is not defined')
     }
 }
 
 // Handle both full URLs and hostname-only values (for Render deployment)
-let apiUrl: string
-try {
-    // Try to parse as full URL first
-    new URL(process.env.NEXT_PUBLIC_API_URL)
-    apiUrl = process.env.NEXT_PUBLIC_API_URL
-} catch {
-    // If it fails, assume it's a hostname and add https protocol
-    apiUrl = `https://${process.env.NEXT_PUBLIC_API_URL}`
-}
-
-const url = new URL(apiUrl)
+const apiUrl = new URL(envSchema.shape.API_URL.parse(process.env.API_URL))
 
 const noCheck = process.env.CHECK_ON_BUILD !== 'true'
 
 const nextConfig: NextConfig = {
+    async rewrites() {
+        console.log('redirect external orpc request from', '/api/nest/:path*', 'to', `${apiUrl.href}`);
+        return [
+            {
+                source: '/api/auth/:path*',
+                destination: `${apiUrl.href}/api/auth/:path*`,
+            },
+            {
+                source: '/api/nest/:path*',
+                destination: `${apiUrl.href}/:path*`,
+            }
+        ]
+    },
     eslint: {
         ignoreDuringBuilds: noCheck,
     },
@@ -61,9 +65,9 @@ const nextConfig: NextConfig = {
         dangerouslyAllowSVG: true,
         remotePatterns: [
             {
-                hostname: url.hostname,
-                port: url.port,
-                protocol: url.protocol.replace(':', '') as 'http' | 'https',
+                hostname: apiUrl.hostname,
+                port: apiUrl.port,
+                protocol: apiUrl.protocol.replace(':', '') as 'http' | 'https',
             },
         ],
     },

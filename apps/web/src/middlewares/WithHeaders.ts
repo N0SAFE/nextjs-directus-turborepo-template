@@ -1,6 +1,6 @@
 import { NextFetchEvent, NextMiddleware, NextRequest } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
-import { nextauthNoApi, nextjsRegexpPageOnly } from './utils/static'
+import { nextjsRegexpPageOnly } from './utils/static'
 
 export const withHeaders: MiddlewareFactory = (next: NextMiddleware) => {
     return async (request: NextRequest, _next: NextFetchEvent) => {
@@ -12,4 +12,4 @@ export const withHeaders: MiddlewareFactory = (next: NextMiddleware) => {
     }
 }
 
-export const matcher: Matcher = [{ and: [nextjsRegexpPageOnly, nextauthNoApi] }]
+export const matcher: Matcher = [{ and: [nextjsRegexpPageOnly] }]

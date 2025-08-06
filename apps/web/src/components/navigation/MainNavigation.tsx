@@ -13,13 +13,13 @@ import {
 } from '@repo/ui/components/shadcn/dropdown-menu'
 import {
     Home,
-    Authlogin,
+    Authsignin,
     Authme,
     Appshowcase,
     AppshowcaseClient,
     AppshowcaseServer,
 } from '@/routes'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from '@/lib/auth'
 import {
     LogOut,
     User,
@@ -29,11 +29,11 @@ import {
     Monitor,
     ChevronDown,
 } from 'lucide-react'
-import { signOut } from '@/lib/auth/actions'
+import SignOutButton from '../signout/signoutButton'
 
 const MainNavigation: React.FC = () => {
     const pathname = usePathname()
-    const { data: session, status } = useSession()
+    const { data: session, isPending } = useSession()
 
     const isActive = (path: string) => pathname === path
 
@@ -45,7 +45,7 @@ const MainNavigation: React.FC = () => {
                         <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-md">
                             <HomeIcon className="h-4 w-4" />
                         </div>
-                        <span className="font-bold">Directus App</span>
+                        <span className="font-bold">NestJS App</span>
                     </Home.Link>
                 </div>
 
@@ -124,7 +124,7 @@ const MainNavigation: React.FC = () => {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                    {status === 'loading' ? (
+                    {isPending ? (
                         <div className="bg-muted h-8 w-8 animate-pulse rounded-md" />
                     ) : session ? (
                         <div className="flex items-center space-x-2">
@@ -138,22 +138,14 @@ const MainNavigation: React.FC = () => {
                                     <span>Profile</span>
                                 </Button>
                             </Authme.Link>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => signOut()}
-                                className="flex items-center space-x-2"
-                            >
-                                <LogOut className="h-4 w-4" />
-                                <span>Sign Out</span>
-                            </Button>
+                            <SignOutButton />
                         </div>
                     ) : (
-                        <Authlogin.Link>
+                        <Authsignin.Link>
                             <Button variant="default" size="sm">
                                 Sign In
                             </Button>
-                        </Authlogin.Link>
+                        </Authsignin.Link>
                     )}
                 </div>
             </div>

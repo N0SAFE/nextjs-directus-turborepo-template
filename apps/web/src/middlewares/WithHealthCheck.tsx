@@ -5,16 +5,16 @@ import {
     NextResponse,
 } from 'next/server'
 import { Matcher, MiddlewareFactory } from './utils/types'
-import { serverHealth, withToken } from '@repo/directus-sdk'
-import { validateEnvSafe } from '#/env'
+import { validateEnvPath } from '#/env'
 import {
-    directusProxy,
-    nextauthNoApi,
     nextjsRegexpPageOnly,
+    nextNoApi,
 } from './utils/static'
-import { createDirectusEdgeWithDefaultUrl } from '@/lib/directus/directus-edge'
+import { orpcServer } from '@/lib/orpc'
+import { toAbsoluteUrl } from '@/lib/utils'
+import { MiddlewareerrorhealthCheck } from '@/routes'
 
-const env = validateEnvSafe(process.env).data
+const NODE_ENV = validateEnvPath(process.env.NODE_ENV, 'NODE_ENV')
 const errorPageRenderingPath = '/middleware/error/healthCheck'
 
 const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
@@ -23,19 +23,11 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
             `Health Check Middleware: Checking server health for ${request.nextUrl.pathname}`,
             request.nextUrl.pathname
         )
-        if (env?.NODE_ENV === 'development') {
+        if (NODE_ENV === 'development') {
             try {
-                const directus = createDirectusEdgeWithDefaultUrl()
-                console.log(
-                    'Directus instance created with url:',
-                    directus.url.href
-                )
+                console.log('Checking API health via ORPC...')
                 try {
-                    const data = await (env.API_ADMIN_TOKEN
-                        ? directus.request(
-                              withToken(env.API_ADMIN_TOKEN, serverHealth())
-                          )
-                        : directus.serverHealth())
+                    const data = await orpcServer.health.check({})
                     console.log('Health Check Response:', data)
                     if (!(data.status === 'ok')) {
                         if (
@@ -44,33 +36,33 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                             return NextResponse.next()
                         } else {
                             return NextResponse.redirect(
-                                request.nextUrl.origin +
-                                    errorPageRenderingPath +
-                                    `?json=${JSON.stringify(data)}&from=${encodeURIComponent(request.url)}`
+                                toAbsoluteUrl(
+                                    MiddlewareerrorhealthCheck({}, {
+                                        json: JSON.stringify(data),
+                                        from: request.url
+                                    })
+                                )
                             )
                         }
                     }
                 } catch (e: unknown) {
                     console.log('Health Check Error:', e)
-                    if (
-                        (e as { response: { status: number } }).response
-                            .status === 401
-                    ) {
-                        const data = await directus.request(serverHealth())
-                        if (!(data.status === 'ok')) {
-                            if (
-                                request.nextUrl.pathname ===
-                                errorPageRenderingPath
-                            ) {
-                                return NextResponse.next()
-                            } else {
-                                return NextResponse.redirect(
-                                    request.nextUrl.origin +
-                                        errorPageRenderingPath +
-                                        `?json=${JSON.stringify(data)}&from=${encodeURIComponent(request.url)}`
-                                )
-                            }
-                        }
+                    const errorData = {
+                        status: 'error',
+                        message: (e as Error).message || 'Unknown error',
+                        timestamp: new Date().toISOString(),
+                    }
+                    if (request.nextUrl.pathname === errorPageRenderingPath) {
+                        return NextResponse.next()
+                    } else {
+                        return NextResponse.redirect(
+                            toAbsoluteUrl(
+                                MiddlewareerrorhealthCheck({}, {
+                                    json: JSON.stringify(errorData),
+                                    from: request.url
+                                })
+                            )
+                        )
                     }
                 }
             } catch {
@@ -78,9 +70,11 @@ const withHealthCheck: MiddlewareFactory = (next: NextMiddleware) => {
                     return NextResponse.next()
                 } else {
                     return NextResponse.redirect(
-                        request.nextUrl.origin +
-                            errorPageRenderingPath +
-                            `?from=${encodeURIComponent(request.url)}`
+                        toAbsoluteUrl(
+                            MiddlewareerrorhealthCheck({}, {
+                                from: request.url
+                            })
+                        )
                     )
                 }
             }
@@ -101,12 +95,7 @@ export const matcher: Matcher = [
     {
         and: [
             nextjsRegexpPageOnly,
-            nextauthNoApi,
-            {
-                not:
-                    process.env.NEXT_PUBLIC_APP_DIRECTUS_PROXY_PATH ||
-                    directusProxy,
-            },
+            nextNoApi,
         ],
     },
 ]

@@ -8,12 +8,13 @@ import {
     CardTitle,
 } from '@repo/ui/components/shadcn/card'
 import {
-    Authlogin,
+    Authsignin,
     Appshowcase,
     AppshowcaseClient,
     AppshowcaseServer,
     BuildInfo,
 } from '@/routes'
+import Link from 'next/link'
 import {
     ArrowRight,
     Database,
@@ -67,16 +68,16 @@ function FeatureCard({
 
 export default function Page(): JSX.Element {
     return (
-        <div className="container mx-auto space-y-12 px-4 py-12">
+        <div className="container mx-auto mt-8 space-y-12 px-4 py-12 md:py-16 lg:py-20">
             {/* Hero Section */}
             <section className="space-y-6 text-center">
                 <div className="space-y-4">
                     <h1 className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
-                        Next.js Directus Template
+                        Next.js NestJS Template
                     </h1>
                     <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
                         A modern, full-stack monorepo template featuring
-                        Next.js, Directus CMS, Shadcn UI, and TypeScript with
+                        Next.js, NestJS API, Shadcn UI, and TypeScript with
                         authentication and declarative routing.
                     </p>
                 </div>
@@ -91,7 +92,7 @@ export default function Page(): JSX.Element {
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Appshowcase.Link>
-                    <Authlogin.Link search={{ callbackUrl: '/showcase' }}>
+                    <Authsignin.Link search={{ callbackUrl: '/showcase' }}>
                         <Button
                             variant="outline"
                             size="lg"
@@ -100,7 +101,7 @@ export default function Page(): JSX.Element {
                             <Shield className="h-5 w-5" />
                             <span>Get Started</span>
                         </Button>
-                    </Authlogin.Link>
+                    </Authsignin.Link>
                 </div>
             </section>
 
@@ -116,7 +117,7 @@ export default function Page(): JSX.Element {
                     <FeatureCard
                         icon={Zap}
                         title="Full-Stack Setup"
-                        description="Complete Next.js frontend with Directus headless CMS backend, ready for production deployment."
+                        description="Complete Next.js frontend with NestJS API backend, ready for production deployment."
                         gradient="from-yellow-400 to-orange-500"
                     />
                     <FeatureCard
@@ -134,7 +135,7 @@ export default function Page(): JSX.Element {
                     <FeatureCard
                         icon={Shield}
                         title="Authentication"
-                        description="Integrated NextAuth.js with Directus authentication, secure session management, and role-based access."
+                        description="Integrated Better Auth with NestJS authentication, secure session management, and role-based access."
                         gradient="from-green-500 to-teal-600"
                     />
                     <FeatureCard
@@ -203,7 +204,7 @@ export default function Page(): JSX.Element {
                             <p className="text-muted-foreground">
                                 Learn server-side rendering techniques, React
                                 Server Components, and API route implementations
-                                with Directus integration.
+                                with NestJS API integration.
                             </p>
                             <AppshowcaseServer.Link>
                                 <Button className="w-full">

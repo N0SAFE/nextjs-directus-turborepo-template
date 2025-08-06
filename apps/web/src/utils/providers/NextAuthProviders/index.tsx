@@ -1,16 +1,14 @@
 import React from 'react'
-import ClientNextAuthProviders from './ClientNextAuthProviders'
-import { auth } from '@/lib/auth'
+import ClientBetterAuthProviders from './ClientBetterAuthProviders'
 
-const NextAuthProviders: React.FC<React.PropsWithChildren> = async ({
+const BetterAuthProviders: React.FC<React.PropsWithChildren> = ({
     children,
 }) => {
-    const session = await auth()
     return (
-        <ClientNextAuthProviders session={session}>
+        <ClientBetterAuthProviders>
             {children}
-        </ClientNextAuthProviders>
+        </ClientBetterAuthProviders>
     )
 }
 
-export default NextAuthProviders
+export default BetterAuthProviders

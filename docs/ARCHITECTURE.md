@@ -1,19 +1,19 @@
 # Architecture Overview
 
-This document provides a high-level overview of the NextJS-Directus-Turborepo template architecture, explaining how the various components interact with each other.
+This document provides a high-level overview of the NextJS-NestJS-Turborepo template architecture, explaining how the various components interact with each other.
 
 ## Monorepo Structure
 
 This project uses a Turborepo-based monorepo architecture, which organizes code into apps and packages:
 
 ```
-nextjs-directus-turborepo-template/
+nextjs-nestjs-turborepo-template/
 ├── apps/                      # Applications
-│   ├── api/                   # Directus API instance
+│   ├── api/                   # NestJS API with tRPC and Better Auth
 │   └── web/                   # NextJS frontend application
 ├── packages/                  # Shared packages
 │   ├── bin/                   # CLI tools and scripts
-│   ├── directus-sdk/          # Directus SDK wrapper
+│   ├── api-sdk/               # tRPC client wrapper
 │   ├── eslint-config/         # Shared ESLint configurations
 │   ├── prettier-config/       # Shared Prettier configurations  
 │   ├── tailwind-config/       # Shared Tailwind CSS configurations
@@ -27,29 +27,29 @@ nextjs-directus-turborepo-template/
 
 ### API Layer (`apps/api`)
 
-The API layer is built on Directus, a headless CMS and API platform. It provides:
+The API layer is built on NestJS, a scalable and maintainable Node.js framework. It provides:
 
-- **RESTful API**: For data access and manipulation
-- **GraphQL API**: Alternative query interface for complex data needs
-- **Authentication**: User management and authentication endpoints
-- **Authorization**: Role-based access control
-- **Content Management**: Admin interface for content creation and management
-- **Extensions**: Custom extensions for business logic and data seeding
+- **tRPC API**: Type-safe end-to-end API with automatic TypeScript inference
+- **Better Auth**: Modern authentication with built-in session management
+- **Drizzle ORM**: Type-safe database operations with PostgreSQL
+- **Authorization**: JWT-based authentication and role-based access control
+- **Database Migrations**: Automated database schema management
+- **Health Checks**: Monitoring endpoints for application health
 
 ### Web Layer (`apps/web`)
 
 The web application is built with Next.js and provides:
 
 - **Server Components**: Modern React application using Next.js App Router
-- **Authentication**: Integration with NextAuth tied to Directus users
-- **Data Fetching**: Uses React Query to efficiently fetch and cache data
+- **Authentication**: Integration with Better Auth for modern authentication
+- **Data Fetching**: Uses tRPC client for type-safe API communication
 - **UI Components**: Utilizes Shadcn UI and Tailwind for responsive design
-- **Routing**: Uses declarative-routing for API route documentation
+- **Routing**: Uses Next.js App Router for modern routing patterns
 
 ### Shared Packages
 
 - **UI Library**: Reusable React components with Tailwind and Shadcn UI
-- **Directus SDK**: Typed client for API communication
+- **tRPC Client**: Typed client for API communication
 - **Configuration Packages**: Shared configs for consistent development experience
 
 ## Data Flow

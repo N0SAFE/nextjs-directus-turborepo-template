@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "monorepo": true,
+  "compilerOptions": {
+    "deleteOutDir": false
+  },
+  "projects": {
+    "api": {
+      "type": "application",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src"
+    },
+    "api-contracts": {
+      "type": "library",
+      "root": "../../packages/api-contracts",
+      "entryFile": "index",
+      "sourceRoot": "../../packages/api-contracts/src",
+      "compilerOptions": {
+        "tsConfigPath": "../../packages/api-contracts/tsconfig.json"
+      }
+    }
+  }
+}

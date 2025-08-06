@@ -1,5 +1,5 @@
-import directus from '@/lib/directus'
 import { NextResponse } from 'next/server'
+import { orpc } from '@/lib/orpc'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,13 +11,14 @@ export async function GET() {
         }
 
         const apiHealth = {
-            status: 'unavailable',
+            status: 'unavailable' as string,
             timestamp: new Date().toISOString(),
-            details: 'API could not be reached',
+            details: 'API could not be reached' as string,
         }
 
         try {
-            const apiRes = await directus.serverHealth()
+            // Check the NestJS API health endpoint using ORPC
+            const apiRes = await orpc.health.check({})
 
             if (apiRes.status === 'ok') {
                 return NextResponse.json({
@@ -25,13 +26,8 @@ export async function GET() {
                     api: apiRes,
                 })
             } else {
-                return NextResponse.json(
-                    {
-                        web: webHealth,
-                        api: apiRes,
-                    },
-                    { status: 503 }
-                )
+                apiHealth.details = `API returned status: ${apiRes.status}`
+                apiHealth.status = 'error'
             }
         } catch (error: unknown) {
             if (error instanceof Error) {

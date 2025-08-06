@@ -1,4 +1,4 @@
-import { Session } from 'next-auth'
+import { Session } from '@/lib/auth/index'
 import { create, StoreApi } from 'zustand'
 // import { devtools, persist } from 'zustand/middleware' // add to the useSession store
 
