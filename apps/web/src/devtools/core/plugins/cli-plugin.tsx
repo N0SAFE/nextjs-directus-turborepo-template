@@ -17,6 +17,11 @@ const cliContract = oc.router({
     .input(cliCommandSchema)
     .output(cliCommandResultSchema),
 
+  // Execute a CLI command with streaming output
+  executeStream: oc
+    .input(cliCommandSchema)
+    .output(cliCommandResultSchema),
+
   // Get available npm scripts
   getScripts: oc
     .output(z.record(z.string(), z.string())),
@@ -28,6 +33,45 @@ const cliContract = oc.router({
       args: z.array(z.string()).optional(),
     }))
     .output(cliCommandResultSchema),
+
+  // Get available commands (npm scripts + common CLI commands)
+  getAvailableCommands: oc
+    .output(z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      type: z.enum(['npm-script', 'system', 'git']),
+    }))),
+
+  // Get system information
+  getSystemInfo: oc
+    .output(z.object({
+      platform: z.string(),
+      arch: z.string(),
+      nodeVersion: z.string(),
+      npmVersion: z.string().optional(),
+      hostname: z.string(),
+      uptime: z.number(),
+      memory: z.object({
+        total: z.number(),
+        free: z.number(),
+        used: z.number(),
+      }),
+      cpu: z.object({
+        cores: z.number(),
+        model: z.string(),
+      }),
+      loadAverage: z.array(z.number()),
+    })),
+
+  // Get environment information
+  getEnvironmentInfo: oc
+    .output(z.object({
+      nodeEnv: z.string(),
+      port: z.number().optional(),
+      variables: z.record(z.string(), z.string()),
+      paths: z.array(z.string()),
+      cwd: z.string(),
+    })),
 })
 
 /**

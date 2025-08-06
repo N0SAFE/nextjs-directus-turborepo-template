@@ -4,25 +4,104 @@ import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { BundleAnalysisComponent, DependenciesComponent, BuildInfoComponent } from './bundles'
 import { BUNDLES_HANDLER_ID } from '../../orpc-handlers'
-import {
-  bundleInfoSchema,
-  dependencyAnalysisSchema,
-  optimizationSuggestionsSchema,
-} from '../../contracts/schemas'
+import z from 'zod/v4'
 
 // Bundles Plugin ORPC Contract
 const bundlesContract = oc.router({
   // Get bundle information
-  getBundles: oc
-    .output(bundleInfoSchema),
+  getBundleInfo: oc
+    .output(z.object({
+      dependencies: z.number(),
+      devDependencies: z.number(),
+      peerDependencies: z.number(),
+      totalDependencies: z.number(),
+      dependencyList: z.object({
+        runtime: z.record(z.string(), z.string()),
+        development: z.record(z.string(), z.string()),
+        peer: z.record(z.string(), z.string()),
+      }),
+      buildInfo: z.object({
+        buildDirectory: z.string(),
+        buildSize: z.string(),
+        buildExists: z.boolean(),
+      }).nullable(),
+    })),
 
-  // Analyze dependencies
+  // Analyze dependencies for vulnerabilities and outdated packages
   analyzeDependencies: oc
-    .output(dependencyAnalysisSchema),
+    .output(z.object({
+      outdated: z.array(z.object({
+        name: z.string(),
+        current: z.string(),
+        wanted: z.string(),
+        latest: z.string(),
+        location: z.string(),
+      })),
+      vulnerabilities: z.array(z.object({
+        name: z.string(),
+        severity: z.enum(['info', 'low', 'moderate', 'high', 'critical']),
+        via: z.string(),
+        title: z.string(),
+        url: z.string().optional(),
+      })),
+      summary: z.object({
+        total: z.number(),
+        outdated: z.number(),
+        vulnerabilities: z.number(),
+        criticalVulns: z.number(),
+      }),
+    })),
 
   // Get optimization suggestions
   getOptimizations: oc
-    .output(optimizationSuggestionsSchema),
+    .output(z.object({
+      suggestions: z.array(z.object({
+        type: z.enum(['bundle-size', 'dependency', 'performance', 'security']),
+        title: z.string(),
+        description: z.string(),
+        impact: z.enum(['low', 'medium', 'high']),
+        effort: z.enum(['low', 'medium', 'high']),
+      })),
+      metrics: z.object({
+        bundleScore: z.number(),
+        dependencyScore: z.number(),
+        securityScore: z.number(),
+        overallScore: z.number(),
+      }),
+    })),
+
+  // Get detailed dependency tree
+  getDependencyTree: oc
+    .input(z.object({ packageName: z.string().optional() }))
+    .output(z.object({
+      name: z.string(),
+      version: z.string(),
+      dependencies: z.array(z.any()),
+      depth: z.number(),
+      size: z.string().optional(),
+    })),
+
+  // Get build statistics
+  getBuildStats: oc
+    .output(z.object({
+      buildTime: z.number().optional(),
+      buildSize: z.string().optional(),
+      pages: z.array(z.object({
+        path: z.string(),
+        size: z.string(),
+        firstLoad: z.string(),
+      })),
+      chunks: z.array(z.object({
+        name: z.string(),
+        size: z.string(),
+        type: z.string(),
+      })),
+      assets: z.array(z.object({
+        name: z.string(),
+        size: z.string(),
+        type: z.string(),
+      })),
+    })),
 })
 
 /**

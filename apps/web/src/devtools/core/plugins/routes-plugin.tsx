@@ -14,16 +14,65 @@ import z from 'zod/v4'
 const routesContract = oc.router({
   // Get all routes
   getRoutes: oc
-    .output(routesListSchema),
+    .output(z.array(z.object({
+      path: z.string(),
+      type: z.enum(['page', 'layout', 'api']),
+      file: z.string(),
+      dynamic: z.boolean(),
+      methods: z.array(z.string()).optional(),
+    }))),
 
   // Get current route information
   getCurrentRoute: oc
-    .output(routeInfoSchema),
+    .output(z.object({
+      pathname: z.string(),
+      routeName: z.string(),
+      params: z.record(z.string(), z.any()).optional(),
+      query: z.record(z.string(), z.any()).optional(),
+    })),
 
   // Analyze a specific route
   analyzeRoute: oc
     .input(z.object({ path: z.string() }))
-    .output(routeAnalysisSchema),
+    .output(z.object({
+      path: z.string(),
+      exists: z.boolean(),
+      type: z.string(),
+      file: z.string().optional(),
+      methods: z.array(z.string()).optional(),
+      dynamic: z.boolean(),
+      segments: z.array(z.object({
+        name: z.string(),
+        dynamic: z.boolean(),
+        optional: z.boolean(),
+      })),
+    })),
+
+  // Get route statistics
+  getRouteStats: oc
+    .output(z.object({
+      totalRoutes: z.number(),
+      pageRoutes: z.number(),
+      apiRoutes: z.number(),
+      dynamicRoutes: z.number(),
+      layoutRoutes: z.number(),
+    })),
+
+  // Test an API route
+  testApiRoute: oc
+    .input(z.object({
+      path: z.string(),
+      method: z.string(),
+      body: z.any().optional(),
+      headers: z.record(z.string(), z.string()).optional(),
+    }))
+    .output(z.object({
+      status: z.number(),
+      success: z.boolean(),
+      response: z.any(),
+      headers: z.record(z.string(), z.string()),
+      duration: z.number(),
+    })),
 })
 
 /**
