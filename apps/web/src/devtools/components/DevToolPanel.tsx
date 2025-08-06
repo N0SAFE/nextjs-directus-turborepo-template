@@ -54,7 +54,8 @@ import {
 import { cn } from '@repo/ui/lib/utils'
 import { usePluginRegistry } from '../core/plugin-registry'
 import { useDevToolState } from '../core/devtool-state'
-import { DevToolState, PluginPage, PluginGroup } from '../types'
+import { DevToolState, PluginPage, PluginGroup, DevToolPlugin } from '../types'
+import { routesPlugin, bundlesPlugin, cliPlugin } from '../core/plugins'
 
 // Map of icon names to components
 const IconMap = {
@@ -135,7 +136,11 @@ export function DevToolPanel() {
 function NormalStateBar() {
   const { position, setPosition, setState } = useDevToolState()
   const registry = usePluginRegistry()
-  const activePlugins = registry.getActivePlugins()
+  const additionalPlugins = registry.getActivePlugins()
+
+  // Core plugins that are always available
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
+  const allPlugins = [...corePlugins, ...additionalPlugins]
 
   const sidebarClasses = {
     left: 'left-0 top-0 h-full w-12 flex-col',
@@ -191,7 +196,7 @@ function NormalStateBar() {
           />
 
           {/* Plugin indicators */}
-          {activePlugins.slice(0, 3).map((plugin) => (
+          {allPlugins.slice(0, 3).map((plugin) => (
             <Tooltip key={plugin.metadata.id}>
               <TooltipTrigger asChild>
                 <Button
@@ -212,7 +217,7 @@ function NormalStateBar() {
             </Tooltip>
           ))}
 
-          {activePlugins.length > 3 && (
+          {allPlugins.length > 3 && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -225,7 +230,7 @@ function NormalStateBar() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{`+${activePlugins.length - 3} more plugins`}</p>
+                <p>{`+${allPlugins.length - 3} more plugins`}</p>
               </TooltipContent>
             </Tooltip>
           )}
@@ -286,8 +291,11 @@ function NormalStateBar() {
 function ExpandedStatePanel() {
   const { setState } = useDevToolState()
   const registry = usePluginRegistry()
-  const activePlugins = registry.getActivePlugins()
+  const additionalPlugins = registry.getActivePlugins()
   const selectedPageData = registry.getSelectedPage()
+
+  // Core plugins that are always available
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
 
   return (
     <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-[90vw] max-w-6xl mb-4">
@@ -329,22 +337,56 @@ function ExpandedStatePanel() {
               </SidebarHeader>
 
               <SidebarContent>
-                {activePlugins.length === 0 ? (
-                  <div className="p-4 text-center">
-                    <div className="text-sm text-muted-foreground">
-                      No plugins active
-                    </div>
-                  </div>
-                ) : (
-                  activePlugins.map((plugin) => (
-                    <PluginSidebarSection key={plugin.metadata.id} plugin={plugin} />
-                  ))
+                {/* Core Plugins Section */}
+                <SidebarGroup>
+                  <SidebarGroupLabel>Core</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {corePlugins.map((plugin) => (
+                        <CorePluginSidebarItem key={plugin.metadata.id} plugin={plugin} />
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+
+                {/* Additional Plugins Section */}
+                {additionalPlugins.length > 0 && (
+                  <>
+                    <SidebarSeparator />
+                    <SidebarGroup>
+                      <SidebarGroupLabel>Plugins</SidebarGroupLabel>
+                      <SidebarGroupContent>
+                        <SidebarMenu>
+                          {additionalPlugins.map((plugin) => (
+                            <PluginSidebarItem key={plugin.metadata.id} plugin={plugin} />
+                          ))}
+                        </SidebarMenu>
+                      </SidebarGroupContent>
+                    </SidebarGroup>
+                  </>
+                )}
+
+                {/* No additional plugins message */}
+                {additionalPlugins.length === 0 && (
+                  <>
+                    <SidebarSeparator />
+                    <SidebarGroup>
+                      <SidebarGroupLabel>Plugins</SidebarGroupLabel>
+                      <SidebarGroupContent>
+                        <div className="px-4 py-2 text-center">
+                          <div className="text-sm text-muted-foreground">
+                            No additional plugins loaded
+                          </div>
+                        </div>
+                      </SidebarGroupContent>
+                    </SidebarGroup>
+                  </>
                 )}
               </SidebarContent>
 
               <SidebarFooter className="border-t">
                 <div className="text-xs text-muted-foreground text-center">
-                  {activePlugins.length} plugins active
+                  {corePlugins.length + additionalPlugins.length} plugins loaded
                 </div>
               </SidebarFooter>
               <SidebarRail />
@@ -379,28 +421,58 @@ function ExpandedStatePanel() {
 }
 
 /**
- * Renders a plugin section in the sidebar
+ * Core plugin sidebar item - shows only the plugin name as a single menu item
  */
-function PluginSidebarSection({ plugin }: { plugin: any }) {
+function CorePluginSidebarItem({ plugin }: { plugin: DevToolPlugin }) {
+  const registry = usePluginRegistry()
+  const selectedPageData = registry.getSelectedPage()
+  
+  // Find the first page from the first group as the default page
+  const defaultPage = plugin.groups[0]?.pages[0]
+  const isSelected = selectedPageData?.page.id === defaultPage?.id
+
+  const handleClick = () => {
+    if (defaultPage) {
+      registry.selectPage(defaultPage.id, plugin.metadata.id)
+    }
+  }
+
+  if (!defaultPage) return null
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton 
+        isActive={isSelected}
+        onClick={handleClick}
+        className="group"
+      >
+        <div className="flex items-center gap-2 flex-1">
+          {plugin.metadata.icon && getIconComponent(plugin.metadata.icon)}
+          <span className="flex-1">{plugin.metadata.name}</span>
+        </div>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+/**
+ * Regular plugin sidebar item - shows the full plugin structure as before
+ */
+function PluginSidebarItem({ plugin }: { plugin: DevToolPlugin }) {
   return (
     <>
       {plugin.groups.map((group: PluginGroup, index: number) => (
-        <SidebarGroup key={group.id}>
-          <SidebarGroupLabel>
-            <div className="flex items-center gap-2">
-              {group.icon && getIconComponent(group.icon)}
+        <div key={group.id}>
+          {plugin.groups.length > 1 && (
+            <SidebarGroupLabel className="px-2 py-1 text-xs text-muted-foreground">
               {group.label}
-            </div>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {group.pages.map((page: PluginPage) => (
-                <PluginPageItem key={page.id} page={page} pluginId={plugin.metadata.id} />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-          {index < plugin.groups.length - 1 && <SidebarSeparator />}
-        </SidebarGroup>
+            </SidebarGroupLabel>
+          )}
+          {group.pages.map((page: PluginPage) => (
+            <PluginPageItem key={page.id} page={page} pluginId={plugin.metadata.id} />
+          ))}
+          {index < plugin.groups.length - 1 && <SidebarSeparator className="my-1" />}
+        </div>
       ))}
     </>
   )

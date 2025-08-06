@@ -3,8 +3,17 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { DevToolPlugin, PluginRegistry, PluginRegistryState, PluginPage } from '../types'
+import { routesPlugin, bundlesPlugin, cliPlugin } from './plugins'
 
-interface PluginRegistryStore extends PluginRegistryState, PluginRegistry {}
+interface PluginRegistryStore extends PluginRegistryState, PluginRegistry {
+  // Additional methods for core plugins
+  getCorePlugins(): DevToolPlugin[]
+  getAllPlugins(): DevToolPlugin[]
+  findCorePageById(pageId: string): { page: PluginPage; plugin: DevToolPlugin } | null
+}
+
+// Core plugins that are always available
+const CORE_PLUGINS: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
 
 /**
  * Plugin registry store using Zustand
@@ -135,6 +144,20 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
       const { plugins, activePlugins } = get()
       
       if (pageId && pluginId) {
+        // Check core plugins first
+        const corePlugin = CORE_PLUGINS.find(p => p.metadata.id === pluginId)
+        if (corePlugin) {
+          const foundPage = findPageInPlugin(corePlugin, pageId)
+          if (foundPage) {
+            set({ 
+              selectedPage: pageId,
+              selectedPlugin: pluginId
+            })
+            return
+          }
+        }
+
+        // Then check registered plugins
         if (!plugins.has(pluginId)) {
           console.warn(`Plugin ${pluginId} is not registered`)
           return
@@ -177,6 +200,16 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         return null
       }
       
+      // Check core plugins first
+      const corePlugin = CORE_PLUGINS.find(p => p.metadata.id === selectedPlugin)
+      if (corePlugin) {
+        const page = findPageInPlugin(corePlugin, selectedPage)
+        if (page) {
+          return { page, plugin: corePlugin }
+        }
+      }
+      
+      // Then check registered plugins
       const plugin = plugins.get(selectedPlugin)
       if (!plugin) {
         return null
@@ -190,9 +223,43 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
       return { page, plugin }
     },
 
-    isRegistered: (pluginId: string) => get().plugins.has(pluginId),
+    isRegistered: (pluginId: string) => {
+      // Core plugins are always "registered"
+      if (CORE_PLUGINS.some(p => p.metadata.id === pluginId)) {
+        return true
+      }
+      return get().plugins.has(pluginId)
+    },
 
-    isActive: (pluginId: string) => get().activePlugins.has(pluginId),
+    isActive: (pluginId: string) => {
+      // Core plugins are always "active"
+      if (CORE_PLUGINS.some(p => p.metadata.id === pluginId)) {
+        return true
+      }
+      return get().activePlugins.has(pluginId)
+    },
+
+    // Core plugin methods
+    getCorePlugins: () => CORE_PLUGINS,
+
+    getAllPlugins: () => {
+      const { plugins, activePlugins } = get()
+      const registeredPlugins = Array.from(activePlugins)
+        .map(id => plugins.get(id))
+        .filter(Boolean) as DevToolPlugin[]
+      
+      return [...CORE_PLUGINS, ...registeredPlugins]
+    },
+
+    findCorePageById: (pageId: string) => {
+      for (const plugin of CORE_PLUGINS) {
+        const page = findPageInPlugin(plugin, pageId)
+        if (page) {
+          return { page, plugin }
+        }
+      }
+      return null
+    },
   }))
 )
 
