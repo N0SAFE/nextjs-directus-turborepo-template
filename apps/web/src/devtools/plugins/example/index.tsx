@@ -1,6 +1,4 @@
 import { createPlugin, PluginUtils } from '../../sdk'
-import { Settings, RefreshCw, Database, Zap } from 'lucide-react'
-import { useState } from 'react'
 
 /**
  * Example component for dialog content
