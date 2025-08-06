@@ -5,33 +5,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { Button } from '@repo/ui/components/shadcn/button'
 import { Skeleton } from '@repo/ui/components/shadcn/skeleton'
-import { Terminal, Copy, Play, Loader2 } from 'lucide-react'
+import { Terminal, Copy, Play, Loader2, RefreshCw, Activity } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { useDevToolAPI } from '../../../hooks/useDevToolAPI'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 /**
- * CLI Commands component - displays available commands from API
+ * Enhanced CLI Commands component with real-time command execution and monitoring
  */
 export function CliCommandsComponent({ context }: { context: PluginContext }) {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
   const [commands, setCommands] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const api = useDevToolAPI()
+  const [executingCommand, setExecutingCommand] = useState<string | null>(null)
+  const [commandResults, setCommandResults] = useState<Map<string, any>>(new Map())
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
+  const enhancedAPI = useEnhancedDevToolAPI()
 
   useEffect(() => {
     const loadCommands = async () => {
       try {
         setLoading(true)
-        const availableCommands = await api.devtools.cli.getAvailableCommands()
+        const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
         
         // Transform API data to component format
         const transformedCommands = availableCommands.map(cmd => ({
           name: cmd.name,
           command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
-          description: cmd.description
+          description: cmd.description,
+          type: cmd.type
         }))
         
         setCommands(transformedCommands)
+        setLastRefresh(new Date())
       } catch (error) {
         console.error('Failed to load commands:', error)
         // Fallback to basic commands if API fails
@@ -39,17 +44,20 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
           {
             name: 'Development Server',
             command: 'npm run dev',
-            description: 'Start the development server with hot reload'
+            description: 'Start the development server with hot reload',
+            type: 'npm-script'
           },
           {
             name: 'Build for Production',
             command: 'npm run build',
-            description: 'Create an optimized production build'
+            description: 'Create an optimized production build',
+            type: 'npm-script'
           },
           {
             name: 'Start Production Server',
             command: 'npm run start',
-            description: 'Start the production server'
+            description: 'Start the production server',
+            type: 'npm-script'
           }
         ])
       } finally {
@@ -58,12 +66,72 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
     }
 
     loadCommands()
-  }, [api])
+
+    // Set up auto-refresh for commands list
+    const unsubscribe = enhancedAPI.utils.setAutoRefresh('cli-commands', async () => {
+      const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
+      const transformedCommands = availableCommands.map(cmd => ({
+        name: cmd.name,
+        command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
+        description: cmd.description,
+        type: cmd.type
+      }))
+      setCommands(transformedCommands)
+      setLastRefresh(new Date())
+    }, 60000) // Refresh every minute
+
+    return unsubscribe
+  }, [enhancedAPI])
 
   const copyCommand = (command: string) => {
     navigator.clipboard.writeText(command)
     setCopiedCommand(command)
     setTimeout(() => setCopiedCommand(null), 2000)
+  }
+
+  const executeCommand = async (command: string) => {
+    try {
+      setExecutingCommand(command)
+      const result = await enhancedAPI.devtools.cli.execute({ 
+        command: command.replace('npm run ', ''),
+        args: [],
+        cwd: undefined
+      })
+      
+      setCommandResults(prev => new Map(prev.set(command, result)))
+      
+      // Notify about command execution
+      enhancedAPI.utils.triggerEvent('command-executed', { command, result })
+    } catch (error) {
+      console.error('Failed to execute command:', error)
+      setCommandResults(prev => new Map(prev.set(command, { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error',
+        output: '',
+        exitCode: 1
+      })))
+    } finally {
+      setExecutingCommand(null)
+    }
+  }
+
+  const refreshCommands = async () => {
+    setLoading(true)
+    try {
+      const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
+      const transformedCommands = availableCommands.map(cmd => ({
+        name: cmd.name,
+        command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
+        description: cmd.description,
+        type: cmd.type
+      }))
+      setCommands(transformedCommands)
+      setLastRefresh(new Date())
+    } catch (error) {
+      console.error('Failed to refresh commands:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (loading) {
@@ -102,41 +170,129 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Terminal className="h-5 w-5" />
-            Available Commands
-          </CardTitle>
-          <CardDescription>
-            CLI commands available for this project
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Terminal className="h-5 w-5" />
+                Available Commands
+                {executingCommand && (
+                  <Badge variant="outline" className="text-xs">
+                    <Activity className="h-3 w-3 mr-1 animate-pulse" />
+                    Running
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                CLI commands available for this project
+                <span className="text-xs text-muted-foreground ml-2">
+                  Last updated: {lastRefresh.toLocaleTimeString()}
+                </span>
+              </CardDescription>
+            </div>
+            <Button
+              onClick={refreshCommands}
+              disabled={loading}
+              variant="outline"
+              size="sm"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {commands.map((cmd, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg group">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-medium text-sm">{cmd.name}</span>
+            {commands.map((cmd, index) => {
+              const result = commandResults.get(cmd.command)
+              const isExecuting = executingCommand === cmd.command
+              
+              return (
+                <div key={index} className="border rounded-lg group">
+                  <div className="flex items-center justify-between p-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="font-medium text-sm">{cmd.name}</span>
+                        {cmd.type && (
+                          <Badge variant="outline" className="text-xs">
+                            {cmd.type}
+                          </Badge>
+                        )}
+                        {result && (
+                          <Badge 
+                            variant={result.success ? "default" : "destructive"} 
+                            className="text-xs"
+                          >
+                            {result.success ? "Success" : "Failed"}
+                          </Badge>
+                        )}
+                      </div>
+                      <code className="text-sm bg-muted px-2 py-1 rounded text-blue-600">
+                        {cmd.command}
+                      </code>
+                      <p className="text-xs text-muted-foreground mt-1">{cmd.description}</p>
+                    </div>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => executeCommand(cmd.command)}
+                        disabled={isExecuting}
+                      >
+                        {isExecuting ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyCommand(cmd.command)}
+                      >
+                        {copiedCommand === cmd.command ? (
+                          <Badge variant="secondary" className="text-xs">Copied!</Badge>
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                  <code className="text-sm bg-muted px-2 py-1 rounded text-blue-600">
-                    {cmd.command}
-                  </code>
-                  <p className="text-xs text-muted-foreground mt-1">{cmd.description}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => copyCommand(cmd.command)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  {copiedCommand === cmd.command ? (
-                    <Badge variant="secondary" className="text-xs">Copied!</Badge>
-                  ) : (
-                    <Copy className="h-4 w-4" />
+                  
+                  {/* Command result display */}
+                  {result && (
+                    <div className="px-3 pb-3">
+                      <div className="bg-muted rounded p-2 text-xs font-mono">
+                        {result.output && (
+                          <div className="mb-2">
+                            <span className="text-muted-foreground">Output:</span>
+                            <pre className="whitespace-pre-wrap mt-1 text-xs">
+                              {result.output.substring(0, 500)}
+                              {result.output.length > 500 && '...'}
+                            </pre>
+                          </div>
+                        )}
+                        {result.error && (
+                          <div className="text-red-600">
+                            <span className="text-muted-foreground">Error:</span>
+                            <pre className="whitespace-pre-wrap mt-1">{result.error}</pre>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t">
+                          <span className="text-muted-foreground">
+                            Exit code: {result.exitCode || 0}
+                          </span>
+                          {result.duration && (
+                            <span className="text-muted-foreground">
+                              Duration: {result.duration}ms
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </Button>
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
         </CardContent>
       </Card>

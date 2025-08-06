@@ -77,24 +77,55 @@ function getBundleInfo() {
 }
 
 /**
- * Custom component for Bundles reduced mode display
+ * Enhanced Bundles reduced mode display with real-time bundle monitoring
  */
 function BundlesReducedDisplay({ context }: { context: any }) {
-  const { bundleSize, status } = getBundleInfo()
+  const [bundleStats, setBundleStats] = useState<any>(null)
+  const [outdatedCount, setOutdatedCount] = useState(0)
+  const [bundleSize, setBundleSize] = useState('...')
+  const enhancedAPI = useEnhancedDevToolAPI()
   
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'optimized': return 'text-green-600'
-      case 'warning': return 'text-yellow-600'
-      case 'error': return 'text-red-600'
-      default: return 'text-gray-600'
-    }
+  useEffect(() => {
+    // Subscribe to bundle changes
+    const unsubscribe = enhancedAPI.bundles.subscribeToBundleChanges(async (stats) => {
+      setBundleStats(stats)
+      
+      // Format bundle size
+      const sizeInMB = (stats.totalSize / 1024 / 1024).toFixed(1)
+      setBundleSize(`${sizeInMB}MB`)
+      
+      // Get dependency info
+      try {
+        const deps = await enhancedAPI.devtools.bundles.getDependencies()
+        setOutdatedCount(deps.outdated?.length || 0)
+      } catch (error) {
+        console.error('Failed to get dependencies:', error)
+      }
+    })
+
+    return unsubscribe
+  }, [enhancedAPI])
+  
+  const getStatusColor = () => {
+    if (!bundleStats) return 'text-gray-600'
+    
+    const sizeInMB = bundleStats.totalSize / 1024 / 1024
+    if (outdatedCount > 5) return 'text-red-600'
+    if (sizeInMB > 10 || outdatedCount > 0) return 'text-yellow-600'
+    return 'text-green-600'
   }
   
   return (
-    <span className={`text-xs font-mono ${getStatusColor(status)}`}>
-      {bundleSize}
-    </span>
+    <div className="flex items-center gap-1">
+      <span className={`text-xs font-mono ${getStatusColor()}`}>
+        {bundleSize}
+      </span>
+      {outdatedCount > 0 && (
+        <span className="text-xs text-red-600">
+          !{outdatedCount}
+        </span>
+      )}
+    </div>
   )
 }
 

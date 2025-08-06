@@ -356,16 +356,48 @@ function NormalStateBar() {
 }
 
 /**
- * Expanded state - full sidebar layout
+ * Expanded state - full sidebar layout with event-driven plugin navigation
  */
 function ExpandedStatePanel() {
   const { setState } = useDevToolState()
   const registry = usePluginRegistry()
   const additionalPlugins = registry.getActivePlugins()
   const selectedPageData = registry.getSelectedPage()
+  const [selectedPlugin, setSelectedPlugin] = useState<string>('')
+  const [selectedPage, setSelectedPage] = useState<string>('')
 
   // Core plugins that are always available
-  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin]
+
+  // Listen for plugin expansion events
+  useEffect(() => {
+    const handlePluginExpansion = (event: CustomEvent) => {
+      const { pluginId, pageId } = event.detail
+      
+      // Find the plugin and page
+      const allPlugins = [...corePlugins, ...additionalPlugins]
+      const plugin = allPlugins.find(p => p.metadata.id === pluginId)
+      
+      if (plugin) {
+        setSelectedPlugin(pluginId)
+        if (pageId) {
+          setSelectedPage(pageId)
+        } else {
+          // Select first page of the plugin
+          const firstGroup = plugin.groups[0]
+          if (firstGroup?.pages?.[0]) {
+            setSelectedPage(firstGroup.pages[0].id)
+          }
+        }
+      }
+    }
+
+    window.addEventListener('devtools:expand-plugin', handlePluginExpansion as EventListener)
+    
+    return () => {
+      window.removeEventListener('devtools:expand-plugin', handlePluginExpansion as EventListener)
+    }
+  }, [corePlugins, additionalPlugins])
 
   return (
     <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-[90vw] max-w-6xl mb-4">

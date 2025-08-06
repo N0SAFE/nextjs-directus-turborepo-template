@@ -7,12 +7,12 @@ import { Button } from '@repo/ui/components/shadcn/button'
 import { Skeleton } from '@repo/ui/components/shadcn/skeleton'
 import { Input } from '@repo/ui/components/shadcn/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/shadcn/select'
-import { ScrollText, Activity, Search, Trash2, RefreshCw, AlertCircle, AlertTriangle, Info, Bug } from 'lucide-react'
+import { ScrollText, Activity, Search, Trash2, RefreshCw, AlertCircle, AlertTriangle, Info, Bug, Play, Pause } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { useDevToolAPI } from '../../../hooks/useDevToolAPI'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 /**
- * Logs Viewer component - displays and filters application logs from API
+ * Enhanced Logs Viewer component with real-time streaming and advanced filtering
  */
 export function LogsViewerComponent({ context }: { context: PluginContext }) {
   const [logs, setLogs] = useState<any[]>([])
@@ -21,21 +21,24 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [levelFilter, setLevelFilter] = useState<string>('all')
   const [autoRefresh, setAutoRefresh] = useState(true)
-  const api = useDevToolAPI()
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const enhancedAPI = useEnhancedDevToolAPI()
   const intervalRef = useRef<NodeJS.Timeout>()
 
   const loadLogs = async () => {
     try {
       const [logsData, statsData] = await Promise.all([
-        api.devtools.logs.getLogs({
+        enhancedAPI.devtools.logs.getLogs({
           level: levelFilter === 'all' ? undefined : levelFilter as any,
           limit: 100
         }),
-        api.devtools.logs.getLogStats()
+        enhancedAPI.devtools.logs.getLogStats()
       ])
       
       setLogs(logsData)
       setStats(statsData)
+      setLastUpdate(new Date())
     } catch (error) {
       console.error('Failed to load logs:', error)
       // Fallback data
@@ -81,23 +84,38 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
 
   useEffect(() => {
     loadLogs()
-  }, [levelFilter, api])
+  }, [levelFilter, enhancedAPI])
 
+  // Set up real-time log streaming
   useEffect(() => {
     if (autoRefresh) {
-      intervalRef.current = setInterval(loadLogs, 5000)
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
+      setIsStreaming(true)
+      const unsubscribe = enhancedAPI.logs.subscribeToLogs((newLogs) => {
+        setLogs(newLogs)
+        setLastUpdate(new Date())
+      })
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+      return () => {
+        unsubscribe()
+        setIsStreaming(false)
       }
+    } else {
+      setIsStreaming(false)
     }
-  }, [autoRefresh])
+  }, [autoRefresh, enhancedAPI])
+
+  const toggleStreaming = () => {
+    setAutoRefresh(!autoRefresh)
+  }
+
+  const clearLogs = async () => {
+    try {
+      await enhancedAPI.devtools.logs.clearLogs({ level: levelFilter === 'all' ? undefined : levelFilter as any })
+      loadLogs()
+    } catch (error) {
+      console.error('Failed to clear logs:', error)
+    }
+  }
 
   const filteredLogs = logs.filter(log =>
     log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -197,19 +215,46 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
               <CardTitle className="text-lg flex items-center gap-2">
                 <ScrollText className="h-5 w-5" />
                 Application Logs
+                {isStreaming && (
+                  <Badge variant="outline" className="text-xs">
+                    <Activity className="h-3 w-3 mr-1 animate-pulse" />
+                    Live
+                  </Badge>
+                )}
               </CardTitle>
               <CardDescription>
                 Real-time application logs and monitoring
+                <span className="text-xs text-muted-foreground ml-2">
+                  Last update: {lastUpdate.toLocaleTimeString()}
+                </span>
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
               <Button
+                variant={autoRefresh ? "default" : "outline"}
+                size="sm"
+                onClick={toggleStreaming}
+              >
+                {autoRefresh ? (
+                  <>
+                    <Pause className="h-4 w-4 mr-2" />
+                    Streaming
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Start Stream
+                  </>
+                )}
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setAutoRefresh(!autoRefresh)}
+                onClick={loadLogs}
+                disabled={loading}
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
-                {autoRefresh ? 'Auto' : 'Manual'}
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
               </Button>
               <Button
                 variant="outline"
