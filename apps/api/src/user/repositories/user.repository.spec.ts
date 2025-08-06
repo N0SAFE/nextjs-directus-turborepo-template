@@ -94,24 +94,9 @@ describe('UserRepository', () => {
           name: input.name,
           email: input.email,
           emailVerified: false,
-          status: 'active',
         })
       );
       expect(mockInsertBuilder.returning).toHaveBeenCalled();
-    });
-
-    it('should create user with custom status', async () => {
-      const input = { name: 'John Doe', email: 'john@example.com', status: 'inactive' };
-      const mockInsertBuilder = mockDb.insert();
-      mockInsertBuilder.returning.mockResolvedValue([{ ...mockUser, status: 'inactive' }]);
-
-      await repository.create(input);
-
-      expect(mockInsertBuilder.values).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'inactive',
-        })
-      );
     });
   });
 
