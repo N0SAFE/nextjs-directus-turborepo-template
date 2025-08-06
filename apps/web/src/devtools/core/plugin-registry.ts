@@ -92,9 +92,13 @@ export const usePluginRegistry = create<PluginRegistryStore>()(
         return // Already active
       }
 
-      set((state) => ({
-        activePlugins: new Set([...state.activePlugins, pluginId])
-      }))
+      set((state) => {
+        const newActivePlugins = new Set(state.activePlugins)
+        newActivePlugins.add(pluginId)
+        return {
+          activePlugins: newActivePlugins
+        }
+      })
 
       plugin.onActivate?.()
     },
