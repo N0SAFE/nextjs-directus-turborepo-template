@@ -124,6 +124,15 @@ jobs:
                     echo "❌ openapi.ts not found"
                   fi
 
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
+                  fi
+
             - name: 🔍 Run ESLint
               run: bun run lint
 
@@ -214,6 +223,15 @@ jobs:
                     echo "✅ openapi.ts found" 
                   else
                     echo "❌ openapi.ts not found"
+                  fi
+
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
                   fi
 
             - name: 🏗️ Build packages
@@ -307,6 +325,15 @@ jobs:
                     echo "✅ openapi.ts found" 
                   else
                     echo "❌ openapi.ts not found"
+                  fi
+
+            - name: 🔧 Generate routes as fallback (if missing)
+              run: |
+                  if [ ! -f "apps/web/src/routes/index.ts" ]; then
+                    echo "⚠️ index.ts missing, regenerating declarative routes..."
+                    cd apps/web && bun run dr:build
+                  else
+                    echo "✅ index.ts exists, skipping regeneration"
                   fi
 
             - name: 🧪 Run tests for all packages
