@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { LogsViewerComponent, ProcessInfoComponent } from './components'
 import { LOGS_HANDLER_ID } from '../../../orpc-handlers'
 import z from 'zod/v4'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 // Logs Plugin ORPC Contract
 const logsContract = oc.router({
@@ -81,16 +82,51 @@ function getLogsInfo() {
 }
 
 /**
- * Custom component for Logs reduced mode display
+ * Enhanced Logs reduced mode display with real-time log monitoring
  */
 function LogsReducedDisplay({ context }: { context: any }) {
-  const { errorCount, hasErrors } = getLogsInfo()
+  const [logStats, setLogStats] = useState<any>(null)
+  const [recentErrors, setRecentErrors] = useState(0)
+  const enhancedAPI = useEnhancedDevToolAPI()
   
-  if (hasErrors && errorCount > 0) {
+  useEffect(() => {
+    // Subscribe to real-time log updates
+    const unsubscribe = enhancedAPI.logs.subscribeToLogs(async (logs) => {
+      // Calculate recent error count (last 5 minutes)
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
+      const recentErrorLogs = logs.filter(log => 
+        log.level === 'error' && 
+        new Date(log.timestamp).getTime() > fiveMinutesAgo
+      )
+      
+      setRecentErrors(recentErrorLogs.length)
+      
+      // Get updated stats
+      try {
+        const stats = await enhancedAPI.devtools.logs.getLogStats()
+        setLogStats(stats)
+      } catch (error) {
+        console.error('Failed to get log stats:', error)
+      }
+    })
+
+    return unsubscribe
+  }, [enhancedAPI])
+  
+  if (recentErrors > 0) {
     return (
       <div className="flex items-center gap-1">
         <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-xs font-mono text-red-600">{errorCount}</span>
+        <span className="text-xs font-mono text-red-600">{recentErrors}</span>
+      </div>
+    )
+  }
+  
+  if (logStats?.warnCount > 0) {
+    return (
+      <div className="flex items-center gap-1">
+        <div className="h-2 w-2 rounded-full bg-yellow-500" />
+        <span className="text-xs font-mono text-yellow-600">{logStats.warnCount}</span>
       </div>
     )
   }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { cn } from '@repo/ui/lib/utils'
 import { createPlugin, PluginUtils } from '../../../sdk'
@@ -9,6 +9,7 @@ import {
   cliCommandResultSchema,
 } from '../../../contracts/schemas'
 import z from 'zod/v4'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 // CLI Plugin ORPC Contract
 const cliContract = oc.router({
@@ -104,21 +105,53 @@ function copyToClipboard(text: string) {
 }
 
 /**
- * Custom component for CLI reduced mode display
+ * Enhanced CLI reduced mode display with real-time environment monitoring
  */
 function CliReducedDisplay({ context }: { context: any }) {
-  const { status } = getCliInfo()
+  const [envStatus, setEnvStatus] = useState<any>(null)
+  const [isOnline, setIsOnline] = useState(true)
+  const enhancedAPI = useEnhancedDevToolAPI()
   
-  const colorClasses = {
-    production: 'bg-red-500',
-    development: 'bg-green-500'
+  useEffect(() => {
+    // Subscribe to environment changes
+    const unsubscribe = enhancedAPI.cli.subscribeToEnvironmentChanges((env) => {
+      setEnvStatus(env)
+    })
+
+    // Monitor online status
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      unsubscribe()
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [enhancedAPI])
+  
+  const getStatusColor = () => {
+    if (!isOnline) return 'bg-gray-500'
+    if (!envStatus) return 'bg-yellow-500'
+    
+    const env = envStatus.nodeEnv || 'development'
+    switch (env) {
+      case 'production': return 'bg-red-500'
+      case 'development': return 'bg-green-500'
+      case 'test': return 'bg-blue-500'
+      default: return 'bg-yellow-500'
+    }
   }
+  
+  const shouldAnimate = isOnline && envStatus?.nodeEnv === 'development'
   
   return (
     <div className={cn(
       'h-2 w-2 rounded-full',
-      colorClasses[status as keyof typeof colorClasses] || 'bg-gray-500',
-      status === 'development' && 'animate-pulse'
+      getStatusColor(),
+      shouldAnimate && 'animate-pulse'
     )} />
   )
 }

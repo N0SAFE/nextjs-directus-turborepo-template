@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './components'
@@ -9,6 +9,7 @@ import {
   routeAnalysisSchema,
 } from '../../../contracts/schemas'
 import z from 'zod/v4'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 // Routes Plugin ORPC Contract
 const routesContract = oc.router({
@@ -91,14 +92,40 @@ function getCurrentRouteInfo() {
 }
 
 /**
- * Custom component for Routes reduced mode display
+ * Enhanced custom component for Routes reduced mode display with real-time updates
  */
 function RoutesReducedDisplay({ context }: { context: any }) {
-  const { currentRoute } = getCurrentRouteInfo()
+  const [currentRoute, setCurrentRoute] = useState('/')
+  const [isLoading, setIsLoading] = useState(false)
+  const enhancedAPI = useEnhancedDevToolAPI()
+  
+  useEffect(() => {
+    // Get initial route info
+    const routeInfo = enhancedAPI.routes.getCurrentRouteRealtime()
+    if (routeInfo) {
+      setCurrentRoute(routeInfo.pathname || '/')
+    }
+
+    // Subscribe to real-time route changes
+    const unsubscribe = enhancedAPI.routes.subscribeToRouteChanges((routeData) => {
+      setCurrentRoute(routeData.pathname || '/')
+      setIsLoading(enhancedAPI.routes.isRouteChanging())
+    })
+
+    return unsubscribe
+  }, [enhancedAPI])
   
   // Display the current route name in a compact format
   const displayRoute = currentRoute === '/' ? 'Home' : 
     currentRoute.split('/').filter(Boolean).pop() || currentRoute
+  
+  if (isLoading) {
+    return (
+      <div className="text-xs font-mono text-muted-foreground animate-pulse">
+        ...
+      </div>
+    )
+  }
   
   return (
     <span className="text-xs font-mono text-blue-600 truncate max-w-16">
@@ -148,7 +175,7 @@ export const routesPlugin = createPlugin(
     onRegister: () => {
       console.log('[DevTools Core] Routes plugin registered')
     },
-    // Reduced mode configuration
+    // Reduced mode configuration with enhanced real-time updates
     reduced: {
       component: RoutesReducedDisplay,
       menu: {
@@ -161,14 +188,15 @@ export const routesPlugin = createPlugin(
                 label: 'Route Details',
                 description: 'View current route information',
                 action: () => {
-                  const { currentRoute } = getCurrentRouteInfo()
-                  alert(`Current route: ${currentRoute}`)
+                  // Route info will be available through the enhanced API in the component
+                  const pathname = window.location.pathname
+                  alert(`Current route: ${pathname}`)
                 }
               },
               {
                 id: 'route-params',
                 label: 'Route Parameters',
-                description: 'View current route parameters',
+                description: 'View current route parameters and query',
                 action: () => {
                   const params = new URLSearchParams(window.location.search)
                   const paramString = Array.from(params.entries()).map(([k, v]) => `${k}=${v}`).join(', ')
@@ -184,9 +212,11 @@ export const routesPlugin = createPlugin(
                 id: 'view-all-routes',
                 label: 'View All Routes',
                 description: 'Open routes overview',
-                badge: '12',
+                badge: 'All',
                 action: () => {
-                  console.log('Opening routes overview')
+                  window.dispatchEvent(new CustomEvent('devtools:expand-plugin', { 
+                    detail: { pluginId: 'core-routes', pageId: 'routes-overview' } 
+                  }))
                 }
               },
               {
@@ -194,17 +224,20 @@ export const routesPlugin = createPlugin(
                 label: 'API Status',
                 description: 'Check API endpoint health',
                 action: () => {
-                  alert('API endpoints: All healthy')
+                  alert('Checking API status...')
                 }
               }
             ]
           }
         ]
       },
-      // Dynamic data function
+      // Enhanced dynamic data function with real-time updates
       getData: () => {
-        const { currentRoute, routeCount } = getCurrentRouteInfo()
-        return { currentRoute, routeCount }
+        return { 
+          currentRoute: window.location.pathname || '/', 
+          routeName: 'Current',
+          isLoading: false
+        }
       }
     },
     // ORPC contract and identifier for server communication

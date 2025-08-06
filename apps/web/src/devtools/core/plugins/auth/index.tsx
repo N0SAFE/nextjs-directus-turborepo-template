@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { User, Shield, Clock, Key, Users, AlertTriangle } from 'lucide-react'
 import { Badge } from '@repo/ui/components/shadcn/badge'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { AuthComponent } from './components'
 import z from 'zod/v4'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 // Auth Plugin ORPC Contract
 const authContract = oc.router({
@@ -130,10 +131,35 @@ function getAuthStatus() {
 }
 
 /**
- * Custom component for auth reduced mode display
+ * Enhanced auth reduced mode display with real-time session monitoring
  */
 function AuthReducedDisplay({ context }: { context: any }) {
-  const { isAuthenticated, securityScore } = getAuthStatus()
+  const [currentSession, setCurrentSession] = useState<any>(null)
+  const [securityScore, setSecurityScore] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const enhancedAPI = useEnhancedDevToolAPI()
+  
+  useEffect(() => {
+    // Subscribe to real-time session changes
+    const unsubscribe = enhancedAPI.auth.subscribeToSessionChanges(async (session) => {
+      setCurrentSession(session)
+      setIsAuthenticated(!!session?.isActive)
+      
+      // Calculate security score based on session data
+      let score = 0
+      if (session?.isActive) score += 40
+      if (session?.metadata?.twoFactorEnabled) score += 30
+      if (session?.metadata?.passkeyRegistered) score += 20
+      if (session?.lastActivity && 
+          Date.now() - new Date(session.lastActivity).getTime() < 30 * 60 * 1000) {
+        score += 10 // Recent activity
+      }
+      
+      setSecurityScore(score)
+    })
+
+    return unsubscribe
+  }, [enhancedAPI])
   
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600'
@@ -141,13 +167,15 @@ function AuthReducedDisplay({ context }: { context: any }) {
     return 'text-red-600'
   }
   
+  const getStatusIcon = () => {
+    if (!isAuthenticated) return <AlertTriangle className="h-3 w-3 text-red-600" />
+    if (currentSession?.metadata?.twoFactorEnabled) return <Shield className="h-3 w-3 text-green-600" />
+    return <User className="h-3 w-3 text-blue-600" />
+  }
+  
   return (
     <div className="flex items-center gap-1">
-      {isAuthenticated ? (
-        <Shield className="h-3 w-3 text-green-600" />
-      ) : (
-        <AlertTriangle className="h-3 w-3 text-red-600" />
-      )}
+      {getStatusIcon()}
       <span className={`text-xs font-mono ${getScoreColor(securityScore)}`}>
         {securityScore}%
       </span>
