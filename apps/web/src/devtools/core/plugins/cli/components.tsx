@@ -1,0 +1,398 @@
+'use client'
+
+import { PluginContext } from '../../../types'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@repo/ui/components/shadcn/card'
+import { Badge } from '@repo/ui/components/shadcn/badge'
+import { Button } from '@repo/ui/components/shadcn/button'
+import { Skeleton } from '@repo/ui/components/shadcn/skeleton'
+import { Terminal, Copy, Play, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useDevToolAPI } from '../../../hooks/useDevToolAPI'
+
+/**
+ * CLI Commands component - displays available commands from API
+ */
+export function CliCommandsComponent({ context }: { context: PluginContext }) {
+  const [copiedCommand, setCopiedCommand] = useState<string | null>(null)
+  const [commands, setCommands] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const api = useDevToolAPI()
+
+  useEffect(() => {
+    const loadCommands = async () => {
+      try {
+        setLoading(true)
+        const availableCommands = await api.devtools.cli.getAvailableCommands()
+        
+        // Transform API data to component format
+        const transformedCommands = availableCommands.map(cmd => ({
+          name: cmd.name,
+          command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
+          description: cmd.description
+        }))
+        
+        setCommands(transformedCommands)
+      } catch (error) {
+        console.error('Failed to load commands:', error)
+        // Fallback to basic commands if API fails
+        setCommands([
+          {
+            name: 'Development Server',
+            command: 'npm run dev',
+            description: 'Start the development server with hot reload'
+          },
+          {
+            name: 'Build for Production',
+            command: 'npm run build',
+            description: 'Create an optimized production build'
+          },
+          {
+            name: 'Start Production Server',
+            command: 'npm run start',
+            description: 'Start the production server'
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCommands()
+  }, [api])
+
+  const copyCommand = (command: string) => {
+    navigator.clipboard.writeText(command)
+    setCopiedCommand(command)
+    setTimeout(() => setCopiedCommand(null), 2000)
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Terminal className="h-5 w-5" />
+              Available Commands
+            </CardTitle>
+            <CardDescription>
+              Loading available CLI commands...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                    <Skeleton className="h-3 w-64" />
+                  </div>
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Terminal className="h-5 w-5" />
+            Available Commands
+          </CardTitle>
+          <CardDescription>
+            CLI commands available for this project
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {commands.map((cmd, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg group">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className="font-medium text-sm">{cmd.name}</span>
+                  </div>
+                  <code className="text-sm bg-muted px-2 py-1 rounded text-blue-600">
+                    {cmd.command}
+                  </code>
+                  <p className="text-xs text-muted-foreground mt-1">{cmd.description}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyCommand(cmd.command)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  {copiedCommand === cmd.command ? (
+                    <Badge variant="secondary" className="text-xs">Copied!</Badge>
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Scripts component - shows package.json scripts from API
+ */
+export function ScriptsComponent({ context }: { context: PluginContext }) {
+  const [scripts, setScripts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const api = useDevToolAPI()
+
+  useEffect(() => {
+    const loadScripts = async () => {
+      try {
+        setLoading(true)
+        const scriptsData = await api.devtools.cli.getScripts()
+        
+        // Transform scripts object to array with metadata
+        const transformedScripts = Object.entries(scriptsData).map(([name, command]) => ({
+          name,
+          command: command as string,
+          type: getScriptType(name)
+        }))
+        
+        setScripts(transformedScripts)
+      } catch (error) {
+        console.error('Failed to load scripts:', error)
+        // Fallback scripts if API fails
+        setScripts([
+          { name: 'dev', command: 'next dev --turbo', type: 'development' },
+          { name: 'build', command: 'next build', type: 'production' },
+          { name: 'start', command: 'next start', type: 'production' },
+          { name: 'lint', command: 'next lint', type: 'development' }
+        ])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadScripts()
+  }, [api])
+
+  const getScriptType = (name: string): string => {
+    if (name.includes('dev') || name.includes('lint') || name.includes('type-check')) {
+      return 'development'
+    }
+    if (name.includes('build') || name.includes('start')) {
+      return 'production'
+    }
+    if (name.includes('test')) {
+      return 'testing'
+    }
+    return 'other'
+  }
+
+  const getScriptBadge = (type: string) => {
+    switch (type) {
+      case 'development':
+        return <Badge variant="default">Development</Badge>
+      case 'production':
+        return <Badge variant="secondary">Production</Badge>
+      case 'testing':
+        return <Badge variant="outline">Testing</Badge>
+      default:
+        return <Badge variant="outline">Other</Badge>
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Package Scripts</CardTitle>
+            <CardDescription>
+              Loading npm/yarn scripts from package.json...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Package Scripts</CardTitle>
+          <CardDescription>
+            Available npm/yarn scripts from package.json
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {scripts.map((script, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <code className="text-sm font-medium">{script.name}</code>
+                  <code className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                    {script.command}
+                  </code>
+                </div>
+                {getScriptBadge(script.type)}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Environment component - shows environment variables from API
+ */
+export function EnvironmentComponent({ context }: { context: PluginContext }) {
+  const [envInfo, setEnvInfo] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const api = useDevToolAPI()
+
+  useEffect(() => {
+    const loadEnvironment = async () => {
+      try {
+        setLoading(true)
+        const envData = await api.devtools.cli.getEnvironmentInfo()
+        setEnvInfo(envData)
+      } catch (error) {
+        console.error('Failed to load environment info:', error)
+        // Fallback environment data
+        setEnvInfo({
+          nodeEnv: process.env.NODE_ENV || 'development',
+          port: 3000,
+          variables: {
+            'NODE_ENV': process.env.NODE_ENV || 'development',
+            'NEXT_PUBLIC_APP_URL': process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+          },
+          cwd: '/app'
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadEnvironment()
+  }, [api])
+
+  const getEnvBadge = (name: string, value: string) => {
+    if (name.startsWith('NEXT_PUBLIC_')) {
+      return <Badge variant="secondary">Public</Badge>
+    }
+    if (value === '[HIDDEN]' || name.includes('SECRET') || name.includes('KEY') || name.includes('PASSWORD')) {
+      return <Badge variant="destructive">Private</Badge>
+    }
+    if (name === 'NODE_ENV' || name === 'PORT') {
+      return <Badge variant="default">System</Badge>
+    }
+    return <Badge variant="outline">Other</Badge>
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Environment Variables</CardTitle>
+            <CardDescription>
+              Loading environment configuration...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                  <Skeleton className="h-6 w-16" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const envVars = envInfo ? Object.entries(envInfo.variables).map(([name, value]) => ({
+    name,
+    value: (value as string).length > 50 ? '[HIDDEN]' : value,
+    type: 'variable'
+  })) : []
+
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Environment Variables</CardTitle>
+          <CardDescription>
+            Current environment configuration (sensitive values hidden)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {envInfo && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+                <div className="space-y-1">
+                  <span className="text-xs font-medium text-muted-foreground">Node Environment</span>
+                  <p className="text-sm font-mono">{envInfo.nodeEnv}</p>
+                </div>
+                {envInfo.port && (
+                  <div className="space-y-1">
+                    <span className="text-xs font-medium text-muted-foreground">Port</span>
+                    <p className="text-sm font-mono">{envInfo.port}</p>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  <span className="text-xs font-medium text-muted-foreground">Working Directory</span>
+                  <p className="text-sm font-mono text-xs">{envInfo.cwd}</p>
+                </div>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              {envVars.map((env, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <code className="text-sm font-medium">{env.name}</code>
+                    <code className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded max-w-xs truncate">
+                      {env.value}
+                    </code>
+                  </div>
+                  {getEnvBadge(env.name, env.value)}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

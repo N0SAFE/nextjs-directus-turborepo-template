@@ -55,7 +55,7 @@ import { cn } from '@repo/ui/lib/utils'
 import { usePluginRegistry } from '../core/plugin-registry'
 import { useDevToolState } from '../core/devtool-state'
 import { DevToolState, PluginPage, PluginGroup, DevToolPlugin } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin } from '../core/plugins'
+import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin } from '../core/plugins'
 import { ReducedModeDisplay } from './ReducedModeDisplay'
 import { ReducedModeMenu } from './ReducedModeMenu'
 import { DevToolSettings } from './DevToolSettings'
@@ -142,7 +142,7 @@ function NormalStateBar() {
   const additionalPlugins = registry.getActivePlugins()
 
   // Core plugins that are always available
-  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
+  const corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin]
   const allPlugins = [...corePlugins, ...additionalPlugins]
   
   // Filter plugins to only show pinned ones, or default to first few if none pinned

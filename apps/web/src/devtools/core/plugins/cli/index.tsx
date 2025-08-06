@@ -1,13 +1,13 @@
 import React from 'react'
 import { oc } from '@orpc/contract'
 import { cn } from '@repo/ui/lib/utils'
-import { createPlugin, PluginUtils } from '../../sdk'
-import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './cli'
-import { CLI_HANDLER_ID } from '../../orpc-handlers'
+import { createPlugin, PluginUtils } from '../../../sdk'
+import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './components'
+import { CLI_HANDLER_ID } from '../../../orpc-handlers'
 import {
   cliCommandSchema,
   cliCommandResultSchema,
-} from '../../contracts/schemas'
+} from '../../../contracts/schemas'
 import z from 'zod/v4'
 
 // CLI Plugin ORPC Contract
