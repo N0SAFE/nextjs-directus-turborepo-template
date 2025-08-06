@@ -3,14 +3,11 @@ import { oc } from '@orpc/contract'
 import { cn } from '@repo/ui/lib/utils'
 import { createPlugin, PluginUtils } from '../../sdk'
 import { CliCommandsComponent, ScriptsComponent, EnvironmentComponent } from './cli'
-import { DevtoolsService } from '../../services/devtools.service'
+import { SERVICE_KEYS } from '../../services/registry'
 import {
   cliCommandSchema,
   cliCommandResultSchema,
 } from '../../contracts/schemas'
-
-// Create service instance for this plugin
-const devtoolsService = new DevtoolsService()
 
 // CLI Plugin ORPC Contract
 const cliContract = oc.router({
@@ -35,11 +32,24 @@ const cliContract = oc.router({
     .func(),
 })
 
-// CLI Plugin ORPC Handlers
-const cliHandlers = {
-  execute: async (input: any) => devtoolsService.executeCommand(input),
-  getScripts: async () => devtoolsService.getScripts(),
-  runScript: async (input: any) => devtoolsService.runScript(input.script, input.args),
+// CLI Plugin ORPC Handler Factory (uses dependency injection)
+function createCliHandlers(services: Record<string, any>) {
+  const devtoolsService = services[SERVICE_KEYS.DEVTOOLS_SERVICE]
+  
+  if (!devtoolsService) {
+    console.warn('[CLI Plugin] DevtoolsService not found in dependency injection')
+    return {
+      execute: async () => ({ success: false, output: '', error: 'Service not available', exitCode: 1, duration: 0 }),
+      getScripts: async () => ({}),
+      runScript: async () => ({ success: false, output: '', error: 'Service not available', exitCode: 1, duration: 0 }),
+    }
+  }
+
+  return {
+    execute: async (input: any) => devtoolsService.executeCommand(input),
+    getScripts: async () => devtoolsService.getScripts(),
+    runScript: async (input: any) => devtoolsService.runScript(input.script, input.args),
+  }
 }
 
 /**
@@ -197,10 +207,10 @@ export const cliPlugin = createPlugin(
         return { status, environment }
       }
     },
-    // ORPC contract and handlers for server communication
+    // ORPC contract and handler factory for server communication
     orpc: {
       contract: cliContract,
-      handlers: cliHandlers
+      handlerFactory: createCliHandlers
     }
   }
 )

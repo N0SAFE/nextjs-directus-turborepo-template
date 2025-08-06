@@ -51,6 +51,7 @@ export function createPlugin(
     onDeactivate?(): void | Promise<void>
     onUnregister?(): void | Promise<void>
     reduced?: import('../types').ReducedModeConfig
+    orpc?: import('../types').PluginOrpcContract
   } = {}
 ): DevToolPlugin {
   return {
@@ -62,6 +63,7 @@ export function createPlugin(
     onDeactivate: pluginOptions.onDeactivate,
     onUnregister: pluginOptions.onUnregister,
     reduced: pluginOptions.reduced,
+    orpc: pluginOptions.orpc,
   }
 }
 
@@ -80,6 +82,7 @@ export function createSimplePlugin(
     onDeactivate?(): void | Promise<void>
     onUnregister?(): void | Promise<void>
     reduced?: import('../types').ReducedModeConfig
+    orpc?: import('../types').PluginOrpcContract
   } = {}
 ): DevToolPlugin {
   return createPlugin(

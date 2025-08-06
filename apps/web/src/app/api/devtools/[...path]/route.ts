@@ -2,6 +2,10 @@ import { os } from '@orpc/server'
 import { RPCHandler } from '@orpc/server/fetch'
 import { resolveOrpcContractFromPlugins, resolveOrpcHandlerFromPlugins } from '../../../../devtools/contracts'
 import { devToolPluginManager } from '../../../../devtools/core/plugin-manager'
+import { initializeServerServices } from '../../../../devtools/services/server-setup'
+
+// Initialize server-side services for dependency injection
+initializeServerServices()
 
 // Get all plugins from the plugin manager
 const plugins = devToolPluginManager.getAllPlugins()

@@ -166,8 +166,10 @@ export interface ReducedModeConfig {
 export interface PluginOrpcContract {
   /** The ORPC contract router for this plugin */
   contract: any
-  /** The handlers implementation for the contract */
-  handlers: any
+  /** The handlers implementation for the contract (client-side safe) */
+  handlers?: any
+  /** Factory function to create handlers with injected services (server-side only) */
+  handlerFactory?: (services: Record<string, any>) => any
 }
 
 /**
