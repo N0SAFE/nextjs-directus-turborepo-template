@@ -19,8 +19,8 @@ jobs:
         timeout-minutes: 10
         env:
             # Essential environment variables for linting/type checking
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
             NEXT_PUBLIC_APP_URL: http://localhost:3003/
@@ -71,8 +71,8 @@ jobs:
         needs: lint-and-typecheck
         env:
             # API Configuration
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
 
@@ -140,8 +140,8 @@ jobs:
         needs: lint-and-typecheck
         env:
             # API Configuration
-            NEXT_PUBLIC_API_URL: http://localhost:8055/
-            NEXT_PUBLIC_API_PORT: 8055
+            API_URL: http://localhost:8055/
+            API_PORT: 8055
             API_PING_PATH: /server/health
             API_ADMIN_TOKEN: ci-test-admin-token
 
@@ -204,8 +204,8 @@ jobs:
     #     if: always() && needs.build-and-test.result == 'success'
     #     env:
     #         # API Configuration
-    #         NEXT_PUBLIC_API_URL: http://localhost:8055/
-    #         NEXT_PUBLIC_API_PORT: 8055
+    #         API_URL: http://localhost:8055/
+    #         API_PORT: 8055
     #         API_PING_PATH: /server/health
     #         API_ADMIN_TOKEN: ci-test-admin-token
 
