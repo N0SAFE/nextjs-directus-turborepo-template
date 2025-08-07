@@ -34,7 +34,6 @@
     },
     "dependencies": {
         "@better-fetch/fetch": "catalog:auth",
-        "better-auth": "catalog:auth",
         "@million/lint": "^1.0.14",
         "@n0safe/envcli": "^1.0.2",
         "@next/bundle-analyzer": "catalog:next",
@@ -47,6 +46,7 @@
         "@tanstack/react-query": "catalog:query",
         "@tanstack/react-query-devtools": "catalog:query",
         "babel-plugin-react-compiler": "^19.1.0-rc.2",
+        "better-auth": "catalog:auth",
         "circular-json": "^0.5.9",
         "concurrently": "catalog:dev",
         "cross-env": "catalog:dev",
@@ -59,6 +59,7 @@
         "query-string": "catalog:utils",
         "react": "catalog:react",
         "react-dom": "catalog:react",
+        "react-use": "^17.6.0",
         "zod": "catalog:utils",
         "zustand": "catalog:utils"
     },

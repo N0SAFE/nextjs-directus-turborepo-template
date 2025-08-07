@@ -1,0 +1,5 @@
+export { routesPlugin } from './routes'
+export { bundlesPlugin } from './bundles'
+export { cliPlugin } from './cli'
+export { logsPlugin } from './logs'
+export { authPlugin } from './auth'
