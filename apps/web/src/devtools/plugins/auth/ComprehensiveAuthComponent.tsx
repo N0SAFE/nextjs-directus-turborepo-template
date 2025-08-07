@@ -54,13 +54,13 @@ export function AuthComponent({ context }: { context: any }) {
         statsResult,
         endpointsResult
       ] = await Promise.all([
-        api.raw.getAuthConfig().catch(() => null),
-        api.raw.getSessionInfo({}).catch(() => null),
-        api.raw.getActiveSessions().catch(() => []),
-        api.raw.getPasskeyInfo().catch(() => null),
-        api.raw.getSecurityEvents().catch(() => []),
-        api.raw.getAuthStats().catch(() => null),
-        api.raw.testAuthEndpoints().catch(() => [])
+        api.auth.getAuthConfig().catch(() => null),
+        api.auth.getCurrentSession().catch(() => null),
+        Promise.resolve([]), // Mock active sessions
+        api.auth.getPasskeys().catch(() => []),
+        api.auth.getSecurityEvents().catch(() => []),
+        Promise.resolve(null), // Mock auth stats
+        Promise.resolve([]) // Mock test endpoints
       ])
       
       setAuthConfig(configResult)

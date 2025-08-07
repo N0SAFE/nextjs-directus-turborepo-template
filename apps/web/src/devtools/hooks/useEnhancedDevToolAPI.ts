@@ -25,7 +25,7 @@ export function useEnhancedDevToolAPI() {
       setIsRouteChanging(true)
       try {
         // Update route info in real-time when route changes
-        const currentRoute = await api.routes.getCurrentRoute()
+        const currentRoute = await api['core-routes'].getCurrentRoute()
         setRouteInfo(currentRoute)
         
         // Notify other components about route change
@@ -40,7 +40,7 @@ export function useEnhancedDevToolAPI() {
     }
 
     updateRouteInfo()
-  }, [pathname, searchParams, isRouteChanging])
+  }, [pathname, searchParams]) // Removed api and isRouteChanging to prevent infinite loops
 
   /**
    * Auto-refresh functionality for time-sensitive data
@@ -84,16 +84,16 @@ export function useEnhancedDevToolAPI() {
   /**
    * Safe API call wrapper that handles missing methods gracefully
    */
-  const safeApiCall = useCallback(async (pluginId: string, method: string, input?: any) => {
+  const safeApiCall = useCallback(async (pluginId: keyof typeof api, method: string, input?: any) => {
     try {
-      const plugin = (api as any)?.[pluginId]
-      if (plugin && typeof plugin[method] === 'function') {
-        return await plugin[method](input)
+      const plugin = api[pluginId]
+      if (plugin && typeof (plugin as any)[method] === 'function') {
+        return await (plugin as any)[method](input)
       }
-      console.warn(`API method ${pluginId}.${method} not available`)
+      console.warn(`API method ${String(pluginId)}.${method} not available`)
       return null
     } catch (error) {
-      console.error(`API call failed: ${pluginId}.${method}`, error)
+      console.error(`API call failed: ${String(pluginId)}.${method}`, error)
       return null
     }
   }, [api])
@@ -114,22 +114,23 @@ export function useEnhancedDevToolAPI() {
         window.addEventListener('devtools:route-changed', handler as EventListener)
         return () => window.removeEventListener('devtools:route-changed', handler as EventListener)
       },
-      getRoutes: () => safeApiCall('core-routes', 'getRoutes'),
-      getCurrentRoute: () => safeApiCall('core-routes', 'getCurrentRoute'),
-      analyzeRoute: (input: any) => safeApiCall('core-routes', 'analyzeRoute', input),
-      getRouteStats: () => safeApiCall('core-routes', 'getRouteStats'),
-      testApiEndpoints: () => safeApiCall('core-routes', 'testApiEndpoints')
+      getRoutes: () => api['core-routes'].getRoutes(),
+      getCurrentRoute: () => api['core-routes'].getCurrentRoute(),
+      analyzeRoute: (input: any) => api['core-routes'].analyzeRoute(input),
+      getRouteStats: () => api['core-routes'].getRouteStats(),
+      testApiEndpoints: () => api['core-routes'].testApiEndpoints()
     },
 
     // Enhanced logs API
     logs: {
-      getLogs: (input?: any) => safeApiCall('core-logs', 'getLogs', input),
-      getProcessInfo: () => safeApiCall('core-logs', 'getProcessInfo'),
-      clearLogs: () => safeApiCall('core-logs', 'clearLogs'),
+      getLogs: (input?: any) => api['core-logs'].getLogs(input),
+      getProcessInfo: () => api['core-logs'].getProcessInfo(),
+      getLogStats: () => api['core-logs'].getLogStats(),
+      clearLogs: () => api['core-logs'].clearLogs(),
       subscribeToLogs: (callback: (logs: any[]) => void) => {
         return setAutoRefresh('logs', async () => {
           try {
-            const logs = await safeApiCall('core-logs', 'getLogs') || []
+            const logs = await api['core-logs'].getLogs() || []
             callback(logs)
           } catch (error) {
             console.error('Failed to fetch logs:', error)
@@ -141,14 +142,14 @@ export function useEnhancedDevToolAPI() {
 
     // Enhanced auth API
     auth: {
-      getAuthConfig: () => safeApiCall('core-auth', 'getAuthConfig'),
-      getCurrentSession: () => safeApiCall('core-auth', 'getCurrentSession'),
-      getSecurityEvents: () => safeApiCall('core-auth', 'getSecurityEvents'),
-      getPasskeys: () => safeApiCall('core-auth', 'getPasskeys'),
+      getAuthConfig: () => api['core-auth'].getAuthConfig(),
+      getCurrentSession: () => api['core-auth'].getCurrentSession(),
+      getSecurityEvents: () => api['core-auth'].getSecurityEvents(),
+      getPasskeys: () => api['core-auth'].getPasskeys(),
       subscribeToSessionChanges: (callback: (session: any) => void) => {
         return setAutoRefresh('auth-session', async () => {
           try {
-            const session = await safeApiCall('core-auth', 'getCurrentSession') || {}
+            const session = await api['core-auth'].getCurrentSession() || {}
             callback(session)
           } catch (error) {
             console.error('Failed to fetch session:', error)
@@ -160,13 +161,13 @@ export function useEnhancedDevToolAPI() {
 
     // Enhanced CLI API
     cli: {
-      execute: (input: any) => safeApiCall('core-cli', 'execute', input),
-      getEnvironment: () => safeApiCall('core-cli', 'getEnvironment'),
-      getSystemInfo: () => safeApiCall('core-cli', 'getSystemInfo'),
+      execute: (input: any) => api['core-cli'].execute(input),
+      getEnvironment: () => api['core-cli'].getEnvironment(),
+      getSystemInfo: () => api['core-cli'].getSystemInfo(),
       subscribeToEnvironmentChanges: (callback: (env: any) => void) => {
         return setAutoRefresh('cli-env', async () => {
           try {
-            const env = await safeApiCall('core-cli', 'getEnvironment') || {}
+            const env = await api['core-cli'].getEnvironment() || {}
             callback(env)
           } catch (error) {
             console.error('Failed to fetch environment:', error)
@@ -178,13 +179,13 @@ export function useEnhancedDevToolAPI() {
 
     // Enhanced bundles API
     bundles: {
-      getBundleStats: () => safeApiCall('core-bundles', 'getBundleStats'),
-      getDependencies: () => safeApiCall('core-bundles', 'getDependencies'),
-      analyzeDependencies: () => safeApiCall('core-bundles', 'analyzeDependencies'),
+      getBundleStats: () => api['core-bundles'].getBundleStats(),
+      getDependencies: () => api['core-bundles'].getDependencies(),
+      analyzeDependencies: () => api['core-bundles'].analyzeDependencies(),
       subscribeToBundleChanges: (callback: (stats: any) => void) => {
         return setAutoRefresh('bundle-stats', async () => {
           try {
-            const stats = await safeApiCall('core-bundles', 'getBundleStats') || {}
+            const stats = await api['core-bundles'].getBundleStats() || {}
             callback(stats)
           } catch (error) {
             console.error('Failed to fetch bundle stats:', error)

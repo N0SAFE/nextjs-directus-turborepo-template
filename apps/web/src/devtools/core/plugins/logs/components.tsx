@@ -359,7 +359,7 @@ export function ProcessInfoComponent({ context }: { context: PluginContext }) {
     const loadProcessInfo = async () => {
       try {
         setLoading(true)
-        const info = await api.raw.logs.getProcessInfo()
+        const info = await api.logs.getProcessInfo()
         setProcessInfo(info)
       } catch (error) {
         console.error('Failed to load process info:', error)

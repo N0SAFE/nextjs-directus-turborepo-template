@@ -24,15 +24,15 @@ export function BundleAnalysisComponent({ context }: { context: PluginContext })
     const loadBundleData = async () => {
       try {
         setLoading(true)
-        const [analysis, stats, optimizations] = await Promise.all([
-          api.raw.bundles.getBundleAnalysis(),
-          api.raw.bundles.getBuildStats(),
-          api.raw.bundles.getOptimizationSuggestions()
+        const [bundleStats, dependencies, analysis] = await Promise.all([
+          api.bundles.getBundleStats(),
+          api.bundles.getDependencies(),
+          api.bundles.analyzeDependencies()
         ])
         
-        setBundleData(analysis)
-        setBuildStats(stats)
-        setSuggestions(optimizations)
+        setBundleData(bundleStats)
+        setBuildStats(dependencies)
+        setSuggestions(analysis)
       } catch (error) {
         console.error('Failed to load bundle data:', error)
         // Fallback data
@@ -40,9 +40,9 @@ export function BundleAnalysisComponent({ context }: { context: PluginContext })
           totalSize: 1024000, // 1MB
           gzippedSize: 358400, // 350KB
           chunks: [
-            { name: 'main', size: 245200, gzippedSize: 85820, files: ['main.js'] },
-            { name: 'vendor', size: 892100, gzippedSize: 312470, files: ['vendor.js'] },
-            { name: 'css', size: 28400, gzippedSize: 9940, files: ['styles.css'] }
+            { name: 'main', size: 245200, type: 'javascript' },
+            { name: 'vendor', size: 892100, type: 'javascript' },
+            { name: 'css', size: 28400, type: 'stylesheet' }
           ],
           assets: [
             { name: 'main.js', size: 245200, type: 'javascript' },
@@ -275,7 +275,7 @@ export function DependenciesComponent({ context }: { context: PluginContext }) {
     const loadDependencies = async () => {
       try {
         setLoading(true)
-        const deps = await api.raw.bundles.getDependencies()
+        const deps = await api.bundles.getDependencies()
         setDependencies(deps)
       } catch (error) {
         console.error('Failed to load dependencies:', error)

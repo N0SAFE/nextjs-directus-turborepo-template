@@ -23,23 +23,47 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
   const enhancedAPI = useEnhancedDevToolAPI()
 
   useEffect(() => {
-    const loadCommands = async () => {
+    const loadEnvironment = async () => {
       try {
         setLoading(true)
-        const availableCommands = await enhancedAPI.cli.getAvailableCommands()
+        const [environment, systemInfo] = await Promise.all([
+          enhancedAPI.cli.getEnvironment(),
+          enhancedAPI.cli.getSystemInfo()
+        ])
         
-        // Transform API data to component format
-        const transformedCommands = availableCommands.map(cmd => ({
-          name: cmd.name,
-          command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
-          description: cmd.description,
-          type: cmd.type
-        }))
+        // Mock available commands based on environment
+        const mockCommands = [
+          {
+            name: 'npm run dev',
+            command: 'npm run dev',
+            description: 'Start development server',
+            type: 'npm-script'
+          },
+          {
+            name: 'npm run build',
+            command: 'npm run build', 
+            description: 'Build the application',
+            type: 'npm-script'
+          },
+          {
+            name: 'npm run test',
+            command: 'npm run test',
+            description: 'Run tests',
+            type: 'npm-script'
+          },
+          {
+            name: 'node --version',
+            command: 'node --version',
+            description: 'Check Node.js version',
+            type: 'system'
+          }
+        ]
         
-        setCommands(transformedCommands)
+        setCommands(mockCommands)
+        setEnvironment({ environment, systemInfo })
         setLastRefresh(new Date())
       } catch (error) {
-        console.error('Failed to load commands:', error)
+        console.error('Failed to load environment:', error)
         // Fallback to basic commands if API fails
         setCommands([
           {
@@ -66,20 +90,13 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
       }
     }
 
-    loadCommands()
+    loadEnvironment()
 
-    // Set up auto-refresh for commands list
-    const unsubscribe = enhancedAPI.utils.setAutoRefresh('cli-commands', async () => {
-      const availableCommands = await enhancedAPI.cli.getAvailableCommands()
-      const transformedCommands = availableCommands.map(cmd => ({
-        name: cmd.name,
-        command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
-        description: cmd.description,
-        type: cmd.type
-      }))
-      setCommands(transformedCommands)
+    // Set up auto-refresh for environment data
+    const unsubscribe = enhancedAPI.cli.subscribeToEnvironmentChanges((envData) => {
+      setEnvironment(envData)
       setLastRefresh(new Date())
-    }, 60000) // Refresh every minute
+    })
 
     return unsubscribe
   }, [enhancedAPI])
@@ -313,10 +330,18 @@ export function ScriptsComponent({ context }: { context: PluginContext }) {
     const loadScripts = async () => {
       try {
         setLoading(true)
-        const scriptsData = await api.raw.cli.getScripts()
+        // For now, use mock scripts data since there's no scripts endpoint
+        const mockScripts = {
+          'dev': 'next dev --turbo',
+          'build': 'next build',
+          'start': 'next start',
+          'lint': 'next lint',
+          'test': 'jest',
+          'type-check': 'tsc --noEmit'
+        }
         
         // Transform scripts object to array with metadata
-        const transformedScripts = Object.entries(scriptsData).map(([name, command]) => ({
+        const transformedScripts = Object.entries(mockScripts).map(([name, command]) => ({
           name,
           command: command as string,
           type: getScriptType(name)

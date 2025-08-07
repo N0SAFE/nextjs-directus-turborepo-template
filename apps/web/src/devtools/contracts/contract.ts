@@ -171,6 +171,17 @@ const logsContract = oc.router({
       })
     })),
   
+  getLogStats: oc
+    .output(z.object({
+      totalLogs: z.number(),
+      errorCount: z.number(),
+      warningCount: z.number(),
+      infoCount: z.number(),
+      debugCount: z.number(),
+      averageLogsPerMinute: z.number(),
+      lastLogTime: z.string().optional()
+    })),
+  
   clearLogs: oc
     .output(z.object({ success: z.boolean() }))
 })
