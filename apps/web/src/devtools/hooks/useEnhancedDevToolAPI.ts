@@ -24,14 +24,8 @@ export function useEnhancedDevToolAPI() {
       
       setIsRouteChanging(true)
       try {
-        // Create route info from current navigation state to avoid API calls that might not be ready
-        const currentRoute = {
-          pathname,
-          routeName: pathname === '/' ? 'Home' : pathname.split('/').filter(Boolean).pop() || pathname,
-          params: {},
-          query: Object.fromEntries(searchParams.entries())
-        }
-        
+        // Update route info in real-time when route changes
+        const currentRoute = await api.routes.getCurrentRoute()
         setRouteInfo(currentRoute)
         
         // Notify other components about route change

@@ -48,6 +48,8 @@ class DevToolPluginManager {
    * Get all registered plugins as an array with their specific types
    */
   getAllPlugins(): DevToolPlugin[] {
+    console.debug('[DevToolPluginManager] Getting all plugins')
+    console.debug('[DevToolPluginManager] Core plugins:', this.corePlugins.map(p => p.metadata.id))
     return Array.from(this.plugins.values())
   }
 

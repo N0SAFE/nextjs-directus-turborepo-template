@@ -18,6 +18,8 @@ export function DevToolProvider({ plugins = [] }: DevToolProviderProps) {
   const registry = usePluginRegistry()
   const registeredPluginsRef = useRef<Set<string>>(new Set())
 
+  console.debug('DevToolProvider initialized with plugins:', plugins.map(p => p.metadata.id))
+
   useEffect(() => {
     // Register provided plugins that haven't been registered yet
     plugins.forEach(plugin => {

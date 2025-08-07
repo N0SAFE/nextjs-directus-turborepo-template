@@ -3,7 +3,7 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { DevToolPlugin, PluginRegistry, PluginRegistryState, PluginPage } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin } from './plugins'
+import { routesPlugin, bundlesPlugin, cliPlugin, authPlugin } from './plugins'
 
 interface PluginRegistryStore extends PluginRegistryState, PluginRegistry {
   // Additional methods for core plugins
@@ -13,7 +13,7 @@ interface PluginRegistryStore extends PluginRegistryState, PluginRegistry {
 }
 
 // Core plugins that are always available
-const CORE_PLUGINS: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin]
+const CORE_PLUGINS: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, authPlugin]
 
 /**
  * Plugin registry store using Zustand

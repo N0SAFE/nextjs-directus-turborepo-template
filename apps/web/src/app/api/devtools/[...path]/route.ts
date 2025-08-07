@@ -32,12 +32,15 @@ const router = os.router(procedures)
 // Create the RPC handler for Next.js
 const handler = new RPCHandler(router)
 
-export async function GET(request: Request) {
+async function handleRequest(request: Request) {
+  console.debug('Handling request in DevTool ORPC route')
   const result = await handler.handle(request)
   return result.matched ? result.response : new Response('Not Found', { status: 404 })
 }
 
-export async function POST(request: Request) {
-  const result = await handler.handle(request)
-  return result.matched ? result.response : new Response('Not Found', { status: 404 })
-}
+export const HEAD = handleRequest
+export const GET = handleRequest
+export const POST = handleRequest
+export const PUT = handleRequest
+export const PATCH = handleRequest
+export const DELETE = handleRequest

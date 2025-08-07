@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollText, Activity, Search, Trash2, RefreshCw, AlertCircle, AlertTriangle, Info, Bug, Play, Pause } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { useDevToolAPI } from '@/devtools/hooks'
 
 /**
  * Enhanced Logs Viewer component with real-time streaming and advanced filtering
@@ -24,7 +25,7 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
   const [isStreaming, setIsStreaming] = useState(false)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const enhancedAPI = useEnhancedDevToolAPI()
-  const intervalRef = useRef<NodeJS.Timeout>()
+  const intervalRef = useRef<NodeJS.Timeout>(null)
 
   const loadLogs = async () => {
     try {
@@ -154,16 +155,6 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
 
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString()
-  }
-
-  const clearLogs = async () => {
-    try {
-      await api.raw.logs.clearLogs({ level: levelFilter === 'all' ? undefined : levelFilter as any })
-      loadLogs()
-    } catch (error) {
-      console.error('Failed to clear logs:', error)
-      alert('Failed to clear logs')
-    }
   }
 
   if (loading) {

@@ -8,6 +8,7 @@ import { Skeleton } from '@repo/ui/components/shadcn/skeleton'
 import { Terminal, Copy, Play, Loader2, RefreshCw, Activity } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { useDevToolAPI } from '@/devtools/hooks'
 
 /**
  * Enhanced CLI Commands component with real-time command execution and monitoring
@@ -434,7 +435,7 @@ export function EnvironmentComponent({ context }: { context: PluginContext }) {
     const loadEnvironment = async () => {
       try {
         setLoading(true)
-        const envData = await api.raw.cli.getEnvironmentInfo()
+        const envData = await api.cli.getEnvironmentInfo()
         setEnvInfo(envData)
       } catch (error) {
         console.error('Failed to load environment info:', error)
