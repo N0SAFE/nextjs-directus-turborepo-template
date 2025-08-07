@@ -8,6 +8,7 @@ import { createPlugin, PluginUtils } from '../../../sdk'
 import { AuthComponent } from './components'
 import z from 'zod/v4'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { AUTH_HANDLER_ID } from '../../../orpc-handlers/constants'
 
 // Auth Plugin ORPC Contract
 const authContract = oc.router({
@@ -317,7 +318,7 @@ export const authPlugin = createPlugin(
     // ORPC contract and identifier for server communication
     orpc: {
       contract: authContract,
-      identifier: 'auth-handler'
+      identifier: AUTH_HANDLER_ID
     }
   }
 )

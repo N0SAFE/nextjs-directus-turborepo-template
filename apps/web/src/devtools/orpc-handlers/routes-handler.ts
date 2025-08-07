@@ -118,6 +118,3 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
     },
   }
 }
-
-// Export unique identifier for this handler
-export const ROUTES_HANDLER_ID = 'routes-handler'

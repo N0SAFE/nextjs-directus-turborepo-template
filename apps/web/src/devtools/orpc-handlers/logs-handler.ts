@@ -3,11 +3,6 @@ import * as path from 'path'
 import * as os from 'os'
 
 /**
- * Unique identifier for logs ORPC handlers
- */
-export const LOGS_HANDLER_ID = 'logs-handler'
-
-/**
  * Mock log data for development
  */
 const mockLogs = [

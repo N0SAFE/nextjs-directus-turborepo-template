@@ -73,5 +73,3 @@ export function createAuthHandlers(services: Record<string, unknown>) {
   }
 }
 
-// Export unique identifier for this handler
-export const AUTH_HANDLER_ID = 'auth-handler'

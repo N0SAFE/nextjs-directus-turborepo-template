@@ -1,11 +1,21 @@
 import { DevToolPlugin } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin } from '../core/plugins'
+import { corePluginServerDefinitions, ServerPluginDefinition } from './plugins/server-definitions'
 
-// Define the specific core plugins tuple for better typing
-const corePluginsList = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin] as const
+// Convert server definitions to DevToolPlugin format for compatibility
+function createPluginFromServerDefinition(def: ServerPluginDefinition): DevToolPlugin {
+  return {
+    metadata: def.metadata,
+    groups: [], // Server-side doesn't need groups (React components)
+    enabled: def.enabled,
+    orpc: def.orpc
+  }
+}
 
-// Extract the specific types from the core plugins
-type CorePluginTypes = typeof corePluginsList[number]
+// Convert server definitions to DevToolPlugin objects
+const corePluginsList = corePluginServerDefinitions.map(createPluginFromServerDefinition)
+
+// Extract the specific types from the core plugins  
+type CorePluginTypes = DevToolPlugin
 
 /**
  * Plugin manager for server-side access to DevTool plugins
@@ -17,8 +27,20 @@ class DevToolPluginManager {
   private corePlugins: readonly DevToolPlugin[] = corePluginsList
 
   private constructor() {
-    // Register core plugins on instantiation
-    this.corePlugins.forEach(plugin => {
+    // Register core plugins on instantiation - using server definitions
+    this.corePlugins.forEach((plugin, index) => {
+      if (!plugin) {
+        console.error(`[DevToolPluginManager] Plugin at index ${index} is undefined`)
+        return
+      }
+      if (!plugin.metadata) {
+        console.error(`[DevToolPluginManager] Plugin at index ${index} has no metadata:`, plugin)
+        return
+      }
+      if (!plugin.metadata.id) {
+        console.error(`[DevToolPluginManager] Plugin at index ${index} has no metadata.id:`, plugin.metadata)
+        return
+      }
       this.plugins.set(plugin.metadata.id, plugin)
     })
   }
@@ -105,7 +127,8 @@ class DevToolPluginManager {
    */
   clearAdditionalPlugins(): void {
     const corePluginIds = new Set(this.corePlugins.map(p => p.metadata.id))
-    for (const [pluginId] of this.plugins) {
+    const pluginEntries = Array.from(this.plugins.entries())
+    for (const [pluginId] of pluginEntries) {
       if (!corePluginIds.has(pluginId)) {
         this.plugins.delete(pluginId)
       }

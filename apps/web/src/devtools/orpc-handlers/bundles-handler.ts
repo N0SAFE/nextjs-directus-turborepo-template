@@ -65,6 +65,12 @@ export function createBundlesHandlers(services: Record<string, unknown>) {
             severity: 'moderate' as const,
             via: 'transitive dependency',
             title: 'Example vulnerability for demo',
+          },
+          {
+            name: 'critical-vuln',
+            severity: 'critical' as const,
+            via: 'direct dependency',
+            title: 'Critical vulnerability example',
           }
         ]
 
@@ -192,5 +198,3 @@ export function createBundlesHandlers(services: Record<string, unknown>) {
   }
 }
 
-// Export unique identifier for this handler
-export const BUNDLES_HANDLER_ID = 'bundles-handler'
