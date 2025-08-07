@@ -272,13 +272,14 @@ const authContract = oc.router({
   
   getActiveSessions: oc
     .output(z.array(z.object({
-      sessionId: z.string(),
+      id: z.string(),
       userId: z.string(),
       createdAt: z.string(),
       lastActivity: z.string(),
       ipAddress: z.string(),
       userAgent: z.string(),
-      isActive: z.boolean()
+      isActive: z.boolean(),
+      location: z.string().optional()
     }))),
   
   getPasskeyInfo: oc
@@ -303,34 +304,34 @@ const authContract = oc.router({
       id: z.string(),
       type: z.string(),
       timestamp: z.string(),
-      userId: z.string().optional(),
-      sessionId: z.string().optional(),
-      ipAddress: z.string().optional(),
-      userAgent: z.string().optional(),
-      severity: z.enum(['low', 'medium', 'high', 'critical']),
-      details: z.record(z.string(), z.any()).optional()
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      location: z.string(),
+      success: z.boolean(),
+      details: z.string()
     }))),
   
   getAuthStats: oc
     .output(z.object({
-      totalUsers: z.number(),
-      activeUsers: z.number(),
       activeSessions: z.number(),
+      totalSessions: z.number(),
+      registeredPasskeys: z.number(),
       recentLogins: z.number(),
-      recentSignups: z.number(),
+      successRate: z.number(),
       securityEvents: z.number(),
-      passkeyUsers: z.number(),
-      twoFactorUsers: z.number()
+      suspiciousActivity: z.number(),
+      lastLogin: z.string()
     })),
   
   testAuthEndpoints: oc
     .output(z.array(z.object({
-      endpoint: z.string(),
+      path: z.string(),
       method: z.string(),
-      status: z.number(),
-      responseTime: z.number(),
+      description: z.string(),
       success: z.boolean(),
-      error: z.string().optional()
+      status: z.number(),
+      duration: z.number(),
+      response: z.record(z.string(), z.any())
     })))
 })
 

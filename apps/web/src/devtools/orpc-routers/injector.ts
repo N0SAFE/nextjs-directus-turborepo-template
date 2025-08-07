@@ -1,6 +1,6 @@
 import { DevToolPlugin } from '../types'
 import { OrpcRouterEntry, getOrpcRouterById } from '../orpc-routers'
-import { serviceRegistry } from '../services/registry'
+import { serviceRegistry, SERVICE_KEYS } from '../services/registry'
 
 /**
  * Injectable service that matches plugins with their ORPC routers
@@ -59,13 +59,8 @@ export class DevToolOrpcInjector {
     
     // Only get services on server-side
     if (typeof window === 'undefined') {
-      // Get all service keys and their values from the registry
-      // Note: ServiceRegistry doesn't expose all keys, so we'll use known service keys
-      const knownServiceKeys = [
-        'devtools-service',
-        'build-service', // Future service
-        // Add more service keys as needed
-      ]
+      // Get all registered service keys and their values from the registry
+      const knownServiceKeys = Object.values(SERVICE_KEYS)
       
       for (const key of knownServiceKeys) {
         const service = serviceRegistry.get(key)

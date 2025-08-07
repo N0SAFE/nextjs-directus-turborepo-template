@@ -14,7 +14,7 @@ const plugins = devToolPluginManager.getAllPlugins()
 // Inject services from plugins using the new system
 const devtoolHandlers = DevToolOrpcInjector.injectServiceFromPlugins(plugins, allOrpcRouterList)
 
-// Create the router using the contract and combined handlers
+// Create the router by implementing the contract with the handlers
 const router = os.router(devtoolsContract, devtoolHandlers)
 
 // Create the RPC handler for Next.js
