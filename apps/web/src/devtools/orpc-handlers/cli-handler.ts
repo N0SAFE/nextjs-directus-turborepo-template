@@ -1,4 +1,5 @@
 import { SERVICE_KEYS } from '../services/registry'
+import { CLI_HANDLER_ID } from './constants'
 
 /**
  * CLI Plugin ORPC Handler Factory (uses dependency injection)
@@ -46,5 +47,5 @@ export function createCliHandlers(services: Record<string, unknown>) {
   }
 }
 
-// Export unique identifier for this handler
-export const CLI_HANDLER_ID = 'cli-handler'
+// Export unique identifier for this handler (imported from constants to avoid circular imports)
+export { CLI_HANDLER_ID }

@@ -3,7 +3,6 @@ import { RPCHandler } from '@orpc/server/fetch'
 import { initializeServerServices } from '../../../../devtools/services/server-setup'
 import { DevToolOrpcInjector, allOrpcRouterList } from '../../../../devtools/orpc-routers'
 import { devToolPluginManager } from '../../../../devtools/core/plugin-manager'
-import { devtoolsContract } from '../../../../devtools/contracts/contract'
 
 // Initialize server-side services for dependency injection
 initializeServerServices()

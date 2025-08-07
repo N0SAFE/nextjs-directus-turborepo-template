@@ -1,4 +1,5 @@
 import { SERVICE_KEYS } from '../services/registry'
+import { ROUTES_HANDLER_ID } from './constants'
 
 /**
  * Routes Plugin ORPC Handler Factory (uses dependency injection)

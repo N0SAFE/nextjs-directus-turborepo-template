@@ -1,10 +1,12 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { BundleAnalysisComponent, DependenciesComponent } from './components'
-import { BUNDLES_HANDLER_ID } from '../../../orpc-handlers'
 import z from 'zod/v4'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { BUNDLES_HANDLER_ID } from '../../../orpc-handlers/constants'
 
 // Bundles Plugin ORPC Contract
 const bundlesContract = oc.router({

@@ -1,8 +1,10 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './components'
-import { ROUTES_HANDLER_ID } from '../../../orpc-handlers'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { ROUTES_HANDLER_ID } from '../../../orpc-handlers/constants'
 
 /**
  * Enhanced custom component for Routes reduced mode display with real-time updates

@@ -1,10 +1,12 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
 import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { LogsViewerComponent, ProcessInfoComponent } from './components'
-import { LOGS_HANDLER_ID } from '../../../orpc-handlers'
 import z from 'zod/v4'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
+import { LOGS_HANDLER_ID } from '../../../orpc-handlers/constants'
 
 // Logs Plugin ORPC Contract
 const logsContract = oc.router({
