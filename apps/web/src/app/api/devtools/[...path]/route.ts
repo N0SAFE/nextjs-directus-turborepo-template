@@ -46,10 +46,9 @@ async function handleRequest(request: Request) {
       return new Response('Request Timeout', { status: 504 })
     }
     
-    return new Response('Internal Server Error', { 
+    return new Response(JSON.stringify({ error: error.message || 'Unknown error' }), { 
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: error.message || 'Unknown error' })
+      headers: { 'Content-Type': 'application/json' }
     })
   }
 }
