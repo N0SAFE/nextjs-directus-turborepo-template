@@ -195,28 +195,71 @@ export class DevtoolsService {
     try {
       const routes = [];
       
-      // Get Next.js routes from app directory
-      const appDir = path.join(this.projectRoot, 'src', 'app');
-      if (await this.pathExists(appDir)) {
-        const appRoutes = await this.discoverAppRoutes(appDir);
-        routes.push(...appRoutes);
-      }
-
-      // Get API routes
-      const apiDir = path.join(this.projectRoot, 'src', 'app', 'api');
-      if (await this.pathExists(apiDir)) {
-        const apiRoutes = await this.discoverApiRoutes(apiDir);
-        routes.push(...apiRoutes);
-      }
-
+      // Get Next.js routes from app directory with timeout
+      const routePromise = Promise.race([
+        this.discoverAllRoutes(),
+        new Promise<any[]>((_, reject) => 
+          setTimeout(() => reject(new Error('Route discovery timeout')), 30000)
+        )
+      ]);
+      
+      const discoveredRoutes = await routePromise;
+      routes.push(...discoveredRoutes);
+      
       return routes;
     } catch (error) {
       console.error('Error discovering routes:', error);
-      return [];
+      return [{
+        path: '/',
+        type: 'page',
+        file: '/src/app/page.tsx',
+        dynamic: false,
+      }]; // Return minimal fallback
     }
   }
 
-  private async discoverAppRoutes(appDir: string, basePath = ''): Promise<any[]> {
+  private async discoverAllRoutes(): Promise<any[]> {
+    const routes = [];
+    
+    // Get Next.js routes from app directory
+    const appDir = path.join(this.projectRoot, 'src', 'app');
+    if (await this.pathExists(appDir)) {
+      const appRoutes = await this.discoverAppRoutes(appDir);
+      routes.push(...appRoutes);
+    }
+
+    // Get API routes
+    const apiDir = path.join(this.projectRoot, 'src', 'app', 'api');
+    if (await this.pathExists(apiDir)) {
+      const apiRoutes = await this.discoverApiRoutes(apiDir);
+      routes.push(...apiRoutes);
+    }
+    
+    return routes;
+  }
+
+  private async discoverAppRoutes(appDir: string, basePath = '', depth = 0, visited = new Set<string>()): Promise<any[]> {
+    // Prevent infinite recursion - limit depth and track visited directories
+    if (depth > 10) {
+      console.warn('Route discovery depth limit reached for:', appDir);
+      return [];
+    }
+    
+    // Use safer path resolution
+    let realPath: string;
+    try {
+      realPath = await fs.realpath(appDir);
+    } catch {
+      // If realpath fails (e.g. in Docker), use the original path
+      realPath = path.resolve(appDir);
+    }
+    
+    if (visited.has(realPath)) {
+      console.warn('Circular directory reference detected:', realPath);
+      return [];
+    }
+    visited.add(realPath);
+    
     const routes = [];
     
     try {
@@ -227,13 +270,15 @@ export class DevtoolsService {
         const routePath = path.join(basePath, file.name);
         
         if (file.isDirectory()) {
-          // Skip certain directories
-          if (['api', '(groups)', 'globals.css'].includes(file.name)) {
+          // Skip certain directories and node_modules
+          if (['api', '(groups)', 'globals.css', 'node_modules', '.next', '.git'].includes(file.name) || 
+              file.name.startsWith('.')) {
             continue;
           }
           
-          // Recursively check subdirectories
-          const subRoutes = await this.discoverAppRoutes(fullPath, routePath);
+          // Recursively check subdirectories with updated visited set
+          const newVisited = new Set(visited);
+          const subRoutes = await this.discoverAppRoutes(fullPath, routePath, depth + 1, newVisited);
           routes.push(...subRoutes);
         } else if (file.name === 'page.tsx' || file.name === 'page.ts') {
           // Found a page route
@@ -262,7 +307,28 @@ export class DevtoolsService {
     return routes;
   }
 
-  private async discoverApiRoutes(apiDir: string, basePath = ''): Promise<any[]> {
+  private async discoverApiRoutes(apiDir: string, basePath = '', depth = 0, visited = new Set<string>()): Promise<any[]> {
+    // Prevent infinite recursion - limit depth and track visited directories
+    if (depth > 10) {
+      console.warn('API route discovery depth limit reached for:', apiDir);
+      return [];
+    }
+    
+    // Use safer path resolution
+    let realPath: string;
+    try {
+      realPath = await fs.realpath(apiDir);
+    } catch {
+      // If realpath fails (e.g. in Docker), use the original path
+      realPath = path.resolve(apiDir);
+    }
+    
+    if (visited.has(realPath)) {
+      console.warn('Circular directory reference detected in API routes:', realPath);
+      return [];
+    }
+    visited.add(realPath);
+    
     const routes = [];
     
     try {
@@ -273,14 +339,20 @@ export class DevtoolsService {
         const routePath = path.join(basePath, file.name);
         
         if (file.isDirectory()) {
-          // Recursively check subdirectories
-          const subRoutes = await this.discoverApiRoutes(fullPath, routePath);
+          // Skip node_modules and hidden directories
+          if (file.name.startsWith('.') || file.name === 'node_modules') {
+            continue;
+          }
+          
+          // Recursively check subdirectories with updated visited set
+          const newVisited = new Set(visited);
+          const subRoutes = await this.discoverApiRoutes(fullPath, routePath, depth + 1, newVisited);
           routes.push(...subRoutes);
         } else if (file.name === 'route.ts' || file.name === 'route.tsx') {
           // Found an API route
           const route = '/api/' + basePath.replace(/\\/g, '/');
           
-          // Try to determine supported HTTP methods
+          // Try to determine supported HTTP methods (with timeout)
           const methods = await this.getApiRouteMethods(fullPath);
           
           routes.push({
@@ -301,21 +373,30 @@ export class DevtoolsService {
 
   private async getApiRouteMethods(filePath: string): Promise<string[]> {
     try {
-      const content = await fs.readFile(filePath, 'utf-8');
+      // Set a timeout for file reading to prevent hanging
+      const content = await Promise.race([
+        fs.readFile(filePath, 'utf-8'),
+        new Promise<string>((_, reject) => 
+          setTimeout(() => reject(new Error('File read timeout')), 5000)
+        )
+      ]);
+      
       const methods = [];
       
       // Look for exported functions that match HTTP methods
       const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'];
       for (const method of httpMethods) {
         if (content.includes(`export async function ${method}`) || 
-            content.includes(`export function ${method}`)) {
+            content.includes(`export function ${method}`) ||
+            content.includes(`export const ${method}`)) {
           methods.push(method);
         }
       }
       
       return methods;
     } catch (error) {
-      return [];
+      console.warn('Error reading API route file:', filePath, error.message);
+      return ['GET']; // Default fallback
     }
   }
 

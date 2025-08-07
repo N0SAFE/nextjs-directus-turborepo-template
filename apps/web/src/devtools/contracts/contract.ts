@@ -218,12 +218,23 @@ const logsContract = oc.router({
     }))),
   
   getProcessLogs: oc
-    .output(z.array(z.object({
-      timestamp: z.string(),
-      type: z.string(),
-      message: z.string(),
-      details: z.record(z.string(), z.any()).optional()
-    }))),
+    .output(z.object({
+      pid: z.number(),
+      uptime: z.number(),
+      memoryUsage: z.object({
+        rss: z.number(),
+        heapTotal: z.number(),
+        heapUsed: z.number(),
+        external: z.number(),
+        arrayBuffers: z.number()
+      }),
+      cpuUsage: z.object({
+        user: z.number(),
+        system: z.number()
+      }),
+      platform: z.string(),
+      versions: z.record(z.string(), z.string())
+    })),
   
   getLogStats: oc
     .output(z.object({
@@ -232,8 +243,8 @@ const logsContract = oc.router({
       warningCount: z.number(),
       infoCount: z.number(),
       debugCount: z.number(),
-      averageLogsPerMinute: z.number(),
-      lastLogTime: z.string().optional()
+      recentErrors: z.number().optional(),
+      logLevel: z.string().optional()
     }))
 })
 

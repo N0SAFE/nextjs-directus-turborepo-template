@@ -22,8 +22,36 @@ const handler = new RPCHandler(router)
 
 async function handleRequest(request: Request) {
   console.debug('Handling request in DevTool ORPC route')
-  const result = await handler.handle(request)
-  return result.matched ? result.response : new Response('Not Found', { status: 404 })
+  
+  try {
+    // Set a timeout for the request to prevent hanging
+    const timeoutPromise = new Promise<Response>((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 60000) // 60 second timeout
+    })
+    
+    const handlerPromise = handler.handle(request)
+    
+    const result = await Promise.race([handlerPromise, timeoutPromise])
+    
+    if ('matched' in result) {
+      return result.matched ? result.response : new Response('Not Found', { status: 404 })
+    }
+    
+    return result
+  } catch (error: any) {
+    console.error('DevTool API error:', error)
+    
+    // Return appropriate error response
+    if (error.message === 'Request timeout') {
+      return new Response('Request Timeout', { status: 504 })
+    }
+    
+    return new Response('Internal Server Error', { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: error.message || 'Unknown error' })
+    })
+  }
 }
 
 export const HEAD = handleRequest
