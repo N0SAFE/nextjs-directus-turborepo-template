@@ -15,27 +15,61 @@ const cliContract = oc.router({
       exitCode: z.number().optional()
     })),
   
-  getEnvironment: oc
-    .output(z.object({
-      nodeVersion: z.string(),
-      platform: z.string(),
-      arch: z.string(),
-      cwd: z.string(),
-      env: z.record(z.string(), z.string()),
-      memory: z.object({
-        used: z.number(),
-        total: z.number(),
-        percentage: z.number()
-      })
+  executeStream: oc
+    .input(z.object({ command: z.string(), args: z.array(z.string()).optional() }))
+    .output(z.object({ 
+      success: z.boolean(), 
+      output: z.string(), 
+      error: z.string().optional(),
+      exitCode: z.number().optional()
     })),
+  
+  getScripts: oc
+    .output(z.record(z.string(), z.any())),
+  
+  runScript: oc
+    .input(z.object({ script: z.string(), args: z.array(z.string()).optional() }))
+    .output(z.object({ 
+      success: z.boolean(), 
+      output: z.string(), 
+      error: z.string().optional(),
+      exitCode: z.number().optional()
+    })),
+  
+  getAvailableCommands: oc
+    .output(z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      category: z.string()
+    }))),
   
   getSystemInfo: oc
     .output(z.object({
+      platform: z.string(),
+      arch: z.string(),
+      nodeVersion: z.string(),
+      npmVersion: z.string().optional(),
+      hostname: z.string(),
       uptime: z.number(),
-      loadAverage: z.array(z.number()),
-      cpus: z.number(),
-      totalMemory: z.number(),
-      freeMemory: z.number()
+      memory: z.object({
+        total: z.number(),
+        free: z.number(),
+        used: z.number()
+      }),
+      cpu: z.object({
+        cores: z.number(),
+        model: z.string()
+      }),
+      loadAverage: z.array(z.number())
+    })),
+  
+  getEnvironmentInfo: oc
+    .output(z.object({
+      nodeEnv: z.string(),
+      port: z.number().optional(),
+      variables: z.record(z.string(), z.string()),
+      paths: z.array(z.string()),
+      cwd: z.string()
     })),
 })
 
@@ -97,46 +131,73 @@ const routesContract = oc.router({
 
 // Bundles Plugin Contract
 const bundlesContract = oc.router({
-  getBundleStats: oc
+  getBundleInfo: oc
     .output(z.object({
-      totalSize: z.number(),
-      gzippedSize: z.number(),
-      chunks: z.array(z.object({
-        name: z.string(),
-        size: z.number(),
-        type: z.string()
-      })),
-      assets: z.array(z.object({
-        name: z.string(),
-        size: z.number(),
-        type: z.string()
-      }))
-    })),
-  
-  getDependencies: oc
-    .output(z.object({
-      production: z.record(z.string(), z.string()),
-      development: z.record(z.string(), z.string()),
-      outdated: z.array(z.object({
-        name: z.string(),
-        current: z.string(),
-        wanted: z.string(),
-        latest: z.string()
-      }))
+      dependencies: z.number(),
+      devDependencies: z.number(),
+      peerDependencies: z.number(),
+      totalDependencies: z.number(),
+      dependencyList: z.object({
+        runtime: z.record(z.string(), z.string()),
+        development: z.record(z.string(), z.string()),
+        peer: z.record(z.string(), z.string())
+      }),
+      buildInfo: z.any().optional()
     })),
   
   analyzeDependencies: oc
     .output(z.object({
-      totalDependencies: z.number(),
-      productionDependencies: z.number(),
-      developmentDependencies: z.number(),
-      outdatedDependencies: z.number(),
-      vulnerabilities: z.number(),
-      bundleSize: z.object({
-        raw: z.number(),
-        gzipped: z.number(),
-        optimizationScore: z.number()
+      outdated: z.array(z.object({
+        name: z.string(),
+        current: z.string(),
+        wanted: z.string(),
+        latest: z.string(),
+        location: z.string().optional()
+      })),
+      vulnerabilities: z.array(z.object({
+        name: z.string(),
+        severity: z.enum(['low', 'moderate', 'high', 'critical']),
+        via: z.string(),
+        title: z.string()
+      })),
+      summary: z.object({
+        total: z.number(),
+        outdated: z.number(),
+        vulnerabilities: z.number(),
+        criticalVulns: z.number()
       })
+    })),
+  
+  getOptimizations: oc
+    .output(z.object({
+      suggestions: z.array(z.object({
+        type: z.string(),
+        priority: z.string(),
+        description: z.string(),
+        impact: z.string(),
+        effort: z.string()
+      })),
+      metrics: z.object({
+        bundleScore: z.number(),
+        dependencyScore: z.number(),
+        securityScore: z.number(),
+        overallScore: z.number()
+      })
+    })),
+  
+  getDependencyTree: oc
+    .output(z.object({
+      name: z.string(),
+      version: z.string(),
+      dependencies: z.array(z.any()),
+      depth: z.number()
+    })),
+  
+  getBuildStats: oc
+    .output(z.object({
+      pages: z.array(z.any()),
+      chunks: z.array(z.any()),
+      assets: z.array(z.any())
     }))
 })
 
@@ -145,7 +206,8 @@ const logsContract = oc.router({
   getLogs: oc
     .input(z.object({ 
       level: z.enum(['error', 'warn', 'info', 'debug']).optional(),
-      limit: z.number().optional() 
+      limit: z.number().optional(),
+      source: z.string().optional()
     }).optional())
     .output(z.array(z.object({
       timestamp: z.string(),
@@ -155,21 +217,13 @@ const logsContract = oc.router({
       stack: z.string().optional()
     }))),
   
-  getProcessInfo: oc
-    .output(z.object({
-      pid: z.number(),
-      uptime: z.number(),
-      memory: z.object({
-        rss: z.number(),
-        heapTotal: z.number(),
-        heapUsed: z.number(),
-        external: z.number()
-      }),
-      cpu: z.object({
-        user: z.number(),
-        system: z.number()
-      })
-    })),
+  getProcessLogs: oc
+    .output(z.array(z.object({
+      timestamp: z.string(),
+      type: z.string(),
+      message: z.string(),
+      details: z.record(z.string(), z.any()).optional()
+    }))),
   
   getLogStats: oc
     .output(z.object({
@@ -180,38 +234,68 @@ const logsContract = oc.router({
       debugCount: z.number(),
       averageLogsPerMinute: z.number(),
       lastLogTime: z.string().optional()
-    })),
-  
-  clearLogs: oc
-    .output(z.object({ success: z.boolean() }))
+    }))
 })
 
 // Auth Plugin Contract
 const authContract = oc.router({
   getAuthConfig: oc
     .output(z.object({
+      configPath: z.string(),
+      baseURL: z.string(),
+      basePath: z.string(),
+      plugins: z.array(z.string()),
       providers: z.array(z.string()),
-      session: z.object({
-        strategy: z.string(),
-        maxAge: z.number()
-      }),
-      features: z.object({
-        passkeys: z.boolean(),
-        twoFactor: z.boolean(),
-        emailVerification: z.boolean()
+      configExists: z.boolean()
+    })),
+  
+  getSessionInfo: oc
+    .input(z.object({ sessionId: z.string().optional() }).optional())
+    .output(z.object({
+      sessionId: z.string(),
+      userId: z.string(),
+      email: z.string(),
+      name: z.string(),
+      createdAt: z.string(),
+      expiresAt: z.string(),
+      lastActivity: z.string(),
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      isActive: z.boolean(),
+      permissions: z.array(z.string()),
+      metadata: z.object({
+        loginMethod: z.string(),
+        twoFactorEnabled: z.boolean(),
+        passkeyRegistered: z.boolean()
       })
     })),
   
-  getCurrentSession: oc
+  getActiveSessions: oc
+    .output(z.array(z.object({
+      sessionId: z.string(),
+      userId: z.string(),
+      createdAt: z.string(),
+      lastActivity: z.string(),
+      ipAddress: z.string(),
+      userAgent: z.string(),
+      isActive: z.boolean()
+    }))),
+  
+  getPasskeyInfo: oc
     .output(z.object({
-      user: z.object({
+      enabled: z.boolean(),
+      registeredKeys: z.array(z.object({
         id: z.string(),
-        email: z.string(),
-        name: z.string().optional(),
-        image: z.string().optional()
-      }).optional(),
-      expires: z.string().optional(),
-      authenticated: z.boolean()
+        name: z.string(),
+        createdAt: z.string(),
+        lastUsed: z.string().optional()
+      })),
+      supportedTransports: z.array(z.string()),
+      settings: z.object({
+        requireUserVerification: z.boolean(),
+        allowCrossPlatform: z.boolean(),
+        timeout: z.number()
+      })
     })),
   
   getSecurityEvents: oc
@@ -219,17 +303,34 @@ const authContract = oc.router({
       id: z.string(),
       type: z.string(),
       timestamp: z.string(),
+      userId: z.string().optional(),
+      sessionId: z.string().optional(),
+      ipAddress: z.string().optional(),
       userAgent: z.string().optional(),
-      ip: z.string().optional(),
+      severity: z.enum(['low', 'medium', 'high', 'critical']),
       details: z.record(z.string(), z.any()).optional()
     }))),
   
-  getPasskeys: oc
+  getAuthStats: oc
+    .output(z.object({
+      totalUsers: z.number(),
+      activeUsers: z.number(),
+      activeSessions: z.number(),
+      recentLogins: z.number(),
+      recentSignups: z.number(),
+      securityEvents: z.number(),
+      passkeyUsers: z.number(),
+      twoFactorUsers: z.number()
+    })),
+  
+  testAuthEndpoints: oc
     .output(z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      createdAt: z.string(),
-      lastUsed: z.string().optional()
+      endpoint: z.string(),
+      method: z.string(),
+      status: z.number(),
+      responseTime: z.number(),
+      success: z.boolean(),
+      error: z.string().optional()
     })))
 })
 
