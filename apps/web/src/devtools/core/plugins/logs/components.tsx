@@ -111,7 +111,7 @@ export function LogsViewerComponent({ context }: { context: PluginContext }) {
 
   const clearLogs = async () => {
     try {
-      await enhancedAPI.logs.clearLogs({ level: levelFilter === 'all' ? undefined : levelFilter as any })
+      await enhancedAPI.logs.clearLogs()
       loadLogs()
     } catch (error) {
       console.error('Failed to clear logs:', error)
@@ -359,7 +359,7 @@ export function ProcessInfoComponent({ context }: { context: PluginContext }) {
     const loadProcessInfo = async () => {
       try {
         setLoading(true)
-        const info = await api.logs.getProcessInfo()
+        const info = await api['core-logs'].getProcessInfo()
         setProcessInfo(info)
       } catch (error) {
         console.error('Failed to load process info:', error)

@@ -454,13 +454,13 @@ export function ScriptsComponent({ context }: { context: PluginContext }) {
 export function EnvironmentComponent({ context }: { context: PluginContext }) {
   const [envInfo, setEnvInfo] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const api = useDevToolAPI()
+  const enhancedAPI = useEnhancedDevToolAPI()
 
   useEffect(() => {
     const loadEnvironment = async () => {
       try {
         setLoading(true)
-        const envData = await api.cli.getEnvironmentInfo()
+        const envData = await enhancedAPI.cli.getEnvironment()
         setEnvInfo(envData)
       } catch (error) {
         console.error('Failed to load environment info:', error)
@@ -480,7 +480,7 @@ export function EnvironmentComponent({ context }: { context: PluginContext }) {
     }
 
     loadEnvironment()
-  }, [api])
+  }, [enhancedAPI])
 
   const getEnvBadge = (name: string, value: string) => {
     if (name.startsWith('NEXT_PUBLIC_')) {

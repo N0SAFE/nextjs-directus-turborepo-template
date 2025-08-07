@@ -185,7 +185,7 @@ export function AuthComponent({ context }: { context: any }) {
   const testEndpoints = async () => {
     try {
       setTesting(true)
-      const results = await api.auth.getCurrentSession() // Use existing method as fallback
+      const results = await enhancedAPI.auth.getCurrentSession() // Use existing method as fallback
       setEndpointTests(results)
     } catch (error) {
       console.error('Failed to test endpoints:', error)
@@ -217,7 +217,7 @@ export function AuthComponent({ context }: { context: any }) {
 
   useEffect(() => {
     loadAuthData()
-  }, [api])
+  }, [enhancedAPI])
 
   const getActiveTab = () => {
     const pageId = context?.pageId || 'session'
