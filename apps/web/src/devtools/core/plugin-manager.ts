@@ -1,5 +1,11 @@
 import { DevToolPlugin } from '../types'
-import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin } from '../core/plugins'
+import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin } from '../core/plugins'
+
+// Define the specific core plugins tuple for better typing
+const corePluginsList = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin] as const
+
+// Extract the specific types from the core plugins
+type CorePluginTypes = typeof corePluginsList[number]
 
 /**
  * Plugin manager for server-side access to DevTool plugins
@@ -8,7 +14,7 @@ import { routesPlugin, bundlesPlugin, cliPlugin, logsPlugin } from '../core/plug
 class DevToolPluginManager {
   private static instance: DevToolPluginManager | null = null
   private plugins: Map<string, DevToolPlugin> = new Map()
-  private corePlugins: DevToolPlugin[] = [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin]
+  private corePlugins: readonly DevToolPlugin[] = corePluginsList
 
   private constructor() {
     // Register core plugins on instantiation
@@ -39,17 +45,24 @@ class DevToolPluginManager {
   }
 
   /**
-   * Get all registered plugins as an array
+   * Get all registered plugins as an array with their specific types
    */
   getAllPlugins(): DevToolPlugin[] {
     return Array.from(this.plugins.values())
   }
 
   /**
-   * Get core plugins only
+   * Get core plugins only with their specific types
    */
-  getCorePlugins(): DevToolPlugin[] {
+  getCorePlugins(): readonly DevToolPlugin[] {
     return this.corePlugins
+  }
+
+  /**
+   * Get core plugins with strongly typed return
+   */
+  getTypedCorePlugins(): readonly CorePluginTypes[] {
+    return corePluginsList
   }
 
   /**
@@ -65,6 +78,17 @@ class DevToolPluginManager {
    */
   getPlugin(pluginId: string): DevToolPlugin | undefined {
     return this.plugins.get(pluginId)
+  }
+
+  /**
+   * Get a specific core plugin by ID with proper typing
+   */
+  getCorePlugin<T extends CorePluginTypes>(pluginId: T['metadata']['id']): T | undefined {
+    const plugin = this.plugins.get(pluginId)
+    if (plugin && this.corePlugins.some(cp => cp.metadata.id === pluginId)) {
+      return plugin as T
+    }
+    return undefined
   }
 
   /**
@@ -85,7 +109,17 @@ class DevToolPluginManager {
       }
     }
   }
+
+  /**
+   * Get plugins with ORPC contracts for type-safe contract generation
+   */
+  getOrpcPlugins(): DevToolPlugin[] {
+    return Array.from(this.plugins.values()).filter(plugin => plugin.orpc?.contract)
+  }
 }
 
 // Export singleton instance
 export const devToolPluginManager = DevToolPluginManager.getInstance()
+
+// Export types for external use
+export type { CorePluginTypes }
