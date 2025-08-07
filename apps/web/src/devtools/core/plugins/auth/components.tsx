@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@repo/ui/components/shadcn/tabs'
 import { Separator } from '@repo/ui/components/shadcn/separator'
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/shadcn/alert'
-import { useDevToolAPI } from '../../../hooks/useDevToolAPI'
+import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
 
 /**
  * Comprehensive Auth Component - Handles all auth-related pages with real API data
@@ -41,7 +41,7 @@ export function AuthComponent({ context }: { context: any }) {
   const [loading, setLoading] = useState(true)
   const [testing, setTesting] = useState(false)
 
-  const api = useDevToolAPI()
+  const enhancedAPI = useEnhancedDevToolAPI()
 
   const loadAuthData = async () => {
     try {
@@ -55,11 +55,11 @@ export function AuthComponent({ context }: { context: any }) {
         eventsResult,
         statsResult
       ] = await Promise.all([
-        api.auth.getAuthConfig(),
-        api.auth.getCurrentSession(),
-        api.auth.getCurrentSession(), // Reuse session for active sessions
-        api.auth.getPasskeys(),
-        api.auth.getSecurityEvents(),
+        enhancedAPI.auth.getAuthConfig(),
+        enhancedAPI.auth.getCurrentSession(),
+        enhancedAPI.auth.getCurrentSession(), // Reuse session for active sessions
+        enhancedAPI.auth.getPasskeys(),
+        enhancedAPI.auth.getSecurityEvents(),
         Promise.resolve({}) // Mock auth stats for now
       ])
       

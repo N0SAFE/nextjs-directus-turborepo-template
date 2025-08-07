@@ -1,11 +1,11 @@
 import { createORPCClient } from '@orpc/client'
-import { devtoolsContract } from '../contracts/contract'
 
 /**
  * DevTools API client for internal web app communication
- * Now uses the static contract for full type safety
+ * Uses direct HTTP calls to /api/devtools without contract for simplicity
+ * Type safety is achieved through the enhanced API hook
  */
-export const devToolsApi = createORPCClient(devtoolsContract, {
+export const devToolsApi = createORPCClient({
   url: '/api/devtools',
 })
 
