@@ -14,8 +14,37 @@ function createPluginFromServerDefinition(def: ServerPluginDefinition): DevToolP
 // Convert server definitions to DevToolPlugin objects
 const corePluginsList = corePluginServerDefinitions.map(createPluginFromServerDefinition)
 
-// Extract the specific types from the core plugins  
-type CorePluginTypes = DevToolPlugin
+// Define specific types for each core plugin based on their contracts
+type CliPlugin = DevToolPlugin & {
+  metadata: { id: 'core-cli' }
+  orpc: { identifier: 'cli-handler' }
+}
+
+type RoutesPlugin = DevToolPlugin & {
+  metadata: { id: 'core-routes' }
+  orpc: { identifier: 'routes-handler' }
+}
+
+type BundlesPlugin = DevToolPlugin & {
+  metadata: { id: 'core-bundles' }
+  orpc: { identifier: 'bundles-handler' }
+}
+
+type LogsPlugin = DevToolPlugin & {
+  metadata: { id: 'core-logs' }
+  orpc: { identifier: 'logs-handler' }
+}
+
+type AuthPlugin = DevToolPlugin & {
+  metadata: { id: 'core-auth' }
+  orpc: { identifier: 'auth-handler' }
+}
+
+// Core plugins tuple type for strongly typed returns
+type CorePluginsTuple = readonly [RoutesPlugin, BundlesPlugin, CliPlugin, LogsPlugin, AuthPlugin]
+
+// Union type for individual core plugins
+type CorePluginTypes = CliPlugin | RoutesPlugin | BundlesPlugin | LogsPlugin | AuthPlugin
 
 /**
  * Plugin manager for server-side access to DevTool plugins
@@ -78,15 +107,40 @@ class DevToolPluginManager {
   /**
    * Get core plugins only with their specific types
    */
-  getCorePlugins(): readonly DevToolPlugin[] {
-    return this.corePlugins
+  getCorePlugins(): readonly CorePluginTypes[] {
+    return this.corePlugins as readonly CorePluginTypes[]
   }
 
   /**
-   * Get core plugins with strongly typed return
+   * Get core plugins with strongly typed return as tuple
    */
-  getTypedCorePlugins(): readonly CorePluginTypes[] {
-    return corePluginsList
+  getTypedCorePlugins(): CorePluginsTuple {
+    // Return core plugins in a specific order for type safety
+    const routesPlugin = this.plugins.get('core-routes') as RoutesPlugin
+    const bundlesPlugin = this.plugins.get('core-bundles') as BundlesPlugin
+    const cliPlugin = this.plugins.get('core-cli') as CliPlugin
+    const logsPlugin = this.plugins.get('core-logs') as LogsPlugin
+    const authPlugin = this.plugins.get('core-auth') as AuthPlugin
+    
+    return [routesPlugin, bundlesPlugin, cliPlugin, logsPlugin, authPlugin] as const
+  }
+
+  /**
+   * Get a specific core plugin by ID with proper typing
+   */
+  getCorePlugin<T extends CorePluginTypes['metadata']['id']>(
+    pluginId: T
+  ): T extends 'core-cli' ? CliPlugin :
+     T extends 'core-routes' ? RoutesPlugin :
+     T extends 'core-bundles' ? BundlesPlugin :
+     T extends 'core-logs' ? LogsPlugin :
+     T extends 'core-auth' ? AuthPlugin :
+     never {
+    const plugin = this.plugins.get(pluginId)
+    if (plugin && this.corePlugins.some(cp => cp.metadata.id === pluginId)) {
+      return plugin as any
+    }
+    throw new Error(`Core plugin '${pluginId}' not found`)
   }
 
   /**
@@ -102,17 +156,6 @@ class DevToolPluginManager {
    */
   getPlugin(pluginId: string): DevToolPlugin | undefined {
     return this.plugins.get(pluginId)
-  }
-
-  /**
-   * Get a specific core plugin by ID with proper typing
-   */
-  getCorePlugin<T extends CorePluginTypes>(pluginId: T['metadata']['id']): T | undefined {
-    const plugin = this.plugins.get(pluginId)
-    if (plugin && this.corePlugins.some(cp => cp.metadata.id === pluginId)) {
-      return plugin as T
-    }
-    return undefined
   }
 
   /**
@@ -137,9 +180,18 @@ class DevToolPluginManager {
 
   /**
    * Get plugins with ORPC contracts for type-safe contract generation
+   * Returns all core plugins since they all have ORPC contracts
    */
-  getOrpcPlugins(): DevToolPlugin[] {
-    return Array.from(this.plugins.values()).filter(plugin => plugin.orpc?.contract)
+  getOrpcPlugins(): readonly CorePluginTypes[] {
+    // All core plugins have ORPC contracts, so return them with proper typing
+    return this.getCorePlugins()
+  }
+
+  /**
+   * Get plugins with ORPC identifiers for service injection
+   */
+  getOrpcEnabledPlugins(): DevToolPlugin[] {
+    return Array.from(this.plugins.values()).filter(plugin => plugin.orpc?.identifier)
   }
 }
 
@@ -147,4 +199,12 @@ class DevToolPluginManager {
 export const devToolPluginManager = DevToolPluginManager.getInstance()
 
 // Export types for external use
-export type { CorePluginTypes }
+export type { 
+  CorePluginTypes, 
+  CorePluginsTuple,
+  CliPlugin,
+  RoutesPlugin,
+  BundlesPlugin,
+  LogsPlugin,
+  AuthPlugin
+}
