@@ -148,10 +148,9 @@ export const useDevToolState = create<DevToolStateStore>()(
       },
       // Only persist position, pinnedPlugins, and settings (not the current state)
       partialize: (state) => ({
-        position: state.position,
-        pinnedPlugins: state.pinnedPlugins,
-        settings: state.settings
-      }) as Partial<DevToolStateStore>
+        ...state,
+        pinnedPlugins: Array.from(state.pinnedPlugins), // Convert Set to Array for persistence
+      } as DevToolStateStore)
     }
   )
 )

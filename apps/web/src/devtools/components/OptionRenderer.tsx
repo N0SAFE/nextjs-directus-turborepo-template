@@ -99,7 +99,7 @@ function DialogOptionRenderer({ option, context }: { option: Extract<PluginOptio
           </DialogTrigger>
           <DialogContent className={`${option.size === 'sm' ? 'max-w-md' : option.size === 'lg' ? 'max-w-4xl' : option.size === 'xl' ? 'max-w-7xl' : 'max-w-2xl'}`}>
             <DialogHeader>
-              <DialogTitle>{option.title}</DialogTitle>
+              <DialogTitle>{option.title || option.label}</DialogTitle>
               {option.description && (
                 <DialogDescription>{option.description}</DialogDescription>
               )}
@@ -128,7 +128,7 @@ function MenuOptionRenderer({ option, context }: { option: Extract<PluginOption,
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            {option.items.map((item) => (
+            {option.items.map((item: any) => (
               <DropdownMenuItem key={item.id} onClick={item.onClick}>
                 {item.icon && <span className="mr-2">{item.icon}</span>}
                 {item.label}
@@ -153,13 +153,13 @@ function TabsOptionRenderer({ option, context }: { option: Extract<PluginOption,
       )}
       <Tabs defaultValue={option.defaultTab || option.tabs[0]?.id} className="w-full">
         <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${option.tabs.length}, minmax(0, 1fr))` }}>
-          {option.tabs.map((tab) => (
+          {option.tabs.map((tab: any) => (
             <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
               {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
-        {option.tabs.map((tab) => {
+        {option.tabs.map((tab: any) => {
           const TabContent = tab.content
           return (
             <TabsContent key={tab.id} value={tab.id} className="mt-2">
@@ -178,9 +178,8 @@ function ToggleOptionRenderer({ option, context }: { option: Extract<PluginOptio
       <div className="flex items-center justify-between">
         <Label className="text-xs font-medium">{option.label}</Label>
         <Switch
-          checked={option.checked}
+          checked={option.checked ?? option.value}
           onCheckedChange={option.onChange}
-          size={option.size}
         />
       </div>
       {option.description && (
@@ -211,7 +210,7 @@ function ListOptionRenderer({ option, context }: { option: Extract<PluginOption,
         <p className="text-xs text-muted-foreground">{option.description}</p>
       )}
       <div className="space-y-1 max-h-32 overflow-y-auto">
-        {option.items.map((item) => (
+        {option.items.map((item: any) => (
           <div
             key={item.id}
             className={`p-2 rounded text-xs border cursor-pointer transition-colors ${
@@ -235,7 +234,7 @@ function ListOptionRenderer({ option, context }: { option: Extract<PluginOption,
 function InputOptionRenderer({ option, context }: { option: Extract<PluginOption, { type: 'input' }>, context: PluginContext }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = option.inputType === 'number' ? parseFloat(e.target.value) || 0 : e.target.value
-    option.onChange(value)
+    option.onChange(String(value))
   }
 
   return (
@@ -276,7 +275,7 @@ function CustomOptionRenderer({ option, context }: { option: Extract<PluginOptio
       {option.description && (
         <p className="text-xs text-muted-foreground">{option.description}</p>
       )}
-      <CustomComponent context={context} />
+      <CustomComponent context={context} option={option} />
     </div>
   )
 }

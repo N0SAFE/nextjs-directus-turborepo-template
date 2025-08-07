@@ -201,6 +201,91 @@ export interface PluginRegistryState {
 }
 
 /**
+ * Plugin option types for configuration UI components
+ */
+export interface BasePluginOption {
+  id: string
+  label: string
+  description?: string
+  disabled?: boolean
+}
+
+export interface DialogPluginOption extends BasePluginOption {
+  type: 'dialog'
+  title?: string
+  triggerText?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  content: React.ComponentType<{ context: PluginContext }>
+}
+
+export interface MenuPluginOption extends BasePluginOption {
+  type: 'menu'
+  triggerText?: string
+  items: Array<{
+    id: string
+    label: string
+    icon?: string | ReactNode
+    action: () => void
+    disabled?: boolean
+  }>
+}
+
+export interface TabsPluginOption extends BasePluginOption {
+  type: 'tabs'
+  tabs: Array<{
+    id: string
+    label: string
+    content: React.ComponentType<{ context: PluginContext }>
+  }>
+  defaultTab?: string
+}
+
+export interface TogglePluginOption extends BasePluginOption {
+  type: 'toggle'
+  value: boolean
+  checked?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  onChange: (value: boolean) => void
+}
+
+export interface ListPluginOption extends BasePluginOption {
+  type: 'list'
+  selectable?: boolean
+  onSelectionChange?: (selectedIds: string[]) => void
+  items: Array<{
+    id: string
+    label: string
+    description?: string
+    icon?: string | ReactNode
+    badge?: string | number
+    action?: () => void
+    selectable?: boolean
+  }>
+}
+
+export interface InputPluginOption extends BasePluginOption {
+  type: 'input'
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  inputType?: 'text' | 'password' | 'email' | 'number' | 'textarea'
+}
+
+export interface CustomPluginOption extends BasePluginOption {
+  type: 'custom'
+  component: React.ComponentType<{ context: PluginContext, option: CustomPluginOption }>
+}
+
+export type PluginOption = 
+  | DialogPluginOption 
+  | MenuPluginOption 
+  | TabsPluginOption 
+  | TogglePluginOption 
+  | ListPluginOption 
+  | InputPluginOption 
+  | CustomPluginOption
+
+/**
  * Plugin registry methods
  */
 export interface PluginRegistry {
