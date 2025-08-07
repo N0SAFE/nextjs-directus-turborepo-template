@@ -10,9 +10,18 @@ initializeServerServices()
 
 // Get all plugins from the plugin manager
 const plugins = devToolPluginManager.getAllPlugins()
+console.log('[DevTool API] Loaded plugins:', plugins.map(p => `${p.metadata.id}:${p.orpc?.identifier || 'no-orpc'}`))
 
 // Inject services from plugins using the new system
 const devtoolHandlers = DevToolOrpcInjector.injectServiceFromPlugins(plugins, allOrpcRouterList)
+console.log('[DevTool API] Generated handlers structure:', Object.keys(devtoolHandlers))
+
+// Debug: Check if auth handlers exist and log their methods
+if (devtoolHandlers['core-auth']) {
+  console.log('[DevTool API] Auth handlers methods:', Object.keys(devtoolHandlers['core-auth']))
+} else {
+  console.log('[DevTool API] ❌ No auth handlers found in structure')
+}
 
 // Create the router by implementing the contract with the handlers
 const router = os.router(devtoolHandlers)

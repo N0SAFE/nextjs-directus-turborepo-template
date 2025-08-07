@@ -61,13 +61,19 @@ export class DevToolOrpcInjector {
     if (typeof window === 'undefined') {
       // Get all registered service keys and their values from the registry
       const knownServiceKeys = Object.values(SERVICE_KEYS)
+      console.log('[DevTool ORPC] Looking for service keys:', knownServiceKeys)
       
       for (const key of knownServiceKeys) {
         const service = serviceRegistry.get(key)
         if (service) {
           services[key] = service
+          console.log(`[DevTool ORPC] ✅ Found service: ${key}`)
+        } else {
+          console.log(`[DevTool ORPC] ❌ Missing service: ${key}`)
         }
       }
+      
+      console.log('[DevTool ORPC] Total services available:', Object.keys(services).length)
     }
     
     return services
