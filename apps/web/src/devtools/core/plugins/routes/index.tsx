@@ -1,95 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { oc } from '@orpc/contract'
 import { createPlugin, PluginUtils } from '../../../sdk'
 import { RoutesOverviewComponent, ApiRoutesComponent } from './components'
 import { ROUTES_HANDLER_ID } from '../../../orpc-handlers'
-import {
-  routesListSchema,
-  routeInfoSchema,
-  routeAnalysisSchema,
-} from '../../../contracts/schemas'
-import z from 'zod/v4'
 import { useEnhancedDevToolAPI } from '../../../hooks/useEnhancedDevToolAPI'
-
-// Routes Plugin ORPC Contract
-const routesContract = oc.router({
-  // Get all routes
-  getRoutes: oc
-    .output(z.array(z.object({
-      path: z.string(),
-      type: z.enum(['page', 'layout', 'api']),
-      file: z.string(),
-      dynamic: z.boolean(),
-      methods: z.array(z.string()).optional(),
-    }))),
-
-  // Get current route information
-  getCurrentRoute: oc
-    .output(z.object({
-      pathname: z.string(),
-      routeName: z.string(),
-      params: z.record(z.string(), z.any()).optional(),
-      query: z.record(z.string(), z.any()).optional(),
-    })),
-
-  // Analyze a specific route
-  analyzeRoute: oc
-    .input(z.object({ path: z.string() }))
-    .output(z.object({
-      path: z.string(),
-      exists: z.boolean(),
-      type: z.string(),
-      file: z.string().optional(),
-      methods: z.array(z.string()).optional(),
-      dynamic: z.boolean(),
-      segments: z.array(z.object({
-        name: z.string(),
-        dynamic: z.boolean(),
-        optional: z.boolean(),
-      })),
-    })),
-
-  // Get route statistics
-  getRouteStats: oc
-    .output(z.object({
-      totalRoutes: z.number(),
-      pageRoutes: z.number(),
-      apiRoutes: z.number(),
-      layoutRoutes: z.number(),
-      dynamicRoutes: z.number(),
-      staticRoutes: z.number(),
-    })),
-
-  // Test API endpoints
-  testApiEndpoints: oc
-    .output(z.array(z.object({
-      path: z.string(),
-      method: z.string(),
-      status: z.number(),
-      responseTime: z.number(),
-      success: z.boolean(),
-      error: z.string().optional(),
-    }))),
-})
-
-/**
- * Get current route information for reduced mode display
- */
-function getCurrentRouteInfo() {
-  // This would normally come from Next.js router or server
-  if (typeof window !== 'undefined') {
-    return {
-      currentRoute: window.location.pathname,
-      routeCount: 12, // Mock count
-      hasApiRoutes: true,
-    }
-  }
-  return {
-    currentRoute: '/',
-    routeCount: 12,
-    hasApiRoutes: true,
-  }
-}
 
 /**
  * Enhanced custom component for Routes reduced mode display with real-time updates
@@ -240,9 +153,8 @@ export const routesPlugin = createPlugin(
         }
       }
     },
-    // ORPC contract and identifier for server communication
+    // ORPC identifier for server communication (contract defined in contracts/contract.ts)
     orpc: {
-      contract: routesContract,
       identifier: ROUTES_HANDLER_ID
     }
   }

@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import { devToolsApi } from '../api'
+import type { DevtoolsContract } from '../contracts'
 
 /**
  * Hook to access the DevTool API client
@@ -11,4 +12,6 @@ export function useDevToolAPI() {
   return useMemo(() => devToolsApi, [])
 }
 
-export type { DevToolsApi } from '../api'
+// Export the properly typed DevTools API
+export type DevToolsApi = typeof devToolsApi
+export type { DevtoolsContract }
