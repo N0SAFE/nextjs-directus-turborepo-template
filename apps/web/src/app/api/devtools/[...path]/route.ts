@@ -3,6 +3,7 @@ import { RPCHandler } from '@orpc/server/fetch'
 import { initializeServerServices } from '../../../../devtools/services/server-setup'
 import { DevToolOrpcInjector, allOrpcRouterList } from '../../../../devtools/orpc-routers'
 import { devToolPluginManager } from '../../../../devtools/core/plugin-manager'
+import { devtoolsContract } from '../../../../devtools/contracts'
 
 // Initialize server-side services for dependency injection
 initializeServerServices()
@@ -13,8 +14,8 @@ const plugins = devToolPluginManager.getAllPlugins()
 // Inject services from plugins using the new system
 const devtoolHandlers = DevToolOrpcInjector.injectServiceFromPlugins(plugins, allOrpcRouterList)
 
-// Create the router using the combined handlers that implement the contract
-const router = os.router(devtoolHandlers)
+// Create the router using the contract and combined handlers
+const router = os.router(devtoolsContract, devtoolHandlers)
 
 // Create the RPC handler for Next.js
 const handler = new RPCHandler(router)

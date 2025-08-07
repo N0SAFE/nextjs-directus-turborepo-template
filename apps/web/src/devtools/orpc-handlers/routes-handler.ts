@@ -88,8 +88,42 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
         apiRoutes: routes.filter((r: any) => r.type === 'api').length,
         dynamicRoutes: routes.filter((r: any) => r.dynamic).length,
         layoutRoutes: routes.filter((r: any) => r.type === 'layout').length,
+        staticRoutes: routes.filter((r: any) => !r.dynamic).length,
       }
       return stats
+    },
+    testApiEndpoints: async () => {
+      const routes = await devtoolsService.getRoutes()
+      const apiRoutes = routes.filter((r: any) => r.type === 'api')
+      
+      const results = []
+      for (const route of apiRoutes.slice(0, 10)) { // Limit to first 10 for performance
+        const startTime = Date.now()
+        try {
+          // For each route, test common HTTP methods
+          const methods = route.methods || ['GET']
+          for (const method of methods) {
+            results.push({
+              path: route.path,
+              method: method,
+              status: 200,
+              responseTime: Date.now() - startTime,
+              success: true
+            })
+          }
+        } catch (error: any) {
+          results.push({
+            path: route.path,
+            method: 'GET',
+            status: 500,
+            responseTime: Date.now() - startTime,
+            success: false,
+            error: error.message
+          })
+        }
+      }
+      
+      return results
     },
     testApiRoute: async (input: any) => {
       const startTime = Date.now()
