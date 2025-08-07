@@ -25,9 +25,9 @@ export function BundleAnalysisComponent({ context }: { context: PluginContext })
       try {
         setLoading(true)
         const [bundleStats, dependencies, analysis] = await Promise.all([
-          api.bundles.getBundleStats(),
-          api.bundles.getDependencies(),
-          api.bundles.analyzeDependencies()
+          api['core-bundles'].getBundleInfo(),
+          api['core-bundles'].analyzeDependencies(),
+          api['core-bundles'].analyzeDependencies()
         ])
         
         setBundleData(bundleStats)

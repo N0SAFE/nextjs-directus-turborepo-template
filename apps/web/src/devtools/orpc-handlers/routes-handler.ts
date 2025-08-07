@@ -40,10 +40,19 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
   return {
     getRoutes: async () => {
       try {
-        return await devtoolsService.getRoutes()
+        console.debug('[Routes Handler] Getting routes...');
+        const result = await devtoolsService.getRoutes();
+        console.debug('[Routes Handler] Routes retrieved successfully:', result.length);
+        return result;
       } catch (error: any) {
-        console.error('Routes handler error:', error)
-        return []
+        console.error('Routes handler error:', error);
+        // Return minimal fallback to prevent further errors
+        return [{
+          path: '/',
+          type: 'page',
+          file: '/src/app/page.tsx',
+          dynamic: false,
+        }];
       }
     },
     getCurrentRoute: async () => {
@@ -100,7 +109,8 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
     },
     getRouteStats: async () => {
       try {
-        const routes = await devtoolsService.getRoutes()
+        console.debug('[Routes Handler] Getting route stats...');
+        const routes = await devtoolsService.getRoutes();
         const stats = {
           totalRoutes: routes.length,
           pageRoutes: routes.filter((r: any) => r.type === 'page').length,
@@ -108,10 +118,11 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
           dynamicRoutes: routes.filter((r: any) => r.dynamic).length,
           layoutRoutes: routes.filter((r: any) => r.type === 'layout').length,
           staticRoutes: routes.filter((r: any) => !r.dynamic).length,
-        }
-        return stats
+        };
+        console.debug('[Routes Handler] Stats calculated successfully:', stats);
+        return stats;
       } catch (error: any) {
-        console.error('Route stats error:', error)
+        console.error('Route stats error:', error);
         return {
           totalRoutes: 0,
           pageRoutes: 0,
@@ -119,7 +130,7 @@ export function createRoutesHandlers(services: Record<string, unknown>) {
           dynamicRoutes: 0,
           layoutRoutes: 0,
           staticRoutes: 0,
-        }
+        };
       }
     },
     testApiEndpoints: async () => {

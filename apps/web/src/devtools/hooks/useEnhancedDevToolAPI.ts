@@ -162,12 +162,12 @@ export function useEnhancedDevToolAPI() {
     // Enhanced CLI API
     cli: {
       execute: (input: any) => api['core-cli'].execute(input),
-      getEnvironment: () => api['core-cli'].getEnvironment(),
+      getEnvironment: () => api['core-cli'].getEnvironmentInfo(),
       getSystemInfo: () => api['core-cli'].getSystemInfo(),
       subscribeToEnvironmentChanges: (callback: (env: any) => void) => {
         return setAutoRefresh('cli-env', async () => {
           try {
-            const env = await api['core-cli'].getEnvironment() || {}
+            const env = await api['core-cli'].getEnvironmentInfo() || {}
             callback(env)
           } catch (error) {
             console.error('Failed to fetch environment:', error)
@@ -179,13 +179,12 @@ export function useEnhancedDevToolAPI() {
 
     // Enhanced bundles API
     bundles: {
-      getBundleStats: () => api['core-bundles'].getBundleStats(),
-      getDependencies: () => api['core-bundles'].getDependencies(),
+      getBundleInfo: () => api['core-bundles'].getBundleInfo(),
       analyzeDependencies: () => api['core-bundles'].analyzeDependencies(),
       subscribeToBundleChanges: (callback: (stats: any) => void) => {
         return setAutoRefresh('bundle-stats', async () => {
           try {
-            const stats = await api['core-bundles'].getBundleStats() || {}
+            const stats = await api['core-bundles'].getBundleInfo() || {}
             callback(stats)
           } catch (error) {
             console.error('Failed to fetch bundle stats:', error)

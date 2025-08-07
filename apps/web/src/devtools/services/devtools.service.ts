@@ -9,6 +9,9 @@ const execAsync = promisify(exec);
 
 export class DevtoolsService {
   private readonly projectRoot: string;
+  private routeDiscoveryCache: { data: any[], timestamp: number } | null = null;
+  private readonly CACHE_TTL = 30000; // 30 seconds cache
+  private routeDiscoveryInProgress = false;
 
   constructor() {
     // Get project root (assuming this service runs from the web app)
@@ -192,6 +195,21 @@ export class DevtoolsService {
 
   // Routes analysis
   async getRoutes() {
+    // Prevent concurrent route discovery
+    if (this.routeDiscoveryInProgress) {
+      console.warn('Route discovery already in progress, returning cached data');
+      return this.routeDiscoveryCache?.data || [];
+    }
+
+    // Check cache first
+    if (this.routeDiscoveryCache && 
+        (Date.now() - this.routeDiscoveryCache.timestamp) < this.CACHE_TTL) {
+      console.debug('Returning cached route data');
+      return this.routeDiscoveryCache.data;
+    }
+
+    this.routeDiscoveryInProgress = true;
+    
     try {
       const routes = [];
       
@@ -199,22 +217,37 @@ export class DevtoolsService {
       const routePromise = Promise.race([
         this.discoverAllRoutes(),
         new Promise<any[]>((_, reject) => 
-          setTimeout(() => reject(new Error('Route discovery timeout')), 30000)
+          setTimeout(() => reject(new Error('Route discovery timeout')), 15000) // Reduced timeout
         )
       ]);
       
       const discoveredRoutes = await routePromise;
       routes.push(...discoveredRoutes);
       
+      // Cache the result
+      this.routeDiscoveryCache = {
+        data: routes,
+        timestamp: Date.now()
+      };
+      
       return routes;
     } catch (error) {
       console.error('Error discovering routes:', error);
+      
+      // Return cached data if available, otherwise minimal fallback
+      if (this.routeDiscoveryCache) {
+        console.warn('Using stale cached route data due to error');
+        return this.routeDiscoveryCache.data;
+      }
+      
       return [{
         path: '/',
         type: 'page',
         file: '/src/app/page.tsx',
         dynamic: false,
       }]; // Return minimal fallback
+    } finally {
+      this.routeDiscoveryInProgress = false;
     }
   }
 
@@ -240,7 +273,7 @@ export class DevtoolsService {
 
   private async discoverAppRoutes(appDir: string, basePath = '', depth = 0, visited = new Set<string>()): Promise<any[]> {
     // Prevent infinite recursion - limit depth and track visited directories
-    if (depth > 10) {
+    if (depth > 8) {
       console.warn('Route discovery depth limit reached for:', appDir);
       return [];
     }
@@ -263,7 +296,13 @@ export class DevtoolsService {
     const routes = [];
     
     try {
-      const files = await fs.readdir(appDir, { withFileTypes: true });
+      // Add timeout for directory reading
+      const readDirPromise = fs.readdir(appDir, { withFileTypes: true });
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Directory read timeout')), 3000)
+      );
+      
+      const files = await Promise.race([readDirPromise, timeoutPromise]);
       
       for (const file of files) {
         const fullPath = path.join(appDir, file.name);
@@ -271,14 +310,13 @@ export class DevtoolsService {
         
         if (file.isDirectory()) {
           // Skip certain directories and node_modules
-          if (['api', '(groups)', 'globals.css', 'node_modules', '.next', '.git'].includes(file.name) || 
+          if (['api', '(groups)', 'globals.css', 'node_modules', '.next', '.git', 'devtools'].includes(file.name) || 
               file.name.startsWith('.')) {
             continue;
           }
           
-          // Recursively check subdirectories with updated visited set
-          const newVisited = new Set(visited);
-          const subRoutes = await this.discoverAppRoutes(fullPath, routePath, depth + 1, newVisited);
+          // Recursively check subdirectories - PASS THE SAME VISITED SET to prevent infinite loops
+          const subRoutes = await this.discoverAppRoutes(fullPath, routePath, depth + 1, visited);
           routes.push(...subRoutes);
         } else if (file.name === 'page.tsx' || file.name === 'page.ts') {
           // Found a page route
@@ -300,8 +338,8 @@ export class DevtoolsService {
           });
         }
       }
-    } catch (error) {
-      console.error('Error reading app directory:', error);
+    } catch (error: any) {
+      console.error('Error reading app directory:', appDir, error?.message || error);
     }
     
     return routes;
@@ -309,7 +347,7 @@ export class DevtoolsService {
 
   private async discoverApiRoutes(apiDir: string, basePath = '', depth = 0, visited = new Set<string>()): Promise<any[]> {
     // Prevent infinite recursion - limit depth and track visited directories
-    if (depth > 10) {
+    if (depth > 8) {
       console.warn('API route discovery depth limit reached for:', apiDir);
       return [];
     }
@@ -332,21 +370,26 @@ export class DevtoolsService {
     const routes = [];
     
     try {
-      const files = await fs.readdir(apiDir, { withFileTypes: true });
+      // Add timeout for directory reading
+      const readDirPromise = fs.readdir(apiDir, { withFileTypes: true });
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Directory read timeout')), 3000)
+      );
+      
+      const files = await Promise.race([readDirPromise, timeoutPromise]);
       
       for (const file of files) {
         const fullPath = path.join(apiDir, file.name);
         const routePath = path.join(basePath, file.name);
         
         if (file.isDirectory()) {
-          // Skip node_modules and hidden directories
-          if (file.name.startsWith('.') || file.name === 'node_modules') {
+          // Skip node_modules and hidden directories, also skip devtools to prevent recursion
+          if (file.name.startsWith('.') || file.name === 'node_modules' || file.name === 'devtools') {
             continue;
           }
           
-          // Recursively check subdirectories with updated visited set
-          const newVisited = new Set(visited);
-          const subRoutes = await this.discoverApiRoutes(fullPath, routePath, depth + 1, newVisited);
+          // Recursively check subdirectories - PASS THE SAME VISITED SET to prevent infinite loops
+          const subRoutes = await this.discoverApiRoutes(fullPath, routePath, depth + 1, visited);
           routes.push(...subRoutes);
         } else if (file.name === 'route.ts' || file.name === 'route.tsx') {
           // Found an API route
@@ -364,8 +407,8 @@ export class DevtoolsService {
           });
         }
       }
-    } catch (error) {
-      console.error('Error reading API directory:', error);
+    } catch (error: any) {
+      console.error('Error reading API directory:', apiDir, error?.message || error);
     }
     
     return routes;
@@ -394,8 +437,8 @@ export class DevtoolsService {
       }
       
       return methods;
-    } catch (error) {
-      console.warn('Error reading API route file:', filePath, error.message);
+    } catch (error: any) {
+      console.warn('Error reading API route file:', filePath, error?.message || error);
       return ['GET']; // Default fallback
     }
   }

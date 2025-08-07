@@ -24,25 +24,46 @@ export function RoutesOverviewComponent({ context }: { context: PluginContext })
 
   // Load initial data and set up real-time updates
   useEffect(() => {
+    let isMounted = true;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
     const loadRoutes = async () => {
+      if (!isMounted) return;
+      
       try {
-        setLoading(true)
+        setLoading(true);
         const [routesData, statsData] = await Promise.all([
           enhancedAPI.routes.getRoutes(),
           enhancedAPI.routes.getRouteStats()
-        ])
+        ]);
         
-        setRoutes(routesData)
-        setStats(statsData)
-        setLastRefresh(new Date())
+        if (!isMounted) return;
+        
+        setRoutes(routesData);
+        setStats(statsData);
+        setLastRefresh(new Date());
+        retryCount = 0; // Reset on success
       } catch (error) {
-        console.error('Failed to load routes:', error)
-        // Fallback data if API fails
+        console.error('Failed to load routes:', error);
+        
+        retryCount++;
+        if (retryCount < maxRetries && isMounted) {
+          // Exponential backoff retry
+          setTimeout(() => {
+            if (isMounted) loadRoutes();
+          }, Math.min(1000 * Math.pow(2, retryCount), 10000));
+          return;
+        }
+        
+        if (!isMounted) return;
+        
+        // Fallback data if API fails after retries
         setRoutes([
           { path: '/', type: 'page', file: 'page.tsx', dynamic: false },
           { path: '/api/auth/[...all]', type: 'api', file: 'route.ts', dynamic: true, methods: ['GET', 'POST'] },
           { path: '/dashboard/[...slug]', type: 'page', file: 'page.tsx', dynamic: true }
-        ])
+        ]);
         setStats({
           totalRoutes: 3,
           pageRoutes: 2,
@@ -50,35 +71,49 @@ export function RoutesOverviewComponent({ context }: { context: PluginContext })
           layoutRoutes: 0,
           dynamicRoutes: 2,
           staticRoutes: 1
-        })
+        });
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    }
+    };
 
-    loadRoutes()
+    loadRoutes();
 
     // Subscribe to route changes for real-time current route display
     const unsubscribeRoute = enhancedAPI.routes.subscribeToRouteChanges((routeData) => {
-      setCurrentRoute(routeData.routeInfo)
-    })
+      if (isMounted) {
+        setCurrentRoute(routeData.routeInfo);
+      }
+    });
 
-    // Set up periodic refresh for route discovery (in case new routes are added)
+    // Set up periodic refresh for route discovery (reduced frequency)
     const unsubscribeRefresh = enhancedAPI.utils.setAutoRefresh('routes-overview', async () => {
-      const [newRoutes, newStats] = await Promise.all([
-        enhancedAPI.routes.getRoutes(),
-        enhancedAPI.routes.getRouteStats()
-      ])
-      setRoutes(newRoutes)
-      setStats(newStats)
-      setLastRefresh(new Date())
-    }, 60000) // Refresh every minute
+      if (!isMounted) return;
+      
+      try {
+        const [newRoutes, newStats] = await Promise.all([
+          enhancedAPI.routes.getRoutes(),
+          enhancedAPI.routes.getRouteStats()
+        ]);
+        
+        if (isMounted) {
+          setRoutes(newRoutes);
+          setStats(newStats);
+          setLastRefresh(new Date());
+        }
+      } catch (error) {
+        console.error('Failed to refresh routes:', error);
+      }
+    }, 120000); // Refresh every 2 minutes instead of 1 minute
 
     return () => {
-      unsubscribeRoute()
-      unsubscribeRefresh()
-    }
-  }, [enhancedAPI])
+      isMounted = false;
+      unsubscribeRoute();
+      unsubscribeRefresh();
+    };
+  }, [enhancedAPI]);
 
   // Manual refresh function
   const handleRefresh = async () => {
