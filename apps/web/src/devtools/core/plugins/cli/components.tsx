@@ -25,7 +25,7 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
     const loadCommands = async () => {
       try {
         setLoading(true)
-        const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
+        const availableCommands = await enhancedAPI.cli.getAvailableCommands()
         
         // Transform API data to component format
         const transformedCommands = availableCommands.map(cmd => ({
@@ -69,7 +69,7 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
 
     // Set up auto-refresh for commands list
     const unsubscribe = enhancedAPI.utils.setAutoRefresh('cli-commands', async () => {
-      const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
+      const availableCommands = await enhancedAPI.cli.getAvailableCommands()
       const transformedCommands = availableCommands.map(cmd => ({
         name: cmd.name,
         command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
@@ -92,7 +92,7 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
   const executeCommand = async (command: string) => {
     try {
       setExecutingCommand(command)
-      const result = await enhancedAPI.devtools.cli.execute({ 
+      const result = await enhancedAPI.cli.execute({ 
         command: command.replace('npm run ', ''),
         args: [],
         cwd: undefined
@@ -118,7 +118,7 @@ export function CliCommandsComponent({ context }: { context: PluginContext }) {
   const refreshCommands = async () => {
     setLoading(true)
     try {
-      const availableCommands = await enhancedAPI.devtools.cli.getAvailableCommands()
+      const availableCommands = await enhancedAPI.cli.getAvailableCommands()
       const transformedCommands = availableCommands.map(cmd => ({
         name: cmd.name,
         command: cmd.type === 'npm-script' ? `npm run ${cmd.name}` : cmd.name,
@@ -312,7 +312,7 @@ export function ScriptsComponent({ context }: { context: PluginContext }) {
     const loadScripts = async () => {
       try {
         setLoading(true)
-        const scriptsData = await api.devtools.cli.getScripts()
+        const scriptsData = await api.raw.cli.getScripts()
         
         // Transform scripts object to array with metadata
         const transformedScripts = Object.entries(scriptsData).map(([name, command]) => ({
@@ -434,7 +434,7 @@ export function EnvironmentComponent({ context }: { context: PluginContext }) {
     const loadEnvironment = async () => {
       try {
         setLoading(true)
-        const envData = await api.devtools.cli.getEnvironmentInfo()
+        const envData = await api.raw.cli.getEnvironmentInfo()
         setEnvInfo(envData)
       } catch (error) {
         console.error('Failed to load environment info:', error)

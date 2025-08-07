@@ -103,7 +103,7 @@ function LogsReducedDisplay({ context }: { context: any }) {
       
       // Get updated stats
       try {
-        const stats = await enhancedAPI.devtools.logs.getLogStats()
+        const stats = await enhancedAPI.logs.getLogStats()
         setLogStats(stats)
       } catch (error) {
         console.error('Failed to get log stats:', error)

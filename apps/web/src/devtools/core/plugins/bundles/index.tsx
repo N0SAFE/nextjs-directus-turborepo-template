@@ -96,7 +96,7 @@ function BundlesReducedDisplay({ context }: { context: any }) {
       
       // Get dependency info
       try {
-        const deps = await enhancedAPI.devtools.bundles.getDependencies()
+        const deps = await enhancedAPI.bundles.getDependencies()
         setOutdatedCount(deps.outdated?.length || 0)
       } catch (error) {
         console.error('Failed to get dependencies:', error)

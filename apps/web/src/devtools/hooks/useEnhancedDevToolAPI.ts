@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useDevToolAPI } from './useDevToolAPI'
 
 /**
@@ -14,15 +14,11 @@ export function useEnhancedDevToolAPI() {
   const [routeInfo, setRouteInfo] = useState<any>(null)
   const [isRouteChanging, setIsRouteChanging] = useState(false)
   const refreshTimers = useRef<Map<string, NodeJS.Timeout>>(new Map())
-  const isInitialized = useRef(false)
 
   /**
    * Route change detection and real-time route info updates
    */
   useEffect(() => {
-    // Prevent infinite loops by checking if already initialized with this route
-    const currentPath = pathname + searchParams.toString()
-    
     const updateRouteInfo = async () => {
       if (isRouteChanging) return // Prevent concurrent updates
       
@@ -50,7 +46,7 @@ export function useEnhancedDevToolAPI() {
     }
 
     updateRouteInfo()
-  }, [pathname, searchParams]) // Remove api dependency to prevent loops
+  }, [pathname, searchParams, isRouteChanging])
 
   /**
    * Auto-refresh functionality for time-sensitive data
@@ -92,14 +88,31 @@ export function useEnhancedDevToolAPI() {
   }, [])
 
   /**
+   * Safe API call wrapper that handles missing methods gracefully
+   */
+  const safeApiCall = useCallback(async (pluginId: string, method: string, input?: any) => {
+    try {
+      const plugin = (api as any)?.[pluginId]
+      if (plugin && typeof plugin[method] === 'function') {
+        return await plugin[method](input)
+      }
+      console.warn(`API method ${pluginId}.${method} not available`)
+      return null
+    } catch (error) {
+      console.error(`API call failed: ${pluginId}.${method}`, error)
+      return null
+    }
+  }, [api])
+
+  /**
    * Enhanced API methods with caching and real-time updates
    */
   const enhancedAPI = {
-    ...api,
+    // Raw API access
+    raw: api,
     
     // Enhanced routes API
     routes: {
-      // Create safe proxy methods to avoid calling API methods that don't exist
       getCurrentRouteRealtime: () => routeInfo,
       isRouteChanging: () => isRouteChanging,
       subscribeToRouteChanges: (callback: (routeInfo: any) => void) => {
@@ -107,84 +120,83 @@ export function useEnhancedDevToolAPI() {
         window.addEventListener('devtools:route-changed', handler as EventListener)
         return () => window.removeEventListener('devtools:route-changed', handler as EventListener)
       },
-      // Wrap API calls safely
-      getRoutes: () => api['core-routes']?.getRoutes?.() || Promise.resolve([]),
-      getCurrentRoute: () => api['core-routes']?.getCurrentRoute?.() || Promise.resolve(routeInfo),
-      analyzeRoute: (input: any) => api['core-routes']?.analyzeRoute?.(input) || Promise.resolve(null),
-      getRouteStats: () => api['core-routes']?.getRouteStats?.() || Promise.resolve({}),
-      testApiEndpoints: () => api['core-routes']?.testApiEndpoints?.() || Promise.resolve([])
+      getRoutes: () => safeApiCall('core-routes', 'getRoutes'),
+      getCurrentRoute: () => safeApiCall('core-routes', 'getCurrentRoute'),
+      analyzeRoute: (input: any) => safeApiCall('core-routes', 'analyzeRoute', input),
+      getRouteStats: () => safeApiCall('core-routes', 'getRouteStats'),
+      testApiEndpoints: () => safeApiCall('core-routes', 'testApiEndpoints')
     },
 
-    // Enhanced logs API with real-time streaming
+    // Enhanced logs API
     logs: {
-      getLogs: (input?: any) => api['core-logs']?.getLogs?.(input) || Promise.resolve([]),
-      getProcessInfo: () => api['core-logs']?.getProcessInfo?.() || Promise.resolve({}),
-      clearLogs: () => api['core-logs']?.clearLogs?.() || Promise.resolve({ success: false }),
+      getLogs: (input?: any) => safeApiCall('core-logs', 'getLogs', input),
+      getProcessInfo: () => safeApiCall('core-logs', 'getProcessInfo'),
+      clearLogs: () => safeApiCall('core-logs', 'clearLogs'),
       subscribeToLogs: (callback: (logs: any[]) => void) => {
         return setAutoRefresh('logs', async () => {
           try {
-            const logs = await api['core-logs']?.getLogs?.() || []
+            const logs = await safeApiCall('core-logs', 'getLogs') || []
             callback(logs)
           } catch (error) {
             console.error('Failed to fetch logs:', error)
             callback([])
           }
-        }, 5000) // Reduced frequency to prevent overload
+        }, 5000)
       }
     },
 
-    // Enhanced auth API with session monitoring
+    // Enhanced auth API
     auth: {
-      getAuthConfig: () => api['core-auth']?.getAuthConfig?.() || Promise.resolve({}),
-      getCurrentSession: () => api['core-auth']?.getCurrentSession?.() || Promise.resolve({}),
-      getSecurityEvents: () => api['core-auth']?.getSecurityEvents?.() || Promise.resolve([]),
-      getPasskeys: () => api['core-auth']?.getPasskeys?.() || Promise.resolve([]),
+      getAuthConfig: () => safeApiCall('core-auth', 'getAuthConfig'),
+      getCurrentSession: () => safeApiCall('core-auth', 'getCurrentSession'),
+      getSecurityEvents: () => safeApiCall('core-auth', 'getSecurityEvents'),
+      getPasskeys: () => safeApiCall('core-auth', 'getPasskeys'),
       subscribeToSessionChanges: (callback: (session: any) => void) => {
         return setAutoRefresh('auth-session', async () => {
           try {
-            const session = await api['core-auth']?.getCurrentSession?.() || {}
+            const session = await safeApiCall('core-auth', 'getCurrentSession') || {}
             callback(session)
           } catch (error) {
             console.error('Failed to fetch session:', error)
             callback({})
           }
-        }, 30000) // Reduced frequency
+        }, 30000)
       }
     },
 
-    // Enhanced CLI API with environment monitoring
+    // Enhanced CLI API
     cli: {
-      execute: (input: any) => api['core-cli']?.execute?.(input) || Promise.resolve({ success: false, output: '', error: 'Not available' }),
-      getEnvironment: () => api['core-cli']?.getEnvironment?.() || Promise.resolve({}),
-      getSystemInfo: () => api['core-cli']?.getSystemInfo?.() || Promise.resolve({}),
+      execute: (input: any) => safeApiCall('core-cli', 'execute', input),
+      getEnvironment: () => safeApiCall('core-cli', 'getEnvironment'),
+      getSystemInfo: () => safeApiCall('core-cli', 'getSystemInfo'),
       subscribeToEnvironmentChanges: (callback: (env: any) => void) => {
         return setAutoRefresh('cli-env', async () => {
           try {
-            const env = await api['core-cli']?.getEnvironment?.() || {}
+            const env = await safeApiCall('core-cli', 'getEnvironment') || {}
             callback(env)
           } catch (error) {
             console.error('Failed to fetch environment:', error)
             callback({})
           }
-        }, 60000) // Reduced frequency
+        }, 60000)
       }
     },
 
-    // Enhanced bundles API with dependency monitoring
+    // Enhanced bundles API
     bundles: {
-      getBundleStats: () => api['core-bundles']?.getBundleStats?.() || Promise.resolve({}),
-      getDependencies: () => api['core-bundles']?.getDependencies?.() || Promise.resolve({ production: {}, development: {}, outdated: [] }),
-      analyzeDependencies: () => api['core-bundles']?.analyzeDependencies?.() || Promise.resolve({}),
+      getBundleStats: () => safeApiCall('core-bundles', 'getBundleStats'),
+      getDependencies: () => safeApiCall('core-bundles', 'getDependencies'),
+      analyzeDependencies: () => safeApiCall('core-bundles', 'analyzeDependencies'),
       subscribeToBundleChanges: (callback: (stats: any) => void) => {
         return setAutoRefresh('bundle-stats', async () => {
           try {
-            const stats = await api['core-bundles']?.getBundleStats?.() || {}
+            const stats = await safeApiCall('core-bundles', 'getBundleStats') || {}
             callback(stats)
           } catch (error) {
             console.error('Failed to fetch bundle stats:', error)
             callback({})
           }
-        }, 120000) // Reduced frequency
+        }, 120000)
       }
     },
 
@@ -192,6 +204,7 @@ export function useEnhancedDevToolAPI() {
     utils: {
       setAutoRefresh,
       clearAutoRefresh,
+      safeApiCall,
       triggerEvent: (eventName: string, detail: any) => {
         window.dispatchEvent(new CustomEvent(`devtools:${eventName}`, { detail }))
       },
@@ -213,7 +226,5 @@ export function useEnhancedDevToolAPI() {
 
   return enhancedAPI
 }
-
-export type EnhancedDevToolAPI = ReturnType<typeof useEnhancedDevToolAPI>
 
 export type EnhancedDevToolAPI = ReturnType<typeof useEnhancedDevToolAPI>

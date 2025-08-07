@@ -25,9 +25,9 @@ export function BundleAnalysisComponent({ context }: { context: PluginContext })
       try {
         setLoading(true)
         const [analysis, stats, optimizations] = await Promise.all([
-          api.devtools.bundles.getBundleAnalysis(),
-          api.devtools.bundles.getBuildStats(),
-          api.devtools.bundles.getOptimizationSuggestions()
+          api.raw.bundles.getBundleAnalysis(),
+          api.raw.bundles.getBuildStats(),
+          api.raw.bundles.getOptimizationSuggestions()
         ])
         
         setBundleData(analysis)
@@ -275,7 +275,7 @@ export function DependenciesComponent({ context }: { context: PluginContext }) {
     const loadDependencies = async () => {
       try {
         setLoading(true)
-        const deps = await api.devtools.bundles.getDependencies()
+        const deps = await api.raw.bundles.getDependencies()
         setDependencies(deps)
       } catch (error) {
         console.error('Failed to load dependencies:', error)

@@ -28,8 +28,8 @@ export function RoutesOverviewComponent({ context }: { context: PluginContext })
       try {
         setLoading(true)
         const [routesData, statsData] = await Promise.all([
-          enhancedAPI.devtools.routes.getRoutes(),
-          enhancedAPI.devtools.routes.getRouteStats()
+          enhancedAPI.routes.getRoutes(),
+          enhancedAPI.routes.getRouteStats()
         ])
         
         setRoutes(routesData)
@@ -66,8 +66,8 @@ export function RoutesOverviewComponent({ context }: { context: PluginContext })
     // Set up periodic refresh for route discovery (in case new routes are added)
     const unsubscribeRefresh = enhancedAPI.utils.setAutoRefresh('routes-overview', async () => {
       const [newRoutes, newStats] = await Promise.all([
-        enhancedAPI.devtools.routes.getRoutes(),
-        enhancedAPI.devtools.routes.getRouteStats()
+        enhancedAPI.routes.getRoutes(),
+        enhancedAPI.routes.getRouteStats()
       ])
       setRoutes(newRoutes)
       setStats(newStats)
@@ -85,8 +85,8 @@ export function RoutesOverviewComponent({ context }: { context: PluginContext })
     setLoading(true)
     try {
       const [routesData, statsData] = await Promise.all([
-        enhancedAPI.devtools.routes.getRoutes(),
-        enhancedAPI.devtools.routes.getRouteStats()
+        enhancedAPI.routes.getRoutes(),
+        enhancedAPI.routes.getRouteStats()
       ])
       
       setRoutes(routesData)
@@ -287,7 +287,7 @@ export function ApiRoutesComponent({ context }: { context: PluginContext }) {
     const loadApiRoutes = async () => {
       try {
         setLoading(true)
-        const routes = await enhancedAPI.devtools.routes.getRoutes()
+        const routes = await enhancedAPI.routes.getRoutes()
         const apiOnly = routes.filter(route => route.type === 'api')
         setApiRoutes(apiOnly)
       } catch (error) {
@@ -306,7 +306,7 @@ export function ApiRoutesComponent({ context }: { context: PluginContext }) {
 
     // Set up auto-refresh for API routes discovery
     const unsubscribe = enhancedAPI.utils.setAutoRefresh('api-routes', async () => {
-      const routes = await enhancedAPI.devtools.routes.getRoutes()
+      const routes = await enhancedAPI.routes.getRoutes()
       const apiOnly = routes.filter(route => route.type === 'api')
       setApiRoutes(apiOnly)
     }, 30000) // Check every 30 seconds
@@ -320,7 +320,7 @@ export function ApiRoutesComponent({ context }: { context: PluginContext }) {
 
     const unsubscribe = enhancedAPI.utils.setAutoRefresh('api-testing', async () => {
       try {
-        const results = await enhancedAPI.devtools.routes.testApiEndpoints()
+        const results = await enhancedAPI.routes.testApiEndpoints()
         setTestResults(results)
         setLastTest(new Date())
       } catch (error) {
@@ -334,7 +334,7 @@ export function ApiRoutesComponent({ context }: { context: PluginContext }) {
   const testApiEndpoints = async () => {
     try {
       setTesting(true)
-      const results = await enhancedAPI.devtools.routes.testApiEndpoints()
+      const results = await enhancedAPI.routes.testApiEndpoints()
       setTestResults(results)
       setLastTest(new Date())
     } catch (error) {

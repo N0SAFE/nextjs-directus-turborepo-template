@@ -54,13 +54,13 @@ export function AuthComponent({ context }: { context: any }) {
         statsResult,
         endpointsResult
       ] = await Promise.all([
-        api.auth.getAuthConfig().catch(() => null),
-        api.auth.getSessionInfo({}).catch(() => null),
-        api.auth.getActiveSessions().catch(() => []),
-        api.auth.getPasskeyInfo().catch(() => null),
-        api.auth.getSecurityEvents().catch(() => []),
-        api.auth.getAuthStats().catch(() => null),
-        api.auth.testAuthEndpoints().catch(() => [])
+        api.raw.getAuthConfig().catch(() => null),
+        api.raw.getSessionInfo({}).catch(() => null),
+        api.raw.getActiveSessions().catch(() => []),
+        api.raw.getPasskeyInfo().catch(() => null),
+        api.raw.getSecurityEvents().catch(() => []),
+        api.raw.getAuthStats().catch(() => null),
+        api.raw.testAuthEndpoints().catch(() => [])
       ])
       
       setAuthConfig(configResult)

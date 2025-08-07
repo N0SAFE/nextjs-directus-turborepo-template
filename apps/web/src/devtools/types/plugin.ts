@@ -164,8 +164,8 @@ export interface ReducedModeConfig {
  * ORPC contract definition for a plugin
  */
 export interface PluginOrpcContract {
-  /** The ORPC contract router for this plugin */
-  contract: unknown
+  /** The ORPC contract router for this plugin (optional - can use static contracts) */
+  contract?: unknown
   /** Unique identifier for the ORPC router that handles this contract */
   identifier: string
 }
